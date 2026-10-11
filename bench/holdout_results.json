@@ -1,0 +1,207 @@
+[
+  {
+    "adapter": "cloakroom full",
+    "items": 60,
+    "items_leaked": 0,
+    "values_total": 110,
+    "values_leaked": 0,
+    "blocked": 0,
+    "negatives": 15,
+    "false_alarms": 3,
+    "by_category": {
+      "md_meeting": {
+        "items": 10,
+        "leaked": 0
+      },
+      "curl_cmd": {
+        "items": 10,
+        "leaked": 0
+      },
+      "yaml_cfg": {
+        "items": 10,
+        "leaked": 0
+      },
+      "stack_trace": {
+        "items": 10,
+        "leaked": 0
+      },
+      "sql_insert": {
+        "items": 10,
+        "leaked": 0
+      },
+      "dockerfile": {
+        "items": 10,
+        "leaked": 0
+      },
+      "negative": {
+        "items": 15,
+        "leaked": 3
+      }
+    },
+    "leaks": [],
+    "ms_per_item": 44.4
+  },
+  {
+    "adapter": "cloakroom rules",
+    "items": 60,
+    "items_leaked": 20,
+    "values_total": 110,
+    "values_leaked": 20,
+    "blocked": 0,
+    "negatives": 15,
+    "false_alarms": 1,
+    "by_category": {
+      "md_meeting": {
+        "items": 10,
+        "leaked": 10
+      },
+      "curl_cmd": {
+        "items": 10,
+        "leaked": 0
+      },
+      "yaml_cfg": {
+        "items": 10,
+        "leaked": 0
+      },
+      "stack_trace": {
+        "items": 10,
+        "leaked": 0
+      },
+      "sql_insert": {
+        "items": 10,
+        "leaked": 10
+      },
+      "dockerfile": {
+        "items": 10,
+        "leaked": 0
+      },
+      "negative": {
+        "items": 15,
+        "leaked": 1
+      }
+    },
+    "leaks": [
+      {
+        "id": "md_meeting-001",
+        "values": [
+          "+44 20 7556 8300"
+        ]
+      },
+      {
+        "id": "sql_insert-005",
+        "values": [
+          "Beatriz Okonkwo"
+        ]
+      },
+      {
+        "id": "md_meeting-007",
+        "values": [
+          "+44 20 7700 5336"
+        ]
+      },
+      {
+        "id": "sql_insert-011",
+        "values": [
+          "Henrik Dahl"
+        ]
+      },
+      {
+        "id": "md_meeting-013",
+        "values": [
+          "+44 20 7573 8089"
+        ]
+      },
+      {
+        "id": "sql_insert-017",
+        "values": [
+          "Yuki Nakamura"
+        ]
+      },
+      {
+        "id": "md_meeting-019",
+        "values": [
+          "+44 20 7375 4289"
+        ]
+      },
+      {
+        "id": "sql_insert-023",
+        "values": [
+          "Samuel Achterberg"
+        ]
+      },
+      {
+        "id": "md_meeting-025",
+        "values": [
+          "+44 20 7846 2719"
+        ]
+      },
+      {
+        "id": "sql_insert-029",
+        "values": [
+          "Leila Farahani"
+        ]
+      },
+      {
+        "id": "md_meeting-031",
+        "values": [
+          "+44 20 7910 6848"
+        ]
+      },
+      {
+        "id": "sql_insert-035",
+        "values": [
+          "Cormac Doyle"
+        ]
+      },
+      {
+        "id": "md_meeting-037",
+        "values": [
+          "+44 20 7779 4999"
+        ]
+      },
+      {
+        "id": "sql_insert-041",
+        "values": [
+          "Nadia Petrov"
+        ]
+      },
+      {
+        "id": "md_meeting-043",
+        "values": [
+          "+44 20 7445 7828"
+        ]
+      },
+      {
+        "id": "sql_insert-047",
+        "values": [
+          "Gabriel Esposito"
+        ]
+      },
+      {
+        "id": "md_meeting-049",
+        "values": [
+          "+44 20 7417 1204"
+        ]
+      },
+      {
+        "id": "sql_insert-053",
+        "values": [
+          "Thandiwe Nkosi"
+        ]
+      },
+      {
+        "id": "md_meeting-055",
+        "values": [
+          "+44 20 7555 8186"
+        ]
+      },
+      {
+        "id": "sql_insert-059",
+        "values": [
+          "Viktor Halvorsen"
+        ]
+      }
+    ],
+    "ms_per_item": 0.0
+  }
+]

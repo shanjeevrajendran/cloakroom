@@ -1,0 +1,5090 @@
+[
+  {
+    "adapter": "sensitive-canary (blocks)",
+    "items": 80,
+    "items_leaked": 1,
+    "values_total": 394,
+    "values_leaked": 5,
+    "blocked": 79,
+    "negatives": 40,
+    "false_alarms": 3,
+    "by_category": {
+      "slack-export": {
+        "items": 3,
+        "leaked": 0
+      },
+      "teams-export": {
+        "items": 3,
+        "leaked": 1
+      },
+      "outlook-eml": {
+        "items": 3,
+        "leaked": 0
+      },
+      "salesforce-export": {
+        "items": 3,
+        "leaked": 0
+      },
+      "hubspot-export": {
+        "items": 3,
+        "leaked": 0
+      },
+      "stripe-dispute": {
+        "items": 3,
+        "leaked": 0
+      },
+      "paypal-dispute": {
+        "items": 3,
+        "leaked": 0
+      },
+      "shopify-order": {
+        "items": 3,
+        "leaked": 0
+      },
+      "twilio-webhook": {
+        "items": 3,
+        "leaked": 0
+      },
+      "sendgrid-webhook": {
+        "items": 3,
+        "leaked": 0
+      },
+      "okta-audit": {
+        "items": 3,
+        "leaked": 0
+      },
+      "auth0-audit": {
+        "items": 3,
+        "leaked": 0
+      },
+      "vpn-auth": {
+        "items": 3,
+        "leaked": 0
+      },
+      "ssh-auth": {
+        "items": 3,
+        "leaked": 0
+      },
+      "gitlab-ci": {
+        "items": 3,
+        "leaked": 0
+      },
+      "ansible-run": {
+        "items": 3,
+        "leaked": 0
+      },
+      "chef-run": {
+        "items": 3,
+        "leaked": 0
+      },
+      "helm-release": {
+        "items": 3,
+        "leaked": 0
+      },
+      "openapi-example": {
+        "items": 3,
+        "leaked": 0
+      },
+      "sqlite-dump": {
+        "items": 3,
+        "leaked": 0
+      },
+      "hr-roster-csv": {
+        "items": 2,
+        "leaked": 0
+      },
+      "pdf-tax-return": {
+        "items": 2,
+        "leaked": 0
+      },
+      "mortgage-application": {
+        "items": 2,
+        "leaked": 0
+      },
+      "visa-application": {
+        "items": 2,
+        "leaked": 0
+      },
+      "hospital-discharge": {
+        "items": 2,
+        "leaked": 0
+      },
+      "school-report-card": {
+        "items": 2,
+        "leaked": 0
+      },
+      "dating-profile": {
+        "items": 2,
+        "leaked": 0
+      },
+      "gym-membership": {
+        "items": 2,
+        "leaked": 0
+      },
+      "airflow-log": {
+        "items": 2,
+        "leaked": 0
+      },
+      "dbt-log": {
+        "items": 2,
+        "leaked": 0
+      },
+      "negative": {
+        "items": 40,
+        "leaked": 3
+      }
+    },
+    "leaks": [
+      {
+        "id": "h5-006",
+        "values": [
+          "falrashid",
+          "103.251.213.235",
+          "mpapadaki",
+          "Faisal Al-Rashid",
+          "+44 7700 900334"
+        ]
+      }
+    ],
+    "ms_per_item": 0.5
+  },
+  {
+    "adapter": "claude-code-redact (+pii)",
+    "items": 80,
+    "items_leaked": 79,
+    "values_total": 394,
+    "values_leaked": 238,
+    "blocked": 0,
+    "negatives": 40,
+    "false_alarms": 5,
+    "by_category": {
+      "slack-export": {
+        "items": 3,
+        "leaked": 3
+      },
+      "teams-export": {
+        "items": 3,
+        "leaked": 3
+      },
+      "outlook-eml": {
+        "items": 3,
+        "leaked": 3
+      },
+      "salesforce-export": {
+        "items": 3,
+        "leaked": 3
+      },
+      "hubspot-export": {
+        "items": 3,
+        "leaked": 3
+      },
+      "stripe-dispute": {
+        "items": 3,
+        "leaked": 3
+      },
+      "paypal-dispute": {
+        "items": 3,
+        "leaked": 3
+      },
+      "shopify-order": {
+        "items": 3,
+        "leaked": 3
+      },
+      "twilio-webhook": {
+        "items": 3,
+        "leaked": 3
+      },
+      "sendgrid-webhook": {
+        "items": 3,
+        "leaked": 3
+      },
+      "okta-audit": {
+        "items": 3,
+        "leaked": 3
+      },
+      "auth0-audit": {
+        "items": 3,
+        "leaked": 3
+      },
+      "vpn-auth": {
+        "items": 3,
+        "leaked": 3
+      },
+      "ssh-auth": {
+        "items": 3,
+        "leaked": 3
+      },
+      "gitlab-ci": {
+        "items": 3,
+        "leaked": 3
+      },
+      "ansible-run": {
+        "items": 3,
+        "leaked": 3
+      },
+      "chef-run": {
+        "items": 3,
+        "leaked": 3
+      },
+      "helm-release": {
+        "items": 3,
+        "leaked": 3
+      },
+      "openapi-example": {
+        "items": 3,
+        "leaked": 2
+      },
+      "sqlite-dump": {
+        "items": 3,
+        "leaked": 3
+      },
+      "hr-roster-csv": {
+        "items": 2,
+        "leaked": 2
+      },
+      "pdf-tax-return": {
+        "items": 2,
+        "leaked": 2
+      },
+      "mortgage-application": {
+        "items": 2,
+        "leaked": 2
+      },
+      "visa-application": {
+        "items": 2,
+        "leaked": 2
+      },
+      "hospital-discharge": {
+        "items": 2,
+        "leaked": 2
+      },
+      "school-report-card": {
+        "items": 2,
+        "leaked": 2
+      },
+      "dating-profile": {
+        "items": 2,
+        "leaked": 2
+      },
+      "gym-membership": {
+        "items": 2,
+        "leaked": 2
+      },
+      "airflow-log": {
+        "items": 2,
+        "leaked": 2
+      },
+      "dbt-log": {
+        "items": 2,
+        "leaked": 2
+      },
+      "negative": {
+        "items": 40,
+        "leaked": 5
+      }
+    },
+    "leaks": [
+      {
+        "id": "h5-001",
+        "values": [
+          "lhoffmann",
+          "Lena Hoffmann",
+          "dkruger",
+          "hfT9ebSB^q8daDEt"
+        ]
+      },
+      {
+        "id": "h5-002",
+        "values": [
+          "nadeyemi",
+          "ahosseini",
+          "ghp_3AH2VnJFJKX5UlaOp1\\\n  44V3iI33dUqYdXqw9E"
+        ]
+      },
+      {
+        "id": "h5-003",
+        "values": [
+          "easante",
+          "Tawanda Sithole",
+          "tsithole",
+          "8BrV_JZVwourPHwLru-"
+        ]
+      },
+      {
+        "id": "h5-004",
+        "values": [
+          "Ananya Das",
+          "Ananya",
+          "adas",
+          "Mariana Solis"
+        ]
+      },
+      {
+        "id": "h5-005",
+        "values": [
+          "Lena Hoffmann",
+          "Tomasz Krawczyk",
+          "03/15/1960"
+        ]
+      },
+      {
+        "id": "h5-006",
+        "values": [
+          "falrashid",
+          "103.251.213.235",
+          "mpapadaki",
+          "Faisal Al-Rashid",
+          "+44 7700 900334"
+        ]
+      },
+      {
+        "id": "h5-007",
+        "values": [
+          "Pablo Serrano",
+          "Felix Braun",
+          "Pablo",
+          "AKIA2AQKEH6HSI2YW93C",
+          "yEhJdqYX4O+kbMrUFnnBrT1dyLKmB44l1bhfFMAM",
+          "pserrano",
+          "9x0hDPw4DlqP"
+        ]
+      },
+      {
+        "id": "h5-008",
+        "values": [
+          "8094 Stonechat Terrace, Boone, AZ 30800",
+          "Georgios Nikolaidis",
+          "1962-11-17"
+        ]
+      },
+      {
+        "id": "h5-009",
+        "values": [
+          "32cea6dfd118fa9129b6809c916425ff2f05c23d913009e2",
+          "Zeynep Demir",
+          "+49 170 0678674"
+        ]
+      },
+      {
+        "id": "h5-010",
+        "values": [
+          "Seojun Jung",
+          "+55 11 9 9136-5625",
+          "Rua dos Ip\u00eas, 309, Florian\u00f3polis - MG, 63304-101",
+          "28/06/1986"
+        ]
+      },
+      {
+        "id": "h5-011",
+        "values": [
+          "Kaito Mori",
+          "eferraro",
+          "3N=4_QyEU6ow4YQfF$Q"
+        ]
+      },
+      {
+        "id": "h5-012",
+        "values": [
+          "Rin Yamada",
+          "D-17, Lotus Enclave, HSR Layout, Bengaluru, Karnataka 360549",
+          "cparedes"
+        ]
+      },
+      {
+        "id": "h5-013",
+        "values": [
+          "Rania Saadeh",
+          "135.102.131.43"
+        ]
+      },
+      {
+        "id": "h5-014",
+        "values": [
+          "Farhan Ahmed",
+          "sjung"
+        ]
+      },
+      {
+        "id": "h5-015",
+        "values": [
+          "Camila Paredes",
+          "+49 170 7405029"
+        ]
+      },
+      {
+        "id": "h5-016",
+        "values": [
+          "Rania Saadeh",
+          "5518 Dunlin Blvd, Boone, NM 45575"
+        ]
+      },
+      {
+        "id": "h5-017",
+        "values": [
+          "Mai Pham",
+          "215.241.49.137"
+        ]
+      },
+      {
+        "id": "h5-018",
+        "values": [
+          "mariajose.ferrer%40kestrelworks.dev",
+          "Mar\u00eda-Jos\u00e9 Ferrer",
+          "+55 11 9 9005-8566"
+        ]
+      },
+      {
+        "id": "h5-019",
+        "values": [
+          "Liv Hagen",
+          "12 Sanderling Terrace, Exeter DH1 3JN",
+          "+44 7700 900220"
+        ]
+      },
+      {
+        "id": "h5-020",
+        "values": [
+          "Grace Harbor"
+        ]
+      },
+      {
+        "id": "h5-021",
+        "values": [
+          "Georgios Nikolaidis"
+        ]
+      },
+      {
+        "id": "h5-022",
+        "values": [
+          "Hunter Frost",
+          "5455 Quarry Ridge Court, Boone, AZ 40670"
+        ]
+      },
+      {
+        "id": "h5-023",
+        "values": [
+          "Stefan Jovanovic",
+          "\u3012979-7166 \u4eac\u90fd\u5e02\u4e0b\u4eac\u533a\u4e00\u756a\u753a7-11-19",
+          "Ngozi Adeyemi"
+        ]
+      },
+      {
+        "id": "h5-024",
+        "values": [
+          "Agus Pratama",
+          "+49 170 7155552",
+          "Kirchweg 39, 60578 Aachen"
+        ]
+      },
+      {
+        "id": "h5-025",
+        "values": [
+          "AC8f01296138564cae77d915495c11779a",
+          "+44 7700 900265",
+          "Tawanda",
+          "9d4d1b33c5c860a4fe72719f232bdf4321258396ae4a92c8",
+          "Tawanda Sithole",
+          "tsithole"
+        ]
+      },
+      {
+        "id": "h5-026",
+        "values": [
+          "Divya Menon",
+          "09/18/1995"
+        ]
+      },
+      {
+        "id": "h5-027",
+        "values": [
+          "ACf9c19c40e92e18db0a23a6102bcfcec4",
+          "gQ9Bef6itXLDBA9U4nF0rwI2JCcJI8bZ",
+          "181.232.121.128"
+        ]
+      },
+      {
+        "id": "h5-028",
+        "values": [
+          "2.135.112.139",
+          "Miguel Torres"
+        ]
+      },
+      {
+        "id": "h5-029",
+        "values": [
+          "Piotr Nowak",
+          "grace.porter%40sparrowhawk.dev"
+        ]
+      },
+      {
+        "id": "h5-030",
+        "values": [
+          "cschmitt",
+          "Olga Kuznetsova",
+          "+55 11 9 9972-5671"
+        ]
+      },
+      {
+        "id": "h5-031",
+        "values": [
+          "Ritu Saxena",
+          "196.60.138.165",
+          "rsaxena"
+        ]
+      },
+      {
+        "id": "h5-032",
+        "values": [
+          "zdemir",
+          "Aoi Suzuki"
+        ]
+      },
+      {
+        "id": "h5-033",
+        "values": [
+          "Meera Krishnan"
+        ]
+      },
+      {
+        "id": "h5-034",
+        "values": [
+          "171.132.89.186",
+          "Francesca Ricci"
+        ]
+      },
+      {
+        "id": "h5-035",
+        "values": [
+          "!+8tCtgQl5FcW1YCObh^",
+          "gnikolaidis",
+          "Georgios Nikolaidis",
+          "+49 170 7715856"
+        ]
+      },
+      {
+        "id": "h5-036",
+        "values": [
+          "62.27.68.212",
+          "Lena Hoffmann"
+        ]
+      },
+      {
+        "id": "h5-037",
+        "values": [
+          "fricci",
+          "44.210.5.66",
+          "Francesca Ricci"
+        ]
+      },
+      {
+        "id": "h5-038",
+        "values": [
+          "abondarenko",
+          "94.127.230.210",
+          "+55 11 9 0947-9830"
+        ]
+      },
+      {
+        "id": "h5-039",
+        "values": [
+          "tmulder",
+          "79.236.65.115",
+          "l4NsHq@06_q#",
+          "Thijs Mulder"
+        ]
+      },
+      {
+        "id": "h5-040",
+        "values": [
+          "obennett",
+          "40.13.188.40",
+          "b2xpdmVyLmJlbm5ldHRAdGlkZXdhdGVybGFicy5pbw==",
+          "Oliver Bennett"
+        ]
+      },
+      {
+        "id": "h5-041",
+        "values": [
+          "amarchand",
+          "202.209.226.201",
+          "Anne-Sophie Marchand"
+        ]
+      },
+      {
+        "id": "h5-042",
+        "values": [
+          "srattanakul",
+          "bmansour",
+          "Somsak Rattanakul"
+        ]
+      },
+      {
+        "id": "h5-043",
+        "values": [
+          "bXBoYW06OCtZc1AjNlloVGVHOXBqTWg=",
+          "mpham"
+        ]
+      },
+      {
+        "id": "h5-044",
+        "values": [
+          "AKIAJ887TKYTZKZDYV73",
+          "88.1.88.171",
+          "Lucia Campos"
+        ]
+      },
+      {
+        "id": "h5-045",
+        "values": [
+          "pwong",
+          "+44 7700 900051"
+        ]
+      },
+      {
+        "id": "h5-046",
+        "values": [
+          "lhagen",
+          "Liv Hagen"
+        ]
+      },
+      {
+        "id": "h5-047",
+        "values": [
+          "86.40.208.104",
+          "eQC6VJGY*OXU#lr",
+          "pserrano"
+        ]
+      },
+      {
+        "id": "h5-048",
+        "values": [
+          "64.217.93.235",
+          "abondarenko",
+          "Andriy Bondarenko"
+        ]
+      },
+      {
+        "id": "h5-049",
+        "values": [
+          "79.58.231.230",
+          "smalik",
+          "j-mmqf5hiq!9e",
+          "Sana Malik"
+        ]
+      },
+      {
+        "id": "h5-050",
+        "values": [
+          "73.98.24.8"
+        ]
+      },
+      {
+        "id": "h5-051",
+        "values": [
+          "asuzuki",
+          "Aoi Suzuki"
+        ]
+      },
+      {
+        "id": "h5-052",
+        "values": [
+          "srattanakul",
+          "Somsak Rattanakul"
+        ]
+      },
+      {
+        "id": "h5-053",
+        "values": [
+          "enavarro",
+          "+55 11 9 3975-0922"
+        ]
+      },
+      {
+        "id": "h5-054",
+        "values": [
+          "Oliver Bennett"
+        ]
+      },
+      {
+        "id": "h5-055",
+        "values": [
+          "Ines Barros"
+        ]
+      },
+      {
+        "id": "h5-056",
+        "values": [
+          "Antoine Dubois"
+        ]
+      },
+      {
+        "id": "h5-058",
+        "values": [
+          "Georgios Nikolaidis",
+          "+49 170 8850807",
+          "1983-09-17",
+          "Rania Saadeh",
+          "07/02/1976"
+        ]
+      },
+      {
+        "id": "h5-059",
+        "values": [
+          "mtorres",
+          "Y13#gx&OdQPKf",
+          "Miguel Torres"
+        ]
+      },
+      {
+        "id": "h5-060",
+        "values": [
+          "MRN-68363919",
+          "Bram Peeters",
+          "06/25/2000",
+          "CLM-W5I2UYTBQ",
+          "hcaldwell"
+        ]
+      },
+      {
+        "id": "h5-061",
+        "values": [
+          "Kaito Mori",
+          "03/05/1981",
+          "James Whitfield",
+          "+44 7700 900876",
+          "17/08/1963",
+          "PJ025421C"
+        ]
+      },
+      {
+        "id": "h5-062",
+        "values": [
+          "Oliver Bennett",
+          "Agnieszka Piotrowska",
+          "Oliver",
+          "Bennett",
+          "oliver.bennett%40coppervale.io",
+          "\u0985\u09a8\u09a8\u09cd\u09af\u09be \u09a6\u09be\u09b8"
+        ]
+      },
+      {
+        "id": "h5-063",
+        "values": [
+          "Tawanda Sithole",
+          "06/14/1977",
+          "7285 Curlew Drive, Galena, AZ 89943",
+          "Agus Pratama"
+        ]
+      },
+      {
+        "id": "h5-064",
+        "values": [
+          "ekaya",
+          "Emre Kaya",
+          "+49 170 3662050"
+        ]
+      },
+      {
+        "id": "h5-065",
+        "values": [
+          "Francesca Ricci",
+          "1961-05-26",
+          "Tawanda Sithole",
+          "5/105 Currawong Street, Fremantle NSW 4819"
+        ]
+      },
+      {
+        "id": "h5-066",
+        "values": [
+          "Felix Braun",
+          "ON DL A5922-78800-00525"
+        ]
+      },
+      {
+        "id": "h5-067",
+        "values": [
+          "Chiamaka Eze",
+          "X40250068",
+          "17/12/1987",
+          "178 rue des Forges, 46000 Strasbourg",
+          "+55 11 9 6374-1187"
+        ]
+      },
+      {
+        "id": "h5-068",
+        "values": [
+          "Farhan Ahmed",
+          "I0236865",
+          "7B, Cypress Heights, Kondapur, Bengaluru, Punjab 879076",
+          "Jean-Pierre Aubert"
+        ]
+      },
+      {
+        "id": "h5-069",
+        "values": [
+          "Mai Pham",
+          "MRN-36810537",
+          "2001-05-22",
+          "Seestra\u00dfe 39, 51651 Aachen",
+          "+49 170 3259247",
+          "Fran\u00e7ois-Xavier Dupont"
+        ]
+      },
+      {
+        "id": "h5-070",
+        "values": [
+          "Oliver Bennett",
+          "CLM-WUROT08W",
+          "06/18/2002"
+        ]
+      },
+      {
+        "id": "h5-071",
+        "values": [
+          "Andriy Bondarenko",
+          "03/01/1976",
+          "Sana Malik",
+          "7135 Cinder Hollow Lane, Galena, MI 24200"
+        ]
+      },
+      {
+        "id": "h5-072",
+        "values": [
+          "Chiamaka",
+          "Eze",
+          "\u0421\u0435\u0440\u0433\u0435\u0439 \u0418\u0432\u0430\u043d\u043e\u0432"
+        ]
+      },
+      {
+        "id": "h5-073",
+        "values": [
+          "Zanele Khumalo",
+          "09/27/1963",
+          "107 Kestrel Close, York YO24 4QG",
+          "+44 7700 900867"
+        ]
+      },
+      {
+        "id": "h5-074",
+        "values": [
+          "Fran\u00e7ois-Xavier Dupont",
+          "5/132 Grevillea Road, Fremantle QLD 4471",
+          "fdupont"
+        ]
+      },
+      {
+        "id": "h5-075",
+        "values": [
+          "James Whitfield",
+          "CLM-SQ75L6BK",
+          "06/11/1977",
+          "+55 11 9 4288-7428",
+          "Rua dos Ip\u00eas, 647, Belo Horizonte - AM, 74551-754"
+        ]
+      },
+      {
+        "id": "h5-076",
+        "values": [
+          "Nicolas Fabre",
+          "Bram Peeters"
+        ]
+      },
+      {
+        "id": "h5-077",
+        "values": [
+          "Camila Paredes"
+        ]
+      },
+      {
+        "id": "h5-078",
+        "values": [
+          "nadeyemi",
+          "Camila Paredes"
+        ]
+      },
+      {
+        "id": "h5-079",
+        "values": [
+          "cparedes",
+          "Camila Paredes"
+        ]
+      },
+      {
+        "id": "h5-080",
+        "values": [
+          "Xue Fang",
+          "1961-01-26",
+          "144.9.111.240"
+        ]
+      }
+    ],
+    "ms_per_item": 0.1
+  },
+  {
+    "adapter": "claude-code-redact (secrets)",
+    "items": 80,
+    "items_leaked": 80,
+    "values_total": 394,
+    "values_leaked": 372,
+    "blocked": 0,
+    "negatives": 40,
+    "false_alarms": 0,
+    "by_category": {
+      "slack-export": {
+        "items": 3,
+        "leaked": 3
+      },
+      "teams-export": {
+        "items": 3,
+        "leaked": 3
+      },
+      "outlook-eml": {
+        "items": 3,
+        "leaked": 3
+      },
+      "salesforce-export": {
+        "items": 3,
+        "leaked": 3
+      },
+      "hubspot-export": {
+        "items": 3,
+        "leaked": 3
+      },
+      "stripe-dispute": {
+        "items": 3,
+        "leaked": 3
+      },
+      "paypal-dispute": {
+        "items": 3,
+        "leaked": 3
+      },
+      "shopify-order": {
+        "items": 3,
+        "leaked": 3
+      },
+      "twilio-webhook": {
+        "items": 3,
+        "leaked": 3
+      },
+      "sendgrid-webhook": {
+        "items": 3,
+        "leaked": 3
+      },
+      "okta-audit": {
+        "items": 3,
+        "leaked": 3
+      },
+      "auth0-audit": {
+        "items": 3,
+        "leaked": 3
+      },
+      "vpn-auth": {
+        "items": 3,
+        "leaked": 3
+      },
+      "ssh-auth": {
+        "items": 3,
+        "leaked": 3
+      },
+      "gitlab-ci": {
+        "items": 3,
+        "leaked": 3
+      },
+      "ansible-run": {
+        "items": 3,
+        "leaked": 3
+      },
+      "chef-run": {
+        "items": 3,
+        "leaked": 3
+      },
+      "helm-release": {
+        "items": 3,
+        "leaked": 3
+      },
+      "openapi-example": {
+        "items": 3,
+        "leaked": 3
+      },
+      "sqlite-dump": {
+        "items": 3,
+        "leaked": 3
+      },
+      "hr-roster-csv": {
+        "items": 2,
+        "leaked": 2
+      },
+      "pdf-tax-return": {
+        "items": 2,
+        "leaked": 2
+      },
+      "mortgage-application": {
+        "items": 2,
+        "leaked": 2
+      },
+      "visa-application": {
+        "items": 2,
+        "leaked": 2
+      },
+      "hospital-discharge": {
+        "items": 2,
+        "leaked": 2
+      },
+      "school-report-card": {
+        "items": 2,
+        "leaked": 2
+      },
+      "dating-profile": {
+        "items": 2,
+        "leaked": 2
+      },
+      "gym-membership": {
+        "items": 2,
+        "leaked": 2
+      },
+      "airflow-log": {
+        "items": 2,
+        "leaked": 2
+      },
+      "dbt-log": {
+        "items": 2,
+        "leaked": 2
+      },
+      "negative": {
+        "items": 40,
+        "leaked": 0
+      }
+    },
+    "leaks": [
+      {
+        "id": "h5-001",
+        "values": [
+          "lhoffmann",
+          "Lena Hoffmann",
+          "dkruger",
+          "hfT9ebSB^q8daDEt",
+          "+1 (312) 414-9588"
+        ]
+      },
+      {
+        "id": "h5-002",
+        "values": [
+          "nadeyemi",
+          "ahosseini",
+          "arash.hosseini@lumenarc.io",
+          "ghp_3AH2VnJFJKX5UlaOp1\\\n  44V3iI33dUqYdXqw9E"
+        ]
+      },
+      {
+        "id": "h5-003",
+        "values": [
+          "easante",
+          "Tawanda Sithole",
+          "tsithole",
+          "8BrV_JZVwourPHwLru-"
+        ]
+      },
+      {
+        "id": "h5-004",
+        "values": [
+          "Ananya Das",
+          "Ananya",
+          "adas",
+          "Mariana Solis"
+        ]
+      },
+      {
+        "id": "h5-005",
+        "values": [
+          "Lena Hoffmann",
+          "Tomasz Krawczyk",
+          "tomasz.krawczyk@dunemarch.dev",
+          "03/15/1960",
+          "682-37-1259"
+        ]
+      },
+      {
+        "id": "h5-006",
+        "values": [
+          "falrashid",
+          "103.251.213.235",
+          "mpapadaki",
+          "Faisal Al-Rashid",
+          "+44 7700 900334"
+        ]
+      },
+      {
+        "id": "h5-007",
+        "values": [
+          "Pablo Serrano",
+          "pablo.serrano@foxglove.systems",
+          "Felix Braun",
+          "felix.braun@cinderwell.dev",
+          "Pablo",
+          "AKIA2AQKEH6HSI2YW93C",
+          "yEhJdqYX4O+kbMrUFnnBrT1dyLKmB44l1bhfFMAM",
+          "pserrano",
+          "9x0hDPw4DlqP"
+        ]
+      },
+      {
+        "id": "h5-008",
+        "values": [
+          "samir.qassem@cinderwell.dev",
+          "georgios.nikolaidis@cinderwell.dev",
+          "4740876822093399",
+          "8094 Stonechat Terrace, Boone, AZ 30800",
+          "Georgios Nikolaidis",
+          "1962-11-17"
+        ]
+      },
+      {
+        "id": "h5-009",
+        "values": [
+          "zeynep.demir@dunemarch.dev",
+          "32cea6dfd118fa9129b6809c916425ff2f05c23d913009e2",
+          "Zeynep Demir",
+          "+49 170 0678674"
+        ]
+      },
+      {
+        "id": "h5-010",
+        "values": [
+          "Seojun Jung",
+          "seojun.jung@lumenarc.io",
+          "+55 11 9 9136-5625",
+          "Rua dos Ip\u00eas, 309, Florian\u00f3polis - MG, 63304-101",
+          "28/06/1986",
+          "383-95-4335",
+          "francoisxavier.dupont@dunemarch.dev"
+        ]
+      },
+      {
+        "id": "h5-011",
+        "values": [
+          "Kaito Mori",
+          "kaito.mori@quillmere.com",
+          "+52 55 5593 0606",
+          "eferraro",
+          "3N=4_QyEU6ow4YQfF$Q"
+        ]
+      },
+      {
+        "id": "h5-012",
+        "values": [
+          "Rin Yamada",
+          "+91 17654 05750",
+          "D-17, Lotus Enclave, HSR Layout, Bengaluru, Karnataka 360549",
+          "cparedes",
+          "camila.paredes@quillmere.com"
+        ]
+      },
+      {
+        "id": "h5-013",
+        "values": [
+          "Rania Saadeh",
+          "rania.saadeh@hollowmere.dev",
+          "+61 404 315 767",
+          "135.102.131.43"
+        ]
+      },
+      {
+        "id": "h5-014",
+        "values": [
+          "Farhan Ahmed",
+          "farhan.ahmed@quillmere.com",
+          "sjung",
+          "seojun.jung@mistraline.com"
+        ]
+      },
+      {
+        "id": "h5-015",
+        "values": [
+          "Camila Paredes",
+          "camila.paredes@mistraline.com",
+          "DE89551541420278718487",
+          "+49 170 7405029"
+        ]
+      },
+      {
+        "id": "h5-016",
+        "values": [
+          "Rania Saadeh",
+          "rania.saadeh@mistraline.com",
+          "51037186151447536",
+          "5518 Dunlin Blvd, Boone, NM 45575",
+          "+1 (602) 823-0180"
+        ]
+      },
+      {
+        "id": "h5-017",
+        "values": [
+          "Mai Pham",
+          "3401785995983504",
+          "215.241.49.137",
+          "mai.pham@dunemarch.dev",
+          "+81 90-5087-3211"
+        ]
+      },
+      {
+        "id": "h5-018",
+        "values": [
+          "mariajose.ferrer%40kestrelworks.dev",
+          "Mar\u00eda-Jos\u00e9 Ferrer",
+          "+55 11 9 9005-8566"
+        ]
+      },
+      {
+        "id": "h5-019",
+        "values": [
+          "Liv Hagen",
+          "liv.hagen@driftline.ai",
+          "60110788958356397",
+          "12 Sanderling Terrace, Exeter DH1 3JN",
+          "+44 7700 900220"
+        ]
+      },
+      {
+        "id": "h5-020",
+        "values": [
+          "Grace Harbor",
+          "grace.harbor@mistraline.com",
+          "ES4871794353792910581801",
+          "+52 55 6725 7929"
+        ]
+      },
+      {
+        "id": "h5-021",
+        "values": [
+          "Georgios Nikolaidis",
+          "+234 735 086 5458",
+          "georgios.nikolaidis@foxglove.systems",
+          "4865099248707059"
+        ]
+      },
+      {
+        "id": "h5-022",
+        "values": [
+          "hunter.frost@mistraline.com",
+          "Hunter Frost",
+          "+1 (704) 278-0924",
+          "5455 Quarry Ridge Court, Boone, AZ 40670",
+          "4584045907795992"
+        ]
+      },
+      {
+        "id": "h5-023",
+        "values": [
+          "Stefan Jovanovic",
+          "ngozi.adeyemi@ironwoodcloud.io",
+          "+81 90-3888-6006",
+          "\u3012979-7166 \u4eac\u90fd\u5e02\u4e0b\u4eac\u533a\u4e00\u756a\u753a7-11-19",
+          "Ngozi Adeyemi"
+        ]
+      },
+      {
+        "id": "h5-024",
+        "values": [
+          "Agus Pratama",
+          "agus.pratama@mistraline.com",
+          "+49 170 7155552",
+          "Kirchweg 39, 60578 Aachen",
+          "DE91356129052340419552"
+        ]
+      },
+      {
+        "id": "h5-025",
+        "values": [
+          "AC8f01296138564cae77d915495c11779a",
+          "+1 (617) 701-9354",
+          "+44 7700 900265",
+          "Tawanda",
+          "9d4d1b33c5c860a4fe72719f232bdf4321258396ae4a92c8",
+          "Tawanda Sithole",
+          "tsithole"
+        ]
+      },
+      {
+        "id": "h5-026",
+        "values": [
+          "+52 55 8281 9890",
+          "+1 (305) 884-4372",
+          "Divya Menon",
+          "09/18/1995"
+        ]
+      },
+      {
+        "id": "h5-027",
+        "values": [
+          "ACf9c19c40e92e18db0a23a6102bcfcec4",
+          "gQ9Bef6itXLDBA9U4nF0rwI2JCcJI8bZ",
+          "seojun.jung@emberfield.app",
+          "181.232.121.128"
+        ]
+      },
+      {
+        "id": "h5-028",
+        "values": [
+          "miguel.torres@dunemarch.dev",
+          "2.135.112.139",
+          "Miguel Torres"
+        ]
+      },
+      {
+        "id": "h5-029",
+        "values": [
+          "piotr.nowak@tidewaterlabs.io",
+          "Piotr Nowak",
+          "grace.porter%40sparrowhawk.dev"
+        ]
+      },
+      {
+        "id": "h5-030",
+        "values": [
+          "cschmitt",
+          "clara.schmitt@sparrowhawk.dev",
+          "Olga Kuznetsova",
+          "+55 11 9 9972-5671"
+        ]
+      },
+      {
+        "id": "h5-031",
+        "values": [
+          "ritu.saxena@ironwoodcloud.io",
+          "Ritu Saxena",
+          "196.60.138.165",
+          "rsaxena"
+        ]
+      },
+      {
+        "id": "h5-032",
+        "values": [
+          "zdemir",
+          "zeynep.demir@dunemarch.dev",
+          "Aoi Suzuki",
+          "aoi.suzuki@mistraline.com",
+          "+1 (415) 806-7798"
+        ]
+      },
+      {
+        "id": "h5-033",
+        "values": [
+          "Meera Krishnan",
+          "meera.krishnan@lumenarc.io",
+          "+61 444 122 581"
+        ]
+      },
+      {
+        "id": "h5-034",
+        "values": [
+          "francesca.ricci@tidewaterlabs.io",
+          "171.132.89.186",
+          "Francesca Ricci"
+        ]
+      },
+      {
+        "id": "h5-035",
+        "values": [
+          "!+8tCtgQl5FcW1YCObh^",
+          "gnikolaidis",
+          "georgios.nikolaidis@mistraline.com",
+          "Georgios Nikolaidis",
+          "+49 170 7715856"
+        ]
+      },
+      {
+        "id": "h5-036",
+        "values": [
+          "62.27.68.212",
+          "lena.hoffmann@brooklinedata.dev",
+          "Lena Hoffmann",
+          "+81 90-9594-1867"
+        ]
+      },
+      {
+        "id": "h5-037",
+        "values": [
+          "fricci",
+          "44.210.5.66",
+          "Francesca Ricci",
+          "francesca.ricci@driftline.ai"
+        ]
+      },
+      {
+        "id": "h5-038",
+        "values": [
+          "abondarenko",
+          "andriy.bondarenko@lumenarc.io",
+          "94.127.230.210",
+          "+55 11 9 0947-9830"
+        ]
+      },
+      {
+        "id": "h5-039",
+        "values": [
+          "tmulder",
+          "79.236.65.115",
+          "l4NsHq@06_q#",
+          "Thijs Mulder",
+          "thijs.mulder@quillmere.com"
+        ]
+      },
+      {
+        "id": "h5-040",
+        "values": [
+          "obennett",
+          "40.13.188.40",
+          "b2xpdmVyLmJlbm5ldHRAdGlkZXdhdGVybGFicy5pbw==",
+          "Oliver Bennett",
+          "oliver.bennett@tidewaterlabs.io"
+        ]
+      },
+      {
+        "id": "h5-041",
+        "values": [
+          "amarchand",
+          "202.209.226.201",
+          "Anne-Sophie Marchand",
+          "annesophie.marchand@hollowmere.dev",
+          "+52 55 3497 7054"
+        ]
+      },
+      {
+        "id": "h5-042",
+        "values": [
+          "srattanakul",
+          "bmansour",
+          "Somsak Rattanakul",
+          "somsak.rattanakul@ironwoodcloud.io",
+          "+1 (718) 525-6634"
+        ]
+      },
+      {
+        "id": "h5-043",
+        "values": [
+          "bXBoYW06OCtZc1AjNlloVGVHOXBqTWg=",
+          "mpham",
+          "mai.pham@sparrowhawk.dev"
+        ]
+      },
+      {
+        "id": "h5-044",
+        "values": [
+          "AKIAJ887TKYTZKZDYV73",
+          "88.1.88.171",
+          "Lucia Campos",
+          "lucia.campos@tidewaterlabs.io"
+        ]
+      },
+      {
+        "id": "h5-045",
+        "values": [
+          "pwong",
+          "pimchanok.wong@quillmere.com",
+          "+44 7700 900051"
+        ]
+      },
+      {
+        "id": "h5-046",
+        "values": [
+          "lhagen",
+          "Liv Hagen",
+          "liv.hagen@cinderwell.dev"
+        ]
+      },
+      {
+        "id": "h5-047",
+        "values": [
+          "86.40.208.104",
+          "eQC6VJGY*OXU#lr",
+          "pserrano",
+          "pablo.serrano@coppervale.io"
+        ]
+      },
+      {
+        "id": "h5-048",
+        "values": [
+          "64.217.93.235",
+          "abondarenko",
+          "Andriy Bondarenko",
+          "+1 (602) 617-5134"
+        ]
+      },
+      {
+        "id": "h5-049",
+        "values": [
+          "79.58.231.230",
+          "smalik",
+          "j-mmqf5hiq!9e",
+          "Sana Malik",
+          "sana.malik@tidewaterlabs.io"
+        ]
+      },
+      {
+        "id": "h5-050",
+        "values": [
+          "73.98.24.8",
+          "pimchanok.wong@cinderwell.dev"
+        ]
+      },
+      {
+        "id": "h5-051",
+        "values": [
+          "asuzuki",
+          "Aoi Suzuki",
+          "+81 90-3406-4073",
+          "aoi.suzuki@coppervale.io"
+        ]
+      },
+      {
+        "id": "h5-052",
+        "values": [
+          "srattanakul",
+          "Somsak Rattanakul",
+          "somsak.rattanakul@quillmere.com"
+        ]
+      },
+      {
+        "id": "h5-053",
+        "values": [
+          "enavarro",
+          "emilio.navarro@ironwoodcloud.io",
+          "+55 11 9 3975-0922"
+        ]
+      },
+      {
+        "id": "h5-054",
+        "values": [
+          "Oliver Bennett",
+          "oliver.bennett@dunemarch.dev"
+        ]
+      },
+      {
+        "id": "h5-055",
+        "values": [
+          "Ines Barros",
+          "ines.barros@quillmere.com",
+          "558-73-3192",
+          "+1 (704) 397-7722"
+        ]
+      },
+      {
+        "id": "h5-056",
+        "values": [
+          "Antoine Dubois",
+          "FR2527374091130753370571132"
+        ]
+      },
+      {
+        "id": "h5-057",
+        "values": [
+          "eleanor.vance@brooklinedata.dev"
+        ]
+      },
+      {
+        "id": "h5-058",
+        "values": [
+          "Georgios Nikolaidis",
+          "georgios.nikolaidis@foxglove.systems",
+          "+49 170 8850807",
+          "1983-09-17",
+          "Rania Saadeh",
+          "rania.saadeh@quillmere.com",
+          "+61 432 493 554",
+          "07/02/1976"
+        ]
+      },
+      {
+        "id": "h5-059",
+        "values": [
+          "mtorres",
+          "Y13#gx&OdQPKf",
+          "miguel.torres@driftline.ai",
+          "Miguel Torres"
+        ]
+      },
+      {
+        "id": "h5-060",
+        "values": [
+          "MRN-68363919",
+          "Bram Peeters",
+          "06/25/2000",
+          "CLM-W5I2UYTBQ",
+          "hcaldwell",
+          "henry.caldwell@brooklinedata.dev"
+        ]
+      },
+      {
+        "id": "h5-061",
+        "values": [
+          "Kaito Mori",
+          "kaito.mori@kestrelworks.dev",
+          "+1 (512) 493-7756",
+          "03/05/1981",
+          "201-59-4264",
+          "James Whitfield",
+          "james.whitfield@ironwoodcloud.io",
+          "+44 7700 900876",
+          "17/08/1963",
+          "PJ025421C"
+        ]
+      },
+      {
+        "id": "h5-062",
+        "values": [
+          "Oliver Bennett",
+          "oliver.bennett@coppervale.io",
+          "Agnieszka Piotrowska",
+          "+52 55 5374 9261",
+          "Oliver",
+          "Bennett",
+          "oliver.bennett%40coppervale.io",
+          "\u0985\u09a8\u09a8\u09cd\u09af\u09be \u09a6\u09be\u09b8",
+          "+81 90-0370-7684"
+        ]
+      },
+      {
+        "id": "h5-063",
+        "values": [
+          "Tawanda Sithole",
+          "472-83-1925",
+          "06/14/1977",
+          "7285 Curlew Drive, Galena, AZ 89943",
+          "Agus Pratama",
+          "agus.pratama@mistraline.com"
+        ]
+      },
+      {
+        "id": "h5-064",
+        "values": [
+          "ekaya",
+          "Emre Kaya",
+          "emre.kaya@emberfield.app",
+          "DE30260348263254427113",
+          "+49 170 3662050",
+          "rafael.duarte@ferrouspeak.io"
+        ]
+      },
+      {
+        "id": "h5-065",
+        "values": [
+          "Francesca Ricci",
+          "1961-05-26",
+          "062-30-6366",
+          "Tawanda Sithole",
+          "tawanda.sithole@mistraline.com",
+          "5/105 Currawong Street, Fremantle NSW 4819",
+          "+61 433 786 249"
+        ]
+      },
+      {
+        "id": "h5-066",
+        "values": [
+          "Felix Braun",
+          "felix.braun@lumenarc.io",
+          "+1 (305) 789-0542",
+          "ON DL A5922-78800-00525"
+        ]
+      },
+      {
+        "id": "h5-067",
+        "values": [
+          "Chiamaka Eze",
+          "X40250068",
+          "17/12/1987",
+          "178 rue des Forges, 46000 Strasbourg",
+          "+55 11 9 6374-1187",
+          "chiamaka.eze@lumenarc.io"
+        ]
+      },
+      {
+        "id": "h5-068",
+        "values": [
+          "Farhan Ahmed",
+          "I0236865",
+          "+91 41462 92995",
+          "7B, Cypress Heights, Kondapur, Bengaluru, Punjab 879076",
+          "Jean-Pierre Aubert",
+          "jeanpierre.aubert@foxglove.systems"
+        ]
+      },
+      {
+        "id": "h5-069",
+        "values": [
+          "Mai Pham",
+          "MRN-36810537",
+          "2001-05-22",
+          "Seestra\u00dfe 39, 51651 Aachen",
+          "+49 170 3259247",
+          "Fran\u00e7ois-Xavier Dupont",
+          "francoisxavier.dupont@brooklinedata.dev"
+        ]
+      },
+      {
+        "id": "h5-070",
+        "values": [
+          "Oliver Bennett",
+          "CLM-WUROT08W",
+          "06/18/2002",
+          "+52 55 2720 8618",
+          "oliver.bennett@ironwoodcloud.io"
+        ]
+      },
+      {
+        "id": "h5-071",
+        "values": [
+          "Andriy Bondarenko",
+          "03/01/1976",
+          "Sana Malik",
+          "sana.malik@dunemarch.dev",
+          "+1 (503) 833-5658",
+          "7135 Cinder Hollow Lane, Galena, MI 24200"
+        ]
+      },
+      {
+        "id": "h5-072",
+        "values": [
+          "Chiamaka",
+          "Eze",
+          "\u0421\u0435\u0440\u0433\u0435\u0439 \u0418\u0432\u0430\u043d\u043e\u0432",
+          "+81 90-4583-3506",
+          "chiamaka.eze@sparrowhawk.dev"
+        ]
+      },
+      {
+        "id": "h5-073",
+        "values": [
+          "Zanele Khumalo",
+          "09/27/1963",
+          "107 Kestrel Close, York YO24 4QG",
+          "zanele.khumalo@mistraline.com",
+          "+44 7700 900867"
+        ]
+      },
+      {
+        "id": "h5-074",
+        "values": [
+          "Fran\u00e7ois-Xavier Dupont",
+          "francoisxavier.dupont@kestrelworks.dev",
+          "+61 468 244 258",
+          "5/132 Grevillea Road, Fremantle QLD 4471",
+          "fdupont"
+        ]
+      },
+      {
+        "id": "h5-075",
+        "values": [
+          "James Whitfield",
+          "CLM-SQ75L6BK",
+          "06/11/1977",
+          "+55 11 9 4288-7428",
+          "james.whitfield@mistraline.com",
+          "Rua dos Ip\u00eas, 647, Belo Horizonte - AM, 74551-754"
+        ]
+      },
+      {
+        "id": "h5-076",
+        "values": [
+          "Nicolas Fabre",
+          "nicolas.fabre@emberfield.app",
+          "+52 55 7890 7893",
+          "Bram Peeters",
+          "+1 (212) 492-6830",
+          "54602172145105330"
+        ]
+      },
+      {
+        "id": "h5-077",
+        "values": [
+          "Camila Paredes",
+          "camila.paredes@coppervale.io"
+        ]
+      },
+      {
+        "id": "h5-078",
+        "values": [
+          "ngozi.adeyemi@brooklinedata.dev",
+          "nadeyemi",
+          "Camila Paredes",
+          "camila.paredes@dunemarch.dev",
+          "+91 93661 69578"
+        ]
+      },
+      {
+        "id": "h5-079",
+        "values": [
+          "cparedes",
+          "camila.paredes@driftline.ai",
+          "Camila Paredes"
+        ]
+      },
+      {
+        "id": "h5-080",
+        "values": [
+          "814-59-9136",
+          "Xue Fang",
+          "1961-01-26",
+          "somsak.rattanakul@ironwoodcloud.io",
+          "144.9.111.240"
+        ]
+      }
+    ],
+    "ms_per_item": 0.1
+  },
+  {
+    "adapter": "cloakroom full",
+    "items": 80,
+    "items_leaked": 2,
+    "values_total": 394,
+    "values_leaked": 2,
+    "blocked": 0,
+    "negatives": 40,
+    "false_alarms": 6,
+    "by_category": {
+      "slack-export": {
+        "items": 3,
+        "leaked": 0
+      },
+      "teams-export": {
+        "items": 3,
+        "leaked": 0
+      },
+      "outlook-eml": {
+        "items": 3,
+        "leaked": 0
+      },
+      "salesforce-export": {
+        "items": 3,
+        "leaked": 0
+      },
+      "hubspot-export": {
+        "items": 3,
+        "leaked": 0
+      },
+      "stripe-dispute": {
+        "items": 3,
+        "leaked": 0
+      },
+      "paypal-dispute": {
+        "items": 3,
+        "leaked": 0
+      },
+      "shopify-order": {
+        "items": 3,
+        "leaked": 0
+      },
+      "twilio-webhook": {
+        "items": 3,
+        "leaked": 0
+      },
+      "sendgrid-webhook": {
+        "items": 3,
+        "leaked": 0
+      },
+      "okta-audit": {
+        "items": 3,
+        "leaked": 0
+      },
+      "auth0-audit": {
+        "items": 3,
+        "leaked": 0
+      },
+      "vpn-auth": {
+        "items": 3,
+        "leaked": 0
+      },
+      "ssh-auth": {
+        "items": 3,
+        "leaked": 1
+      },
+      "gitlab-ci": {
+        "items": 3,
+        "leaked": 0
+      },
+      "ansible-run": {
+        "items": 3,
+        "leaked": 0
+      },
+      "chef-run": {
+        "items": 3,
+        "leaked": 0
+      },
+      "helm-release": {
+        "items": 3,
+        "leaked": 0
+      },
+      "openapi-example": {
+        "items": 3,
+        "leaked": 0
+      },
+      "sqlite-dump": {
+        "items": 3,
+        "leaked": 0
+      },
+      "hr-roster-csv": {
+        "items": 2,
+        "leaked": 0
+      },
+      "pdf-tax-return": {
+        "items": 2,
+        "leaked": 0
+      },
+      "mortgage-application": {
+        "items": 2,
+        "leaked": 0
+      },
+      "visa-application": {
+        "items": 2,
+        "leaked": 0
+      },
+      "hospital-discharge": {
+        "items": 2,
+        "leaked": 0
+      },
+      "school-report-card": {
+        "items": 2,
+        "leaked": 0
+      },
+      "dating-profile": {
+        "items": 2,
+        "leaked": 0
+      },
+      "gym-membership": {
+        "items": 2,
+        "leaked": 0
+      },
+      "airflow-log": {
+        "items": 2,
+        "leaked": 0
+      },
+      "dbt-log": {
+        "items": 2,
+        "leaked": 1
+      },
+      "negative": {
+        "items": 40,
+        "leaked": 6
+      }
+    },
+    "leaks": [
+      {
+        "id": "h5-040",
+        "values": [
+          "b2xpdmVyLmJlbm5ldHRAdGlkZXdhdGVybGFicy5pbw=="
+        ]
+      },
+      {
+        "id": "h5-079",
+        "values": [
+          "cparedes"
+        ]
+      }
+    ],
+    "ms_per_item": 62.7
+  },
+  {
+    "adapter": "cloakroom rules",
+    "items": 80,
+    "items_leaked": 71,
+    "values_total": 394,
+    "values_leaked": 184,
+    "blocked": 0,
+    "negatives": 40,
+    "false_alarms": 1,
+    "by_category": {
+      "slack-export": {
+        "items": 3,
+        "leaked": 3
+      },
+      "teams-export": {
+        "items": 3,
+        "leaked": 3
+      },
+      "outlook-eml": {
+        "items": 3,
+        "leaked": 3
+      },
+      "salesforce-export": {
+        "items": 3,
+        "leaked": 3
+      },
+      "hubspot-export": {
+        "items": 3,
+        "leaked": 3
+      },
+      "stripe-dispute": {
+        "items": 3,
+        "leaked": 2
+      },
+      "paypal-dispute": {
+        "items": 3,
+        "leaked": 3
+      },
+      "shopify-order": {
+        "items": 3,
+        "leaked": 2
+      },
+      "twilio-webhook": {
+        "items": 3,
+        "leaked": 3
+      },
+      "sendgrid-webhook": {
+        "items": 3,
+        "leaked": 3
+      },
+      "okta-audit": {
+        "items": 3,
+        "leaked": 3
+      },
+      "auth0-audit": {
+        "items": 3,
+        "leaked": 3
+      },
+      "vpn-auth": {
+        "items": 3,
+        "leaked": 3
+      },
+      "ssh-auth": {
+        "items": 3,
+        "leaked": 3
+      },
+      "gitlab-ci": {
+        "items": 3,
+        "leaked": 3
+      },
+      "ansible-run": {
+        "items": 3,
+        "leaked": 3
+      },
+      "chef-run": {
+        "items": 3,
+        "leaked": 3
+      },
+      "helm-release": {
+        "items": 3,
+        "leaked": 2
+      },
+      "openapi-example": {
+        "items": 3,
+        "leaked": 0
+      },
+      "sqlite-dump": {
+        "items": 3,
+        "leaked": 3
+      },
+      "hr-roster-csv": {
+        "items": 2,
+        "leaked": 1
+      },
+      "pdf-tax-return": {
+        "items": 2,
+        "leaked": 2
+      },
+      "mortgage-application": {
+        "items": 2,
+        "leaked": 1
+      },
+      "visa-application": {
+        "items": 2,
+        "leaked": 2
+      },
+      "hospital-discharge": {
+        "items": 2,
+        "leaked": 2
+      },
+      "school-report-card": {
+        "items": 2,
+        "leaked": 2
+      },
+      "dating-profile": {
+        "items": 2,
+        "leaked": 2
+      },
+      "gym-membership": {
+        "items": 2,
+        "leaked": 2
+      },
+      "airflow-log": {
+        "items": 2,
+        "leaked": 1
+      },
+      "dbt-log": {
+        "items": 2,
+        "leaked": 2
+      },
+      "negative": {
+        "items": 40,
+        "leaked": 1
+      }
+    },
+    "leaks": [
+      {
+        "id": "h5-001",
+        "values": [
+          "lhoffmann",
+          "Lena Hoffmann",
+          "dkruger",
+          "hfT9ebSB^q8daDEt"
+        ]
+      },
+      {
+        "id": "h5-002",
+        "values": [
+          "nadeyemi",
+          "ahosseini",
+          "ghp_3AH2VnJFJKX5UlaOp1\\\n  44V3iI33dUqYdXqw9E"
+        ]
+      },
+      {
+        "id": "h5-003",
+        "values": [
+          "easante",
+          "Tawanda Sithole",
+          "tsithole",
+          "8BrV_JZVwourPHwLru-"
+        ]
+      },
+      {
+        "id": "h5-004",
+        "values": [
+          "Ananya Das",
+          "Ananya",
+          "adas",
+          "Mariana Solis"
+        ]
+      },
+      {
+        "id": "h5-005",
+        "values": [
+          "Lena Hoffmann",
+          "Tomasz Krawczyk"
+        ]
+      },
+      {
+        "id": "h5-006",
+        "values": [
+          "falrashid",
+          "103.251.213.235",
+          "Faisal Al-Rashid",
+          "+44 7700 900334"
+        ]
+      },
+      {
+        "id": "h5-007",
+        "values": [
+          "Pablo",
+          "AKIA2AQKEH6HSI2YW93C",
+          "yEhJdqYX4O+kbMrUFnnBrT1dyLKmB44l1bhfFMAM",
+          "pserrano",
+          "9x0hDPw4DlqP"
+        ]
+      },
+      {
+        "id": "h5-008",
+        "values": [
+          "Georgios Nikolaidis"
+        ]
+      },
+      {
+        "id": "h5-009",
+        "values": [
+          "32cea6dfd118fa9129b6809c916425ff2f05c23d913009e2",
+          "Zeynep Demir",
+          "+49 170 0678674"
+        ]
+      },
+      {
+        "id": "h5-010",
+        "values": [
+          "+55 11 9 9136-5625",
+          "Rua dos Ip\u00eas, 309, Florian\u00f3polis - MG, 63304-101"
+        ]
+      },
+      {
+        "id": "h5-011",
+        "values": [
+          "+52 55 5593 0606",
+          "eferraro",
+          "3N=4_QyEU6ow4YQfF$Q"
+        ]
+      },
+      {
+        "id": "h5-012",
+        "values": [
+          "+91 17654 05750",
+          "D-17, Lotus Enclave, HSR Layout, Bengaluru, Karnataka 360549",
+          "cparedes"
+        ]
+      },
+      {
+        "id": "h5-013",
+        "values": [
+          "Rania Saadeh",
+          "+61 404 315 767",
+          "135.102.131.43"
+        ]
+      },
+      {
+        "id": "h5-014",
+        "values": [
+          "sjung"
+        ]
+      },
+      {
+        "id": "h5-015",
+        "values": [
+          "+49 170 7405029"
+        ]
+      },
+      {
+        "id": "h5-017",
+        "values": [
+          "Mai Pham",
+          "215.241.49.137",
+          "+81 90-5087-3211"
+        ]
+      },
+      {
+        "id": "h5-018",
+        "values": [
+          "mariajose.ferrer%40kestrelworks.dev",
+          "Mar\u00eda-Jos\u00e9 Ferrer",
+          "+55 11 9 9005-8566"
+        ]
+      },
+      {
+        "id": "h5-019",
+        "values": [
+          "+44 7700 900220"
+        ]
+      },
+      {
+        "id": "h5-020",
+        "values": [
+          "+52 55 6725 7929"
+        ]
+      },
+      {
+        "id": "h5-021",
+        "values": [
+          "Georgios Nikolaidis"
+        ]
+      },
+      {
+        "id": "h5-023",
+        "values": [
+          "+81 90-3888-6006",
+          "\u3012979-7166 \u4eac\u90fd\u5e02\u4e0b\u4eac\u533a\u4e00\u756a\u753a7-11-19",
+          "Ngozi Adeyemi"
+        ]
+      },
+      {
+        "id": "h5-024",
+        "values": [
+          "+49 170 7155552",
+          "Kirchweg 39, 60578 Aachen"
+        ]
+      },
+      {
+        "id": "h5-025",
+        "values": [
+          "+44 7700 900265",
+          "Tawanda",
+          "9d4d1b33c5c860a4fe72719f232bdf4321258396ae4a92c8",
+          "Tawanda Sithole",
+          "tsithole"
+        ]
+      },
+      {
+        "id": "h5-026",
+        "values": [
+          "+52 55 8281 9890",
+          "Divya Menon",
+          "09/18/1995"
+        ]
+      },
+      {
+        "id": "h5-027",
+        "values": [
+          "gQ9Bef6itXLDBA9U4nF0rwI2JCcJI8bZ",
+          "181.232.121.128"
+        ]
+      },
+      {
+        "id": "h5-028",
+        "values": [
+          "2.135.112.139",
+          "Miguel Torres"
+        ]
+      },
+      {
+        "id": "h5-029",
+        "values": [
+          "grace.porter%40sparrowhawk.dev"
+        ]
+      },
+      {
+        "id": "h5-030",
+        "values": [
+          "cschmitt",
+          "+55 11 9 9972-5671"
+        ]
+      },
+      {
+        "id": "h5-031",
+        "values": [
+          "Ritu Saxena",
+          "196.60.138.165",
+          "rsaxena"
+        ]
+      },
+      {
+        "id": "h5-032",
+        "values": [
+          "zdemir"
+        ]
+      },
+      {
+        "id": "h5-033",
+        "values": [
+          "Meera Krishnan",
+          "+61 444 122 581"
+        ]
+      },
+      {
+        "id": "h5-034",
+        "values": [
+          "171.132.89.186",
+          "Francesca Ricci"
+        ]
+      },
+      {
+        "id": "h5-035",
+        "values": [
+          "!+8tCtgQl5FcW1YCObh^",
+          "gnikolaidis",
+          "Georgios Nikolaidis",
+          "+49 170 7715856"
+        ]
+      },
+      {
+        "id": "h5-036",
+        "values": [
+          "62.27.68.212",
+          "+81 90-9594-1867"
+        ]
+      },
+      {
+        "id": "h5-037",
+        "values": [
+          "fricci",
+          "44.210.5.66",
+          "Francesca Ricci"
+        ]
+      },
+      {
+        "id": "h5-038",
+        "values": [
+          "abondarenko",
+          "94.127.230.210",
+          "+55 11 9 0947-9830"
+        ]
+      },
+      {
+        "id": "h5-039",
+        "values": [
+          "tmulder",
+          "79.236.65.115",
+          "l4NsHq@06_q#"
+        ]
+      },
+      {
+        "id": "h5-040",
+        "values": [
+          "obennett",
+          "40.13.188.40",
+          "b2xpdmVyLmJlbm5ldHRAdGlkZXdhdGVybGFicy5pbw=="
+        ]
+      },
+      {
+        "id": "h5-041",
+        "values": [
+          "amarchand",
+          "202.209.226.201",
+          "+52 55 3497 7054"
+        ]
+      },
+      {
+        "id": "h5-042",
+        "values": [
+          "srattanakul",
+          "bmansour"
+        ]
+      },
+      {
+        "id": "h5-043",
+        "values": [
+          "bXBoYW06OCtZc1AjNlloVGVHOXBqTWg=",
+          "glpat-2tSqJZ3lkw1pnQQywDHA",
+          "mpham"
+        ]
+      },
+      {
+        "id": "h5-044",
+        "values": [
+          "88.1.88.171"
+        ]
+      },
+      {
+        "id": "h5-045",
+        "values": [
+          "pwong",
+          "+44 7700 900051"
+        ]
+      },
+      {
+        "id": "h5-046",
+        "values": [
+          "lhagen"
+        ]
+      },
+      {
+        "id": "h5-047",
+        "values": [
+          "86.40.208.104",
+          "pserrano"
+        ]
+      },
+      {
+        "id": "h5-048",
+        "values": [
+          "64.217.93.235",
+          "abondarenko",
+          "Andriy Bondarenko"
+        ]
+      },
+      {
+        "id": "h5-049",
+        "values": [
+          "79.58.231.230",
+          "smalik",
+          "j-mmqf5hiq!9e"
+        ]
+      },
+      {
+        "id": "h5-050",
+        "values": [
+          "73.98.24.8"
+        ]
+      },
+      {
+        "id": "h5-051",
+        "values": [
+          "asuzuki",
+          "Aoi Suzuki",
+          "+81 90-3406-4073"
+        ]
+      },
+      {
+        "id": "h5-052",
+        "values": [
+          "srattanakul"
+        ]
+      },
+      {
+        "id": "h5-053",
+        "values": [
+          "enavarro",
+          "+55 11 9 3975-0922"
+        ]
+      },
+      {
+        "id": "h5-058",
+        "values": [
+          "Georgios Nikolaidis",
+          "+49 170 8850807",
+          "1983-09-17",
+          "Rania Saadeh",
+          "+61 432 493 554",
+          "07/02/1976"
+        ]
+      },
+      {
+        "id": "h5-059",
+        "values": [
+          "mtorres",
+          "Y13#gx&OdQPKf",
+          "Miguel Torres"
+        ]
+      },
+      {
+        "id": "h5-060",
+        "values": [
+          "MRN-68363919",
+          "Bram Peeters",
+          "06/25/2000",
+          "CLM-W5I2UYTBQ",
+          "hcaldwell"
+        ]
+      },
+      {
+        "id": "h5-062",
+        "values": [
+          "Agnieszka Piotrowska",
+          "+52 55 5374 9261",
+          "\u0985\u09a8\u09a8\u09cd\u09af\u09be \u09a6\u09be\u09b8",
+          "+81 90-0370-7684"
+        ]
+      },
+      {
+        "id": "h5-063",
+        "values": [
+          "Tawanda Sithole"
+        ]
+      },
+      {
+        "id": "h5-064",
+        "values": [
+          "ekaya",
+          "+49 170 3662050"
+        ]
+      },
+      {
+        "id": "h5-065",
+        "values": [
+          "Francesca Ricci",
+          "+61 433 786 249"
+        ]
+      },
+      {
+        "id": "h5-067",
+        "values": [
+          "Chiamaka Eze",
+          "178 rue des Forges, 46000 Strasbourg"
+        ]
+      },
+      {
+        "id": "h5-068",
+        "values": [
+          "Farhan Ahmed",
+          "I0236865",
+          "+91 41462 92995",
+          "7B, Cypress Heights, Kondapur, Bengaluru, Punjab 879076"
+        ]
+      },
+      {
+        "id": "h5-069",
+        "values": [
+          "MRN-36810537",
+          "Seestra\u00dfe 39, 51651 Aachen",
+          "+49 170 3259247"
+        ]
+      },
+      {
+        "id": "h5-070",
+        "values": [
+          "Oliver Bennett",
+          "CLM-WUROT08W",
+          "+52 55 2720 8618"
+        ]
+      },
+      {
+        "id": "h5-071",
+        "values": [
+          "Andriy Bondarenko"
+        ]
+      },
+      {
+        "id": "h5-072",
+        "values": [
+          "Chiamaka",
+          "Eze",
+          "\u0421\u0435\u0440\u0433\u0435\u0439 \u0418\u0432\u0430\u043d\u043e\u0432",
+          "+81 90-4583-3506"
+        ]
+      },
+      {
+        "id": "h5-073",
+        "values": [
+          "Zanele Khumalo",
+          "09/27/1963",
+          "107 Kestrel Close, York YO24 4QG",
+          "+44 7700 900867"
+        ]
+      },
+      {
+        "id": "h5-074",
+        "values": [
+          "Fran\u00e7ois-Xavier Dupont",
+          "+61 468 244 258",
+          "fdupont"
+        ]
+      },
+      {
+        "id": "h5-075",
+        "values": [
+          "James Whitfield",
+          "CLM-SQ75L6BK",
+          "+55 11 9 4288-7428",
+          "Rua dos Ip\u00eas, 647, Belo Horizonte - AM, 74551-754"
+        ]
+      },
+      {
+        "id": "h5-076",
+        "values": [
+          "+52 55 7890 7893",
+          "Bram Peeters"
+        ]
+      },
+      {
+        "id": "h5-078",
+        "values": [
+          "+91 93661 69578"
+        ]
+      },
+      {
+        "id": "h5-079",
+        "values": [
+          "cparedes",
+          "Camila Paredes"
+        ]
+      },
+      {
+        "id": "h5-080",
+        "values": [
+          "Xue Fang",
+          "1961-01-26",
+          "144.9.111.240"
+        ]
+      }
+    ],
+    "ms_per_item": 0.1
+  },
+  {
+    "adapter": "maisecrets",
+    "items": 80,
+    "items_leaked": 78,
+    "values_total": 394,
+    "values_leaked": 203,
+    "blocked": 0,
+    "negatives": 40,
+    "false_alarms": 5,
+    "by_category": {
+      "slack-export": {
+        "items": 3,
+        "leaked": 3
+      },
+      "teams-export": {
+        "items": 3,
+        "leaked": 3
+      },
+      "outlook-eml": {
+        "items": 3,
+        "leaked": 3
+      },
+      "salesforce-export": {
+        "items": 3,
+        "leaked": 3
+      },
+      "hubspot-export": {
+        "items": 3,
+        "leaked": 3
+      },
+      "stripe-dispute": {
+        "items": 3,
+        "leaked": 3
+      },
+      "paypal-dispute": {
+        "items": 3,
+        "leaked": 3
+      },
+      "shopify-order": {
+        "items": 3,
+        "leaked": 3
+      },
+      "twilio-webhook": {
+        "items": 3,
+        "leaked": 3
+      },
+      "sendgrid-webhook": {
+        "items": 3,
+        "leaked": 3
+      },
+      "okta-audit": {
+        "items": 3,
+        "leaked": 3
+      },
+      "auth0-audit": {
+        "items": 3,
+        "leaked": 3
+      },
+      "vpn-auth": {
+        "items": 3,
+        "leaked": 3
+      },
+      "ssh-auth": {
+        "items": 3,
+        "leaked": 3
+      },
+      "gitlab-ci": {
+        "items": 3,
+        "leaked": 3
+      },
+      "ansible-run": {
+        "items": 3,
+        "leaked": 3
+      },
+      "chef-run": {
+        "items": 3,
+        "leaked": 2
+      },
+      "helm-release": {
+        "items": 3,
+        "leaked": 3
+      },
+      "openapi-example": {
+        "items": 3,
+        "leaked": 2
+      },
+      "sqlite-dump": {
+        "items": 3,
+        "leaked": 3
+      },
+      "hr-roster-csv": {
+        "items": 2,
+        "leaked": 2
+      },
+      "pdf-tax-return": {
+        "items": 2,
+        "leaked": 2
+      },
+      "mortgage-application": {
+        "items": 2,
+        "leaked": 2
+      },
+      "visa-application": {
+        "items": 2,
+        "leaked": 2
+      },
+      "hospital-discharge": {
+        "items": 2,
+        "leaked": 2
+      },
+      "school-report-card": {
+        "items": 2,
+        "leaked": 2
+      },
+      "dating-profile": {
+        "items": 2,
+        "leaked": 2
+      },
+      "gym-membership": {
+        "items": 2,
+        "leaked": 2
+      },
+      "airflow-log": {
+        "items": 2,
+        "leaked": 2
+      },
+      "dbt-log": {
+        "items": 2,
+        "leaked": 2
+      },
+      "negative": {
+        "items": 40,
+        "leaked": 5
+      }
+    },
+    "leaks": [
+      {
+        "id": "h5-001",
+        "values": [
+          "lhoffmann",
+          "Lena Hoffmann",
+          "dkruger",
+          "hfT9ebSB^q8daDEt"
+        ]
+      },
+      {
+        "id": "h5-002",
+        "values": [
+          "nadeyemi",
+          "ahosseini",
+          "ghp_3AH2VnJFJKX5UlaOp1\\\n  44V3iI33dUqYdXqw9E"
+        ]
+      },
+      {
+        "id": "h5-003",
+        "values": [
+          "easante",
+          "Tawanda Sithole",
+          "tsithole",
+          "8BrV_JZVwourPHwLru-"
+        ]
+      },
+      {
+        "id": "h5-004",
+        "values": [
+          "Ananya Das",
+          "Ananya",
+          "adas",
+          "Mariana Solis"
+        ]
+      },
+      {
+        "id": "h5-005",
+        "values": [
+          "Lena Hoffmann",
+          "Tomasz Krawczyk",
+          "03/15/1960"
+        ]
+      },
+      {
+        "id": "h5-006",
+        "values": [
+          "falrashid",
+          "mpapadaki",
+          "Faisal Al-Rashid"
+        ]
+      },
+      {
+        "id": "h5-007",
+        "values": [
+          "Pablo Serrano",
+          "Felix Braun",
+          "Pablo",
+          "pserrano",
+          "9x0hDPw4DlqP"
+        ]
+      },
+      {
+        "id": "h5-008",
+        "values": [
+          "8094 Stonechat Terrace, Boone, AZ 30800",
+          "Georgios Nikolaidis",
+          "1962-11-17"
+        ]
+      },
+      {
+        "id": "h5-009",
+        "values": [
+          "32cea6dfd118fa9129b6809c916425ff2f05c23d913009e2",
+          "Zeynep Demir"
+        ]
+      },
+      {
+        "id": "h5-010",
+        "values": [
+          "Seojun Jung",
+          "+55 11 9 9136-5625",
+          "Rua dos Ip\u00eas, 309, Florian\u00f3polis - MG, 63304-101",
+          "28/06/1986"
+        ]
+      },
+      {
+        "id": "h5-011",
+        "values": [
+          "Kaito Mori",
+          "eferraro",
+          "3N=4_QyEU6ow4YQfF$Q"
+        ]
+      },
+      {
+        "id": "h5-012",
+        "values": [
+          "Rin Yamada",
+          "D-17, Lotus Enclave, HSR Layout, Bengaluru, Karnataka 360549",
+          "cparedes"
+        ]
+      },
+      {
+        "id": "h5-013",
+        "values": [
+          "Rania Saadeh"
+        ]
+      },
+      {
+        "id": "h5-014",
+        "values": [
+          "Farhan Ahmed",
+          "sjung"
+        ]
+      },
+      {
+        "id": "h5-015",
+        "values": [
+          "Camila Paredes"
+        ]
+      },
+      {
+        "id": "h5-016",
+        "values": [
+          "Rania Saadeh",
+          "5518 Dunlin Blvd, Boone, NM 45575"
+        ]
+      },
+      {
+        "id": "h5-017",
+        "values": [
+          "Mai Pham"
+        ]
+      },
+      {
+        "id": "h5-018",
+        "values": [
+          "mariajose.ferrer%40kestrelworks.dev",
+          "Mar\u00eda-Jos\u00e9 Ferrer",
+          "+55 11 9 9005-8566"
+        ]
+      },
+      {
+        "id": "h5-019",
+        "values": [
+          "Liv Hagen",
+          "12 Sanderling Terrace, Exeter DH1 3JN"
+        ]
+      },
+      {
+        "id": "h5-020",
+        "values": [
+          "Grace Harbor"
+        ]
+      },
+      {
+        "id": "h5-021",
+        "values": [
+          "Georgios Nikolaidis",
+          "4865099248707059"
+        ]
+      },
+      {
+        "id": "h5-022",
+        "values": [
+          "Hunter Frost",
+          "5455 Quarry Ridge Court, Boone, AZ 40670"
+        ]
+      },
+      {
+        "id": "h5-023",
+        "values": [
+          "Stefan Jovanovic",
+          "\u3012979-7166 \u4eac\u90fd\u5e02\u4e0b\u4eac\u533a\u4e00\u756a\u753a7-11-19",
+          "Ngozi Adeyemi"
+        ]
+      },
+      {
+        "id": "h5-024",
+        "values": [
+          "Agus Pratama",
+          "Kirchweg 39, 60578 Aachen"
+        ]
+      },
+      {
+        "id": "h5-025",
+        "values": [
+          "AC8f01296138564cae77d915495c11779a",
+          "Tawanda",
+          "9d4d1b33c5c860a4fe72719f232bdf4321258396ae4a92c8",
+          "Tawanda Sithole",
+          "tsithole"
+        ]
+      },
+      {
+        "id": "h5-026",
+        "values": [
+          "Divya Menon",
+          "09/18/1995"
+        ]
+      },
+      {
+        "id": "h5-027",
+        "values": [
+          "ACf9c19c40e92e18db0a23a6102bcfcec4",
+          "gQ9Bef6itXLDBA9U4nF0rwI2JCcJI8bZ"
+        ]
+      },
+      {
+        "id": "h5-028",
+        "values": [
+          "Miguel Torres"
+        ]
+      },
+      {
+        "id": "h5-029",
+        "values": [
+          "Piotr Nowak",
+          "grace.porter%40sparrowhawk.dev"
+        ]
+      },
+      {
+        "id": "h5-030",
+        "values": [
+          "cschmitt",
+          "Olga Kuznetsova",
+          "+55 11 9 9972-5671"
+        ]
+      },
+      {
+        "id": "h5-031",
+        "values": [
+          "Ritu Saxena",
+          "rsaxena"
+        ]
+      },
+      {
+        "id": "h5-032",
+        "values": [
+          "zdemir",
+          "Aoi Suzuki"
+        ]
+      },
+      {
+        "id": "h5-033",
+        "values": [
+          "Meera Krishnan"
+        ]
+      },
+      {
+        "id": "h5-034",
+        "values": [
+          "Francesca Ricci"
+        ]
+      },
+      {
+        "id": "h5-035",
+        "values": [
+          "!+8tCtgQl5FcW1YCObh^",
+          "gnikolaidis",
+          "Georgios Nikolaidis"
+        ]
+      },
+      {
+        "id": "h5-036",
+        "values": [
+          "Lena Hoffmann"
+        ]
+      },
+      {
+        "id": "h5-037",
+        "values": [
+          "fricci",
+          "Francesca Ricci"
+        ]
+      },
+      {
+        "id": "h5-038",
+        "values": [
+          "abondarenko",
+          "+55 11 9 0947-9830"
+        ]
+      },
+      {
+        "id": "h5-039",
+        "values": [
+          "tmulder",
+          "l4NsHq@06_q#",
+          "Thijs Mulder"
+        ]
+      },
+      {
+        "id": "h5-040",
+        "values": [
+          "obennett",
+          "Oliver Bennett"
+        ]
+      },
+      {
+        "id": "h5-041",
+        "values": [
+          "amarchand",
+          "Anne-Sophie Marchand"
+        ]
+      },
+      {
+        "id": "h5-042",
+        "values": [
+          "srattanakul",
+          "bmansour",
+          "Somsak Rattanakul"
+        ]
+      },
+      {
+        "id": "h5-043",
+        "values": [
+          "bXBoYW06OCtZc1AjNlloVGVHOXBqTWg=",
+          "mpham"
+        ]
+      },
+      {
+        "id": "h5-044",
+        "values": [
+          "AKIAJ887TKYTZKZDYV73",
+          "Lucia Campos"
+        ]
+      },
+      {
+        "id": "h5-045",
+        "values": [
+          "pwong"
+        ]
+      },
+      {
+        "id": "h5-046",
+        "values": [
+          "lhagen",
+          "Liv Hagen"
+        ]
+      },
+      {
+        "id": "h5-047",
+        "values": [
+          "pserrano"
+        ]
+      },
+      {
+        "id": "h5-048",
+        "values": [
+          "abondarenko",
+          "Andriy Bondarenko"
+        ]
+      },
+      {
+        "id": "h5-049",
+        "values": [
+          "smalik",
+          "j-mmqf5hiq!9e",
+          "Sana Malik"
+        ]
+      },
+      {
+        "id": "h5-051",
+        "values": [
+          "asuzuki",
+          "Aoi Suzuki"
+        ]
+      },
+      {
+        "id": "h5-052",
+        "values": [
+          "srattanakul",
+          "Somsak Rattanakul"
+        ]
+      },
+      {
+        "id": "h5-053",
+        "values": [
+          "enavarro",
+          "+55 11 9 3975-0922"
+        ]
+      },
+      {
+        "id": "h5-054",
+        "values": [
+          "Oliver Bennett"
+        ]
+      },
+      {
+        "id": "h5-055",
+        "values": [
+          "Ines Barros"
+        ]
+      },
+      {
+        "id": "h5-056",
+        "values": [
+          "Antoine Dubois"
+        ]
+      },
+      {
+        "id": "h5-058",
+        "values": [
+          "Georgios Nikolaidis",
+          "1983-09-17",
+          "Rania Saadeh",
+          "07/02/1976"
+        ]
+      },
+      {
+        "id": "h5-059",
+        "values": [
+          "mtorres",
+          "Y13#gx&OdQPKf",
+          "Miguel Torres"
+        ]
+      },
+      {
+        "id": "h5-060",
+        "values": [
+          "MRN-68363919",
+          "Bram Peeters",
+          "06/25/2000",
+          "CLM-W5I2UYTBQ",
+          "hcaldwell"
+        ]
+      },
+      {
+        "id": "h5-061",
+        "values": [
+          "Kaito Mori",
+          "03/05/1981",
+          "James Whitfield",
+          "17/08/1963",
+          "PJ025421C"
+        ]
+      },
+      {
+        "id": "h5-062",
+        "values": [
+          "Oliver Bennett",
+          "Agnieszka Piotrowska",
+          "Oliver",
+          "Bennett",
+          "oliver.bennett%40coppervale.io",
+          "\u0985\u09a8\u09a8\u09cd\u09af\u09be \u09a6\u09be\u09b8"
+        ]
+      },
+      {
+        "id": "h5-063",
+        "values": [
+          "Tawanda Sithole",
+          "06/14/1977",
+          "7285 Curlew Drive, Galena, AZ 89943",
+          "Agus Pratama"
+        ]
+      },
+      {
+        "id": "h5-064",
+        "values": [
+          "ekaya",
+          "Emre Kaya"
+        ]
+      },
+      {
+        "id": "h5-065",
+        "values": [
+          "Francesca Ricci",
+          "1961-05-26",
+          "Tawanda Sithole",
+          "5/105 Currawong Street, Fremantle NSW 4819"
+        ]
+      },
+      {
+        "id": "h5-066",
+        "values": [
+          "Felix Braun",
+          "ON DL A5922-78800-00525"
+        ]
+      },
+      {
+        "id": "h5-067",
+        "values": [
+          "Chiamaka Eze",
+          "17/12/1987",
+          "178 rue des Forges, 46000 Strasbourg",
+          "+55 11 9 6374-1187"
+        ]
+      },
+      {
+        "id": "h5-068",
+        "values": [
+          "Farhan Ahmed",
+          "I0236865",
+          "7B, Cypress Heights, Kondapur, Bengaluru, Punjab 879076",
+          "Jean-Pierre Aubert"
+        ]
+      },
+      {
+        "id": "h5-069",
+        "values": [
+          "Mai Pham",
+          "MRN-36810537",
+          "2001-05-22",
+          "Seestra\u00dfe 39, 51651 Aachen",
+          "Fran\u00e7ois-Xavier Dupont"
+        ]
+      },
+      {
+        "id": "h5-070",
+        "values": [
+          "Oliver Bennett",
+          "CLM-WUROT08W",
+          "06/18/2002"
+        ]
+      },
+      {
+        "id": "h5-071",
+        "values": [
+          "Andriy Bondarenko",
+          "03/01/1976",
+          "Sana Malik",
+          "7135 Cinder Hollow Lane, Galena, MI 24200"
+        ]
+      },
+      {
+        "id": "h5-072",
+        "values": [
+          "Chiamaka",
+          "Eze",
+          "\u0421\u0435\u0440\u0433\u0435\u0439 \u0418\u0432\u0430\u043d\u043e\u0432"
+        ]
+      },
+      {
+        "id": "h5-073",
+        "values": [
+          "Zanele Khumalo",
+          "09/27/1963",
+          "107 Kestrel Close, York YO24 4QG"
+        ]
+      },
+      {
+        "id": "h5-074",
+        "values": [
+          "Fran\u00e7ois-Xavier Dupont",
+          "5/132 Grevillea Road, Fremantle QLD 4471",
+          "fdupont"
+        ]
+      },
+      {
+        "id": "h5-075",
+        "values": [
+          "James Whitfield",
+          "CLM-SQ75L6BK",
+          "06/11/1977",
+          "+55 11 9 4288-7428",
+          "Rua dos Ip\u00eas, 647, Belo Horizonte - AM, 74551-754"
+        ]
+      },
+      {
+        "id": "h5-076",
+        "values": [
+          "Nicolas Fabre",
+          "Bram Peeters"
+        ]
+      },
+      {
+        "id": "h5-077",
+        "values": [
+          "cparedes",
+          "Camila Paredes"
+        ]
+      },
+      {
+        "id": "h5-078",
+        "values": [
+          "nadeyemi",
+          "Camila Paredes"
+        ]
+      },
+      {
+        "id": "h5-079",
+        "values": [
+          "cparedes",
+          "Camila Paredes"
+        ]
+      },
+      {
+        "id": "h5-080",
+        "values": [
+          "Xue Fang",
+          "1961-01-26"
+        ]
+      }
+    ],
+    "ms_per_item": 0.4
+  },
+  {
+    "adapter": "redact-hook (default)",
+    "items": 80,
+    "items_leaked": 80,
+    "values_total": 394,
+    "values_leaked": 309,
+    "blocked": 0,
+    "negatives": 40,
+    "false_alarms": 10,
+    "by_category": {
+      "slack-export": {
+        "items": 3,
+        "leaked": 3
+      },
+      "teams-export": {
+        "items": 3,
+        "leaked": 3
+      },
+      "outlook-eml": {
+        "items": 3,
+        "leaked": 3
+      },
+      "salesforce-export": {
+        "items": 3,
+        "leaked": 3
+      },
+      "hubspot-export": {
+        "items": 3,
+        "leaked": 3
+      },
+      "stripe-dispute": {
+        "items": 3,
+        "leaked": 3
+      },
+      "paypal-dispute": {
+        "items": 3,
+        "leaked": 3
+      },
+      "shopify-order": {
+        "items": 3,
+        "leaked": 3
+      },
+      "twilio-webhook": {
+        "items": 3,
+        "leaked": 3
+      },
+      "sendgrid-webhook": {
+        "items": 3,
+        "leaked": 3
+      },
+      "okta-audit": {
+        "items": 3,
+        "leaked": 3
+      },
+      "auth0-audit": {
+        "items": 3,
+        "leaked": 3
+      },
+      "vpn-auth": {
+        "items": 3,
+        "leaked": 3
+      },
+      "ssh-auth": {
+        "items": 3,
+        "leaked": 3
+      },
+      "gitlab-ci": {
+        "items": 3,
+        "leaked": 3
+      },
+      "ansible-run": {
+        "items": 3,
+        "leaked": 3
+      },
+      "chef-run": {
+        "items": 3,
+        "leaked": 3
+      },
+      "helm-release": {
+        "items": 3,
+        "leaked": 3
+      },
+      "openapi-example": {
+        "items": 3,
+        "leaked": 3
+      },
+      "sqlite-dump": {
+        "items": 3,
+        "leaked": 3
+      },
+      "hr-roster-csv": {
+        "items": 2,
+        "leaked": 2
+      },
+      "pdf-tax-return": {
+        "items": 2,
+        "leaked": 2
+      },
+      "mortgage-application": {
+        "items": 2,
+        "leaked": 2
+      },
+      "visa-application": {
+        "items": 2,
+        "leaked": 2
+      },
+      "hospital-discharge": {
+        "items": 2,
+        "leaked": 2
+      },
+      "school-report-card": {
+        "items": 2,
+        "leaked": 2
+      },
+      "dating-profile": {
+        "items": 2,
+        "leaked": 2
+      },
+      "gym-membership": {
+        "items": 2,
+        "leaked": 2
+      },
+      "airflow-log": {
+        "items": 2,
+        "leaked": 2
+      },
+      "dbt-log": {
+        "items": 2,
+        "leaked": 2
+      },
+      "negative": {
+        "items": 40,
+        "leaked": 10
+      }
+    },
+    "leaks": [
+      {
+        "id": "h5-001",
+        "values": [
+          "lhoffmann",
+          "Lena Hoffmann",
+          "dkruger",
+          "hfT9ebSB^q8daDEt"
+        ]
+      },
+      {
+        "id": "h5-002",
+        "values": [
+          "nadeyemi",
+          "ahosseini",
+          "arash.hosseini@lumenarc.io"
+        ]
+      },
+      {
+        "id": "h5-003",
+        "values": [
+          "easante",
+          "Tawanda Sithole",
+          "tsithole",
+          "8BrV_JZVwourPHwLru-"
+        ]
+      },
+      {
+        "id": "h5-004",
+        "values": [
+          "Ananya Das",
+          "Ananya",
+          "adas",
+          "Mariana Solis"
+        ]
+      },
+      {
+        "id": "h5-005",
+        "values": [
+          "Lena Hoffmann",
+          "Tomasz Krawczyk",
+          "tomasz.krawczyk@dunemarch.dev",
+          "03/15/1960",
+          "682-37-1259"
+        ]
+      },
+      {
+        "id": "h5-006",
+        "values": [
+          "falrashid",
+          "103.251.213.235",
+          "mpapadaki",
+          "Faisal Al-Rashid"
+        ]
+      },
+      {
+        "id": "h5-007",
+        "values": [
+          "Pablo Serrano",
+          "pablo.serrano@foxglove.systems",
+          "Felix Braun",
+          "felix.braun@cinderwell.dev",
+          "Pablo",
+          "yEhJdqYX4O+kbMrUFnnBrT1dyLKmB44l1bhfFMAM",
+          "pserrano",
+          "9x0hDPw4DlqP"
+        ]
+      },
+      {
+        "id": "h5-008",
+        "values": [
+          "samir.qassem@cinderwell.dev",
+          "georgios.nikolaidis@cinderwell.dev",
+          "8094 Stonechat Terrace, Boone, AZ 30800",
+          "Georgios Nikolaidis",
+          "1962-11-17"
+        ]
+      },
+      {
+        "id": "h5-009",
+        "values": [
+          "zeynep.demir@dunemarch.dev",
+          "32cea6dfd118fa9129b6809c916425ff2f05c23d913009e2",
+          "Zeynep Demir"
+        ]
+      },
+      {
+        "id": "h5-010",
+        "values": [
+          "Seojun Jung",
+          "seojun.jung@lumenarc.io",
+          "Rua dos Ip\u00eas, 309, Florian\u00f3polis - MG, 63304-101",
+          "28/06/1986",
+          "383-95-4335",
+          "francoisxavier.dupont@dunemarch.dev"
+        ]
+      },
+      {
+        "id": "h5-011",
+        "values": [
+          "Kaito Mori",
+          "kaito.mori@quillmere.com",
+          "eferraro",
+          "3N=4_QyEU6ow4YQfF$Q"
+        ]
+      },
+      {
+        "id": "h5-012",
+        "values": [
+          "Rin Yamada",
+          "D-17, Lotus Enclave, HSR Layout, Bengaluru, Karnataka 360549",
+          "cparedes",
+          "camila.paredes@quillmere.com"
+        ]
+      },
+      {
+        "id": "h5-013",
+        "values": [
+          "Rania Saadeh",
+          "rania.saadeh@hollowmere.dev",
+          "135.102.131.43"
+        ]
+      },
+      {
+        "id": "h5-014",
+        "values": [
+          "Farhan Ahmed",
+          "farhan.ahmed@quillmere.com",
+          "sjung",
+          "seojun.jung@mistraline.com"
+        ]
+      },
+      {
+        "id": "h5-015",
+        "values": [
+          "Camila Paredes",
+          "camila.paredes@mistraline.com",
+          "DE89551541420278718487"
+        ]
+      },
+      {
+        "id": "h5-016",
+        "values": [
+          "Rania Saadeh",
+          "rania.saadeh@mistraline.com",
+          "5518 Dunlin Blvd, Boone, NM 45575"
+        ]
+      },
+      {
+        "id": "h5-017",
+        "values": [
+          "Mai Pham",
+          "215.241.49.137",
+          "mai.pham@dunemarch.dev"
+        ]
+      },
+      {
+        "id": "h5-018",
+        "values": [
+          "mariajose.ferrer%40kestrelworks.dev",
+          "Mar\u00eda-Jos\u00e9 Ferrer"
+        ]
+      },
+      {
+        "id": "h5-019",
+        "values": [
+          "Liv Hagen",
+          "liv.hagen@driftline.ai",
+          "12 Sanderling Terrace, Exeter DH1 3JN"
+        ]
+      },
+      {
+        "id": "h5-020",
+        "values": [
+          "Grace Harbor",
+          "grace.harbor@mistraline.com",
+          "ES4871794353792910581801"
+        ]
+      },
+      {
+        "id": "h5-021",
+        "values": [
+          "Georgios Nikolaidis",
+          "georgios.nikolaidis@foxglove.systems"
+        ]
+      },
+      {
+        "id": "h5-022",
+        "values": [
+          "hunter.frost@mistraline.com",
+          "Hunter Frost",
+          "5455 Quarry Ridge Court, Boone, AZ 40670"
+        ]
+      },
+      {
+        "id": "h5-023",
+        "values": [
+          "Stefan Jovanovic",
+          "ngozi.adeyemi@ironwoodcloud.io",
+          "\u3012979-7166 \u4eac\u90fd\u5e02\u4e0b\u4eac\u533a\u4e00\u756a\u753a7-11-19",
+          "Ngozi Adeyemi"
+        ]
+      },
+      {
+        "id": "h5-024",
+        "values": [
+          "Agus Pratama",
+          "agus.pratama@mistraline.com",
+          "Kirchweg 39, 60578 Aachen",
+          "DE91356129052340419552"
+        ]
+      },
+      {
+        "id": "h5-025",
+        "values": [
+          "AC8f01296138564cae77d915495c11779a",
+          "Tawanda",
+          "9d4d1b33c5c860a4fe72719f232bdf4321258396ae4a92c8",
+          "Tawanda Sithole",
+          "tsithole"
+        ]
+      },
+      {
+        "id": "h5-026",
+        "values": [
+          "Divya Menon",
+          "09/18/1995"
+        ]
+      },
+      {
+        "id": "h5-027",
+        "values": [
+          "ACf9c19c40e92e18db0a23a6102bcfcec4",
+          "gQ9Bef6itXLDBA9U4nF0rwI2JCcJI8bZ",
+          "seojun.jung@emberfield.app",
+          "181.232.121.128"
+        ]
+      },
+      {
+        "id": "h5-028",
+        "values": [
+          "miguel.torres@dunemarch.dev",
+          "2.135.112.139",
+          "Miguel Torres"
+        ]
+      },
+      {
+        "id": "h5-029",
+        "values": [
+          "piotr.nowak@tidewaterlabs.io",
+          "Piotr Nowak",
+          "grace.porter%40sparrowhawk.dev"
+        ]
+      },
+      {
+        "id": "h5-030",
+        "values": [
+          "cschmitt",
+          "clara.schmitt@sparrowhawk.dev",
+          "Olga Kuznetsova"
+        ]
+      },
+      {
+        "id": "h5-031",
+        "values": [
+          "ritu.saxena@ironwoodcloud.io",
+          "Ritu Saxena",
+          "196.60.138.165",
+          "rsaxena"
+        ]
+      },
+      {
+        "id": "h5-032",
+        "values": [
+          "zdemir",
+          "zeynep.demir@dunemarch.dev",
+          "Aoi Suzuki",
+          "aoi.suzuki@mistraline.com"
+        ]
+      },
+      {
+        "id": "h5-033",
+        "values": [
+          "Meera Krishnan",
+          "meera.krishnan@lumenarc.io"
+        ]
+      },
+      {
+        "id": "h5-034",
+        "values": [
+          "francesca.ricci@tidewaterlabs.io",
+          "171.132.89.186",
+          "Francesca Ricci"
+        ]
+      },
+      {
+        "id": "h5-035",
+        "values": [
+          "!+8tCtgQl5FcW1YCObh^",
+          "gnikolaidis",
+          "georgios.nikolaidis@mistraline.com",
+          "Georgios Nikolaidis"
+        ]
+      },
+      {
+        "id": "h5-036",
+        "values": [
+          "62.27.68.212",
+          "lena.hoffmann@brooklinedata.dev",
+          "Lena Hoffmann"
+        ]
+      },
+      {
+        "id": "h5-037",
+        "values": [
+          "fricci",
+          "44.210.5.66",
+          "Francesca Ricci",
+          "francesca.ricci@driftline.ai"
+        ]
+      },
+      {
+        "id": "h5-038",
+        "values": [
+          "abondarenko",
+          "andriy.bondarenko@lumenarc.io",
+          "94.127.230.210"
+        ]
+      },
+      {
+        "id": "h5-039",
+        "values": [
+          "tmulder",
+          "79.236.65.115",
+          "l4NsHq@06_q#",
+          "Thijs Mulder",
+          "thijs.mulder@quillmere.com"
+        ]
+      },
+      {
+        "id": "h5-040",
+        "values": [
+          "obennett",
+          "40.13.188.40",
+          "b2xpdmVyLmJlbm5ldHRAdGlkZXdhdGVybGFicy5pbw==",
+          "Oliver Bennett",
+          "oliver.bennett@tidewaterlabs.io"
+        ]
+      },
+      {
+        "id": "h5-041",
+        "values": [
+          "amarchand",
+          "202.209.226.201",
+          "Anne-Sophie Marchand",
+          "annesophie.marchand@hollowmere.dev"
+        ]
+      },
+      {
+        "id": "h5-042",
+        "values": [
+          "srattanakul",
+          "bmansour",
+          "Somsak Rattanakul",
+          "somsak.rattanakul@ironwoodcloud.io"
+        ]
+      },
+      {
+        "id": "h5-043",
+        "values": [
+          "bXBoYW06OCtZc1AjNlloVGVHOXBqTWg=",
+          "mpham",
+          "mai.pham@sparrowhawk.dev"
+        ]
+      },
+      {
+        "id": "h5-044",
+        "values": [
+          "88.1.88.171",
+          "Lucia Campos",
+          "lucia.campos@tidewaterlabs.io"
+        ]
+      },
+      {
+        "id": "h5-045",
+        "values": [
+          "pwong",
+          "pimchanok.wong@quillmere.com"
+        ]
+      },
+      {
+        "id": "h5-046",
+        "values": [
+          "lhagen",
+          "OCOemECHAwnUaR$+!p1",
+          "Liv Hagen",
+          "liv.hagen@cinderwell.dev"
+        ]
+      },
+      {
+        "id": "h5-047",
+        "values": [
+          "86.40.208.104",
+          "eQC6VJGY*OXU#lr",
+          "pserrano",
+          "pablo.serrano@coppervale.io"
+        ]
+      },
+      {
+        "id": "h5-048",
+        "values": [
+          "64.217.93.235",
+          "abondarenko",
+          "Andriy Bondarenko"
+        ]
+      },
+      {
+        "id": "h5-049",
+        "values": [
+          "79.58.231.230",
+          "smalik",
+          "j-mmqf5hiq!9e",
+          "Sana Malik",
+          "sana.malik@tidewaterlabs.io"
+        ]
+      },
+      {
+        "id": "h5-050",
+        "values": [
+          "73.98.24.8",
+          "pimchanok.wong@cinderwell.dev"
+        ]
+      },
+      {
+        "id": "h5-051",
+        "values": [
+          "asuzuki",
+          "Aoi Suzuki",
+          "aoi.suzuki@coppervale.io"
+        ]
+      },
+      {
+        "id": "h5-052",
+        "values": [
+          "srattanakul",
+          "Somsak Rattanakul",
+          "somsak.rattanakul@quillmere.com"
+        ]
+      },
+      {
+        "id": "h5-053",
+        "values": [
+          "enavarro",
+          "emilio.navarro@ironwoodcloud.io"
+        ]
+      },
+      {
+        "id": "h5-054",
+        "values": [
+          "Oliver Bennett",
+          "oliver.bennett@dunemarch.dev"
+        ]
+      },
+      {
+        "id": "h5-055",
+        "values": [
+          "Ines Barros",
+          "ines.barros@quillmere.com",
+          "558-73-3192"
+        ]
+      },
+      {
+        "id": "h5-056",
+        "values": [
+          "Antoine Dubois",
+          "FR2527374091130753370571132"
+        ]
+      },
+      {
+        "id": "h5-057",
+        "values": [
+          "eleanor.vance@brooklinedata.dev"
+        ]
+      },
+      {
+        "id": "h5-058",
+        "values": [
+          "Georgios Nikolaidis",
+          "georgios.nikolaidis@foxglove.systems",
+          "1983-09-17",
+          "Rania Saadeh",
+          "rania.saadeh@quillmere.com",
+          "07/02/1976"
+        ]
+      },
+      {
+        "id": "h5-059",
+        "values": [
+          "mtorres",
+          "Y13#gx&OdQPKf",
+          "miguel.torres@driftline.ai",
+          "Miguel Torres"
+        ]
+      },
+      {
+        "id": "h5-060",
+        "values": [
+          "MRN-68363919",
+          "Bram Peeters",
+          "06/25/2000",
+          "CLM-W5I2UYTBQ",
+          "hcaldwell",
+          "henry.caldwell@brooklinedata.dev"
+        ]
+      },
+      {
+        "id": "h5-061",
+        "values": [
+          "Kaito Mori",
+          "kaito.mori@kestrelworks.dev",
+          "03/05/1981",
+          "201-59-4264",
+          "James Whitfield",
+          "james.whitfield@ironwoodcloud.io",
+          "17/08/1963",
+          "PJ025421C"
+        ]
+      },
+      {
+        "id": "h5-062",
+        "values": [
+          "Oliver Bennett",
+          "oliver.bennett@coppervale.io",
+          "Agnieszka Piotrowska",
+          "Oliver",
+          "Bennett",
+          "oliver.bennett%40coppervale.io",
+          "\u0985\u09a8\u09a8\u09cd\u09af\u09be \u09a6\u09be\u09b8"
+        ]
+      },
+      {
+        "id": "h5-063",
+        "values": [
+          "Tawanda Sithole",
+          "472-83-1925",
+          "06/14/1977",
+          "7285 Curlew Drive, Galena, AZ 89943",
+          "Agus Pratama",
+          "agus.pratama@mistraline.com"
+        ]
+      },
+      {
+        "id": "h5-064",
+        "values": [
+          "ekaya",
+          "Emre Kaya",
+          "emre.kaya@emberfield.app",
+          "DE30260348263254427113",
+          "rafael.duarte@ferrouspeak.io"
+        ]
+      },
+      {
+        "id": "h5-065",
+        "values": [
+          "Francesca Ricci",
+          "1961-05-26",
+          "062-30-6366",
+          "Tawanda Sithole",
+          "tawanda.sithole@mistraline.com",
+          "5/105 Currawong Street, Fremantle NSW 4819"
+        ]
+      },
+      {
+        "id": "h5-066",
+        "values": [
+          "Felix Braun",
+          "felix.braun@lumenarc.io"
+        ]
+      },
+      {
+        "id": "h5-067",
+        "values": [
+          "Chiamaka Eze",
+          "X40250068",
+          "17/12/1987",
+          "178 rue des Forges, 46000 Strasbourg",
+          "chiamaka.eze@lumenarc.io"
+        ]
+      },
+      {
+        "id": "h5-068",
+        "values": [
+          "Farhan Ahmed",
+          "I0236865",
+          "7B, Cypress Heights, Kondapur, Bengaluru, Punjab 879076",
+          "Jean-Pierre Aubert",
+          "jeanpierre.aubert@foxglove.systems"
+        ]
+      },
+      {
+        "id": "h5-069",
+        "values": [
+          "Mai Pham",
+          "MRN-36810537",
+          "2001-05-22",
+          "Seestra\u00dfe 39, 51651 Aachen",
+          "Fran\u00e7ois-Xavier Dupont",
+          "francoisxavier.dupont@brooklinedata.dev"
+        ]
+      },
+      {
+        "id": "h5-070",
+        "values": [
+          "Oliver Bennett",
+          "CLM-WUROT08W",
+          "06/18/2002",
+          "oliver.bennett@ironwoodcloud.io"
+        ]
+      },
+      {
+        "id": "h5-071",
+        "values": [
+          "Andriy Bondarenko",
+          "03/01/1976",
+          "Sana Malik",
+          "sana.malik@dunemarch.dev",
+          "7135 Cinder Hollow Lane, Galena, MI 24200"
+        ]
+      },
+      {
+        "id": "h5-072",
+        "values": [
+          "Chiamaka",
+          "Eze",
+          "\u0421\u0435\u0440\u0433\u0435\u0439 \u0418\u0432\u0430\u043d\u043e\u0432",
+          "chiamaka.eze@sparrowhawk.dev"
+        ]
+      },
+      {
+        "id": "h5-073",
+        "values": [
+          "Zanele Khumalo",
+          "09/27/1963",
+          "107 Kestrel Close, York YO24 4QG",
+          "zanele.khumalo@mistraline.com"
+        ]
+      },
+      {
+        "id": "h5-074",
+        "values": [
+          "Fran\u00e7ois-Xavier Dupont",
+          "francoisxavier.dupont@kestrelworks.dev",
+          "5/132 Grevillea Road, Fremantle QLD 4471",
+          "fdupont"
+        ]
+      },
+      {
+        "id": "h5-075",
+        "values": [
+          "James Whitfield",
+          "CLM-SQ75L6BK",
+          "06/11/1977",
+          "james.whitfield@mistraline.com",
+          "Rua dos Ip\u00eas, 647, Belo Horizonte - AM, 74551-754"
+        ]
+      },
+      {
+        "id": "h5-076",
+        "values": [
+          "Nicolas Fabre",
+          "nicolas.fabre@emberfield.app",
+          "Bram Peeters"
+        ]
+      },
+      {
+        "id": "h5-077",
+        "values": [
+          "cparedes",
+          "Camila Paredes",
+          "camila.paredes@coppervale.io"
+        ]
+      },
+      {
+        "id": "h5-078",
+        "values": [
+          "ngozi.adeyemi@brooklinedata.dev",
+          "nadeyemi",
+          "Camila Paredes",
+          "camila.paredes@dunemarch.dev"
+        ]
+      },
+      {
+        "id": "h5-079",
+        "values": [
+          "cparedes",
+          "rwkTdAiY$8q%%TOPCIt",
+          "camila.paredes@driftline.ai",
+          "Camila Paredes"
+        ]
+      },
+      {
+        "id": "h5-080",
+        "values": [
+          "814-59-9136",
+          "Xue Fang",
+          "1961-01-26",
+          "somsak.rattanakul@ironwoodcloud.io",
+          "144.9.111.240"
+        ]
+      }
+    ],
+    "ms_per_item": 0.1
+  },
+  {
+    "adapter": "redact-hook (aggressive)",
+    "items": 80,
+    "items_leaked": 80,
+    "values_total": 394,
+    "values_leaked": 308,
+    "blocked": 0,
+    "negatives": 40,
+    "false_alarms": 11,
+    "by_category": {
+      "slack-export": {
+        "items": 3,
+        "leaked": 3
+      },
+      "teams-export": {
+        "items": 3,
+        "leaked": 3
+      },
+      "outlook-eml": {
+        "items": 3,
+        "leaked": 3
+      },
+      "salesforce-export": {
+        "items": 3,
+        "leaked": 3
+      },
+      "hubspot-export": {
+        "items": 3,
+        "leaked": 3
+      },
+      "stripe-dispute": {
+        "items": 3,
+        "leaked": 3
+      },
+      "paypal-dispute": {
+        "items": 3,
+        "leaked": 3
+      },
+      "shopify-order": {
+        "items": 3,
+        "leaked": 3
+      },
+      "twilio-webhook": {
+        "items": 3,
+        "leaked": 3
+      },
+      "sendgrid-webhook": {
+        "items": 3,
+        "leaked": 3
+      },
+      "okta-audit": {
+        "items": 3,
+        "leaked": 3
+      },
+      "auth0-audit": {
+        "items": 3,
+        "leaked": 3
+      },
+      "vpn-auth": {
+        "items": 3,
+        "leaked": 3
+      },
+      "ssh-auth": {
+        "items": 3,
+        "leaked": 3
+      },
+      "gitlab-ci": {
+        "items": 3,
+        "leaked": 3
+      },
+      "ansible-run": {
+        "items": 3,
+        "leaked": 3
+      },
+      "chef-run": {
+        "items": 3,
+        "leaked": 3
+      },
+      "helm-release": {
+        "items": 3,
+        "leaked": 3
+      },
+      "openapi-example": {
+        "items": 3,
+        "leaked": 3
+      },
+      "sqlite-dump": {
+        "items": 3,
+        "leaked": 3
+      },
+      "hr-roster-csv": {
+        "items": 2,
+        "leaked": 2
+      },
+      "pdf-tax-return": {
+        "items": 2,
+        "leaked": 2
+      },
+      "mortgage-application": {
+        "items": 2,
+        "leaked": 2
+      },
+      "visa-application": {
+        "items": 2,
+        "leaked": 2
+      },
+      "hospital-discharge": {
+        "items": 2,
+        "leaked": 2
+      },
+      "school-report-card": {
+        "items": 2,
+        "leaked": 2
+      },
+      "dating-profile": {
+        "items": 2,
+        "leaked": 2
+      },
+      "gym-membership": {
+        "items": 2,
+        "leaked": 2
+      },
+      "airflow-log": {
+        "items": 2,
+        "leaked": 2
+      },
+      "dbt-log": {
+        "items": 2,
+        "leaked": 2
+      },
+      "negative": {
+        "items": 40,
+        "leaked": 11
+      }
+    },
+    "leaks": [
+      {
+        "id": "h5-001",
+        "values": [
+          "lhoffmann",
+          "Lena Hoffmann",
+          "dkruger",
+          "hfT9ebSB^q8daDEt"
+        ]
+      },
+      {
+        "id": "h5-002",
+        "values": [
+          "nadeyemi",
+          "ahosseini",
+          "arash.hosseini@lumenarc.io"
+        ]
+      },
+      {
+        "id": "h5-003",
+        "values": [
+          "easante",
+          "Tawanda Sithole",
+          "tsithole",
+          "8BrV_JZVwourPHwLru-"
+        ]
+      },
+      {
+        "id": "h5-004",
+        "values": [
+          "Ananya Das",
+          "Ananya",
+          "adas",
+          "Mariana Solis"
+        ]
+      },
+      {
+        "id": "h5-005",
+        "values": [
+          "Lena Hoffmann",
+          "Tomasz Krawczyk",
+          "tomasz.krawczyk@dunemarch.dev",
+          "03/15/1960",
+          "682-37-1259"
+        ]
+      },
+      {
+        "id": "h5-006",
+        "values": [
+          "falrashid",
+          "103.251.213.235",
+          "mpapadaki",
+          "Faisal Al-Rashid"
+        ]
+      },
+      {
+        "id": "h5-007",
+        "values": [
+          "Pablo Serrano",
+          "pablo.serrano@foxglove.systems",
+          "Felix Braun",
+          "felix.braun@cinderwell.dev",
+          "Pablo",
+          "yEhJdqYX4O+kbMrUFnnBrT1dyLKmB44l1bhfFMAM",
+          "pserrano",
+          "9x0hDPw4DlqP"
+        ]
+      },
+      {
+        "id": "h5-008",
+        "values": [
+          "samir.qassem@cinderwell.dev",
+          "georgios.nikolaidis@cinderwell.dev",
+          "8094 Stonechat Terrace, Boone, AZ 30800",
+          "Georgios Nikolaidis",
+          "1962-11-17"
+        ]
+      },
+      {
+        "id": "h5-009",
+        "values": [
+          "zeynep.demir@dunemarch.dev",
+          "32cea6dfd118fa9129b6809c916425ff2f05c23d913009e2",
+          "Zeynep Demir"
+        ]
+      },
+      {
+        "id": "h5-010",
+        "values": [
+          "Seojun Jung",
+          "seojun.jung@lumenarc.io",
+          "Rua dos Ip\u00eas, 309, Florian\u00f3polis - MG, 63304-101",
+          "28/06/1986",
+          "383-95-4335",
+          "francoisxavier.dupont@dunemarch.dev"
+        ]
+      },
+      {
+        "id": "h5-011",
+        "values": [
+          "Kaito Mori",
+          "kaito.mori@quillmere.com",
+          "eferraro",
+          "3N=4_QyEU6ow4YQfF$Q"
+        ]
+      },
+      {
+        "id": "h5-012",
+        "values": [
+          "Rin Yamada",
+          "D-17, Lotus Enclave, HSR Layout, Bengaluru, Karnataka 360549",
+          "cparedes",
+          "camila.paredes@quillmere.com"
+        ]
+      },
+      {
+        "id": "h5-013",
+        "values": [
+          "Rania Saadeh",
+          "rania.saadeh@hollowmere.dev",
+          "135.102.131.43"
+        ]
+      },
+      {
+        "id": "h5-014",
+        "values": [
+          "Farhan Ahmed",
+          "farhan.ahmed@quillmere.com",
+          "sjung",
+          "seojun.jung@mistraline.com"
+        ]
+      },
+      {
+        "id": "h5-015",
+        "values": [
+          "Camila Paredes",
+          "camila.paredes@mistraline.com",
+          "DE89551541420278718487"
+        ]
+      },
+      {
+        "id": "h5-016",
+        "values": [
+          "Rania Saadeh",
+          "rania.saadeh@mistraline.com",
+          "5518 Dunlin Blvd, Boone, NM 45575"
+        ]
+      },
+      {
+        "id": "h5-017",
+        "values": [
+          "Mai Pham",
+          "215.241.49.137",
+          "mai.pham@dunemarch.dev"
+        ]
+      },
+      {
+        "id": "h5-018",
+        "values": [
+          "mariajose.ferrer%40kestrelworks.dev",
+          "Mar\u00eda-Jos\u00e9 Ferrer"
+        ]
+      },
+      {
+        "id": "h5-019",
+        "values": [
+          "Liv Hagen",
+          "liv.hagen@driftline.ai",
+          "12 Sanderling Terrace, Exeter DH1 3JN"
+        ]
+      },
+      {
+        "id": "h5-020",
+        "values": [
+          "Grace Harbor",
+          "grace.harbor@mistraline.com",
+          "ES4871794353792910581801"
+        ]
+      },
+      {
+        "id": "h5-021",
+        "values": [
+          "Georgios Nikolaidis",
+          "georgios.nikolaidis@foxglove.systems"
+        ]
+      },
+      {
+        "id": "h5-022",
+        "values": [
+          "hunter.frost@mistraline.com",
+          "Hunter Frost",
+          "5455 Quarry Ridge Court, Boone, AZ 40670"
+        ]
+      },
+      {
+        "id": "h5-023",
+        "values": [
+          "Stefan Jovanovic",
+          "ngozi.adeyemi@ironwoodcloud.io",
+          "\u3012979-7166 \u4eac\u90fd\u5e02\u4e0b\u4eac\u533a\u4e00\u756a\u753a7-11-19",
+          "Ngozi Adeyemi"
+        ]
+      },
+      {
+        "id": "h5-024",
+        "values": [
+          "Agus Pratama",
+          "agus.pratama@mistraline.com",
+          "Kirchweg 39, 60578 Aachen",
+          "DE91356129052340419552"
+        ]
+      },
+      {
+        "id": "h5-025",
+        "values": [
+          "AC8f01296138564cae77d915495c11779a",
+          "Tawanda",
+          "9d4d1b33c5c860a4fe72719f232bdf4321258396ae4a92c8",
+          "Tawanda Sithole",
+          "tsithole"
+        ]
+      },
+      {
+        "id": "h5-026",
+        "values": [
+          "Divya Menon",
+          "09/18/1995"
+        ]
+      },
+      {
+        "id": "h5-027",
+        "values": [
+          "ACf9c19c40e92e18db0a23a6102bcfcec4",
+          "gQ9Bef6itXLDBA9U4nF0rwI2JCcJI8bZ",
+          "seojun.jung@emberfield.app",
+          "181.232.121.128"
+        ]
+      },
+      {
+        "id": "h5-028",
+        "values": [
+          "miguel.torres@dunemarch.dev",
+          "2.135.112.139",
+          "Miguel Torres"
+        ]
+      },
+      {
+        "id": "h5-029",
+        "values": [
+          "piotr.nowak@tidewaterlabs.io",
+          "Piotr Nowak",
+          "grace.porter%40sparrowhawk.dev"
+        ]
+      },
+      {
+        "id": "h5-030",
+        "values": [
+          "cschmitt",
+          "clara.schmitt@sparrowhawk.dev",
+          "Olga Kuznetsova"
+        ]
+      },
+      {
+        "id": "h5-031",
+        "values": [
+          "ritu.saxena@ironwoodcloud.io",
+          "Ritu Saxena",
+          "196.60.138.165",
+          "rsaxena"
+        ]
+      },
+      {
+        "id": "h5-032",
+        "values": [
+          "zdemir",
+          "zeynep.demir@dunemarch.dev",
+          "Aoi Suzuki",
+          "aoi.suzuki@mistraline.com"
+        ]
+      },
+      {
+        "id": "h5-033",
+        "values": [
+          "Meera Krishnan",
+          "meera.krishnan@lumenarc.io"
+        ]
+      },
+      {
+        "id": "h5-034",
+        "values": [
+          "francesca.ricci@tidewaterlabs.io",
+          "171.132.89.186",
+          "Francesca Ricci"
+        ]
+      },
+      {
+        "id": "h5-035",
+        "values": [
+          "!+8tCtgQl5FcW1YCObh^",
+          "gnikolaidis",
+          "georgios.nikolaidis@mistraline.com",
+          "Georgios Nikolaidis"
+        ]
+      },
+      {
+        "id": "h5-036",
+        "values": [
+          "62.27.68.212",
+          "lena.hoffmann@brooklinedata.dev",
+          "Lena Hoffmann"
+        ]
+      },
+      {
+        "id": "h5-037",
+        "values": [
+          "fricci",
+          "44.210.5.66",
+          "Francesca Ricci",
+          "francesca.ricci@driftline.ai"
+        ]
+      },
+      {
+        "id": "h5-038",
+        "values": [
+          "abondarenko",
+          "andriy.bondarenko@lumenarc.io",
+          "94.127.230.210"
+        ]
+      },
+      {
+        "id": "h5-039",
+        "values": [
+          "tmulder",
+          "79.236.65.115",
+          "l4NsHq@06_q#",
+          "Thijs Mulder",
+          "thijs.mulder@quillmere.com"
+        ]
+      },
+      {
+        "id": "h5-040",
+        "values": [
+          "obennett",
+          "40.13.188.40",
+          "Oliver Bennett",
+          "oliver.bennett@tidewaterlabs.io"
+        ]
+      },
+      {
+        "id": "h5-041",
+        "values": [
+          "amarchand",
+          "202.209.226.201",
+          "Anne-Sophie Marchand",
+          "annesophie.marchand@hollowmere.dev"
+        ]
+      },
+      {
+        "id": "h5-042",
+        "values": [
+          "srattanakul",
+          "bmansour",
+          "Somsak Rattanakul",
+          "somsak.rattanakul@ironwoodcloud.io"
+        ]
+      },
+      {
+        "id": "h5-043",
+        "values": [
+          "bXBoYW06OCtZc1AjNlloVGVHOXBqTWg=",
+          "mpham",
+          "mai.pham@sparrowhawk.dev"
+        ]
+      },
+      {
+        "id": "h5-044",
+        "values": [
+          "88.1.88.171",
+          "Lucia Campos",
+          "lucia.campos@tidewaterlabs.io"
+        ]
+      },
+      {
+        "id": "h5-045",
+        "values": [
+          "pwong",
+          "pimchanok.wong@quillmere.com"
+        ]
+      },
+      {
+        "id": "h5-046",
+        "values": [
+          "lhagen",
+          "OCOemECHAwnUaR$+!p1",
+          "Liv Hagen",
+          "liv.hagen@cinderwell.dev"
+        ]
+      },
+      {
+        "id": "h5-047",
+        "values": [
+          "86.40.208.104",
+          "eQC6VJGY*OXU#lr",
+          "pserrano",
+          "pablo.serrano@coppervale.io"
+        ]
+      },
+      {
+        "id": "h5-048",
+        "values": [
+          "64.217.93.235",
+          "abondarenko",
+          "Andriy Bondarenko"
+        ]
+      },
+      {
+        "id": "h5-049",
+        "values": [
+          "79.58.231.230",
+          "smalik",
+          "j-mmqf5hiq!9e",
+          "Sana Malik",
+          "sana.malik@tidewaterlabs.io"
+        ]
+      },
+      {
+        "id": "h5-050",
+        "values": [
+          "73.98.24.8",
+          "pimchanok.wong@cinderwell.dev"
+        ]
+      },
+      {
+        "id": "h5-051",
+        "values": [
+          "asuzuki",
+          "Aoi Suzuki",
+          "aoi.suzuki@coppervale.io"
+        ]
+      },
+      {
+        "id": "h5-052",
+        "values": [
+          "srattanakul",
+          "Somsak Rattanakul",
+          "somsak.rattanakul@quillmere.com"
+        ]
+      },
+      {
+        "id": "h5-053",
+        "values": [
+          "enavarro",
+          "emilio.navarro@ironwoodcloud.io"
+        ]
+      },
+      {
+        "id": "h5-054",
+        "values": [
+          "Oliver Bennett",
+          "oliver.bennett@dunemarch.dev"
+        ]
+      },
+      {
+        "id": "h5-055",
+        "values": [
+          "Ines Barros",
+          "ines.barros@quillmere.com",
+          "558-73-3192"
+        ]
+      },
+      {
+        "id": "h5-056",
+        "values": [
+          "Antoine Dubois",
+          "FR2527374091130753370571132"
+        ]
+      },
+      {
+        "id": "h5-057",
+        "values": [
+          "eleanor.vance@brooklinedata.dev"
+        ]
+      },
+      {
+        "id": "h5-058",
+        "values": [
+          "Georgios Nikolaidis",
+          "georgios.nikolaidis@foxglove.systems",
+          "1983-09-17",
+          "Rania Saadeh",
+          "rania.saadeh@quillmere.com",
+          "07/02/1976"
+        ]
+      },
+      {
+        "id": "h5-059",
+        "values": [
+          "mtorres",
+          "Y13#gx&OdQPKf",
+          "miguel.torres@driftline.ai",
+          "Miguel Torres"
+        ]
+      },
+      {
+        "id": "h5-060",
+        "values": [
+          "MRN-68363919",
+          "Bram Peeters",
+          "06/25/2000",
+          "CLM-W5I2UYTBQ",
+          "hcaldwell",
+          "henry.caldwell@brooklinedata.dev"
+        ]
+      },
+      {
+        "id": "h5-061",
+        "values": [
+          "Kaito Mori",
+          "kaito.mori@kestrelworks.dev",
+          "03/05/1981",
+          "201-59-4264",
+          "James Whitfield",
+          "james.whitfield@ironwoodcloud.io",
+          "17/08/1963",
+          "PJ025421C"
+        ]
+      },
+      {
+        "id": "h5-062",
+        "values": [
+          "Oliver Bennett",
+          "oliver.bennett@coppervale.io",
+          "Agnieszka Piotrowska",
+          "Oliver",
+          "Bennett",
+          "oliver.bennett%40coppervale.io",
+          "\u0985\u09a8\u09a8\u09cd\u09af\u09be \u09a6\u09be\u09b8"
+        ]
+      },
+      {
+        "id": "h5-063",
+        "values": [
+          "Tawanda Sithole",
+          "472-83-1925",
+          "06/14/1977",
+          "7285 Curlew Drive, Galena, AZ 89943",
+          "Agus Pratama",
+          "agus.pratama@mistraline.com"
+        ]
+      },
+      {
+        "id": "h5-064",
+        "values": [
+          "ekaya",
+          "Emre Kaya",
+          "emre.kaya@emberfield.app",
+          "DE30260348263254427113",
+          "rafael.duarte@ferrouspeak.io"
+        ]
+      },
+      {
+        "id": "h5-065",
+        "values": [
+          "Francesca Ricci",
+          "1961-05-26",
+          "062-30-6366",
+          "Tawanda Sithole",
+          "tawanda.sithole@mistraline.com",
+          "5/105 Currawong Street, Fremantle NSW 4819"
+        ]
+      },
+      {
+        "id": "h5-066",
+        "values": [
+          "Felix Braun",
+          "felix.braun@lumenarc.io"
+        ]
+      },
+      {
+        "id": "h5-067",
+        "values": [
+          "Chiamaka Eze",
+          "X40250068",
+          "17/12/1987",
+          "178 rue des Forges, 46000 Strasbourg",
+          "chiamaka.eze@lumenarc.io"
+        ]
+      },
+      {
+        "id": "h5-068",
+        "values": [
+          "Farhan Ahmed",
+          "I0236865",
+          "7B, Cypress Heights, Kondapur, Bengaluru, Punjab 879076",
+          "Jean-Pierre Aubert",
+          "jeanpierre.aubert@foxglove.systems"
+        ]
+      },
+      {
+        "id": "h5-069",
+        "values": [
+          "Mai Pham",
+          "MRN-36810537",
+          "2001-05-22",
+          "Seestra\u00dfe 39, 51651 Aachen",
+          "Fran\u00e7ois-Xavier Dupont",
+          "francoisxavier.dupont@brooklinedata.dev"
+        ]
+      },
+      {
+        "id": "h5-070",
+        "values": [
+          "Oliver Bennett",
+          "CLM-WUROT08W",
+          "06/18/2002",
+          "oliver.bennett@ironwoodcloud.io"
+        ]
+      },
+      {
+        "id": "h5-071",
+        "values": [
+          "Andriy Bondarenko",
+          "03/01/1976",
+          "Sana Malik",
+          "sana.malik@dunemarch.dev",
+          "7135 Cinder Hollow Lane, Galena, MI 24200"
+        ]
+      },
+      {
+        "id": "h5-072",
+        "values": [
+          "Chiamaka",
+          "Eze",
+          "\u0421\u0435\u0440\u0433\u0435\u0439 \u0418\u0432\u0430\u043d\u043e\u0432",
+          "chiamaka.eze@sparrowhawk.dev"
+        ]
+      },
+      {
+        "id": "h5-073",
+        "values": [
+          "Zanele Khumalo",
+          "09/27/1963",
+          "107 Kestrel Close, York YO24 4QG",
+          "zanele.khumalo@mistraline.com"
+        ]
+      },
+      {
+        "id": "h5-074",
+        "values": [
+          "Fran\u00e7ois-Xavier Dupont",
+          "francoisxavier.dupont@kestrelworks.dev",
+          "5/132 Grevillea Road, Fremantle QLD 4471",
+          "fdupont"
+        ]
+      },
+      {
+        "id": "h5-075",
+        "values": [
+          "James Whitfield",
+          "CLM-SQ75L6BK",
+          "06/11/1977",
+          "james.whitfield@mistraline.com",
+          "Rua dos Ip\u00eas, 647, Belo Horizonte - AM, 74551-754"
+        ]
+      },
+      {
+        "id": "h5-076",
+        "values": [
+          "Nicolas Fabre",
+          "nicolas.fabre@emberfield.app",
+          "Bram Peeters"
+        ]
+      },
+      {
+        "id": "h5-077",
+        "values": [
+          "cparedes",
+          "Camila Paredes",
+          "camila.paredes@coppervale.io"
+        ]
+      },
+      {
+        "id": "h5-078",
+        "values": [
+          "ngozi.adeyemi@brooklinedata.dev",
+          "nadeyemi",
+          "Camila Paredes",
+          "camila.paredes@dunemarch.dev"
+        ]
+      },
+      {
+        "id": "h5-079",
+        "values": [
+          "cparedes",
+          "rwkTdAiY$8q%%TOPCIt",
+          "camila.paredes@driftline.ai",
+          "Camila Paredes"
+        ]
+      },
+      {
+        "id": "h5-080",
+        "values": [
+          "814-59-9136",
+          "Xue Fang",
+          "1961-01-26",
+          "somsak.rattanakul@ironwoodcloud.io",
+          "144.9.111.240"
+        ]
+      }
+    ],
+    "ms_per_item": 0.1
+  }
+]

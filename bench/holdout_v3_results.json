@@ -1,0 +1,4448 @@
+[
+  {
+    "adapter": "sensitive-canary (blocks)",
+    "items": 80,
+    "items_leaked": 6,
+    "values_total": 320,
+    "values_leaked": 18,
+    "blocked": 74,
+    "negatives": 40,
+    "false_alarms": 2,
+    "by_category": {
+      "github-actions-log": {
+        "items": 4,
+        "leaked": 0
+      },
+      "helm-values": {
+        "items": 4,
+        "leaked": 0
+      },
+      "ansible-inventory": {
+        "items": 4,
+        "leaked": 0
+      },
+      "env-production": {
+        "items": 4,
+        "leaked": 0
+      },
+      "gcp-service-account": {
+        "items": 4,
+        "leaked": 0
+      },
+      "azure-connection-string": {
+        "items": 4,
+        "leaked": 0
+      },
+      "kubectl-describe": {
+        "items": 4,
+        "leaked": 0
+      },
+      "syslog": {
+        "items": 4,
+        "leaked": 1
+      },
+      "browser-har": {
+        "items": 4,
+        "leaked": 1
+      },
+      "sentry-event": {
+        "items": 4,
+        "leaked": 0
+      },
+      "stripe-webhook": {
+        "items": 4,
+        "leaked": 0
+      },
+      "fhir-patient": {
+        "items": 4,
+        "leaked": 1
+      },
+      "payroll-csv": {
+        "items": 4,
+        "leaked": 0
+      },
+      "hr-onboarding": {
+        "items": 4,
+        "leaked": 0
+      },
+      "travel-booking": {
+        "items": 4,
+        "leaked": 0
+      },
+      "pr-review": {
+        "items": 4,
+        "leaked": 0
+      },
+      "mobile-crash": {
+        "items": 4,
+        "leaked": 0
+      },
+      "shell-history": {
+        "items": 3,
+        "leaked": 1
+      },
+      "windows-event": {
+        "items": 3,
+        "leaked": 2
+      },
+      "lease-agreement": {
+        "items": 3,
+        "leaked": 0
+      },
+      "court-filing": {
+        "items": 3,
+        "leaked": 0
+      },
+      "negative": {
+        "items": 40,
+        "leaked": 2
+      }
+    },
+    "leaks": [
+      {
+        "id": "h3-032",
+        "values": [
+          "csilveira"
+        ]
+      },
+      {
+        "id": "h3-034",
+        "values": [
+          "meera.iyer%40tideroot.com",
+          "91c4e1a93a189d005d0cfafeb78888832ff89446d83d469d",
+          "miyer"
+        ]
+      },
+      {
+        "id": "h3-048",
+        "values": [
+          "Freya Nilsen",
+          "13 Jan 1986",
+          "TXKB9HAAK",
+          "Birkenstra\u00dfe 116, 75923 Bremen",
+          "+49 170 9809552"
+        ]
+      },
+      {
+        "id": "h3-070",
+        "values": [
+          "yyamada",
+          "EQL^IgDcgWrX9*MLV",
+          "136.73.190.175",
+          "146.110.131.160"
+        ]
+      },
+      {
+        "id": "h3-072",
+        "values": [
+          "jmoreau",
+          "196.201.88.234"
+        ]
+      },
+      {
+        "id": "h3-074",
+        "values": [
+          "jQMhIKJNlyJl@u#Ulf",
+          "fwagner",
+          "Felix Wagner"
+        ]
+      }
+    ],
+    "ms_per_item": 0.5
+  },
+  {
+    "adapter": "claude-code-redact (+pii)",
+    "items": 80,
+    "items_leaked": 73,
+    "values_total": 320,
+    "values_leaked": 174,
+    "blocked": 0,
+    "negatives": 40,
+    "false_alarms": 4,
+    "by_category": {
+      "github-actions-log": {
+        "items": 4,
+        "leaked": 4
+      },
+      "helm-values": {
+        "items": 4,
+        "leaked": 4
+      },
+      "ansible-inventory": {
+        "items": 4,
+        "leaked": 4
+      },
+      "env-production": {
+        "items": 4,
+        "leaked": 2
+      },
+      "gcp-service-account": {
+        "items": 4,
+        "leaked": 3
+      },
+      "azure-connection-string": {
+        "items": 4,
+        "leaked": 3
+      },
+      "kubectl-describe": {
+        "items": 4,
+        "leaked": 3
+      },
+      "syslog": {
+        "items": 4,
+        "leaked": 4
+      },
+      "browser-har": {
+        "items": 4,
+        "leaked": 3
+      },
+      "sentry-event": {
+        "items": 4,
+        "leaked": 4
+      },
+      "stripe-webhook": {
+        "items": 4,
+        "leaked": 4
+      },
+      "fhir-patient": {
+        "items": 4,
+        "leaked": 4
+      },
+      "payroll-csv": {
+        "items": 4,
+        "leaked": 4
+      },
+      "hr-onboarding": {
+        "items": 4,
+        "leaked": 4
+      },
+      "travel-booking": {
+        "items": 4,
+        "leaked": 4
+      },
+      "pr-review": {
+        "items": 4,
+        "leaked": 4
+      },
+      "mobile-crash": {
+        "items": 4,
+        "leaked": 4
+      },
+      "shell-history": {
+        "items": 3,
+        "leaked": 2
+      },
+      "windows-event": {
+        "items": 3,
+        "leaked": 3
+      },
+      "lease-agreement": {
+        "items": 3,
+        "leaked": 3
+      },
+      "court-filing": {
+        "items": 3,
+        "leaked": 3
+      },
+      "negative": {
+        "items": 40,
+        "leaked": 4
+      }
+    },
+    "leaks": [
+      {
+        "id": "h3-001",
+        "values": [
+          "VXaakbSzLm2krOG34OJgcaqpx9PsuTpSkdFDjKha",
+          "evance"
+        ]
+      },
+      {
+        "id": "h3-002",
+        "values": [
+          "Layla Hassan",
+          "lhassan"
+        ]
+      },
+      {
+        "id": "h3-003",
+        "values": [
+          "189.190.39.193"
+        ]
+      },
+      {
+        "id": "h3-004",
+        "values": [
+          "a2FyaW0uYWRlbEBmZXJud2lzcC5pbw==",
+          "Karim Adel",
+          "kadel"
+        ]
+      },
+      {
+        "id": "h3-005",
+        "values": [
+          "jokonkwo"
+        ]
+      },
+      {
+        "id": "h3-006",
+        "values": [
+          "Will Abernathy"
+        ]
+      },
+      {
+        "id": "h3-007",
+        "values": [
+          "Chiamaka Nwosu"
+        ]
+      },
+      {
+        "id": "h3-008",
+        "values": [
+          "Vikram Reddy"
+        ]
+      },
+      {
+        "id": "h3-009",
+        "values": [
+          "flevesque"
+        ]
+      },
+      {
+        "id": "h3-010",
+        "values": [
+          "edemir",
+          "Elif Demir"
+        ]
+      },
+      {
+        "id": "h3-011",
+        "values": [
+          "Meera Iyer",
+          "miyer"
+        ]
+      },
+      {
+        "id": "h3-012",
+        "values": [
+          "63.49.43.249",
+          "mkaya"
+        ]
+      },
+      {
+        "id": "h3-014",
+        "values": [
+          "Chlo\u00e9 Marchand"
+        ]
+      },
+      {
+        "id": "h3-016",
+        "values": [
+          "hdahl",
+          "Henrik Dahl"
+        ]
+      },
+      {
+        "id": "h3-018",
+        "values": [
+          "skulkarni",
+          "Sanjay Kulkarni"
+        ]
+      },
+      {
+        "id": "h3-019",
+        "values": [
+          "Efua Mensah"
+        ]
+      },
+      {
+        "id": "h3-020",
+        "values": [
+          "Efua Mensah",
+          "emensah"
+        ]
+      },
+      {
+        "id": "h3-021",
+        "values": [
+          "Arjun Krishnan"
+        ]
+      },
+      {
+        "id": "h3-022",
+        "values": [
+          "_+_7VQ6tCHpSHKiQ0"
+        ]
+      },
+      {
+        "id": "h3-023",
+        "values": [
+          "edemir",
+          "Elif Demir"
+        ]
+      },
+      {
+        "id": "h3-026",
+        "values": [
+          "ZHJhZ2hhdmFuOkxzbWdiX1M3Ky1MbCVhK1UtJmw="
+        ]
+      },
+      {
+        "id": "h3-027",
+        "values": [
+          "210.182.217.52",
+          "130.202.200.105",
+          "mkaya"
+        ]
+      },
+      {
+        "id": "h3-028",
+        "values": [
+          "miyer",
+          "Meera Iyer"
+        ]
+      },
+      {
+        "id": "h3-029",
+        "values": [
+          "sdelacroix",
+          "90.6.79.30",
+          "Summer Delacroix"
+        ]
+      },
+      {
+        "id": "h3-030",
+        "values": [
+          "Katarzyna Nowak",
+          "+49 170 3100374",
+          "Birkenstra\u00dfe 13, 30413 Dortmund"
+        ]
+      },
+      {
+        "id": "h3-031",
+        "values": [
+          "knowak",
+          "ESH&32f3qu0nL",
+          "193.123.144.16"
+        ]
+      },
+      {
+        "id": "h3-032",
+        "values": [
+          "csilveira"
+        ]
+      },
+      {
+        "id": "h3-033",
+        "values": [
+          "Yasmin Haddad"
+        ]
+      },
+      {
+        "id": "h3-034",
+        "values": [
+          "meera.iyer%40tideroot.com",
+          "91c4e1a93a189d005d0cfafeb78888832ff89446d83d469d",
+          "miyer"
+        ]
+      },
+      {
+        "id": "h3-035",
+        "values": [
+          "am1vcmVhdTpNMCsmNnpidk4lIWY=",
+          "Julien Moreau"
+        ]
+      },
+      {
+        "id": "h3-037",
+        "values": [
+          "Henrik Dahl",
+          "hdahl"
+        ]
+      },
+      {
+        "id": "h3-038",
+        "values": [
+          "tmoyo",
+          "89.236.250.209",
+          "jWeG8zXabFXLjM",
+          "Tendai Moyo"
+        ]
+      },
+      {
+        "id": "h3-039",
+        "values": [
+          "MRN-14326226",
+          "2000-10-11",
+          "+44 7700 900688",
+          "Zanele Dlamini"
+        ]
+      },
+      {
+        "id": "h3-040",
+        "values": [
+          "evance"
+        ]
+      },
+      {
+        "id": "h3-041",
+        "values": [
+          "Dmitri Volkov",
+          "1693 Dusk Meadow Dr, Marfa, MI 62367"
+        ]
+      },
+      {
+        "id": "h3-042",
+        "values": [
+          "Tendai Moyo",
+          "139 Hollow Brook Lane, Leeds LS9 7QZ",
+          "+44 7700 900233"
+        ]
+      },
+      {
+        "id": "h3-043",
+        "values": [
+          "Julien Moreau",
+          "1792 Pebble Root Ave, Bend, NY 51940"
+        ]
+      },
+      {
+        "id": "h3-044",
+        "values": [
+          "Mert",
+          "Kaya",
+          "1976-02-28",
+          "9693 Fern Gully Rd, Ithaca, OR 13117"
+        ]
+      },
+      {
+        "id": "h3-045",
+        "values": [
+          "Chlo\u00e9 Marchand",
+          "1995-07-22",
+          "1835 Tide Root Blvd, Ithaca, MI 21634",
+          "MRN-44216770"
+        ]
+      },
+      {
+        "id": "h3-046",
+        "values": [
+          "Henrik Dahl",
+          "MRN-07095844",
+          "+44 7700 900668"
+        ]
+      },
+      {
+        "id": "h3-047",
+        "values": [
+          "Julien Moreau",
+          "12/02/1958",
+          "\u3012174-7567 \u6771\u4eac\u90fd\u6e0b\u8c37\u533a\u795e\u5bae\u524d5-28-11"
+        ]
+      },
+      {
+        "id": "h3-048",
+        "values": [
+          "Freya Nilsen",
+          "13 Jan 1986",
+          "TXKB9HAAK",
+          "Birkenstra\u00dfe 116, 75923 Bremen",
+          "+49 170 9809552"
+        ]
+      },
+      {
+        "id": "h3-049",
+        "values": [
+          "Jos\u00e9-Mar\u00eda Delgado",
+          "Saoirse Brennan"
+        ]
+      },
+      {
+        "id": "h3-050",
+        "values": [
+          "Kenji Watanabe",
+          "TY865302D",
+          "Arjun Krishnan",
+          "NB232661C"
+        ]
+      },
+      {
+        "id": "h3-051",
+        "values": [
+          "Kenji Watanabe",
+          "899330029139",
+          "Zanele Dlamini"
+        ]
+      },
+      {
+        "id": "h3-052",
+        "values": [
+          "Katarzyna Nowak",
+          "70630180022",
+          "\u0141ukasz Wi\u015bniewski",
+          "299064411362629"
+        ]
+      },
+      {
+        "id": "h3-053",
+        "values": [
+          "Karim Adel",
+          "1 May 1983",
+          "3362 Bramble Court, Bend, MI 11694",
+          "kadel"
+        ]
+      },
+      {
+        "id": "h3-054",
+        "values": [
+          "\u0141ukasz Wi\u015bniewski",
+          "202833903",
+          "2002-02-08",
+          "+44 7700 900117",
+          "50 Wrenfield Terrace, Leeds S11 8NT"
+        ]
+      },
+      {
+        "id": "h3-055",
+        "values": [
+          "Sanjay Kulkarni",
+          "skulkarni"
+        ]
+      },
+      {
+        "id": "h3-056",
+        "values": [
+          "Jiwoo Park",
+          "02/04/1991",
+          "143 impasse des Roses, 27437 Dijon"
+        ]
+      },
+      {
+        "id": "h3-057",
+        "values": [
+          "Mert Kaya",
+          "658755519",
+          "09/22/1979"
+        ]
+      },
+      {
+        "id": "h3-058",
+        "values": [
+          "Fang Wang",
+          "+44 7700 900251",
+          "12 Bramble Close, Norwich S11 8NT"
+        ]
+      },
+      {
+        "id": "h3-059",
+        "values": [
+          "S\u00f8ren Kj\u00e6rgaard",
+          "1968-02-22",
+          "+49 170 3000742"
+        ]
+      },
+      {
+        "id": "h3-060",
+        "values": [
+          "Jos\u00e9-Mar\u00eda Delgado",
+          "+55 11 9 3271-3863",
+          "Rua do Orat\u00f3rio, 92, S\u00e3o Paulo - SP, 89337-600"
+        ]
+      },
+      {
+        "id": "h3-061",
+        "values": [
+          "Niamh Gallagher"
+        ]
+      },
+      {
+        "id": "h3-062",
+        "values": [
+          "Saoirse Brennan",
+          "sbrennan"
+        ]
+      },
+      {
+        "id": "h3-063",
+        "values": [
+          "f0b9f86e2a7df048e516d3268d6b318e0cf80fffb9ee7829",
+          "Karim Adel"
+        ]
+      },
+      {
+        "id": "h3-064",
+        "values": [
+          "Camila Silveira"
+        ]
+      },
+      {
+        "id": "h3-065",
+        "values": [
+          "zvanderberg",
+          "Zo\u00eb Van der Berg"
+        ]
+      },
+      {
+        "id": "h3-066",
+        "values": [
+          "zdlamini",
+          "37.241.149.45"
+        ]
+      },
+      {
+        "id": "h3-067",
+        "values": [
+          "Will Abernathy"
+        ]
+      },
+      {
+        "id": "h3-068",
+        "values": [
+          "ogrant",
+          "ywpM0#Xsv35A_96hHI-",
+          "of4^12D0R1XmS2xm8F",
+          "Oliver Grant"
+        ]
+      },
+      {
+        "id": "h3-070",
+        "values": [
+          "yyamada",
+          "EQL^IgDcgWrX9*MLV",
+          "136.73.190.175",
+          "146.110.131.160"
+        ]
+      },
+      {
+        "id": "h3-071",
+        "values": [
+          "jpark",
+          "aml3b28ucGFya0Bob2xsb3dicm9vay5kZXY=",
+          "Jiwoo Park"
+        ]
+      },
+      {
+        "id": "h3-072",
+        "values": [
+          "jmoreau",
+          "196.201.88.234"
+        ]
+      },
+      {
+        "id": "h3-073",
+        "values": [
+          "jpark"
+        ]
+      },
+      {
+        "id": "h3-074",
+        "values": [
+          "jQMhIKJNlyJl@u#Ulf",
+          "fwagner",
+          "Felix Wagner"
+        ]
+      },
+      {
+        "id": "h3-075",
+        "values": [
+          "Will Abernathy",
+          "1 Mar 1984",
+          "4811 Fern Gully Rd, Bend, AZ 78870"
+        ]
+      },
+      {
+        "id": "h3-076",
+        "values": [
+          "Yang Liu",
+          "9599 Pebble Root Ave, Flagstaff, OR 60203"
+        ]
+      },
+      {
+        "id": "h3-077",
+        "values": [
+          "Zo\u00eb Van der Berg",
+          "PU2FE1YY1",
+          "+49 170 0031060",
+          "Ahornweg 76, 10438 Bremen"
+        ]
+      },
+      {
+        "id": "h3-078",
+        "values": [
+          "Felix Wagner",
+          "18 May 1998",
+          "107 Fern Vale, Leeds BS4 3EH",
+          "+44 7700 900525"
+        ]
+      },
+      {
+        "id": "h3-079",
+        "values": [
+          "Julien Moreau",
+          "11/19/1977"
+        ]
+      },
+      {
+        "id": "h3-080",
+        "values": [
+          "Arjun Krishnan",
+          "1104 Dusk Meadow Dr, Bend, NC 49706"
+        ]
+      }
+    ],
+    "ms_per_item": 0.1
+  },
+  {
+    "adapter": "claude-code-redact (secrets)",
+    "items": 80,
+    "items_leaked": 79,
+    "values_total": 320,
+    "values_leaked": 277,
+    "blocked": 0,
+    "negatives": 40,
+    "false_alarms": 0,
+    "by_category": {
+      "github-actions-log": {
+        "items": 4,
+        "leaked": 4
+      },
+      "helm-values": {
+        "items": 4,
+        "leaked": 4
+      },
+      "ansible-inventory": {
+        "items": 4,
+        "leaked": 4
+      },
+      "env-production": {
+        "items": 4,
+        "leaked": 4
+      },
+      "gcp-service-account": {
+        "items": 4,
+        "leaked": 4
+      },
+      "azure-connection-string": {
+        "items": 4,
+        "leaked": 4
+      },
+      "kubectl-describe": {
+        "items": 4,
+        "leaked": 4
+      },
+      "syslog": {
+        "items": 4,
+        "leaked": 4
+      },
+      "browser-har": {
+        "items": 4,
+        "leaked": 3
+      },
+      "sentry-event": {
+        "items": 4,
+        "leaked": 4
+      },
+      "stripe-webhook": {
+        "items": 4,
+        "leaked": 4
+      },
+      "fhir-patient": {
+        "items": 4,
+        "leaked": 4
+      },
+      "payroll-csv": {
+        "items": 4,
+        "leaked": 4
+      },
+      "hr-onboarding": {
+        "items": 4,
+        "leaked": 4
+      },
+      "travel-booking": {
+        "items": 4,
+        "leaked": 4
+      },
+      "pr-review": {
+        "items": 4,
+        "leaked": 4
+      },
+      "mobile-crash": {
+        "items": 4,
+        "leaked": 4
+      },
+      "shell-history": {
+        "items": 3,
+        "leaked": 3
+      },
+      "windows-event": {
+        "items": 3,
+        "leaked": 3
+      },
+      "lease-agreement": {
+        "items": 3,
+        "leaked": 3
+      },
+      "court-filing": {
+        "items": 3,
+        "leaked": 3
+      },
+      "negative": {
+        "items": 40,
+        "leaked": 0
+      }
+    },
+    "leaks": [
+      {
+        "id": "h3-001",
+        "values": [
+          "VXaakbSzLm2krOG34OJgcaqpx9PsuTpSkdFDjKha",
+          "evance",
+          "eleanor.vance@pebbleroot.com"
+        ]
+      },
+      {
+        "id": "h3-002",
+        "values": [
+          "Layla Hassan",
+          "layla.hassan@grottolabs.dev",
+          "lhassan"
+        ]
+      },
+      {
+        "id": "h3-003",
+        "values": [
+          "ghp_NDlMVENBIYlzVhQW8w\\\n  5IItePPMPzgizeNGQV",
+          "189.190.39.193",
+          "sanjay.kulkarni@wrenfield.dev"
+        ]
+      },
+      {
+        "id": "h3-004",
+        "values": [
+          "a2FyaW0uYWRlbEBmZXJud2lzcC5pbw==",
+          "Karim Adel",
+          "kadel",
+          "karim.adel@fernwisp.io"
+        ]
+      },
+      {
+        "id": "h3-005",
+        "values": [
+          "jokonkwo",
+          "joy.okonkwo@grottolabs.dev"
+        ]
+      },
+      {
+        "id": "h3-006",
+        "values": [
+          "will.abernathy@hollowbrook.dev",
+          "Will Abernathy"
+        ]
+      },
+      {
+        "id": "h3-007",
+        "values": [
+          "Chiamaka Nwosu",
+          "chiamaka.nwosu@grottolabs.dev"
+        ]
+      },
+      {
+        "id": "h3-008",
+        "values": [
+          "Vikram Reddy",
+          "+1 (411) 555-0170"
+        ]
+      },
+      {
+        "id": "h3-009",
+        "values": [
+          "flevesque",
+          "francois.levesque@fernwisp.io"
+        ]
+      },
+      {
+        "id": "h3-010",
+        "values": [
+          "edemir",
+          "Elif Demir",
+          "elif.demir@fernwisp.io"
+        ]
+      },
+      {
+        "id": "h3-011",
+        "values": [
+          "Meera Iyer",
+          "meera.iyer@hollowbrook.dev",
+          "miyer"
+        ]
+      },
+      {
+        "id": "h3-012",
+        "values": [
+          "63.49.43.249",
+          "mkaya",
+          "mert.kaya@duskmeadow.dev"
+        ]
+      },
+      {
+        "id": "h3-013",
+        "values": [
+          "efua.mensah@duskmeadow.dev"
+        ]
+      },
+      {
+        "id": "h3-014",
+        "values": [
+          "Chlo\u00e9 Marchand"
+        ]
+      },
+      {
+        "id": "h3-015",
+        "values": [
+          "katarzyna.nowak@loonharbor.dev"
+        ]
+      },
+      {
+        "id": "h3-016",
+        "values": [
+          "hdahl",
+          "Henrik Dahl"
+        ]
+      },
+      {
+        "id": "h3-017",
+        "values": [
+          "tendai.moyo@wrenfield.dev"
+        ]
+      },
+      {
+        "id": "h3-018",
+        "values": [
+          "sanjay.kulkarni@mistvale.app",
+          "skulkarni",
+          "Sanjay Kulkarni"
+        ]
+      },
+      {
+        "id": "h3-019",
+        "values": [
+          "Efua Mensah",
+          "efua.mensah@hollowbrook.dev"
+        ]
+      },
+      {
+        "id": "h3-020",
+        "values": [
+          "efua.mensah@grottolabs.dev",
+          "Efua Mensah",
+          "emensah"
+        ]
+      },
+      {
+        "id": "h3-021",
+        "values": [
+          "Arjun Krishnan",
+          "arjun.krishnan@hollowbrook.dev"
+        ]
+      },
+      {
+        "id": "h3-022",
+        "values": [
+          "_+_7VQ6tCHpSHKiQ0",
+          "diego.fuentes@loonharbor.dev"
+        ]
+      },
+      {
+        "id": "h3-023",
+        "values": [
+          "edemir",
+          "Elif Demir"
+        ]
+      },
+      {
+        "id": "h3-024",
+        "values": [
+          "yuto.yamada@duskmeadow.dev",
+          "+1 (566) 555-0107"
+        ]
+      },
+      {
+        "id": "h3-025",
+        "values": [
+          "vikram.reddy@hollowbrook.dev"
+        ]
+      },
+      {
+        "id": "h3-026",
+        "values": [
+          "ZHJhZ2hhdmFuOkxzbWdiX1M3Ky1MbCVhK1UtJmw=",
+          "divya.raghavan@hollowbrook.dev"
+        ]
+      },
+      {
+        "id": "h3-027",
+        "values": [
+          "210.182.217.52",
+          "130.202.200.105",
+          "mkaya",
+          "mert.kaya@mossbank.app"
+        ]
+      },
+      {
+        "id": "h3-028",
+        "values": [
+          "miyer",
+          "meera.iyer@grottolabs.dev",
+          "Meera Iyer",
+          "+1 (839) 555-0109"
+        ]
+      },
+      {
+        "id": "h3-029",
+        "values": [
+          "sdelacroix",
+          "90.6.79.30",
+          "Summer Delacroix",
+          "summer.delacroix@mossbank.app"
+        ]
+      },
+      {
+        "id": "h3-030",
+        "values": [
+          "Katarzyna Nowak",
+          "katarzyna.nowak@wrenfield.dev",
+          "+49 170 3100374",
+          "Birkenstra\u00dfe 13, 30413 Dortmund"
+        ]
+      },
+      {
+        "id": "h3-031",
+        "values": [
+          "knowak",
+          "ESH&32f3qu0nL",
+          "193.123.144.16",
+          "katarzyna.nowak@fernwisp.io"
+        ]
+      },
+      {
+        "id": "h3-032",
+        "values": [
+          "csilveira"
+        ]
+      },
+      {
+        "id": "h3-033",
+        "values": [
+          "yasmin.haddad@mistvale.app",
+          "Yasmin Haddad"
+        ]
+      },
+      {
+        "id": "h3-034",
+        "values": [
+          "meera.iyer%40tideroot.com",
+          "91c4e1a93a189d005d0cfafeb78888832ff89446d83d469d",
+          "miyer"
+        ]
+      },
+      {
+        "id": "h3-035",
+        "values": [
+          "am1vcmVhdTpNMCsmNnpidk4lIWY=",
+          "Julien Moreau",
+          "+1 (315) 555-0120"
+        ]
+      },
+      {
+        "id": "h3-037",
+        "values": [
+          "henrik.dahl@hollowbrook.dev",
+          "Henrik Dahl",
+          "hdahl"
+        ]
+      },
+      {
+        "id": "h3-038",
+        "values": [
+          "tendai.moyo@pebbleroot.com",
+          "tmoyo",
+          "89.236.250.209",
+          "jWeG8zXabFXLjM",
+          "Tendai Moyo",
+          "+1 (917) 555-0194"
+        ]
+      },
+      {
+        "id": "h3-039",
+        "values": [
+          "MRN-14326226",
+          "zanele.dlamini@wrenfield.dev",
+          "2000-10-11",
+          "+44 7700 900688",
+          "Zanele Dlamini"
+        ]
+      },
+      {
+        "id": "h3-040",
+        "values": [
+          "evance",
+          "eleanor.vance@grottolabs.dev"
+        ]
+      },
+      {
+        "id": "h3-041",
+        "values": [
+          "dmitri.volkov@pebbleroot.com",
+          "Dmitri Volkov",
+          "+1 (349) 555-0106",
+          "1693 Dusk Meadow Dr, Marfa, MI 62367"
+        ]
+      },
+      {
+        "id": "h3-042",
+        "values": [
+          "tendai.moyo@slatefern.io",
+          "Tendai Moyo",
+          "139 Hollow Brook Lane, Leeds LS9 7QZ",
+          "+44 7700 900233"
+        ]
+      },
+      {
+        "id": "h3-043",
+        "values": [
+          "Julien Moreau",
+          "julien.moreau@tideroot.com",
+          "1792 Pebble Root Ave, Bend, NY 51940",
+          "+1 (157) 555-0197"
+        ]
+      },
+      {
+        "id": "h3-044",
+        "values": [
+          "mert.kaya@fernwisp.io",
+          "Mert",
+          "Kaya",
+          "1976-02-28",
+          "+1 (812) 555-0126",
+          "9693 Fern Gully Rd, Ithaca, OR 13117"
+        ]
+      },
+      {
+        "id": "h3-045",
+        "values": [
+          "Chlo\u00e9 Marchand",
+          "1995-07-22",
+          "+1 (338) 555-0182",
+          "chloe.marchand@pebbleroot.com",
+          "1835 Tide Root Blvd, Ithaca, MI 21634",
+          "MRN-44216770"
+        ]
+      },
+      {
+        "id": "h3-046",
+        "values": [
+          "Henrik Dahl",
+          "490-72-2634",
+          "MRN-07095844",
+          "henrik.dahl@hollowbrook.dev",
+          "+44 7700 900668"
+        ]
+      },
+      {
+        "id": "h3-047",
+        "values": [
+          "Julien Moreau",
+          "12/02/1958",
+          "+81 90-8844-7189",
+          "\u3012174-7567 \u6771\u4eac\u90fd\u6e0b\u8c37\u533a\u795e\u5bae\u524d5-28-11"
+        ]
+      },
+      {
+        "id": "h3-048",
+        "values": [
+          "Freya Nilsen",
+          "13 Jan 1986",
+          "TXKB9HAAK",
+          "Birkenstra\u00dfe 116, 75923 Bremen",
+          "+49 170 9809552"
+        ]
+      },
+      {
+        "id": "h3-049",
+        "values": [
+          "Jos\u00e9-Mar\u00eda Delgado",
+          "jose-maria.delgado@loonharbor.dev",
+          "123-37-5270",
+          "DE95375957363878667084",
+          "Saoirse Brennan",
+          "saoirse.brennan@mistvale.app",
+          "056-38-4864",
+          "GB38MPDB57067259204235"
+        ]
+      },
+      {
+        "id": "h3-050",
+        "values": [
+          "Kenji Watanabe",
+          "TY865302D",
+          "kenji.watanabe@slatefern.io",
+          "Arjun Krishnan",
+          "NB232661C",
+          "arjun.krishnan@fernwisp.io"
+        ]
+      },
+      {
+        "id": "h3-051",
+        "values": [
+          "Kenji Watanabe",
+          "899330029139",
+          "HBOHO2771L",
+          "kenji.watanabe@tideroot.com",
+          "Zanele Dlamini",
+          "860624705135",
+          "UNWLB6031T",
+          "zanele.dlamini@bramblekit.io"
+        ]
+      },
+      {
+        "id": "h3-052",
+        "values": [
+          "Katarzyna Nowak",
+          "70630180022",
+          "DE38416365198324751256",
+          "katarzyna.nowak@fernwisp.io",
+          "\u0141ukasz Wi\u015bniewski",
+          "299064411362629",
+          "FR4676103129732837225475584",
+          "lukasz.wisniewski@mistvale.app"
+        ]
+      },
+      {
+        "id": "h3-053",
+        "values": [
+          "Karim Adel",
+          "karim.adel@fernwisp.io",
+          "1 May 1983",
+          "+1 (956) 555-0178",
+          "3362 Bramble Court, Bend, MI 11694",
+          "kadel"
+        ]
+      },
+      {
+        "id": "h3-054",
+        "values": [
+          "\u0141ukasz Wi\u015bniewski",
+          "202833903",
+          "2002-02-08",
+          "+44 7700 900117",
+          "50 Wrenfield Terrace, Leeds S11 8NT",
+          "lukasz.wisniewski@wrenfield.dev"
+        ]
+      },
+      {
+        "id": "h3-055",
+        "values": [
+          "Sanjay Kulkarni",
+          "sanjay.kulkarni@fernwisp.io",
+          "471-38-8981",
+          "skulkarni"
+        ]
+      },
+      {
+        "id": "h3-056",
+        "values": [
+          "Jiwoo Park",
+          "jiwoo.park@tideroot.com",
+          "02/04/1991",
+          "+33 6 31 27 56 90",
+          "143 impasse des Roses, 27437 Dijon"
+        ]
+      },
+      {
+        "id": "h3-057",
+        "values": [
+          "Mert Kaya",
+          "mert.kaya@fernwisp.io",
+          "+1 (641) 555-0166",
+          "658755519",
+          "09/22/1979"
+        ]
+      },
+      {
+        "id": "h3-058",
+        "values": [
+          "Fang Wang",
+          "fang.wang@grottolabs.dev",
+          "+44 7700 900251",
+          "12 Bramble Close, Norwich S11 8NT",
+          "4785682587888643"
+        ]
+      },
+      {
+        "id": "h3-059",
+        "values": [
+          "S\u00f8ren Kj\u00e6rgaard",
+          "1968-02-22",
+          "soren.kjaergaard@tideroot.com",
+          "+49 170 3000742"
+        ]
+      },
+      {
+        "id": "h3-060",
+        "values": [
+          "Jos\u00e9-Mar\u00eda Delgado",
+          "jose-maria.delgado@duskmeadow.dev",
+          "+55 11 9 3271-3863",
+          "Rua do Orat\u00f3rio, 92, S\u00e3o Paulo - SP, 89337-600"
+        ]
+      },
+      {
+        "id": "h3-061",
+        "values": [
+          "Niamh Gallagher",
+          "niamh.gallagher@hollowbrook.dev"
+        ]
+      },
+      {
+        "id": "h3-062",
+        "values": [
+          "Saoirse Brennan",
+          "sbrennan",
+          "saoirse.brennan@duskmeadow.dev"
+        ]
+      },
+      {
+        "id": "h3-063",
+        "values": [
+          "f0b9f86e2a7df048e516d3268d6b318e0cf80fffb9ee7829",
+          "Karim Adel",
+          "karim.adel@bramblekit.io"
+        ]
+      },
+      {
+        "id": "h3-064",
+        "values": [
+          "Camila Silveira",
+          "camila.silveira@fernwisp.io"
+        ]
+      },
+      {
+        "id": "h3-065",
+        "values": [
+          "zvanderberg",
+          "Zo\u00eb Van der Berg",
+          "zoe.vanderberg@mistvale.app"
+        ]
+      },
+      {
+        "id": "h3-066",
+        "values": [
+          "zdlamini",
+          "37.241.149.45",
+          "zanele.dlamini@duskmeadow.dev"
+        ]
+      },
+      {
+        "id": "h3-067",
+        "values": [
+          "will.abernathy@duskmeadow.dev",
+          "Will Abernathy"
+        ]
+      },
+      {
+        "id": "h3-068",
+        "values": [
+          "ogrant",
+          "ywpM0#Xsv35A_96hHI-",
+          "oliver.grant@fernwisp.io",
+          "of4^12D0R1XmS2xm8F",
+          "Oliver Grant",
+          "+1 (313) 555-0104"
+        ]
+      },
+      {
+        "id": "h3-069",
+        "values": [
+          "jiwoo.park@grottolabs.dev"
+        ]
+      },
+      {
+        "id": "h3-070",
+        "values": [
+          "yyamada",
+          "EQL^IgDcgWrX9*MLV",
+          "136.73.190.175",
+          "146.110.131.160"
+        ]
+      },
+      {
+        "id": "h3-071",
+        "values": [
+          "jiwoo.park@hollowbrook.dev",
+          "jpark",
+          "aml3b28ucGFya0Bob2xsb3dicm9vay5kZXY=",
+          "Jiwoo Park"
+        ]
+      },
+      {
+        "id": "h3-072",
+        "values": [
+          "jmoreau",
+          "196.201.88.234"
+        ]
+      },
+      {
+        "id": "h3-073",
+        "values": [
+          "jpark",
+          "jiwoo.park@fernwisp.io"
+        ]
+      },
+      {
+        "id": "h3-074",
+        "values": [
+          "jQMhIKJNlyJl@u#Ulf",
+          "fwagner",
+          "Felix Wagner"
+        ]
+      },
+      {
+        "id": "h3-075",
+        "values": [
+          "Will Abernathy",
+          "1 Mar 1984",
+          "4811 Fern Gully Rd, Bend, AZ 78870",
+          "+1 (627) 555-0175",
+          "134-70-5061",
+          "will.abernathy@duskmeadow.dev"
+        ]
+      },
+      {
+        "id": "h3-076",
+        "values": [
+          "Yang Liu",
+          "yang.liu@grottolabs.dev",
+          "DE26291217643906704650",
+          "+1 (525) 555-0164",
+          "9599 Pebble Root Ave, Flagstaff, OR 60203"
+        ]
+      },
+      {
+        "id": "h3-077",
+        "values": [
+          "Zo\u00eb Van der Berg",
+          "PU2FE1YY1",
+          "+49 170 0031060",
+          "Ahornweg 76, 10438 Bremen",
+          "zoe.vanderberg@grottolabs.dev"
+        ]
+      },
+      {
+        "id": "h3-078",
+        "values": [
+          "Felix Wagner",
+          "18 May 1998",
+          "107 Fern Vale, Leeds BS4 3EH",
+          "+44 7700 900525",
+          "felix.wagner@grottolabs.dev"
+        ]
+      },
+      {
+        "id": "h3-079",
+        "values": [
+          "Julien Moreau",
+          "+1 (217) 555-0139",
+          "julien.moreau@fernwisp.io",
+          "11/19/1977"
+        ]
+      },
+      {
+        "id": "h3-080",
+        "values": [
+          "Arjun Krishnan",
+          "arjun.krishnan@mistvale.app",
+          "1104 Dusk Meadow Dr, Bend, NC 49706"
+        ]
+      }
+    ],
+    "ms_per_item": 0.1
+  },
+  {
+    "adapter": "cloakroom full",
+    "items": 80,
+    "items_leaked": 15,
+    "values_total": 320,
+    "values_leaked": 15,
+    "blocked": 0,
+    "negatives": 40,
+    "false_alarms": 12,
+    "by_category": {
+      "github-actions-log": {
+        "items": 4,
+        "leaked": 0
+      },
+      "helm-values": {
+        "items": 4,
+        "leaked": 1
+      },
+      "ansible-inventory": {
+        "items": 4,
+        "leaked": 0
+      },
+      "env-production": {
+        "items": 4,
+        "leaked": 0
+      },
+      "gcp-service-account": {
+        "items": 4,
+        "leaked": 0
+      },
+      "azure-connection-string": {
+        "items": 4,
+        "leaked": 1
+      },
+      "kubectl-describe": {
+        "items": 4,
+        "leaked": 1
+      },
+      "syslog": {
+        "items": 4,
+        "leaked": 0
+      },
+      "browser-har": {
+        "items": 4,
+        "leaked": 1
+      },
+      "sentry-event": {
+        "items": 4,
+        "leaked": 1
+      },
+      "stripe-webhook": {
+        "items": 4,
+        "leaked": 3
+      },
+      "fhir-patient": {
+        "items": 4,
+        "leaked": 1
+      },
+      "payroll-csv": {
+        "items": 4,
+        "leaked": 0
+      },
+      "hr-onboarding": {
+        "items": 4,
+        "leaked": 1
+      },
+      "travel-booking": {
+        "items": 4,
+        "leaked": 1
+      },
+      "pr-review": {
+        "items": 4,
+        "leaked": 0
+      },
+      "mobile-crash": {
+        "items": 4,
+        "leaked": 1
+      },
+      "shell-history": {
+        "items": 3,
+        "leaked": 0
+      },
+      "windows-event": {
+        "items": 3,
+        "leaked": 0
+      },
+      "lease-agreement": {
+        "items": 3,
+        "leaked": 2
+      },
+      "court-filing": {
+        "items": 3,
+        "leaked": 1
+      },
+      "negative": {
+        "items": 40,
+        "leaked": 12
+      }
+    },
+    "leaks": [
+      {
+        "id": "h3-008",
+        "values": [
+          "+1 (411) 555-0170"
+        ]
+      },
+      {
+        "id": "h3-024",
+        "values": [
+          "+1 (566) 555-0107"
+        ]
+      },
+      {
+        "id": "h3-028",
+        "values": [
+          "+1 (839) 555-0109"
+        ]
+      },
+      {
+        "id": "h3-035",
+        "values": [
+          "+1 (315) 555-0120"
+        ]
+      },
+      {
+        "id": "h3-038",
+        "values": [
+          "+1 (917) 555-0194"
+        ]
+      },
+      {
+        "id": "h3-041",
+        "values": [
+          "+1 (349) 555-0106"
+        ]
+      },
+      {
+        "id": "h3-043",
+        "values": [
+          "+1 (157) 555-0197"
+        ]
+      },
+      {
+        "id": "h3-044",
+        "values": [
+          "+1 (812) 555-0126"
+        ]
+      },
+      {
+        "id": "h3-045",
+        "values": [
+          "+1 (338) 555-0182"
+        ]
+      },
+      {
+        "id": "h3-053",
+        "values": [
+          "+1 (956) 555-0178"
+        ]
+      },
+      {
+        "id": "h3-057",
+        "values": [
+          "+1 (641) 555-0166"
+        ]
+      },
+      {
+        "id": "h3-068",
+        "values": [
+          "+1 (313) 555-0104"
+        ]
+      },
+      {
+        "id": "h3-075",
+        "values": [
+          "+1 (627) 555-0175"
+        ]
+      },
+      {
+        "id": "h3-076",
+        "values": [
+          "+1 (525) 555-0164"
+        ]
+      },
+      {
+        "id": "h3-079",
+        "values": [
+          "+1 (217) 555-0139"
+        ]
+      }
+    ],
+    "ms_per_item": 66.1
+  },
+  {
+    "adapter": "cloakroom rules",
+    "items": 80,
+    "items_leaked": 64,
+    "values_total": 320,
+    "values_leaked": 138,
+    "blocked": 0,
+    "negatives": 40,
+    "false_alarms": 3,
+    "by_category": {
+      "github-actions-log": {
+        "items": 4,
+        "leaked": 4
+      },
+      "helm-values": {
+        "items": 4,
+        "leaked": 3
+      },
+      "ansible-inventory": {
+        "items": 4,
+        "leaked": 3
+      },
+      "env-production": {
+        "items": 4,
+        "leaked": 2
+      },
+      "gcp-service-account": {
+        "items": 4,
+        "leaked": 3
+      },
+      "azure-connection-string": {
+        "items": 4,
+        "leaked": 3
+      },
+      "kubectl-describe": {
+        "items": 4,
+        "leaked": 3
+      },
+      "syslog": {
+        "items": 4,
+        "leaked": 3
+      },
+      "browser-har": {
+        "items": 4,
+        "leaked": 3
+      },
+      "sentry-event": {
+        "items": 4,
+        "leaked": 3
+      },
+      "stripe-webhook": {
+        "items": 4,
+        "leaked": 4
+      },
+      "fhir-patient": {
+        "items": 4,
+        "leaked": 4
+      },
+      "payroll-csv": {
+        "items": 4,
+        "leaked": 3
+      },
+      "hr-onboarding": {
+        "items": 4,
+        "leaked": 3
+      },
+      "travel-booking": {
+        "items": 4,
+        "leaked": 4
+      },
+      "pr-review": {
+        "items": 4,
+        "leaked": 3
+      },
+      "mobile-crash": {
+        "items": 4,
+        "leaked": 4
+      },
+      "shell-history": {
+        "items": 3,
+        "leaked": 2
+      },
+      "windows-event": {
+        "items": 3,
+        "leaked": 2
+      },
+      "lease-agreement": {
+        "items": 3,
+        "leaked": 3
+      },
+      "court-filing": {
+        "items": 3,
+        "leaked": 2
+      },
+      "negative": {
+        "items": 40,
+        "leaked": 3
+      }
+    },
+    "leaks": [
+      {
+        "id": "h3-001",
+        "values": [
+          "VXaakbSzLm2krOG34OJgcaqpx9PsuTpSkdFDjKha"
+        ]
+      },
+      {
+        "id": "h3-002",
+        "values": [
+          "Layla Hassan",
+          "lhassan"
+        ]
+      },
+      {
+        "id": "h3-003",
+        "values": [
+          "189.190.39.193"
+        ]
+      },
+      {
+        "id": "h3-004",
+        "values": [
+          "a2FyaW0uYWRlbEBmZXJud2lzcC5pbw==",
+          "kadel"
+        ]
+      },
+      {
+        "id": "h3-005",
+        "values": [
+          "jokonkwo"
+        ]
+      },
+      {
+        "id": "h3-007",
+        "values": [
+          "Chiamaka Nwosu"
+        ]
+      },
+      {
+        "id": "h3-008",
+        "values": [
+          "IxSjrjyhWZFIbbEvt5UCj74XmX9JiADnHSqGO5BG2t2G1rTfXL15glBrLyPJNGAbGaVMW13LqR4SWLvNaKd5YQ==",
+          "+1 (411) 555-0170"
+        ]
+      },
+      {
+        "id": "h3-009",
+        "values": [
+          "flevesque"
+        ]
+      },
+      {
+        "id": "h3-011",
+        "values": [
+          "miyer"
+        ]
+      },
+      {
+        "id": "h3-012",
+        "values": [
+          "63.49.43.249",
+          "mkaya"
+        ]
+      },
+      {
+        "id": "h3-014",
+        "values": [
+          "Chlo\u00e9 Marchand"
+        ]
+      },
+      {
+        "id": "h3-016",
+        "values": [
+          "hdahl",
+          "Henrik Dahl"
+        ]
+      },
+      {
+        "id": "h3-018",
+        "values": [
+          "skulkarni",
+          "Sanjay Kulkarni"
+        ]
+      },
+      {
+        "id": "h3-019",
+        "values": [
+          "Efua Mensah"
+        ]
+      },
+      {
+        "id": "h3-020",
+        "values": [
+          "emensah"
+        ]
+      },
+      {
+        "id": "h3-021",
+        "values": [
+          "Xn7wSIUloB8L3ghMVgC62wk8TTfMn0ryfCy+KC8Keho5H2N6FbIi3JSVHrwDudcdZwJ29zNBaAcm8lsqZLgVmQ=="
+        ]
+      },
+      {
+        "id": "h3-023",
+        "values": [
+          "edemir",
+          "Elif Demir"
+        ]
+      },
+      {
+        "id": "h3-024",
+        "values": [
+          "zY5CJasg0bOZFRfsm2bcnmXV1Ub6Fj2htWBN7H2fpLXsd9tGrc0zDnmcnas/rrZ6EHYBDodx97STtICoS6dh1g==",
+          "+1 (566) 555-0107"
+        ]
+      },
+      {
+        "id": "h3-026",
+        "values": [
+          "ZHJhZ2hhdmFuOkxzbWdiX1M3Ky1MbCVhK1UtJmw="
+        ]
+      },
+      {
+        "id": "h3-027",
+        "values": [
+          "210.182.217.52",
+          "130.202.200.105",
+          "mkaya"
+        ]
+      },
+      {
+        "id": "h3-028",
+        "values": [
+          "Meera Iyer",
+          "+1 (839) 555-0109"
+        ]
+      },
+      {
+        "id": "h3-029",
+        "values": [
+          "sdelacroix",
+          "90.6.79.30",
+          "Summer Delacroix"
+        ]
+      },
+      {
+        "id": "h3-030",
+        "values": [
+          "+49 170 3100374",
+          "Birkenstra\u00dfe 13, 30413 Dortmund"
+        ]
+      },
+      {
+        "id": "h3-031",
+        "values": [
+          "knowak",
+          "ESH&32f3qu0nL",
+          "193.123.144.16"
+        ]
+      },
+      {
+        "id": "h3-033",
+        "values": [
+          "Yasmin Haddad"
+        ]
+      },
+      {
+        "id": "h3-034",
+        "values": [
+          "meera.iyer%40tideroot.com",
+          "91c4e1a93a189d005d0cfafeb78888832ff89446d83d469d",
+          "miyer"
+        ]
+      },
+      {
+        "id": "h3-035",
+        "values": [
+          "am1vcmVhdTpNMCsmNnpidk4lIWY=",
+          "Julien Moreau",
+          "+1 (315) 555-0120"
+        ]
+      },
+      {
+        "id": "h3-038",
+        "values": [
+          "tmoyo",
+          "89.236.250.209",
+          "jWeG8zXabFXLjM",
+          "Tendai Moyo",
+          "+1 (917) 555-0194"
+        ]
+      },
+      {
+        "id": "h3-039",
+        "values": [
+          "MRN-14326226",
+          "+44 7700 900688"
+        ]
+      },
+      {
+        "id": "h3-040",
+        "values": [
+          "evance"
+        ]
+      },
+      {
+        "id": "h3-041",
+        "values": [
+          "+1 (349) 555-0106"
+        ]
+      },
+      {
+        "id": "h3-042",
+        "values": [
+          "Tendai Moyo",
+          "+44 7700 900233"
+        ]
+      },
+      {
+        "id": "h3-043",
+        "values": [
+          "Julien Moreau",
+          "+1 (157) 555-0197"
+        ]
+      },
+      {
+        "id": "h3-044",
+        "values": [
+          "Mert",
+          "Kaya",
+          "+1 (812) 555-0126"
+        ]
+      },
+      {
+        "id": "h3-045",
+        "values": [
+          "Chlo\u00e9 Marchand",
+          "+1 (338) 555-0182",
+          "MRN-44216770"
+        ]
+      },
+      {
+        "id": "h3-046",
+        "values": [
+          "Henrik Dahl",
+          "MRN-07095844",
+          "+44 7700 900668"
+        ]
+      },
+      {
+        "id": "h3-047",
+        "values": [
+          "Julien Moreau",
+          "+81 90-8844-7189",
+          "\u3012174-7567 \u6771\u4eac\u90fd\u6e0b\u8c37\u533a\u795e\u5bae\u524d5-28-11"
+        ]
+      },
+      {
+        "id": "h3-048",
+        "values": [
+          "Freya Nilsen",
+          "TXKB9HAAK",
+          "Birkenstra\u00dfe 116, 75923 Bremen",
+          "+49 170 9809552"
+        ]
+      },
+      {
+        "id": "h3-050",
+        "values": [
+          "Kenji Watanabe",
+          "TY865302D",
+          "Arjun Krishnan",
+          "NB232661C"
+        ]
+      },
+      {
+        "id": "h3-051",
+        "values": [
+          "Kenji Watanabe",
+          "899330029139",
+          "HBOHO2771L",
+          "Zanele Dlamini",
+          "860624705135",
+          "UNWLB6031T"
+        ]
+      },
+      {
+        "id": "h3-052",
+        "values": [
+          "70630180022",
+          "299064411362629"
+        ]
+      },
+      {
+        "id": "h3-053",
+        "values": [
+          "+1 (956) 555-0178",
+          "kadel"
+        ]
+      },
+      {
+        "id": "h3-054",
+        "values": [
+          "\u0141ukasz Wi\u015bniewski",
+          "+44 7700 900117"
+        ]
+      },
+      {
+        "id": "h3-056",
+        "values": [
+          "02/04/1991",
+          "+33 6 31 27 56 90",
+          "143 impasse des Roses, 27437 Dijon"
+        ]
+      },
+      {
+        "id": "h3-057",
+        "values": [
+          "+1 (641) 555-0166"
+        ]
+      },
+      {
+        "id": "h3-058",
+        "values": [
+          "Fang Wang",
+          "+44 7700 900251",
+          "12 Bramble Close, Norwich S11 8NT"
+        ]
+      },
+      {
+        "id": "h3-059",
+        "values": [
+          "S\u00f8ren Kj\u00e6rgaard",
+          "+49 170 3000742"
+        ]
+      },
+      {
+        "id": "h3-060",
+        "values": [
+          "+55 11 9 3271-3863",
+          "Rua do Orat\u00f3rio, 92, S\u00e3o Paulo - SP, 89337-600"
+        ]
+      },
+      {
+        "id": "h3-062",
+        "values": [
+          "Saoirse Brennan",
+          "sbrennan"
+        ]
+      },
+      {
+        "id": "h3-063",
+        "values": [
+          "f0b9f86e2a7df048e516d3268d6b318e0cf80fffb9ee7829"
+        ]
+      },
+      {
+        "id": "h3-064",
+        "values": [
+          "Camila Silveira"
+        ]
+      },
+      {
+        "id": "h3-065",
+        "values": [
+          "Zo\u00eb Van der Berg"
+        ]
+      },
+      {
+        "id": "h3-066",
+        "values": [
+          "zdlamini",
+          "37.241.149.45"
+        ]
+      },
+      {
+        "id": "h3-067",
+        "values": [
+          "Will Abernathy"
+        ]
+      },
+      {
+        "id": "h3-068",
+        "values": [
+          "ogrant",
+          "ywpM0#Xsv35A_96hHI-",
+          "of4^12D0R1XmS2xm8F",
+          "+1 (313) 555-0104"
+        ]
+      },
+      {
+        "id": "h3-070",
+        "values": [
+          "EQL^IgDcgWrX9*MLV",
+          "136.73.190.175",
+          "146.110.131.160"
+        ]
+      },
+      {
+        "id": "h3-071",
+        "values": [
+          "aml3b28ucGFya0Bob2xsb3dicm9vay5kZXY=",
+          "Jiwoo Park"
+        ]
+      },
+      {
+        "id": "h3-072",
+        "values": [
+          "jmoreau",
+          "196.201.88.234"
+        ]
+      },
+      {
+        "id": "h3-074",
+        "values": [
+          "jQMhIKJNlyJl@u#Ulf",
+          "fwagner",
+          "Felix Wagner"
+        ]
+      },
+      {
+        "id": "h3-075",
+        "values": [
+          "Will Abernathy",
+          "+1 (627) 555-0175"
+        ]
+      },
+      {
+        "id": "h3-076",
+        "values": [
+          "+1 (525) 555-0164"
+        ]
+      },
+      {
+        "id": "h3-077",
+        "values": [
+          "Zo\u00eb Van der Berg",
+          "PU2FE1YY1",
+          "+49 170 0031060",
+          "Ahornweg 76, 10438 Bremen"
+        ]
+      },
+      {
+        "id": "h3-078",
+        "values": [
+          "Felix Wagner",
+          "107 Fern Vale, Leeds BS4 3EH",
+          "+44 7700 900525"
+        ]
+      },
+      {
+        "id": "h3-079",
+        "values": [
+          "Julien Moreau",
+          "+1 (217) 555-0139",
+          "11/19/1977"
+        ]
+      }
+    ],
+    "ms_per_item": 0.1
+  },
+  {
+    "adapter": "maisecrets",
+    "items": 80,
+    "items_leaked": 74,
+    "values_total": 320,
+    "values_leaked": 154,
+    "blocked": 0,
+    "negatives": 40,
+    "false_alarms": 2,
+    "by_category": {
+      "github-actions-log": {
+        "items": 4,
+        "leaked": 3
+      },
+      "helm-values": {
+        "items": 4,
+        "leaked": 4
+      },
+      "ansible-inventory": {
+        "items": 4,
+        "leaked": 4
+      },
+      "env-production": {
+        "items": 4,
+        "leaked": 4
+      },
+      "gcp-service-account": {
+        "items": 4,
+        "leaked": 3
+      },
+      "azure-connection-string": {
+        "items": 4,
+        "leaked": 3
+      },
+      "kubectl-describe": {
+        "items": 4,
+        "leaked": 3
+      },
+      "syslog": {
+        "items": 4,
+        "leaked": 4
+      },
+      "browser-har": {
+        "items": 4,
+        "leaked": 3
+      },
+      "sentry-event": {
+        "items": 4,
+        "leaked": 4
+      },
+      "stripe-webhook": {
+        "items": 4,
+        "leaked": 4
+      },
+      "fhir-patient": {
+        "items": 4,
+        "leaked": 4
+      },
+      "payroll-csv": {
+        "items": 4,
+        "leaked": 4
+      },
+      "hr-onboarding": {
+        "items": 4,
+        "leaked": 4
+      },
+      "travel-booking": {
+        "items": 4,
+        "leaked": 4
+      },
+      "pr-review": {
+        "items": 4,
+        "leaked": 4
+      },
+      "mobile-crash": {
+        "items": 4,
+        "leaked": 4
+      },
+      "shell-history": {
+        "items": 3,
+        "leaked": 2
+      },
+      "windows-event": {
+        "items": 3,
+        "leaked": 3
+      },
+      "lease-agreement": {
+        "items": 3,
+        "leaked": 3
+      },
+      "court-filing": {
+        "items": 3,
+        "leaked": 3
+      },
+      "negative": {
+        "items": 40,
+        "leaked": 2
+      }
+    },
+    "leaks": [
+      {
+        "id": "h3-001",
+        "values": [
+          "VXaakbSzLm2krOG34OJgcaqpx9PsuTpSkdFDjKha",
+          "evance"
+        ]
+      },
+      {
+        "id": "h3-002",
+        "values": [
+          "Layla Hassan",
+          "lhassan"
+        ]
+      },
+      {
+        "id": "h3-004",
+        "values": [
+          "a2FyaW0uYWRlbEBmZXJud2lzcC5pbw==",
+          "Karim Adel",
+          "kadel"
+        ]
+      },
+      {
+        "id": "h3-005",
+        "values": [
+          "jokonkwo"
+        ]
+      },
+      {
+        "id": "h3-006",
+        "values": [
+          "Will Abernathy"
+        ]
+      },
+      {
+        "id": "h3-007",
+        "values": [
+          "Chiamaka Nwosu"
+        ]
+      },
+      {
+        "id": "h3-008",
+        "values": [
+          "Vikram Reddy"
+        ]
+      },
+      {
+        "id": "h3-009",
+        "values": [
+          "flevesque"
+        ]
+      },
+      {
+        "id": "h3-010",
+        "values": [
+          "edemir",
+          "Elif Demir"
+        ]
+      },
+      {
+        "id": "h3-011",
+        "values": [
+          "Meera Iyer",
+          "miyer"
+        ]
+      },
+      {
+        "id": "h3-012",
+        "values": [
+          "mkaya"
+        ]
+      },
+      {
+        "id": "h3-013",
+        "values": [
+          "emensah"
+        ]
+      },
+      {
+        "id": "h3-014",
+        "values": [
+          "Chlo\u00e9 Marchand"
+        ]
+      },
+      {
+        "id": "h3-015",
+        "values": [
+          "knowak"
+        ]
+      },
+      {
+        "id": "h3-016",
+        "values": [
+          "hdahl",
+          "Henrik Dahl"
+        ]
+      },
+      {
+        "id": "h3-018",
+        "values": [
+          "skulkarni",
+          "Sanjay Kulkarni"
+        ]
+      },
+      {
+        "id": "h3-019",
+        "values": [
+          "Efua Mensah"
+        ]
+      },
+      {
+        "id": "h3-020",
+        "values": [
+          "Efua Mensah",
+          "emensah"
+        ]
+      },
+      {
+        "id": "h3-021",
+        "values": [
+          "Arjun Krishnan"
+        ]
+      },
+      {
+        "id": "h3-022",
+        "values": [
+          "_+_7VQ6tCHpSHKiQ0"
+        ]
+      },
+      {
+        "id": "h3-023",
+        "values": [
+          "edemir",
+          "Elif Demir"
+        ]
+      },
+      {
+        "id": "h3-026",
+        "values": [
+          "ZHJhZ2hhdmFuOkxzbWdiX1M3Ky1MbCVhK1UtJmw="
+        ]
+      },
+      {
+        "id": "h3-027",
+        "values": [
+          "mkaya"
+        ]
+      },
+      {
+        "id": "h3-028",
+        "values": [
+          "miyer",
+          "Meera Iyer"
+        ]
+      },
+      {
+        "id": "h3-029",
+        "values": [
+          "sdelacroix",
+          "Summer Delacroix"
+        ]
+      },
+      {
+        "id": "h3-030",
+        "values": [
+          "Katarzyna Nowak",
+          "Birkenstra\u00dfe 13, 30413 Dortmund"
+        ]
+      },
+      {
+        "id": "h3-031",
+        "values": [
+          "knowak",
+          "ESH&32f3qu0nL"
+        ]
+      },
+      {
+        "id": "h3-032",
+        "values": [
+          "csilveira"
+        ]
+      },
+      {
+        "id": "h3-033",
+        "values": [
+          "Yasmin Haddad"
+        ]
+      },
+      {
+        "id": "h3-034",
+        "values": [
+          "meera.iyer%40tideroot.com",
+          "91c4e1a93a189d005d0cfafeb78888832ff89446d83d469d",
+          "miyer"
+        ]
+      },
+      {
+        "id": "h3-035",
+        "values": [
+          "Julien Moreau"
+        ]
+      },
+      {
+        "id": "h3-037",
+        "values": [
+          "Henrik Dahl",
+          "hdahl"
+        ]
+      },
+      {
+        "id": "h3-038",
+        "values": [
+          "tmoyo",
+          "jWeG8zXabFXLjM",
+          "Tendai Moyo"
+        ]
+      },
+      {
+        "id": "h3-039",
+        "values": [
+          "MRN-14326226",
+          "2000-10-11",
+          "Zanele Dlamini"
+        ]
+      },
+      {
+        "id": "h3-040",
+        "values": [
+          "evance"
+        ]
+      },
+      {
+        "id": "h3-041",
+        "values": [
+          "Dmitri Volkov",
+          "1693 Dusk Meadow Dr, Marfa, MI 62367"
+        ]
+      },
+      {
+        "id": "h3-042",
+        "values": [
+          "Tendai Moyo",
+          "139 Hollow Brook Lane, Leeds LS9 7QZ"
+        ]
+      },
+      {
+        "id": "h3-043",
+        "values": [
+          "Julien Moreau",
+          "1792 Pebble Root Ave, Bend, NY 51940"
+        ]
+      },
+      {
+        "id": "h3-044",
+        "values": [
+          "Mert",
+          "Kaya",
+          "1976-02-28",
+          "9693 Fern Gully Rd, Ithaca, OR 13117"
+        ]
+      },
+      {
+        "id": "h3-045",
+        "values": [
+          "Chlo\u00e9 Marchand",
+          "1995-07-22",
+          "1835 Tide Root Blvd, Ithaca, MI 21634",
+          "MRN-44216770"
+        ]
+      },
+      {
+        "id": "h3-046",
+        "values": [
+          "Henrik Dahl",
+          "MRN-07095844"
+        ]
+      },
+      {
+        "id": "h3-047",
+        "values": [
+          "Julien Moreau",
+          "12/02/1958",
+          "\u3012174-7567 \u6771\u4eac\u90fd\u6e0b\u8c37\u533a\u795e\u5bae\u524d5-28-11"
+        ]
+      },
+      {
+        "id": "h3-048",
+        "values": [
+          "Freya Nilsen",
+          "13 Jan 1986",
+          "TXKB9HAAK",
+          "Birkenstra\u00dfe 116, 75923 Bremen"
+        ]
+      },
+      {
+        "id": "h3-049",
+        "values": [
+          "Jos\u00e9-Mar\u00eda Delgado",
+          "Saoirse Brennan"
+        ]
+      },
+      {
+        "id": "h3-050",
+        "values": [
+          "Kenji Watanabe",
+          "TY865302D",
+          "Arjun Krishnan",
+          "NB232661C"
+        ]
+      },
+      {
+        "id": "h3-051",
+        "values": [
+          "Kenji Watanabe",
+          "899330029139",
+          "HBOHO2771L",
+          "Zanele Dlamini",
+          "860624705135",
+          "UNWLB6031T"
+        ]
+      },
+      {
+        "id": "h3-052",
+        "values": [
+          "Katarzyna Nowak",
+          "70630180022",
+          "\u0141ukasz Wi\u015bniewski",
+          "299064411362629"
+        ]
+      },
+      {
+        "id": "h3-053",
+        "values": [
+          "Karim Adel",
+          "1 May 1983",
+          "3362 Bramble Court, Bend, MI 11694",
+          "kadel"
+        ]
+      },
+      {
+        "id": "h3-054",
+        "values": [
+          "\u0141ukasz Wi\u015bniewski",
+          "2002-02-08",
+          "50 Wrenfield Terrace, Leeds S11 8NT"
+        ]
+      },
+      {
+        "id": "h3-055",
+        "values": [
+          "Sanjay Kulkarni",
+          "skulkarni"
+        ]
+      },
+      {
+        "id": "h3-056",
+        "values": [
+          "Jiwoo Park",
+          "02/04/1991",
+          "143 impasse des Roses, 27437 Dijon"
+        ]
+      },
+      {
+        "id": "h3-057",
+        "values": [
+          "Mert Kaya",
+          "09/22/1979"
+        ]
+      },
+      {
+        "id": "h3-058",
+        "values": [
+          "Fang Wang",
+          "12 Bramble Close, Norwich S11 8NT"
+        ]
+      },
+      {
+        "id": "h3-059",
+        "values": [
+          "S\u00f8ren Kj\u00e6rgaard",
+          "1968-02-22"
+        ]
+      },
+      {
+        "id": "h3-060",
+        "values": [
+          "+55 11 9 3271-3863",
+          "Rua do Orat\u00f3rio, 92, S\u00e3o Paulo - SP, 89337-600"
+        ]
+      },
+      {
+        "id": "h3-061",
+        "values": [
+          "Niamh Gallagher"
+        ]
+      },
+      {
+        "id": "h3-062",
+        "values": [
+          "Saoirse Brennan",
+          "sbrennan"
+        ]
+      },
+      {
+        "id": "h3-063",
+        "values": [
+          "f0b9f86e2a7df048e516d3268d6b318e0cf80fffb9ee7829",
+          "Karim Adel"
+        ]
+      },
+      {
+        "id": "h3-064",
+        "values": [
+          "Camila Silveira"
+        ]
+      },
+      {
+        "id": "h3-065",
+        "values": [
+          "zvanderberg",
+          "Zo\u00eb Van der Berg"
+        ]
+      },
+      {
+        "id": "h3-066",
+        "values": [
+          "zdlamini"
+        ]
+      },
+      {
+        "id": "h3-067",
+        "values": [
+          "Will Abernathy"
+        ]
+      },
+      {
+        "id": "h3-068",
+        "values": [
+          "ogrant",
+          "ywpM0#Xsv35A_96hHI-",
+          "of4^12D0R1XmS2xm8F",
+          "Oliver Grant"
+        ]
+      },
+      {
+        "id": "h3-070",
+        "values": [
+          "yyamada",
+          "EQL^IgDcgWrX9*MLV"
+        ]
+      },
+      {
+        "id": "h3-071",
+        "values": [
+          "jpark",
+          "aml3b28ucGFya0Bob2xsb3dicm9vay5kZXY=",
+          "Jiwoo Park"
+        ]
+      },
+      {
+        "id": "h3-072",
+        "values": [
+          "jmoreau"
+        ]
+      },
+      {
+        "id": "h3-073",
+        "values": [
+          "jpark"
+        ]
+      },
+      {
+        "id": "h3-074",
+        "values": [
+          "jQMhIKJNlyJl@u#Ulf",
+          "fwagner",
+          "Felix Wagner"
+        ]
+      },
+      {
+        "id": "h3-075",
+        "values": [
+          "Will Abernathy",
+          "1 Mar 1984",
+          "4811 Fern Gully Rd, Bend, AZ 78870"
+        ]
+      },
+      {
+        "id": "h3-076",
+        "values": [
+          "Yang Liu",
+          "9599 Pebble Root Ave, Flagstaff, OR 60203"
+        ]
+      },
+      {
+        "id": "h3-077",
+        "values": [
+          "Zo\u00eb Van der Berg",
+          "PU2FE1YY1",
+          "Ahornweg 76, 10438 Bremen"
+        ]
+      },
+      {
+        "id": "h3-078",
+        "values": [
+          "Felix Wagner",
+          "18 May 1998",
+          "107 Fern Vale, Leeds BS4 3EH"
+        ]
+      },
+      {
+        "id": "h3-079",
+        "values": [
+          "Julien Moreau",
+          "11/19/1977"
+        ]
+      },
+      {
+        "id": "h3-080",
+        "values": [
+          "Arjun Krishnan",
+          "1104 Dusk Meadow Dr, Bend, NC 49706"
+        ]
+      }
+    ],
+    "ms_per_item": 0.4
+  },
+  {
+    "adapter": "redact-hook (default)",
+    "items": 80,
+    "items_leaked": 79,
+    "values_total": 320,
+    "values_leaked": 253,
+    "blocked": 0,
+    "negatives": 40,
+    "false_alarms": 4,
+    "by_category": {
+      "github-actions-log": {
+        "items": 4,
+        "leaked": 4
+      },
+      "helm-values": {
+        "items": 4,
+        "leaked": 4
+      },
+      "ansible-inventory": {
+        "items": 4,
+        "leaked": 4
+      },
+      "env-production": {
+        "items": 4,
+        "leaked": 4
+      },
+      "gcp-service-account": {
+        "items": 4,
+        "leaked": 4
+      },
+      "azure-connection-string": {
+        "items": 4,
+        "leaked": 4
+      },
+      "kubectl-describe": {
+        "items": 4,
+        "leaked": 4
+      },
+      "syslog": {
+        "items": 4,
+        "leaked": 4
+      },
+      "browser-har": {
+        "items": 4,
+        "leaked": 3
+      },
+      "sentry-event": {
+        "items": 4,
+        "leaked": 4
+      },
+      "stripe-webhook": {
+        "items": 4,
+        "leaked": 4
+      },
+      "fhir-patient": {
+        "items": 4,
+        "leaked": 4
+      },
+      "payroll-csv": {
+        "items": 4,
+        "leaked": 4
+      },
+      "hr-onboarding": {
+        "items": 4,
+        "leaked": 4
+      },
+      "travel-booking": {
+        "items": 4,
+        "leaked": 4
+      },
+      "pr-review": {
+        "items": 4,
+        "leaked": 4
+      },
+      "mobile-crash": {
+        "items": 4,
+        "leaked": 4
+      },
+      "shell-history": {
+        "items": 3,
+        "leaked": 3
+      },
+      "windows-event": {
+        "items": 3,
+        "leaked": 3
+      },
+      "lease-agreement": {
+        "items": 3,
+        "leaked": 3
+      },
+      "court-filing": {
+        "items": 3,
+        "leaked": 3
+      },
+      "negative": {
+        "items": 40,
+        "leaked": 4
+      }
+    },
+    "leaks": [
+      {
+        "id": "h3-001",
+        "values": [
+          "VXaakbSzLm2krOG34OJgcaqpx9PsuTpSkdFDjKha",
+          "evance",
+          "eleanor.vance@pebbleroot.com"
+        ]
+      },
+      {
+        "id": "h3-002",
+        "values": [
+          "Layla Hassan",
+          "layla.hassan@grottolabs.dev",
+          "lhassan"
+        ]
+      },
+      {
+        "id": "h3-003",
+        "values": [
+          "189.190.39.193",
+          "sanjay.kulkarni@wrenfield.dev"
+        ]
+      },
+      {
+        "id": "h3-004",
+        "values": [
+          "a2FyaW0uYWRlbEBmZXJud2lzcC5pbw==",
+          "Karim Adel",
+          "kadel",
+          "karim.adel@fernwisp.io"
+        ]
+      },
+      {
+        "id": "h3-005",
+        "values": [
+          "jokonkwo",
+          "1eb5fcd75e73c300ea64f9ff5e523397820edaf0c6ea55b9",
+          "joy.okonkwo@grottolabs.dev"
+        ]
+      },
+      {
+        "id": "h3-006",
+        "values": [
+          "will.abernathy@hollowbrook.dev",
+          "Will Abernathy"
+        ]
+      },
+      {
+        "id": "h3-007",
+        "values": [
+          "Chiamaka Nwosu",
+          "chiamaka.nwosu@grottolabs.dev"
+        ]
+      },
+      {
+        "id": "h3-008",
+        "values": [
+          "IxSjrjyhWZFIbbEvt5UCj74XmX9JiADnHSqGO5BG2t2G1rTfXL15glBrLyPJNGAbGaVMW13LqR4SWLvNaKd5YQ==",
+          "Vikram Reddy"
+        ]
+      },
+      {
+        "id": "h3-009",
+        "values": [
+          "flevesque",
+          "LD_&rgoXpUyw-L",
+          "francois.levesque@fernwisp.io"
+        ]
+      },
+      {
+        "id": "h3-010",
+        "values": [
+          "edemir",
+          "Elif Demir",
+          "elif.demir@fernwisp.io"
+        ]
+      },
+      {
+        "id": "h3-011",
+        "values": [
+          "Meera Iyer",
+          "meera.iyer@hollowbrook.dev",
+          "miyer",
+          "B#EBy9Wcrdpffo4rRME"
+        ]
+      },
+      {
+        "id": "h3-012",
+        "values": [
+          "63.49.43.249",
+          "mkaya",
+          "mert.kaya@duskmeadow.dev"
+        ]
+      },
+      {
+        "id": "h3-013",
+        "values": [
+          "emensah",
+          "efua.mensah@duskmeadow.dev"
+        ]
+      },
+      {
+        "id": "h3-014",
+        "values": [
+          "Chlo\u00e9 Marchand"
+        ]
+      },
+      {
+        "id": "h3-015",
+        "values": [
+          "knowak",
+          "katarzyna.nowak@loonharbor.dev"
+        ]
+      },
+      {
+        "id": "h3-016",
+        "values": [
+          "hdahl",
+          "Henrik Dahl"
+        ]
+      },
+      {
+        "id": "h3-017",
+        "values": [
+          "tendai.moyo@wrenfield.dev"
+        ]
+      },
+      {
+        "id": "h3-018",
+        "values": [
+          "sanjay.kulkarni@mistvale.app",
+          "skulkarni",
+          "Sanjay Kulkarni"
+        ]
+      },
+      {
+        "id": "h3-019",
+        "values": [
+          "Efua Mensah",
+          "efua.mensah@hollowbrook.dev"
+        ]
+      },
+      {
+        "id": "h3-020",
+        "values": [
+          "efua.mensah@grottolabs.dev",
+          "Efua Mensah",
+          "emensah"
+        ]
+      },
+      {
+        "id": "h3-021",
+        "values": [
+          "Arjun Krishnan",
+          "arjun.krishnan@hollowbrook.dev"
+        ]
+      },
+      {
+        "id": "h3-022",
+        "values": [
+          "_+_7VQ6tCHpSHKiQ0",
+          "diego.fuentes@loonharbor.dev"
+        ]
+      },
+      {
+        "id": "h3-023",
+        "values": [
+          "edemir",
+          "Elif Demir"
+        ]
+      },
+      {
+        "id": "h3-024",
+        "values": [
+          "yuto.yamada@duskmeadow.dev"
+        ]
+      },
+      {
+        "id": "h3-025",
+        "values": [
+          "vikram.reddy@hollowbrook.dev"
+        ]
+      },
+      {
+        "id": "h3-026",
+        "values": [
+          "ZHJhZ2hhdmFuOkxzbWdiX1M3Ky1MbCVhK1UtJmw=",
+          "divya.raghavan@hollowbrook.dev"
+        ]
+      },
+      {
+        "id": "h3-027",
+        "values": [
+          "210.182.217.52",
+          "130.202.200.105",
+          "mkaya",
+          "mert.kaya@mossbank.app"
+        ]
+      },
+      {
+        "id": "h3-028",
+        "values": [
+          "miyer",
+          "meera.iyer@grottolabs.dev",
+          "Meera Iyer"
+        ]
+      },
+      {
+        "id": "h3-029",
+        "values": [
+          "sdelacroix",
+          "90.6.79.30",
+          "Summer Delacroix",
+          "summer.delacroix@mossbank.app"
+        ]
+      },
+      {
+        "id": "h3-030",
+        "values": [
+          "Katarzyna Nowak",
+          "katarzyna.nowak@wrenfield.dev",
+          "Birkenstra\u00dfe 13, 30413 Dortmund"
+        ]
+      },
+      {
+        "id": "h3-031",
+        "values": [
+          "knowak",
+          "193.123.144.16",
+          "katarzyna.nowak@fernwisp.io"
+        ]
+      },
+      {
+        "id": "h3-032",
+        "values": [
+          "csilveira"
+        ]
+      },
+      {
+        "id": "h3-033",
+        "values": [
+          "yasmin.haddad@mistvale.app",
+          "Yasmin Haddad"
+        ]
+      },
+      {
+        "id": "h3-034",
+        "values": [
+          "meera.iyer%40tideroot.com",
+          "91c4e1a93a189d005d0cfafeb78888832ff89446d83d469d",
+          "miyer"
+        ]
+      },
+      {
+        "id": "h3-035",
+        "values": [
+          "am1vcmVhdTpNMCsmNnpidk4lIWY=",
+          "Julien Moreau"
+        ]
+      },
+      {
+        "id": "h3-037",
+        "values": [
+          "henrik.dahl@hollowbrook.dev",
+          "Henrik Dahl",
+          "hdahl"
+        ]
+      },
+      {
+        "id": "h3-038",
+        "values": [
+          "tendai.moyo@pebbleroot.com",
+          "tmoyo",
+          "89.236.250.209",
+          "jWeG8zXabFXLjM",
+          "Tendai Moyo"
+        ]
+      },
+      {
+        "id": "h3-039",
+        "values": [
+          "MRN-14326226",
+          "zanele.dlamini@wrenfield.dev",
+          "2000-10-11",
+          "Zanele Dlamini"
+        ]
+      },
+      {
+        "id": "h3-040",
+        "values": [
+          "evance",
+          "eleanor.vance@grottolabs.dev"
+        ]
+      },
+      {
+        "id": "h3-041",
+        "values": [
+          "dmitri.volkov@pebbleroot.com",
+          "Dmitri Volkov",
+          "1693 Dusk Meadow Dr, Marfa, MI 62367"
+        ]
+      },
+      {
+        "id": "h3-042",
+        "values": [
+          "tendai.moyo@slatefern.io",
+          "Tendai Moyo",
+          "139 Hollow Brook Lane, Leeds LS9 7QZ"
+        ]
+      },
+      {
+        "id": "h3-043",
+        "values": [
+          "Julien Moreau",
+          "julien.moreau@tideroot.com",
+          "1792 Pebble Root Ave, Bend, NY 51940"
+        ]
+      },
+      {
+        "id": "h3-044",
+        "values": [
+          "mert.kaya@fernwisp.io",
+          "Mert",
+          "Kaya",
+          "1976-02-28",
+          "9693 Fern Gully Rd, Ithaca, OR 13117"
+        ]
+      },
+      {
+        "id": "h3-045",
+        "values": [
+          "Chlo\u00e9 Marchand",
+          "1995-07-22",
+          "chloe.marchand@pebbleroot.com",
+          "1835 Tide Root Blvd, Ithaca, MI 21634",
+          "MRN-44216770"
+        ]
+      },
+      {
+        "id": "h3-046",
+        "values": [
+          "Henrik Dahl",
+          "490-72-2634",
+          "MRN-07095844",
+          "henrik.dahl@hollowbrook.dev"
+        ]
+      },
+      {
+        "id": "h3-047",
+        "values": [
+          "Julien Moreau",
+          "12/02/1958",
+          "\u3012174-7567 \u6771\u4eac\u90fd\u6e0b\u8c37\u533a\u795e\u5bae\u524d5-28-11"
+        ]
+      },
+      {
+        "id": "h3-048",
+        "values": [
+          "Freya Nilsen",
+          "13 Jan 1986",
+          "TXKB9HAAK",
+          "Birkenstra\u00dfe 116, 75923 Bremen"
+        ]
+      },
+      {
+        "id": "h3-049",
+        "values": [
+          "Jos\u00e9-Mar\u00eda Delgado",
+          "jose-maria.delgado@loonharbor.dev",
+          "123-37-5270",
+          "DE95375957363878667084",
+          "Saoirse Brennan",
+          "saoirse.brennan@mistvale.app",
+          "056-38-4864",
+          "GB38MPDB57067259204235"
+        ]
+      },
+      {
+        "id": "h3-050",
+        "values": [
+          "Kenji Watanabe",
+          "TY865302D",
+          "kenji.watanabe@slatefern.io",
+          "Arjun Krishnan",
+          "NB232661C",
+          "arjun.krishnan@fernwisp.io"
+        ]
+      },
+      {
+        "id": "h3-051",
+        "values": [
+          "Kenji Watanabe",
+          "899330029139",
+          "HBOHO2771L",
+          "kenji.watanabe@tideroot.com",
+          "Zanele Dlamini",
+          "860624705135",
+          "UNWLB6031T",
+          "zanele.dlamini@bramblekit.io"
+        ]
+      },
+      {
+        "id": "h3-052",
+        "values": [
+          "Katarzyna Nowak",
+          "70630180022",
+          "DE38416365198324751256",
+          "katarzyna.nowak@fernwisp.io",
+          "\u0141ukasz Wi\u015bniewski",
+          "299064411362629",
+          "FR4676103129732837225475584",
+          "lukasz.wisniewski@mistvale.app"
+        ]
+      },
+      {
+        "id": "h3-053",
+        "values": [
+          "Karim Adel",
+          "karim.adel@fernwisp.io",
+          "1 May 1983",
+          "3362 Bramble Court, Bend, MI 11694",
+          "kadel"
+        ]
+      },
+      {
+        "id": "h3-054",
+        "values": [
+          "\u0141ukasz Wi\u015bniewski",
+          "202833903",
+          "2002-02-08",
+          "50 Wrenfield Terrace, Leeds S11 8NT",
+          "lukasz.wisniewski@wrenfield.dev"
+        ]
+      },
+      {
+        "id": "h3-055",
+        "values": [
+          "Sanjay Kulkarni",
+          "sanjay.kulkarni@fernwisp.io",
+          "471-38-8981",
+          "skulkarni",
+          "eC$h2sM=0Mhr#Hk"
+        ]
+      },
+      {
+        "id": "h3-056",
+        "values": [
+          "Jiwoo Park",
+          "jiwoo.park@tideroot.com",
+          "02/04/1991",
+          "143 impasse des Roses, 27437 Dijon"
+        ]
+      },
+      {
+        "id": "h3-057",
+        "values": [
+          "Mert Kaya",
+          "mert.kaya@fernwisp.io",
+          "658755519",
+          "09/22/1979"
+        ]
+      },
+      {
+        "id": "h3-058",
+        "values": [
+          "Fang Wang",
+          "fang.wang@grottolabs.dev",
+          "12 Bramble Close, Norwich S11 8NT"
+        ]
+      },
+      {
+        "id": "h3-059",
+        "values": [
+          "S\u00f8ren Kj\u00e6rgaard",
+          "1968-02-22",
+          "soren.kjaergaard@tideroot.com"
+        ]
+      },
+      {
+        "id": "h3-060",
+        "values": [
+          "Jos\u00e9-Mar\u00eda Delgado",
+          "jose-maria.delgado@duskmeadow.dev",
+          "Rua do Orat\u00f3rio, 92, S\u00e3o Paulo - SP, 89337-600"
+        ]
+      },
+      {
+        "id": "h3-061",
+        "values": [
+          "Niamh Gallagher",
+          "niamh.gallagher@hollowbrook.dev"
+        ]
+      },
+      {
+        "id": "h3-062",
+        "values": [
+          "Saoirse Brennan",
+          "WKfFcAOuH&Zd",
+          "sbrennan",
+          "saoirse.brennan@duskmeadow.dev"
+        ]
+      },
+      {
+        "id": "h3-063",
+        "values": [
+          "f0b9f86e2a7df048e516d3268d6b318e0cf80fffb9ee7829",
+          "Karim Adel",
+          "karim.adel@bramblekit.io"
+        ]
+      },
+      {
+        "id": "h3-064",
+        "values": [
+          "Camila Silveira",
+          "camila.silveira@fernwisp.io"
+        ]
+      },
+      {
+        "id": "h3-065",
+        "values": [
+          "zvanderberg",
+          "Zo\u00eb Van der Berg",
+          "zoe.vanderberg@mistvale.app"
+        ]
+      },
+      {
+        "id": "h3-066",
+        "values": [
+          "zdlamini",
+          "37.241.149.45",
+          "zanele.dlamini@duskmeadow.dev"
+        ]
+      },
+      {
+        "id": "h3-067",
+        "values": [
+          "will.abernathy@duskmeadow.dev",
+          "Will Abernathy"
+        ]
+      },
+      {
+        "id": "h3-068",
+        "values": [
+          "ogrant",
+          "ywpM0#Xsv35A_96hHI-",
+          "oliver.grant@fernwisp.io",
+          "of4^12D0R1XmS2xm8F",
+          "Oliver Grant"
+        ]
+      },
+      {
+        "id": "h3-069",
+        "values": [
+          "jiwoo.park@grottolabs.dev"
+        ]
+      },
+      {
+        "id": "h3-070",
+        "values": [
+          "yyamada",
+          "EQL^IgDcgWrX9*MLV",
+          "136.73.190.175",
+          "146.110.131.160"
+        ]
+      },
+      {
+        "id": "h3-071",
+        "values": [
+          "jiwoo.park@hollowbrook.dev",
+          "jpark",
+          "aml3b28ucGFya0Bob2xsb3dicm9vay5kZXY=",
+          "Jiwoo Park"
+        ]
+      },
+      {
+        "id": "h3-072",
+        "values": [
+          "jmoreau",
+          "196.201.88.234"
+        ]
+      },
+      {
+        "id": "h3-073",
+        "values": [
+          "jpark",
+          "jiwoo.park@fernwisp.io"
+        ]
+      },
+      {
+        "id": "h3-074",
+        "values": [
+          "fwagner",
+          "Felix Wagner"
+        ]
+      },
+      {
+        "id": "h3-075",
+        "values": [
+          "Will Abernathy",
+          "1 Mar 1984",
+          "4811 Fern Gully Rd, Bend, AZ 78870",
+          "134-70-5061",
+          "will.abernathy@duskmeadow.dev"
+        ]
+      },
+      {
+        "id": "h3-076",
+        "values": [
+          "Yang Liu",
+          "yang.liu@grottolabs.dev",
+          "DE26291217643906704650",
+          "9599 Pebble Root Ave, Flagstaff, OR 60203"
+        ]
+      },
+      {
+        "id": "h3-077",
+        "values": [
+          "Zo\u00eb Van der Berg",
+          "PU2FE1YY1",
+          "Ahornweg 76, 10438 Bremen",
+          "zoe.vanderberg@grottolabs.dev"
+        ]
+      },
+      {
+        "id": "h3-078",
+        "values": [
+          "Felix Wagner",
+          "18 May 1998",
+          "107 Fern Vale, Leeds BS4 3EH",
+          "felix.wagner@grottolabs.dev"
+        ]
+      },
+      {
+        "id": "h3-079",
+        "values": [
+          "Julien Moreau",
+          "julien.moreau@fernwisp.io",
+          "11/19/1977"
+        ]
+      },
+      {
+        "id": "h3-080",
+        "values": [
+          "Arjun Krishnan",
+          "arjun.krishnan@mistvale.app",
+          "1104 Dusk Meadow Dr, Bend, NC 49706"
+        ]
+      }
+    ],
+    "ms_per_item": 0.0
+  },
+  {
+    "adapter": "redact-hook (aggressive)",
+    "items": 80,
+    "items_leaked": 79,
+    "values_total": 320,
+    "values_leaked": 248,
+    "blocked": 0,
+    "negatives": 40,
+    "false_alarms": 5,
+    "by_category": {
+      "github-actions-log": {
+        "items": 4,
+        "leaked": 4
+      },
+      "helm-values": {
+        "items": 4,
+        "leaked": 4
+      },
+      "ansible-inventory": {
+        "items": 4,
+        "leaked": 4
+      },
+      "env-production": {
+        "items": 4,
+        "leaked": 4
+      },
+      "gcp-service-account": {
+        "items": 4,
+        "leaked": 4
+      },
+      "azure-connection-string": {
+        "items": 4,
+        "leaked": 4
+      },
+      "kubectl-describe": {
+        "items": 4,
+        "leaked": 4
+      },
+      "syslog": {
+        "items": 4,
+        "leaked": 4
+      },
+      "browser-har": {
+        "items": 4,
+        "leaked": 3
+      },
+      "sentry-event": {
+        "items": 4,
+        "leaked": 4
+      },
+      "stripe-webhook": {
+        "items": 4,
+        "leaked": 4
+      },
+      "fhir-patient": {
+        "items": 4,
+        "leaked": 4
+      },
+      "payroll-csv": {
+        "items": 4,
+        "leaked": 4
+      },
+      "hr-onboarding": {
+        "items": 4,
+        "leaked": 4
+      },
+      "travel-booking": {
+        "items": 4,
+        "leaked": 4
+      },
+      "pr-review": {
+        "items": 4,
+        "leaked": 4
+      },
+      "mobile-crash": {
+        "items": 4,
+        "leaked": 4
+      },
+      "shell-history": {
+        "items": 3,
+        "leaked": 3
+      },
+      "windows-event": {
+        "items": 3,
+        "leaked": 3
+      },
+      "lease-agreement": {
+        "items": 3,
+        "leaked": 3
+      },
+      "court-filing": {
+        "items": 3,
+        "leaked": 3
+      },
+      "negative": {
+        "items": 40,
+        "leaked": 5
+      }
+    },
+    "leaks": [
+      {
+        "id": "h3-001",
+        "values": [
+          "evance",
+          "eleanor.vance@pebbleroot.com"
+        ]
+      },
+      {
+        "id": "h3-002",
+        "values": [
+          "Layla Hassan",
+          "layla.hassan@grottolabs.dev",
+          "lhassan"
+        ]
+      },
+      {
+        "id": "h3-003",
+        "values": [
+          "189.190.39.193",
+          "sanjay.kulkarni@wrenfield.dev"
+        ]
+      },
+      {
+        "id": "h3-004",
+        "values": [
+          "a2FyaW0uYWRlbEBmZXJud2lzcC5pbw==",
+          "Karim Adel",
+          "kadel",
+          "karim.adel@fernwisp.io"
+        ]
+      },
+      {
+        "id": "h3-005",
+        "values": [
+          "jokonkwo",
+          "1eb5fcd75e73c300ea64f9ff5e523397820edaf0c6ea55b9",
+          "joy.okonkwo@grottolabs.dev"
+        ]
+      },
+      {
+        "id": "h3-006",
+        "values": [
+          "will.abernathy@hollowbrook.dev",
+          "Will Abernathy"
+        ]
+      },
+      {
+        "id": "h3-007",
+        "values": [
+          "Chiamaka Nwosu",
+          "chiamaka.nwosu@grottolabs.dev"
+        ]
+      },
+      {
+        "id": "h3-008",
+        "values": [
+          "Vikram Reddy"
+        ]
+      },
+      {
+        "id": "h3-009",
+        "values": [
+          "flevesque",
+          "LD_&rgoXpUyw-L",
+          "francois.levesque@fernwisp.io"
+        ]
+      },
+      {
+        "id": "h3-010",
+        "values": [
+          "edemir",
+          "Elif Demir",
+          "elif.demir@fernwisp.io"
+        ]
+      },
+      {
+        "id": "h3-011",
+        "values": [
+          "Meera Iyer",
+          "meera.iyer@hollowbrook.dev",
+          "miyer",
+          "B#EBy9Wcrdpffo4rRME"
+        ]
+      },
+      {
+        "id": "h3-012",
+        "values": [
+          "63.49.43.249",
+          "mkaya",
+          "mert.kaya@duskmeadow.dev"
+        ]
+      },
+      {
+        "id": "h3-013",
+        "values": [
+          "emensah",
+          "efua.mensah@duskmeadow.dev"
+        ]
+      },
+      {
+        "id": "h3-014",
+        "values": [
+          "Chlo\u00e9 Marchand"
+        ]
+      },
+      {
+        "id": "h3-015",
+        "values": [
+          "knowak",
+          "katarzyna.nowak@loonharbor.dev"
+        ]
+      },
+      {
+        "id": "h3-016",
+        "values": [
+          "hdahl",
+          "Henrik Dahl"
+        ]
+      },
+      {
+        "id": "h3-017",
+        "values": [
+          "tendai.moyo@wrenfield.dev"
+        ]
+      },
+      {
+        "id": "h3-018",
+        "values": [
+          "sanjay.kulkarni@mistvale.app",
+          "skulkarni",
+          "Sanjay Kulkarni"
+        ]
+      },
+      {
+        "id": "h3-019",
+        "values": [
+          "Efua Mensah",
+          "efua.mensah@hollowbrook.dev"
+        ]
+      },
+      {
+        "id": "h3-020",
+        "values": [
+          "efua.mensah@grottolabs.dev",
+          "Efua Mensah",
+          "emensah"
+        ]
+      },
+      {
+        "id": "h3-021",
+        "values": [
+          "Arjun Krishnan",
+          "arjun.krishnan@hollowbrook.dev"
+        ]
+      },
+      {
+        "id": "h3-022",
+        "values": [
+          "diego.fuentes@loonharbor.dev"
+        ]
+      },
+      {
+        "id": "h3-023",
+        "values": [
+          "edemir",
+          "Elif Demir"
+        ]
+      },
+      {
+        "id": "h3-024",
+        "values": [
+          "yuto.yamada@duskmeadow.dev"
+        ]
+      },
+      {
+        "id": "h3-025",
+        "values": [
+          "vikram.reddy@hollowbrook.dev"
+        ]
+      },
+      {
+        "id": "h3-026",
+        "values": [
+          "divya.raghavan@hollowbrook.dev"
+        ]
+      },
+      {
+        "id": "h3-027",
+        "values": [
+          "210.182.217.52",
+          "130.202.200.105",
+          "mkaya",
+          "mert.kaya@mossbank.app"
+        ]
+      },
+      {
+        "id": "h3-028",
+        "values": [
+          "miyer",
+          "meera.iyer@grottolabs.dev",
+          "Meera Iyer"
+        ]
+      },
+      {
+        "id": "h3-029",
+        "values": [
+          "sdelacroix",
+          "90.6.79.30",
+          "Summer Delacroix",
+          "summer.delacroix@mossbank.app"
+        ]
+      },
+      {
+        "id": "h3-030",
+        "values": [
+          "Katarzyna Nowak",
+          "katarzyna.nowak@wrenfield.dev",
+          "Birkenstra\u00dfe 13, 30413 Dortmund"
+        ]
+      },
+      {
+        "id": "h3-031",
+        "values": [
+          "knowak",
+          "193.123.144.16",
+          "katarzyna.nowak@fernwisp.io"
+        ]
+      },
+      {
+        "id": "h3-032",
+        "values": [
+          "csilveira"
+        ]
+      },
+      {
+        "id": "h3-033",
+        "values": [
+          "yasmin.haddad@mistvale.app",
+          "Yasmin Haddad"
+        ]
+      },
+      {
+        "id": "h3-034",
+        "values": [
+          "meera.iyer%40tideroot.com",
+          "91c4e1a93a189d005d0cfafeb78888832ff89446d83d469d",
+          "miyer"
+        ]
+      },
+      {
+        "id": "h3-035",
+        "values": [
+          "am1vcmVhdTpNMCsmNnpidk4lIWY=",
+          "Julien Moreau"
+        ]
+      },
+      {
+        "id": "h3-037",
+        "values": [
+          "henrik.dahl@hollowbrook.dev",
+          "Henrik Dahl",
+          "hdahl"
+        ]
+      },
+      {
+        "id": "h3-038",
+        "values": [
+          "tendai.moyo@pebbleroot.com",
+          "tmoyo",
+          "89.236.250.209",
+          "jWeG8zXabFXLjM",
+          "Tendai Moyo"
+        ]
+      },
+      {
+        "id": "h3-039",
+        "values": [
+          "MRN-14326226",
+          "zanele.dlamini@wrenfield.dev",
+          "2000-10-11",
+          "Zanele Dlamini"
+        ]
+      },
+      {
+        "id": "h3-040",
+        "values": [
+          "evance",
+          "eleanor.vance@grottolabs.dev"
+        ]
+      },
+      {
+        "id": "h3-041",
+        "values": [
+          "dmitri.volkov@pebbleroot.com",
+          "Dmitri Volkov",
+          "1693 Dusk Meadow Dr, Marfa, MI 62367"
+        ]
+      },
+      {
+        "id": "h3-042",
+        "values": [
+          "tendai.moyo@slatefern.io",
+          "Tendai Moyo",
+          "139 Hollow Brook Lane, Leeds LS9 7QZ"
+        ]
+      },
+      {
+        "id": "h3-043",
+        "values": [
+          "Julien Moreau",
+          "julien.moreau@tideroot.com",
+          "1792 Pebble Root Ave, Bend, NY 51940"
+        ]
+      },
+      {
+        "id": "h3-044",
+        "values": [
+          "mert.kaya@fernwisp.io",
+          "Mert",
+          "Kaya",
+          "1976-02-28",
+          "9693 Fern Gully Rd, Ithaca, OR 13117"
+        ]
+      },
+      {
+        "id": "h3-045",
+        "values": [
+          "Chlo\u00e9 Marchand",
+          "1995-07-22",
+          "chloe.marchand@pebbleroot.com",
+          "1835 Tide Root Blvd, Ithaca, MI 21634",
+          "MRN-44216770"
+        ]
+      },
+      {
+        "id": "h3-046",
+        "values": [
+          "Henrik Dahl",
+          "490-72-2634",
+          "MRN-07095844",
+          "henrik.dahl@hollowbrook.dev"
+        ]
+      },
+      {
+        "id": "h3-047",
+        "values": [
+          "Julien Moreau",
+          "12/02/1958",
+          "\u3012174-7567 \u6771\u4eac\u90fd\u6e0b\u8c37\u533a\u795e\u5bae\u524d5-28-11"
+        ]
+      },
+      {
+        "id": "h3-048",
+        "values": [
+          "Freya Nilsen",
+          "13 Jan 1986",
+          "TXKB9HAAK",
+          "Birkenstra\u00dfe 116, 75923 Bremen"
+        ]
+      },
+      {
+        "id": "h3-049",
+        "values": [
+          "Jos\u00e9-Mar\u00eda Delgado",
+          "jose-maria.delgado@loonharbor.dev",
+          "123-37-5270",
+          "DE95375957363878667084",
+          "Saoirse Brennan",
+          "saoirse.brennan@mistvale.app",
+          "056-38-4864",
+          "GB38MPDB57067259204235"
+        ]
+      },
+      {
+        "id": "h3-050",
+        "values": [
+          "Kenji Watanabe",
+          "TY865302D",
+          "kenji.watanabe@slatefern.io",
+          "Arjun Krishnan",
+          "NB232661C",
+          "arjun.krishnan@fernwisp.io"
+        ]
+      },
+      {
+        "id": "h3-051",
+        "values": [
+          "Kenji Watanabe",
+          "899330029139",
+          "HBOHO2771L",
+          "kenji.watanabe@tideroot.com",
+          "Zanele Dlamini",
+          "860624705135",
+          "UNWLB6031T",
+          "zanele.dlamini@bramblekit.io"
+        ]
+      },
+      {
+        "id": "h3-052",
+        "values": [
+          "Katarzyna Nowak",
+          "70630180022",
+          "DE38416365198324751256",
+          "katarzyna.nowak@fernwisp.io",
+          "\u0141ukasz Wi\u015bniewski",
+          "299064411362629",
+          "FR4676103129732837225475584",
+          "lukasz.wisniewski@mistvale.app"
+        ]
+      },
+      {
+        "id": "h3-053",
+        "values": [
+          "Karim Adel",
+          "karim.adel@fernwisp.io",
+          "1 May 1983",
+          "3362 Bramble Court, Bend, MI 11694",
+          "kadel"
+        ]
+      },
+      {
+        "id": "h3-054",
+        "values": [
+          "\u0141ukasz Wi\u015bniewski",
+          "202833903",
+          "2002-02-08",
+          "50 Wrenfield Terrace, Leeds S11 8NT",
+          "lukasz.wisniewski@wrenfield.dev"
+        ]
+      },
+      {
+        "id": "h3-055",
+        "values": [
+          "Sanjay Kulkarni",
+          "sanjay.kulkarni@fernwisp.io",
+          "471-38-8981",
+          "skulkarni",
+          "eC$h2sM=0Mhr#Hk"
+        ]
+      },
+      {
+        "id": "h3-056",
+        "values": [
+          "Jiwoo Park",
+          "jiwoo.park@tideroot.com",
+          "02/04/1991",
+          "143 impasse des Roses, 27437 Dijon"
+        ]
+      },
+      {
+        "id": "h3-057",
+        "values": [
+          "Mert Kaya",
+          "mert.kaya@fernwisp.io",
+          "658755519",
+          "09/22/1979"
+        ]
+      },
+      {
+        "id": "h3-058",
+        "values": [
+          "Fang Wang",
+          "fang.wang@grottolabs.dev",
+          "12 Bramble Close, Norwich S11 8NT"
+        ]
+      },
+      {
+        "id": "h3-059",
+        "values": [
+          "S\u00f8ren Kj\u00e6rgaard",
+          "1968-02-22",
+          "soren.kjaergaard@tideroot.com"
+        ]
+      },
+      {
+        "id": "h3-060",
+        "values": [
+          "Jos\u00e9-Mar\u00eda Delgado",
+          "jose-maria.delgado@duskmeadow.dev",
+          "Rua do Orat\u00f3rio, 92, S\u00e3o Paulo - SP, 89337-600"
+        ]
+      },
+      {
+        "id": "h3-061",
+        "values": [
+          "Niamh Gallagher",
+          "niamh.gallagher@hollowbrook.dev"
+        ]
+      },
+      {
+        "id": "h3-062",
+        "values": [
+          "Saoirse Brennan",
+          "WKfFcAOuH&Zd",
+          "sbrennan",
+          "saoirse.brennan@duskmeadow.dev"
+        ]
+      },
+      {
+        "id": "h3-063",
+        "values": [
+          "f0b9f86e2a7df048e516d3268d6b318e0cf80fffb9ee7829",
+          "Karim Adel",
+          "karim.adel@bramblekit.io"
+        ]
+      },
+      {
+        "id": "h3-064",
+        "values": [
+          "Camila Silveira",
+          "camila.silveira@fernwisp.io"
+        ]
+      },
+      {
+        "id": "h3-065",
+        "values": [
+          "Zo\u00eb Van der Berg",
+          "zoe.vanderberg@mistvale.app"
+        ]
+      },
+      {
+        "id": "h3-066",
+        "values": [
+          "zdlamini",
+          "37.241.149.45",
+          "zanele.dlamini@duskmeadow.dev"
+        ]
+      },
+      {
+        "id": "h3-067",
+        "values": [
+          "will.abernathy@duskmeadow.dev",
+          "Will Abernathy"
+        ]
+      },
+      {
+        "id": "h3-068",
+        "values": [
+          "ogrant",
+          "ywpM0#Xsv35A_96hHI-",
+          "oliver.grant@fernwisp.io",
+          "of4^12D0R1XmS2xm8F",
+          "Oliver Grant"
+        ]
+      },
+      {
+        "id": "h3-069",
+        "values": [
+          "jiwoo.park@grottolabs.dev"
+        ]
+      },
+      {
+        "id": "h3-070",
+        "values": [
+          "yyamada",
+          "EQL^IgDcgWrX9*MLV",
+          "136.73.190.175",
+          "146.110.131.160"
+        ]
+      },
+      {
+        "id": "h3-071",
+        "values": [
+          "jiwoo.park@hollowbrook.dev",
+          "jpark",
+          "aml3b28ucGFya0Bob2xsb3dicm9vay5kZXY=",
+          "Jiwoo Park"
+        ]
+      },
+      {
+        "id": "h3-072",
+        "values": [
+          "jmoreau",
+          "196.201.88.234"
+        ]
+      },
+      {
+        "id": "h3-073",
+        "values": [
+          "jpark",
+          "jiwoo.park@fernwisp.io"
+        ]
+      },
+      {
+        "id": "h3-074",
+        "values": [
+          "fwagner",
+          "Felix Wagner"
+        ]
+      },
+      {
+        "id": "h3-075",
+        "values": [
+          "Will Abernathy",
+          "1 Mar 1984",
+          "4811 Fern Gully Rd, Bend, AZ 78870",
+          "134-70-5061",
+          "will.abernathy@duskmeadow.dev"
+        ]
+      },
+      {
+        "id": "h3-076",
+        "values": [
+          "Yang Liu",
+          "yang.liu@grottolabs.dev",
+          "DE26291217643906704650",
+          "9599 Pebble Root Ave, Flagstaff, OR 60203"
+        ]
+      },
+      {
+        "id": "h3-077",
+        "values": [
+          "Zo\u00eb Van der Berg",
+          "PU2FE1YY1",
+          "Ahornweg 76, 10438 Bremen",
+          "zoe.vanderberg@grottolabs.dev"
+        ]
+      },
+      {
+        "id": "h3-078",
+        "values": [
+          "Felix Wagner",
+          "18 May 1998",
+          "107 Fern Vale, Leeds BS4 3EH",
+          "felix.wagner@grottolabs.dev"
+        ]
+      },
+      {
+        "id": "h3-079",
+        "values": [
+          "Julien Moreau",
+          "julien.moreau@fernwisp.io",
+          "11/19/1977"
+        ]
+      },
+      {
+        "id": "h3-080",
+        "values": [
+          "Arjun Krishnan",
+          "arjun.krishnan@mistvale.app",
+          "1104 Dusk Meadow Dr, Bend, NC 49706"
+        ]
+      }
+    ],
+    "ms_per_item": 0.1
+  }
+]

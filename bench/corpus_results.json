@@ -1,0 +1,110 @@
+[
+  {
+    "adapter": "cloakroom full",
+    "items": 92,
+    "items_leaked": 0,
+    "values_total": 530,
+    "values_leaked": 0,
+    "blocked": 0,
+    "negatives": 20,
+    "false_alarms": 1,
+    "by_category": {
+      "env_file": {
+        "items": 12,
+        "leaked": 0
+      },
+      "json_config": {
+        "items": 10,
+        "leaked": 0
+      },
+      "app_log": {
+        "items": 14,
+        "leaked": 0
+      },
+      "csv_export": {
+        "items": 10,
+        "leaked": 0
+      },
+      "source_code": {
+        "items": 12,
+        "leaked": 0
+      },
+      "shell_git": {
+        "items": 10,
+        "leaked": 0
+      },
+      "shell_env": {
+        "items": 8,
+        "leaked": 0
+      },
+      "doc_note": {
+        "items": 12,
+        "leaked": 0
+      },
+      "private_key": {
+        "items": 4,
+        "leaked": 0
+      },
+      "negative": {
+        "items": 20,
+        "leaked": 1
+      }
+    },
+    "leaks": [],
+    "ms_per_item": 41.5
+  },
+  {
+    "adapter": "cloakroom rules",
+    "items": 92,
+    "items_leaked": 0,
+    "values_total": 530,
+    "values_leaked": 0,
+    "blocked": 0,
+    "negatives": 20,
+    "false_alarms": 0,
+    "by_category": {
+      "env_file": {
+        "items": 12,
+        "leaked": 0
+      },
+      "json_config": {
+        "items": 10,
+        "leaked": 0
+      },
+      "app_log": {
+        "items": 14,
+        "leaked": 0
+      },
+      "csv_export": {
+        "items": 10,
+        "leaked": 0
+      },
+      "source_code": {
+        "items": 12,
+        "leaked": 0
+      },
+      "shell_git": {
+        "items": 10,
+        "leaked": 0
+      },
+      "shell_env": {
+        "items": 8,
+        "leaked": 0
+      },
+      "doc_note": {
+        "items": 12,
+        "leaked": 0
+      },
+      "private_key": {
+        "items": 4,
+        "leaked": 0
+      },
+      "negative": {
+        "items": 20,
+        "leaked": 0
+      }
+    },
+    "leaks": [],
+    "ms_per_item": 0.1
+  }
+]

@@ -1,0 +1,4905 @@
+[
+  {
+    "adapter": "sensitive-canary (blocks)",
+    "items": 80,
+    "items_leaked": 10,
+    "values_total": 328,
+    "values_leaked": 36,
+    "blocked": 70,
+    "negatives": 40,
+    "false_alarms": 2,
+    "by_category": {
+      "docker-build-log": {
+        "items": 4,
+        "leaked": 0
+      },
+      "k8s-configmap": {
+        "items": 2,
+        "leaked": 0
+      },
+      "k8s-event": {
+        "items": 2,
+        "leaked": 0
+      },
+      "prometheus-alert": {
+        "items": 2,
+        "leaked": 1
+      },
+      "grafana-alert": {
+        "items": 2,
+        "leaked": 0
+      },
+      "datadog-log": {
+        "items": 2,
+        "leaked": 0
+      },
+      "newrelic-log": {
+        "items": 2,
+        "leaked": 1
+      },
+      "terraform-plan": {
+        "items": 4,
+        "leaked": 1
+      },
+      "cloudformation": {
+        "items": 4,
+        "leaked": 0
+      },
+      "nginx-access": {
+        "items": 2,
+        "leaked": 0
+      },
+      "apache-error": {
+        "items": 1,
+        "leaked": 0
+      },
+      "apache-access": {
+        "items": 1,
+        "leaked": 0
+      },
+      "postgres-slowlog": {
+        "items": 4,
+        "leaked": 2
+      },
+      "mongodb-doc": {
+        "items": 4,
+        "leaked": 1
+      },
+      "elasticsearch-hit": {
+        "items": 4,
+        "leaked": 1
+      },
+      "jira-ticket": {
+        "items": 2,
+        "leaked": 1
+      },
+      "linear-ticket": {
+        "items": 2,
+        "leaked": 0
+      },
+      "zendesk-ticket": {
+        "items": 2,
+        "leaked": 0
+      },
+      "intercom-ticket": {
+        "items": 2,
+        "leaked": 0
+      },
+      "ics-invite": {
+        "items": 4,
+        "leaked": 2
+      },
+      "vcard": {
+        "items": 4,
+        "leaked": 0
+      },
+      "pdf-bank-statement": {
+        "items": 3,
+        "leaked": 0
+      },
+      "insurance-claim": {
+        "items": 3,
+        "leaked": 0
+      },
+      "school-enrollment": {
+        "items": 3,
+        "leaked": 0
+      },
+      "pharmacy-rx": {
+        "items": 3,
+        "leaked": 0
+      },
+      "git-blame": {
+        "items": 2,
+        "leaked": 0
+      },
+      "git-log": {
+        "items": 1,
+        "leaked": 0
+      },
+      "jupyter-traceback": {
+        "items": 3,
+        "leaked": 0
+      },
+      "postman-env": {
+        "items": 3,
+        "leaked": 0
+      },
+      "kafka-payload": {
+        "items": 3,
+        "leaked": 0
+      },
+      "negative": {
+        "items": 40,
+        "leaked": 2
+      }
+    },
+    "leaks": [
+      {
+        "id": "h4-011",
+        "values": [
+          "69.158.65.116",
+          "zlewandowska",
+          "Zofia Lewandowska",
+          "+61 414 446 800"
+        ]
+      },
+      {
+        "id": "h4-014",
+        "values": [
+          "malvarez",
+          "i!kyBV7DyKVcqNoixmQ",
+          "4a099646822e93b97c485f7f18fd759b6a07be107c180683"
+        ]
+      },
+      {
+        "id": "h4-019",
+        "values": [
+          "slee",
+          "Soo-Ah Lee",
+          "+91 29606 00286"
+        ]
+      },
+      {
+        "id": "h4-030",
+        "values": [
+          "55334505514283596",
+          "Sanne Bakker"
+        ]
+      },
+      {
+        "id": "h4-032",
+        "values": [
+          "Adaeze Uche",
+          "14/09/1984",
+          "DE90619976620697434016"
+        ]
+      },
+      {
+        "id": "h4-035",
+        "values": [
+          "POL-1ZIPZEJEC",
+          "Selam Tesfaye",
+          "MRN-08427517",
+          "+52 55 4268 5070"
+        ]
+      },
+      {
+        "id": "h4-039",
+        "values": [
+          "Rohan Bhatt",
+          "683958880",
+          "+81 90-9384-1967",
+          "Sofia Ribeiro"
+        ]
+      },
+      {
+        "id": "h4-043",
+        "values": [
+          "hana.kobayashi@copperfinch.io",
+          "Sakura Ito",
+          "sito",
+          "+61 477 715 965"
+        ]
+      },
+      {
+        "id": "h4-050",
+        "values": [
+          "Santiago Morales",
+          "MRN-70687455",
+          "1966-01-28",
+          "+52 55 8777 5498",
+          "Calle de los \u00c1lamos 299, Col. Condesa, Ciudad de M\u00e9xico, C.P. 92818"
+        ]
+      },
+      {
+        "id": "h4-052",
+        "values": [
+          "Emil",
+          "Lucas Pereira",
+          "emil.hansen@driftwell.app",
+          "+81 90-8450-9359"
+        ]
+      }
+    ],
+    "ms_per_item": 0.4
+  },
+  {
+    "adapter": "claude-code-redact (+pii)",
+    "items": 80,
+    "items_leaked": 76,
+    "values_total": 328,
+    "values_leaked": 204,
+    "blocked": 0,
+    "negatives": 40,
+    "false_alarms": 5,
+    "by_category": {
+      "docker-build-log": {
+        "items": 4,
+        "leaked": 4
+      },
+      "k8s-configmap": {
+        "items": 2,
+        "leaked": 2
+      },
+      "k8s-event": {
+        "items": 2,
+        "leaked": 2
+      },
+      "prometheus-alert": {
+        "items": 2,
+        "leaked": 2
+      },
+      "grafana-alert": {
+        "items": 2,
+        "leaked": 2
+      },
+      "datadog-log": {
+        "items": 2,
+        "leaked": 2
+      },
+      "newrelic-log": {
+        "items": 2,
+        "leaked": 1
+      },
+      "terraform-plan": {
+        "items": 4,
+        "leaked": 3
+      },
+      "cloudformation": {
+        "items": 4,
+        "leaked": 3
+      },
+      "nginx-access": {
+        "items": 2,
+        "leaked": 2
+      },
+      "apache-error": {
+        "items": 1,
+        "leaked": 1
+      },
+      "apache-access": {
+        "items": 1,
+        "leaked": 1
+      },
+      "postgres-slowlog": {
+        "items": 4,
+        "leaked": 4
+      },
+      "mongodb-doc": {
+        "items": 4,
+        "leaked": 4
+      },
+      "elasticsearch-hit": {
+        "items": 4,
+        "leaked": 4
+      },
+      "jira-ticket": {
+        "items": 2,
+        "leaked": 2
+      },
+      "linear-ticket": {
+        "items": 2,
+        "leaked": 2
+      },
+      "zendesk-ticket": {
+        "items": 2,
+        "leaked": 2
+      },
+      "intercom-ticket": {
+        "items": 2,
+        "leaked": 2
+      },
+      "ics-invite": {
+        "items": 4,
+        "leaked": 4
+      },
+      "vcard": {
+        "items": 4,
+        "leaked": 4
+      },
+      "pdf-bank-statement": {
+        "items": 3,
+        "leaked": 3
+      },
+      "insurance-claim": {
+        "items": 3,
+        "leaked": 3
+      },
+      "school-enrollment": {
+        "items": 3,
+        "leaked": 3
+      },
+      "pharmacy-rx": {
+        "items": 3,
+        "leaked": 3
+      },
+      "git-blame": {
+        "items": 2,
+        "leaked": 2
+      },
+      "git-log": {
+        "items": 1,
+        "leaked": 1
+      },
+      "jupyter-traceback": {
+        "items": 3,
+        "leaked": 3
+      },
+      "postman-env": {
+        "items": 3,
+        "leaked": 2
+      },
+      "kafka-payload": {
+        "items": 3,
+        "leaked": 3
+      },
+      "negative": {
+        "items": 40,
+        "leaked": 5
+      }
+    },
+    "leaks": [
+      {
+        "id": "h4-001",
+        "values": [
+          "ZGhhaWxlOlFaUFRHd3ZZNmE9JExQNHY="
+        ]
+      },
+      {
+        "id": "h4-002",
+        "values": [
+          "ghp_zkMNArN6zxC5WrKkiJ\\\n  d9o5cxj1jsU74A2Cqp",
+          "tmahmoud"
+        ]
+      },
+      {
+        "id": "h4-003",
+        "values": [
+          "Pooja Sharma"
+        ]
+      },
+      {
+        "id": "h4-004",
+        "values": [
+          "mandersen"
+        ]
+      },
+      {
+        "id": "h4-005",
+        "values": [
+          "Nikos Papadopoulos"
+        ]
+      },
+      {
+        "id": "h4-006",
+        "values": [
+          "193.82.9.213",
+          "oadeleke"
+        ]
+      },
+      {
+        "id": "h4-007",
+        "values": [
+          "AC5d0944ee6f23cad399eafbc50a47182e",
+          "Nikos Papadopoulos"
+        ]
+      },
+      {
+        "id": "h4-008",
+        "values": [
+          "danggraini"
+        ]
+      },
+      {
+        "id": "h4-009",
+        "values": [
+          "+44 7700 900390"
+        ]
+      },
+      {
+        "id": "h4-010",
+        "values": [
+          "Ioana Radu",
+          "+49 170 7796673"
+        ]
+      },
+      {
+        "id": "h4-011",
+        "values": [
+          "69.158.65.116",
+          "zlewandowska",
+          "Zofia Lewandowska"
+        ]
+      },
+      {
+        "id": "h4-012",
+        "values": [
+          "Bliss Carter"
+        ]
+      },
+      {
+        "id": "h4-013",
+        "values": [
+          "Giulia Romano"
+        ]
+      },
+      {
+        "id": "h4-014",
+        "values": [
+          "malvarez",
+          "i!kyBV7DyKVcqNoixmQ",
+          "4a099646822e93b97c485f7f18fd759b6a07be107c180683"
+        ]
+      },
+      {
+        "id": "h4-015",
+        "values": [
+          "mlaurent",
+          "139.142.143.245"
+        ]
+      },
+      {
+        "id": "h4-017",
+        "values": [
+          "ghU8S^OadE_1$DF",
+          "=%Pkm*Z%D7OKMm",
+          "ybenali",
+          "ylevi"
+        ]
+      },
+      {
+        "id": "h4-019",
+        "values": [
+          "slee",
+          "Soo-Ah Lee"
+        ]
+      },
+      {
+        "id": "h4-020",
+        "values": [
+          "nbergstrom",
+          "191.95.135.138"
+        ]
+      },
+      {
+        "id": "h4-021",
+        "values": [
+          "rgupta"
+        ]
+      },
+      {
+        "id": "h4-023",
+        "values": [
+          "AKIAO0RDFPBNZODOQ4D7",
+          "Linh Nguyen"
+        ]
+      },
+      {
+        "id": "h4-024",
+        "values": [
+          "Taras Kovalenko",
+          "+55 11 9 2636-7777"
+        ]
+      },
+      {
+        "id": "h4-025",
+        "values": [
+          "135.87.49.56",
+          "talmeida"
+        ]
+      },
+      {
+        "id": "h4-026",
+        "values": [
+          "33.70.238.171"
+        ]
+      },
+      {
+        "id": "h4-027",
+        "values": [
+          "25.56.47.168",
+          "sooah.lee%40driftwell.app",
+          "Soo-Ah Lee"
+        ]
+      },
+      {
+        "id": "h4-028",
+        "values": [
+          "139.205.190.45",
+          "mvillanueva"
+        ]
+      },
+      {
+        "id": "h4-029",
+        "values": [
+          "mlaurent",
+          "33.225.2.191"
+        ]
+      },
+      {
+        "id": "h4-030",
+        "values": [
+          "Sanne Bakker"
+        ]
+      },
+      {
+        "id": "h4-031",
+        "values": [
+          "HIC-0PZPQLWD"
+        ]
+      },
+      {
+        "id": "h4-032",
+        "values": [
+          "Adaeze Uche",
+          "14/09/1984"
+        ]
+      },
+      {
+        "id": "h4-033",
+        "values": [
+          "Dina Khalil",
+          "4853 Stonechat Terrace, Bisbee, AZ 63657",
+          "1986-12-20",
+          "938 827 581"
+        ]
+      },
+      {
+        "id": "h4-034",
+        "values": [
+          "bcelik",
+          "47.250.220.200",
+          "Noa Cohen"
+        ]
+      },
+      {
+        "id": "h4-035",
+        "values": [
+          "POL-1ZIPZEJEC",
+          "Selam Tesfaye",
+          "MRN-08427517"
+        ]
+      },
+      {
+        "id": "h4-036",
+        "values": [
+          "lnguyen",
+          "Duc Tran",
+          "+44 7700 900947"
+        ]
+      },
+      {
+        "id": "h4-037",
+        "values": [
+          "Tiago",
+          "Tiago Almeida",
+          "+49 170 0675146"
+        ]
+      },
+      {
+        "id": "h4-038",
+        "values": [
+          "207.9.7.188",
+          "dvisser"
+        ]
+      },
+      {
+        "id": "h4-039",
+        "values": [
+          "Rohan Bhatt",
+          "683958880",
+          "Sofia Ribeiro"
+        ]
+      },
+      {
+        "id": "h4-040",
+        "values": [
+          "104 rue des Aub\u00e9pines, 35895 Bordeaux"
+        ]
+      },
+      {
+        "id": "h4-041",
+        "values": [
+          "Linh Nguyen",
+          "Min-Jun Kim",
+          "Charity Bell",
+          "Honor Blackwood",
+          "Bliss Carter",
+          "lnguyen"
+        ]
+      },
+      {
+        "id": "h4-042",
+        "values": [
+          "malvarez",
+          "Mateo Alvarez",
+          "+55 11 9 5963-6955"
+        ]
+      },
+      {
+        "id": "h4-043",
+        "values": [
+          "Sakura Ito",
+          "sito"
+        ]
+      },
+      {
+        "id": "h4-044",
+        "values": [
+          "Olumide Adeleke",
+          "07/23/1979",
+          "River Stone",
+          "23/11/1985",
+          "Skylar Finch",
+          "Willow Ash"
+        ]
+      },
+      {
+        "id": "h4-045",
+        "values": [
+          "Ifeanyi Obi",
+          "wash"
+        ]
+      },
+      {
+        "id": "h4-046",
+        "values": [
+          "Burak Celik",
+          "bcelik"
+        ]
+      },
+      {
+        "id": "h4-047",
+        "values": [
+          "Sara Ahmadi",
+          "133 Grebe Lane, York YO24 4QG",
+          "Eichenweg 16, 73422 Aachen"
+        ]
+      },
+      {
+        "id": "h4-048",
+        "values": [
+          "Nora Bergstrom",
+          "ACf791d8b372e6c530c651c3a1d1d6ca3d",
+          "oerzJzOwLcFsJfJUN5qc4kt389wnZyqQ"
+        ]
+      },
+      {
+        "id": "h4-049",
+        "values": [
+          "Eleni Kostas",
+          "eleni.kostas@alderpoint.dev",
+          "Bliss Carter",
+          "bliss.carter@emberline.dev"
+        ]
+      },
+      {
+        "id": "h4-050",
+        "values": [
+          "Santiago Morales",
+          "MRN-70687455",
+          "1966-01-28",
+          "Calle de los \u00c1lamos 299, Col. Condesa, Ciudad de M\u00e9xico, C.P. 92818"
+        ]
+      },
+      {
+        "id": "h4-051",
+        "values": [
+          "Mia Fischer",
+          "emil.hansen@foxdenlabs.io",
+          "mia.fischer@pinecrestlabs.dev",
+          "5/44 Grevillea Road, Fremantle QLD 7627",
+          "CA DL X8664678"
+        ]
+      },
+      {
+        "id": "h4-052",
+        "values": [
+          "Emil",
+          "Lucas Pereira"
+        ]
+      },
+      {
+        "id": "h4-053",
+        "values": [
+          "Sanne Bakker",
+          "Bakker",
+          "Sanne",
+          "sanne.bakker@larkspur.digital",
+          "+55 11 9 6459-5213",
+          "Travessa do Farol, 1021, Belo Horizonte - AM, 77917-618",
+          "1999-02-10"
+        ]
+      },
+      {
+        "id": "h4-054",
+        "values": [
+          "Jakub Kowalczyk",
+          "jakub.kowalczyk@corvidlabs.dev",
+          "+49 170 2368309"
+        ]
+      },
+      {
+        "id": "h4-055",
+        "values": [
+          "Irina Sokolova",
+          "Sokolova",
+          "Irina",
+          "irina.sokolova@duskfield.dev",
+          "57 Allen Avenue, Ikeja, Lagos"
+        ]
+      },
+      {
+        "id": "h4-056",
+        "values": [
+          "\u0639\u0645\u0631 \u062d\u062f\u0627\u062f",
+          "Rao",
+          "Ishita",
+          "ishita.rao@vantacore.com",
+          "\u3012613-3903 \u5e83\u5cf6\u5e02\u4e2d\u533a\u4e00\u756a\u753a3-8-18"
+        ]
+      },
+      {
+        "id": "h4-057",
+        "values": [
+          "Reza Karimi",
+          "5988 Harbor Mist Way, Boone, AZ 68158",
+          "01/27/2000"
+        ]
+      },
+      {
+        "id": "h4-058",
+        "values": [
+          "Noa Cohen",
+          "+44 7700 900209"
+        ]
+      },
+      {
+        "id": "h4-059",
+        "values": [
+          "Lea Martin",
+          "12/02/1981",
+          "18 rue des Forges, 65249 Bordeaux"
+        ]
+      },
+      {
+        "id": "h4-060",
+        "values": [
+          "Sneha Kulkarni",
+          "MBR-2GZ5R6DH",
+          "1975-07-22"
+        ]
+      },
+      {
+        "id": "h4-061",
+        "values": [
+          "Aisha Rahman",
+          "CA DL S3588392",
+          "15/40 Grevillea Road, Albany NSW 4714"
+        ]
+      },
+      {
+        "id": "h4-062",
+        "values": [
+          "Daiki Fujita",
+          "MRN-38330247",
+          "POL-WCYAPQ2N4FY",
+          "Alexei Morozov"
+        ]
+      },
+      {
+        "id": "h4-063",
+        "values": [
+          "Abena Frimpong",
+          "01/13/1976",
+          "Daniela Vargas",
+          "2405 Dunlin Blvd, Lanesboro, NM 65477"
+        ]
+      },
+      {
+        "id": "h4-064",
+        "values": [
+          "Santiago",
+          "Morales",
+          "\u0395\u03bb\u03ad\u03bd\u03b7 \u039a\u03ce\u03c3\u03c4\u03b1",
+          "Juliana Costa"
+        ]
+      },
+      {
+        "id": "h4-065",
+        "values": [
+          "Mateo Alvarez",
+          "15/11/1968",
+          "4 avenue des Ch\u00eanes, 17561 Strasbourg",
+          "+55 11 9 3847-2381"
+        ]
+      },
+      {
+        "id": "h4-066",
+        "values": [
+          "Aditya Rao",
+          "1963-02-16",
+          "MRN-25843411",
+          "Aisha Rahman",
+          "INS-OZ5VV4RKCYMD"
+        ]
+      },
+      {
+        "id": "h4-067",
+        "values": [
+          "Omar Haddad",
+          "Seestra\u00dfe 57, 37172 Regensburg",
+          "+49 170 1521928",
+          "MBR-ALPLCBLKIW"
+        ]
+      },
+      {
+        "id": "h4-068",
+        "values": [
+          "Vlad Popa",
+          "01/19/1998",
+          "MBR-SXWFNZ8BF3B"
+        ]
+      },
+      {
+        "id": "h4-069",
+        "values": [
+          "Ana Reyes",
+          "River Stone",
+          "areyes"
+        ]
+      },
+      {
+        "id": "h4-070",
+        "values": [
+          "Sara Ahmadi",
+          "0a+_mCS69aqNX^6OJ+"
+        ]
+      },
+      {
+        "id": "h4-071",
+        "values": [
+          "jfernandez",
+          "ACa491a2c726ef8226b7f9b6ed8efec377",
+          "Duc Tran",
+          "+44 7700 900331"
+        ]
+      },
+      {
+        "id": "h4-072",
+        "values": [
+          "jcosta"
+        ]
+      },
+      {
+        "id": "h4-073",
+        "values": [
+          "vcruz",
+          "Dtlfug%zlEqMLL",
+          "Dawit Haile"
+        ]
+      },
+      {
+        "id": "h4-074",
+        "values": [
+          "iobi",
+          "Santiago Morales",
+          "1972-11-01"
+        ]
+      },
+      {
+        "id": "h4-076",
+        "values": [
+          "dtran"
+        ]
+      },
+      {
+        "id": "h4-077",
+        "values": [
+          "AC9fe7eb61f222198d8b850fe7cda949ab",
+          "rQgmZMm0EW3dlm3Lzyxbufyj3YSkWgLH"
+        ]
+      },
+      {
+        "id": "h4-078",
+        "values": [
+          "yowusu",
+          "Yaw Owusu",
+          "+55 11 9 7570-1635",
+          "167.78.11.18"
+        ]
+      },
+      {
+        "id": "h4-079",
+        "values": [
+          "Nicha Srisai"
+        ]
+      },
+      {
+        "id": "h4-080",
+        "values": [
+          "oshevchenko",
+          "249831125",
+          "609 312 665"
+        ]
+      }
+    ],
+    "ms_per_item": 0.1
+  },
+  {
+    "adapter": "claude-code-redact (secrets)",
+    "items": 80,
+    "items_leaked": 80,
+    "values_total": 328,
+    "values_leaked": 304,
+    "blocked": 0,
+    "negatives": 40,
+    "false_alarms": 0,
+    "by_category": {
+      "docker-build-log": {
+        "items": 4,
+        "leaked": 4
+      },
+      "k8s-configmap": {
+        "items": 2,
+        "leaked": 2
+      },
+      "k8s-event": {
+        "items": 2,
+        "leaked": 2
+      },
+      "prometheus-alert": {
+        "items": 2,
+        "leaked": 2
+      },
+      "grafana-alert": {
+        "items": 2,
+        "leaked": 2
+      },
+      "datadog-log": {
+        "items": 2,
+        "leaked": 2
+      },
+      "newrelic-log": {
+        "items": 2,
+        "leaked": 2
+      },
+      "terraform-plan": {
+        "items": 4,
+        "leaked": 4
+      },
+      "cloudformation": {
+        "items": 4,
+        "leaked": 4
+      },
+      "nginx-access": {
+        "items": 2,
+        "leaked": 2
+      },
+      "apache-error": {
+        "items": 1,
+        "leaked": 1
+      },
+      "apache-access": {
+        "items": 1,
+        "leaked": 1
+      },
+      "postgres-slowlog": {
+        "items": 4,
+        "leaked": 4
+      },
+      "mongodb-doc": {
+        "items": 4,
+        "leaked": 4
+      },
+      "elasticsearch-hit": {
+        "items": 4,
+        "leaked": 4
+      },
+      "jira-ticket": {
+        "items": 2,
+        "leaked": 2
+      },
+      "linear-ticket": {
+        "items": 2,
+        "leaked": 2
+      },
+      "zendesk-ticket": {
+        "items": 2,
+        "leaked": 2
+      },
+      "intercom-ticket": {
+        "items": 2,
+        "leaked": 2
+      },
+      "ics-invite": {
+        "items": 4,
+        "leaked": 4
+      },
+      "vcard": {
+        "items": 4,
+        "leaked": 4
+      },
+      "pdf-bank-statement": {
+        "items": 3,
+        "leaked": 3
+      },
+      "insurance-claim": {
+        "items": 3,
+        "leaked": 3
+      },
+      "school-enrollment": {
+        "items": 3,
+        "leaked": 3
+      },
+      "pharmacy-rx": {
+        "items": 3,
+        "leaked": 3
+      },
+      "git-blame": {
+        "items": 2,
+        "leaked": 2
+      },
+      "git-log": {
+        "items": 1,
+        "leaked": 1
+      },
+      "jupyter-traceback": {
+        "items": 3,
+        "leaked": 3
+      },
+      "postman-env": {
+        "items": 3,
+        "leaked": 3
+      },
+      "kafka-payload": {
+        "items": 3,
+        "leaked": 3
+      },
+      "negative": {
+        "items": 40,
+        "leaked": 0
+      }
+    },
+    "leaks": [
+      {
+        "id": "h4-001",
+        "values": [
+          "ZGhhaWxlOlFaUFRHd3ZZNmE9JExQNHY=",
+          "dawit.haile@vantacore.com"
+        ]
+      },
+      {
+        "id": "h4-002",
+        "values": [
+          "ghp_zkMNArN6zxC5WrKkiJ\\\n  d9o5cxj1jsU74A2Cqp",
+          "tmahmoud",
+          "tariq.mahmoud@cloudspire.io"
+        ]
+      },
+      {
+        "id": "h4-003",
+        "values": [
+          "Pooja Sharma"
+        ]
+      },
+      {
+        "id": "h4-004",
+        "values": [
+          "mandersen"
+        ]
+      },
+      {
+        "id": "h4-005",
+        "values": [
+          "nikos.papadopoulos@duskfield.dev",
+          "Nikos Papadopoulos",
+          "+1 (214) 350-2488"
+        ]
+      },
+      {
+        "id": "h4-006",
+        "values": [
+          "193.82.9.213",
+          "oadeleke",
+          "olumide.adeleke@vantacore.com"
+        ]
+      },
+      {
+        "id": "h4-007",
+        "values": [
+          "AC5d0944ee6f23cad399eafbc50a47182e",
+          "Nikos Papadopoulos",
+          "nikos.papadopoulos@foxdenlabs.io"
+        ]
+      },
+      {
+        "id": "h4-008",
+        "values": [
+          "danggraini",
+          "dewi.anggraini@foxdenlabs.io"
+        ]
+      },
+      {
+        "id": "h4-009",
+        "values": [
+          "deniz.yilmaz@alderpoint.dev",
+          "+44 7700 900390"
+        ]
+      },
+      {
+        "id": "h4-010",
+        "values": [
+          "Ioana Radu",
+          "ioana.radu@corvidlabs.dev",
+          "+49 170 7796673"
+        ]
+      },
+      {
+        "id": "h4-011",
+        "values": [
+          "69.158.65.116",
+          "zlewandowska",
+          "Zofia Lewandowska",
+          "+61 414 446 800"
+        ]
+      },
+      {
+        "id": "h4-012",
+        "values": [
+          "Bliss Carter",
+          "bliss.carter@larkspur.digital",
+          "+1 (704) 592-0239"
+        ]
+      },
+      {
+        "id": "h4-013",
+        "values": [
+          "giulia.romano@alderpoint.dev",
+          "Giulia Romano",
+          "4595150121793042"
+        ]
+      },
+      {
+        "id": "h4-014",
+        "values": [
+          "malvarez",
+          "i!kyBV7DyKVcqNoixmQ",
+          "4a099646822e93b97c485f7f18fd759b6a07be107c180683"
+        ]
+      },
+      {
+        "id": "h4-015",
+        "values": [
+          "mlaurent",
+          "+52 55 6221 3669",
+          "139.142.143.245"
+        ]
+      },
+      {
+        "id": "h4-016",
+        "values": [
+          "charity.bell@sablewing.io"
+        ]
+      },
+      {
+        "id": "h4-017",
+        "values": [
+          "ghU8S^OadE_1$DF",
+          "=%Pkm*Z%D7OKMm",
+          "ybenali",
+          "ylevi",
+          "yasmine.benali@pinecrestlabs.dev"
+        ]
+      },
+      {
+        "id": "h4-018",
+        "values": [
+          "mark.villanueva@emberline.dev"
+        ]
+      },
+      {
+        "id": "h4-019",
+        "values": [
+          "slee",
+          "Soo-Ah Lee",
+          "+91 29606 00286"
+        ]
+      },
+      {
+        "id": "h4-020",
+        "values": [
+          "nbergstrom",
+          "nora.bergstrom@duskfield.dev",
+          "191.95.135.138"
+        ]
+      },
+      {
+        "id": "h4-021",
+        "values": [
+          "rgupta"
+        ]
+      },
+      {
+        "id": "h4-022",
+        "values": [
+          "theo.girard@harborlight.ai"
+        ]
+      },
+      {
+        "id": "h4-023",
+        "values": [
+          "AKIAO0RDFPBNZODOQ4D7",
+          "Linh Nguyen",
+          "+81 90-6924-6547"
+        ]
+      },
+      {
+        "id": "h4-024",
+        "values": [
+          "Taras Kovalenko",
+          "taras.kovalenko@corvidlabs.dev",
+          "+55 11 9 2636-7777"
+        ]
+      },
+      {
+        "id": "h4-025",
+        "values": [
+          "135.87.49.56",
+          "talmeida"
+        ]
+      },
+      {
+        "id": "h4-026",
+        "values": [
+          "33.70.238.171",
+          "reza.karimi@larkspur.digital"
+        ]
+      },
+      {
+        "id": "h4-027",
+        "values": [
+          "25.56.47.168",
+          "sooah.lee%40driftwell.app",
+          "+234 961 561 0083",
+          "Soo-Ah Lee"
+        ]
+      },
+      {
+        "id": "h4-028",
+        "values": [
+          "139.205.190.45",
+          "mvillanueva",
+          "mark.villanueva@alderpoint.dev"
+        ]
+      },
+      {
+        "id": "h4-029",
+        "values": [
+          "manon.laurent@cloudspire.io",
+          "146-49-8087",
+          "mlaurent",
+          "33.225.2.191"
+        ]
+      },
+      {
+        "id": "h4-030",
+        "values": [
+          "55334505514283596",
+          "Sanne Bakker"
+        ]
+      },
+      {
+        "id": "h4-031",
+        "values": [
+          "+61 490 868 851",
+          "HIC-0PZPQLWD",
+          "lucas.pereira@copperfinch.io"
+        ]
+      },
+      {
+        "id": "h4-032",
+        "values": [
+          "Adaeze Uche",
+          "14/09/1984",
+          "DE90619976620697434016"
+        ]
+      },
+      {
+        "id": "h4-033",
+        "values": [
+          "Dina Khalil",
+          "dina.khalil@quillback.io",
+          "+1 (303) 215-1831",
+          "4853 Stonechat Terrace, Bisbee, AZ 63657",
+          "1986-12-20",
+          "938 827 581"
+        ]
+      },
+      {
+        "id": "h4-034",
+        "values": [
+          "bcelik",
+          "47.250.220.200",
+          "Noa Cohen",
+          "noa.cohen@driftwell.app"
+        ]
+      },
+      {
+        "id": "h4-035",
+        "values": [
+          "POL-1ZIPZEJEC",
+          "Selam Tesfaye",
+          "MRN-08427517",
+          "+52 55 4268 5070"
+        ]
+      },
+      {
+        "id": "h4-036",
+        "values": [
+          "lnguyen",
+          "duc.tran@duskfield.dev",
+          "Duc Tran",
+          "+44 7700 900947"
+        ]
+      },
+      {
+        "id": "h4-037",
+        "values": [
+          "tiago.almeida@corvidlabs.dev",
+          "Tiago",
+          "Tiago Almeida",
+          "+49 170 0675146"
+        ]
+      },
+      {
+        "id": "h4-038",
+        "values": [
+          "207.9.7.188",
+          "dvisser"
+        ]
+      },
+      {
+        "id": "h4-039",
+        "values": [
+          "Rohan Bhatt",
+          "683958880",
+          "+81 90-9384-1967",
+          "Sofia Ribeiro"
+        ]
+      },
+      {
+        "id": "h4-040",
+        "values": [
+          "leon.meyer@harborlight.ai",
+          "FR3816208672714581634877353",
+          "104 rue des Aub\u00e9pines, 35895 Bordeaux"
+        ]
+      },
+      {
+        "id": "h4-041",
+        "values": [
+          "Linh Nguyen",
+          "linh.nguyen@harborlight.ai",
+          "Min-Jun Kim",
+          "+91 03603 47717",
+          "Charity Bell",
+          "Honor Blackwood",
+          "Bliss Carter",
+          "minjun.kim@alderpoint.dev",
+          "lnguyen"
+        ]
+      },
+      {
+        "id": "h4-042",
+        "values": [
+          "malvarez",
+          "Mateo Alvarez",
+          "+55 11 9 5963-6955"
+        ]
+      },
+      {
+        "id": "h4-043",
+        "values": [
+          "hana.kobayashi@copperfinch.io",
+          "Sakura Ito",
+          "sito",
+          "+61 477 715 965"
+        ]
+      },
+      {
+        "id": "h4-044",
+        "values": [
+          "Olumide Adeleke",
+          "07/23/1979",
+          "River Stone",
+          "23/11/1985",
+          "Skylar Finch",
+          "olumide.adeleke@driftwell.app",
+          "Willow Ash",
+          "astrid.lund@larkspur.digital"
+        ]
+      },
+      {
+        "id": "h4-045",
+        "values": [
+          "Ifeanyi Obi",
+          "ifeanyi.obi@pinecrestlabs.dev",
+          "3747045911706148",
+          "+1 (615) 814-9307",
+          "wash"
+        ]
+      },
+      {
+        "id": "h4-046",
+        "values": [
+          "burak.celik@emberline.dev",
+          "Burak Celik",
+          "bcelik",
+          "+234 186 400 6980"
+        ]
+      },
+      {
+        "id": "h4-047",
+        "values": [
+          "Sara Ahmadi",
+          "sara.ahmadi@copperfinch.io",
+          "133 Grebe Lane, York YO24 4QG",
+          "Eichenweg 16, 73422 Aachen"
+        ]
+      },
+      {
+        "id": "h4-048",
+        "values": [
+          "nora.bergstrom@duskfield.dev",
+          "Nora Bergstrom",
+          "ACf791d8b372e6c530c651c3a1d1d6ca3d",
+          "oerzJzOwLcFsJfJUN5qc4kt389wnZyqQ"
+        ]
+      },
+      {
+        "id": "h4-049",
+        "values": [
+          "Eleni Kostas",
+          "eleni.kostas@alderpoint.dev",
+          "Bliss Carter",
+          "bliss.carter@emberline.dev",
+          "+1 (206) 744-3742"
+        ]
+      },
+      {
+        "id": "h4-050",
+        "values": [
+          "Santiago Morales",
+          "MRN-70687455",
+          "1966-01-28",
+          "+52 55 8777 5498",
+          "Calle de los \u00c1lamos 299, Col. Condesa, Ciudad de M\u00e9xico, C.P. 92818"
+        ]
+      },
+      {
+        "id": "h4-051",
+        "values": [
+          "Mia Fischer",
+          "emil.hansen@foxdenlabs.io",
+          "mia.fischer@pinecrestlabs.dev",
+          "5/44 Grevillea Road, Fremantle QLD 7627",
+          "CA DL X8664678"
+        ]
+      },
+      {
+        "id": "h4-052",
+        "values": [
+          "Emil",
+          "Lucas Pereira",
+          "emil.hansen@driftwell.app",
+          "+81 90-8450-9359"
+        ]
+      },
+      {
+        "id": "h4-053",
+        "values": [
+          "Sanne Bakker",
+          "Bakker",
+          "Sanne",
+          "sanne.bakker@larkspur.digital",
+          "+55 11 9 6459-5213",
+          "Travessa do Farol, 1021, Belo Horizonte - AM, 77917-618",
+          "1999-02-10"
+        ]
+      },
+      {
+        "id": "h4-054",
+        "values": [
+          "Jakub Kowalczyk",
+          "jakub.kowalczyk@corvidlabs.dev",
+          "+49 170 2368309"
+        ]
+      },
+      {
+        "id": "h4-055",
+        "values": [
+          "Irina Sokolova",
+          "Sokolova",
+          "Irina",
+          "irina.sokolova@duskfield.dev",
+          "+234 215 354 5232",
+          "57 Allen Avenue, Ikeja, Lagos"
+        ]
+      },
+      {
+        "id": "h4-056",
+        "values": [
+          "\u0639\u0645\u0631 \u062d\u062f\u0627\u062f",
+          "Rao",
+          "Ishita",
+          "ishita.rao@vantacore.com",
+          "+81 90-7939-1179",
+          "\u3012613-3903 \u5e83\u5cf6\u5e02\u4e2d\u533a\u4e00\u756a\u753a3-8-18"
+        ]
+      },
+      {
+        "id": "h4-057",
+        "values": [
+          "Reza Karimi",
+          "5988 Harbor Mist Way, Boone, AZ 68158",
+          "4318845764619737",
+          "01/27/2000",
+          "+1 (646) 898-5129",
+          "reza.karimi@ternstone.dev"
+        ]
+      },
+      {
+        "id": "h4-058",
+        "values": [
+          "Noa Cohen",
+          "noa.cohen@harborlight.ai",
+          "GB31601177512594192713",
+          "+44 7700 900209",
+          "261-76-7783"
+        ]
+      },
+      {
+        "id": "h4-059",
+        "values": [
+          "Lea Martin",
+          "12/02/1981",
+          "IT9413489907457368641669327",
+          "18 rue des Forges, 65249 Bordeaux",
+          "lea.martin@corvidlabs.dev"
+        ]
+      },
+      {
+        "id": "h4-060",
+        "values": [
+          "Sneha Kulkarni",
+          "MBR-2GZ5R6DH",
+          "1975-07-22",
+          "+1 (512) 632-1503",
+          "mona.elsayed@larkspur.digital"
+        ]
+      },
+      {
+        "id": "h4-061",
+        "values": [
+          "Aisha Rahman",
+          "CA DL S3588392",
+          "15/40 Grevillea Road, Albany NSW 4714",
+          "+61 472 083 591",
+          "aisha.rahman@larkspur.digital"
+        ]
+      },
+      {
+        "id": "h4-062",
+        "values": [
+          "Daiki Fujita",
+          "MRN-38330247",
+          "POL-WCYAPQ2N4FY",
+          "daiki.fujita@driftwell.app",
+          "Alexei Morozov",
+          "+52 55 8249 3245"
+        ]
+      },
+      {
+        "id": "h4-063",
+        "values": [
+          "Abena Frimpong",
+          "01/13/1976",
+          "Daniela Vargas",
+          "daniela.vargas@pinecrestlabs.dev",
+          "+1 (206) 491-6936",
+          "2405 Dunlin Blvd, Lanesboro, NM 65477"
+        ]
+      },
+      {
+        "id": "h4-064",
+        "values": [
+          "Santiago",
+          "Morales",
+          "\u0395\u03bb\u03ad\u03bd\u03b7 \u039a\u03ce\u03c3\u03c4\u03b1",
+          "+81 90-4638-3869",
+          "Juliana Costa",
+          "santiago.morales@vantacore.com"
+        ]
+      },
+      {
+        "id": "h4-065",
+        "values": [
+          "Mateo Alvarez",
+          "15/11/1968",
+          "4 avenue des Ch\u00eanes, 17561 Strasbourg",
+          "+55 11 9 3847-2381",
+          "mateo.alvarez@copperfinch.io"
+        ]
+      },
+      {
+        "id": "h4-066",
+        "values": [
+          "Aditya Rao",
+          "1963-02-16",
+          "MRN-25843411",
+          "Aisha Rahman",
+          "aisha.rahman@larkspur.digital",
+          "+1 (512) 863-0676",
+          "INS-OZ5VV4RKCYMD"
+        ]
+      },
+      {
+        "id": "h4-067",
+        "values": [
+          "Omar Haddad",
+          "Seestra\u00dfe 57, 37172 Regensburg",
+          "+49 170 1521928",
+          "MBR-ALPLCBLKIW",
+          "omar.haddad@sablewing.io"
+        ]
+      },
+      {
+        "id": "h4-068",
+        "values": [
+          "Vlad Popa",
+          "01/19/1998",
+          "MBR-SXWFNZ8BF3B",
+          "+52 55 8419 2544",
+          "vlad.popa@quillback.io"
+        ]
+      },
+      {
+        "id": "h4-069",
+        "values": [
+          "Ana Reyes",
+          "River Stone",
+          "ana.reyes@duskfield.dev",
+          "areyes"
+        ]
+      },
+      {
+        "id": "h4-070",
+        "values": [
+          "Sara Ahmadi",
+          "sara.ahmadi@cloudspire.io",
+          "0a+_mCS69aqNX^6OJ+"
+        ]
+      },
+      {
+        "id": "h4-071",
+        "values": [
+          "jfernandez",
+          "ACa491a2c726ef8226b7f9b6ed8efec377",
+          "Duc Tran",
+          "+44 7700 900331"
+        ]
+      },
+      {
+        "id": "h4-072",
+        "values": [
+          "jcosta",
+          "juliana.costa@quillback.io"
+        ]
+      },
+      {
+        "id": "h4-073",
+        "values": [
+          "dawit.haile@alderpoint.dev",
+          "vcruz",
+          "Dtlfug%zlEqMLL",
+          "Dawit Haile"
+        ]
+      },
+      {
+        "id": "h4-074",
+        "values": [
+          "iobi",
+          "Santiago Morales",
+          "171-35-1214",
+          "1972-11-01",
+          "santiago.morales@driftwell.app",
+          "+91 41304 30411"
+        ]
+      },
+      {
+        "id": "h4-075",
+        "values": [
+          "anna.wisniewska@sablewing.io"
+        ]
+      },
+      {
+        "id": "h4-076",
+        "values": [
+          "+61 449 115 998",
+          "dtran"
+        ]
+      },
+      {
+        "id": "h4-077",
+        "values": [
+          "AC9fe7eb61f222198d8b850fe7cda949ab",
+          "rQgmZMm0EW3dlm3Lzyxbufyj3YSkWgLH",
+          "mikkel.andersen@copperline.io"
+        ]
+      },
+      {
+        "id": "h4-078",
+        "values": [
+          "yowusu",
+          "yaw.owusu@larkspur.digital",
+          "Yaw Owusu",
+          "+55 11 9 7570-1635",
+          "167.78.11.18"
+        ]
+      },
+      {
+        "id": "h4-079",
+        "values": [
+          "60110205257125308",
+          "Nicha Srisai",
+          "nicha.srisai@driftwell.app"
+        ]
+      },
+      {
+        "id": "h4-080",
+        "values": [
+          "oshevchenko",
+          "249831125",
+          "609 312 665",
+          "+61 410 758 481",
+          "olena.shevchenko@copperfinch.io"
+        ]
+      }
+    ],
+    "ms_per_item": 0.1
+  },
+  {
+    "adapter": "cloakroom full",
+    "items": 80,
+    "items_leaked": 4,
+    "values_total": 328,
+    "values_leaked": 4,
+    "blocked": 0,
+    "negatives": 40,
+    "false_alarms": 12,
+    "by_category": {
+      "docker-build-log": {
+        "items": 4,
+        "leaked": 0
+      },
+      "k8s-configmap": {
+        "items": 2,
+        "leaked": 0
+      },
+      "k8s-event": {
+        "items": 2,
+        "leaked": 0
+      },
+      "prometheus-alert": {
+        "items": 2,
+        "leaked": 1
+      },
+      "grafana-alert": {
+        "items": 2,
+        "leaked": 0
+      },
+      "datadog-log": {
+        "items": 2,
+        "leaked": 0
+      },
+      "newrelic-log": {
+        "items": 2,
+        "leaked": 0
+      },
+      "terraform-plan": {
+        "items": 4,
+        "leaked": 1
+      },
+      "cloudformation": {
+        "items": 4,
+        "leaked": 0
+      },
+      "nginx-access": {
+        "items": 2,
+        "leaked": 1
+      },
+      "apache-error": {
+        "items": 1,
+        "leaked": 0
+      },
+      "apache-access": {
+        "items": 1,
+        "leaked": 0
+      },
+      "postgres-slowlog": {
+        "items": 4,
+        "leaked": 0
+      },
+      "mongodb-doc": {
+        "items": 4,
+        "leaked": 0
+      },
+      "elasticsearch-hit": {
+        "items": 4,
+        "leaked": 0
+      },
+      "jira-ticket": {
+        "items": 2,
+        "leaked": 0
+      },
+      "linear-ticket": {
+        "items": 2,
+        "leaked": 0
+      },
+      "zendesk-ticket": {
+        "items": 2,
+        "leaked": 0
+      },
+      "intercom-ticket": {
+        "items": 2,
+        "leaked": 0
+      },
+      "ics-invite": {
+        "items": 4,
+        "leaked": 0
+      },
+      "vcard": {
+        "items": 4,
+        "leaked": 0
+      },
+      "pdf-bank-statement": {
+        "items": 3,
+        "leaked": 0
+      },
+      "insurance-claim": {
+        "items": 3,
+        "leaked": 0
+      },
+      "school-enrollment": {
+        "items": 3,
+        "leaked": 0
+      },
+      "pharmacy-rx": {
+        "items": 3,
+        "leaked": 0
+      },
+      "git-blame": {
+        "items": 2,
+        "leaked": 1
+      },
+      "git-log": {
+        "items": 1,
+        "leaked": 0
+      },
+      "jupyter-traceback": {
+        "items": 3,
+        "leaked": 0
+      },
+      "postman-env": {
+        "items": 3,
+        "leaked": 0
+      },
+      "kafka-payload": {
+        "items": 3,
+        "leaked": 0
+      },
+      "negative": {
+        "items": 40,
+        "leaked": 12
+      }
+    },
+    "leaks": [
+      {
+        "id": "h4-011",
+        "values": [
+          "69.158.65.116"
+        ]
+      },
+      {
+        "id": "h4-019",
+        "values": [
+          "slee"
+        ]
+      },
+      {
+        "id": "h4-025",
+        "values": [
+          "talmeida"
+        ]
+      },
+      {
+        "id": "h4-071",
+        "values": [
+          "ACa491a2c726ef8226b7f9b6ed8efec377"
+        ]
+      }
+    ],
+    "ms_per_item": 57.4
+  },
+  {
+    "adapter": "cloakroom rules",
+    "items": 80,
+    "items_leaked": 71,
+    "values_total": 328,
+    "values_leaked": 163,
+    "blocked": 0,
+    "negatives": 40,
+    "false_alarms": 4,
+    "by_category": {
+      "docker-build-log": {
+        "items": 4,
+        "leaked": 2
+      },
+      "k8s-configmap": {
+        "items": 2,
+        "leaked": 2
+      },
+      "k8s-event": {
+        "items": 2,
+        "leaked": 2
+      },
+      "prometheus-alert": {
+        "items": 2,
+        "leaked": 2
+      },
+      "grafana-alert": {
+        "items": 2,
+        "leaked": 1
+      },
+      "datadog-log": {
+        "items": 2,
+        "leaked": 1
+      },
+      "newrelic-log": {
+        "items": 2,
+        "leaked": 1
+      },
+      "terraform-plan": {
+        "items": 4,
+        "leaked": 3
+      },
+      "cloudformation": {
+        "items": 4,
+        "leaked": 3
+      },
+      "nginx-access": {
+        "items": 2,
+        "leaked": 2
+      },
+      "apache-error": {
+        "items": 1,
+        "leaked": 1
+      },
+      "apache-access": {
+        "items": 1,
+        "leaked": 1
+      },
+      "postgres-slowlog": {
+        "items": 4,
+        "leaked": 4
+      },
+      "mongodb-doc": {
+        "items": 4,
+        "leaked": 4
+      },
+      "elasticsearch-hit": {
+        "items": 4,
+        "leaked": 4
+      },
+      "jira-ticket": {
+        "items": 2,
+        "leaked": 2
+      },
+      "linear-ticket": {
+        "items": 2,
+        "leaked": 2
+      },
+      "zendesk-ticket": {
+        "items": 2,
+        "leaked": 2
+      },
+      "intercom-ticket": {
+        "items": 2,
+        "leaked": 2
+      },
+      "ics-invite": {
+        "items": 4,
+        "leaked": 4
+      },
+      "vcard": {
+        "items": 4,
+        "leaked": 4
+      },
+      "pdf-bank-statement": {
+        "items": 3,
+        "leaked": 3
+      },
+      "insurance-claim": {
+        "items": 3,
+        "leaked": 3
+      },
+      "school-enrollment": {
+        "items": 3,
+        "leaked": 3
+      },
+      "pharmacy-rx": {
+        "items": 3,
+        "leaked": 3
+      },
+      "git-blame": {
+        "items": 2,
+        "leaked": 2
+      },
+      "git-log": {
+        "items": 1,
+        "leaked": 1
+      },
+      "jupyter-traceback": {
+        "items": 3,
+        "leaked": 2
+      },
+      "postman-env": {
+        "items": 3,
+        "leaked": 2
+      },
+      "kafka-payload": {
+        "items": 3,
+        "leaked": 3
+      },
+      "negative": {
+        "items": 40,
+        "leaked": 4
+      }
+    },
+    "leaks": [
+      {
+        "id": "h4-001",
+        "values": [
+          "ZGhhaWxlOlFaUFRHd3ZZNmE9JExQNHY="
+        ]
+      },
+      {
+        "id": "h4-002",
+        "values": [
+          "ghp_zkMNArN6zxC5WrKkiJ\\\n  d9o5cxj1jsU74A2Cqp",
+          "tmahmoud"
+        ]
+      },
+      {
+        "id": "h4-005",
+        "values": [
+          "Nikos Papadopoulos"
+        ]
+      },
+      {
+        "id": "h4-006",
+        "values": [
+          "193.82.9.213",
+          "oadeleke"
+        ]
+      },
+      {
+        "id": "h4-007",
+        "values": [
+          "AC5d0944ee6f23cad399eafbc50a47182e"
+        ]
+      },
+      {
+        "id": "h4-008",
+        "values": [
+          "danggraini"
+        ]
+      },
+      {
+        "id": "h4-009",
+        "values": [
+          "+44 7700 900390"
+        ]
+      },
+      {
+        "id": "h4-010",
+        "values": [
+          "+49 170 7796673"
+        ]
+      },
+      {
+        "id": "h4-011",
+        "values": [
+          "69.158.65.116",
+          "zlewandowska",
+          "Zofia Lewandowska",
+          "+61 414 446 800"
+        ]
+      },
+      {
+        "id": "h4-014",
+        "values": [
+          "malvarez",
+          "4a099646822e93b97c485f7f18fd759b6a07be107c180683"
+        ]
+      },
+      {
+        "id": "h4-015",
+        "values": [
+          "mlaurent",
+          "+52 55 6221 3669",
+          "139.142.143.245"
+        ]
+      },
+      {
+        "id": "h4-017",
+        "values": [
+          "ghU8S^OadE_1$DF",
+          "=%Pkm*Z%D7OKMm",
+          "ybenali",
+          "ylevi"
+        ]
+      },
+      {
+        "id": "h4-019",
+        "values": [
+          "slee",
+          "Soo-Ah Lee",
+          "+91 29606 00286"
+        ]
+      },
+      {
+        "id": "h4-020",
+        "values": [
+          "nbergstrom",
+          "191.95.135.138"
+        ]
+      },
+      {
+        "id": "h4-021",
+        "values": [
+          "rgupta"
+        ]
+      },
+      {
+        "id": "h4-023",
+        "values": [
+          "AKIAO0RDFPBNZODOQ4D7",
+          "+81 90-6924-6547"
+        ]
+      },
+      {
+        "id": "h4-024",
+        "values": [
+          "Taras Kovalenko",
+          "+55 11 9 2636-7777"
+        ]
+      },
+      {
+        "id": "h4-025",
+        "values": [
+          "135.87.49.56",
+          "talmeida"
+        ]
+      },
+      {
+        "id": "h4-026",
+        "values": [
+          "33.70.238.171"
+        ]
+      },
+      {
+        "id": "h4-027",
+        "values": [
+          "25.56.47.168",
+          "sooah.lee%40driftwell.app",
+          "Soo-Ah Lee"
+        ]
+      },
+      {
+        "id": "h4-028",
+        "values": [
+          "139.205.190.45"
+        ]
+      },
+      {
+        "id": "h4-029",
+        "values": [
+          "mlaurent",
+          "33.225.2.191"
+        ]
+      },
+      {
+        "id": "h4-030",
+        "values": [
+          "Sanne Bakker"
+        ]
+      },
+      {
+        "id": "h4-031",
+        "values": [
+          "+61 490 868 851",
+          "HIC-0PZPQLWD"
+        ]
+      },
+      {
+        "id": "h4-032",
+        "values": [
+          "14/09/1984"
+        ]
+      },
+      {
+        "id": "h4-033",
+        "values": [
+          "938 827 581"
+        ]
+      },
+      {
+        "id": "h4-034",
+        "values": [
+          "bcelik",
+          "47.250.220.200"
+        ]
+      },
+      {
+        "id": "h4-035",
+        "values": [
+          "POL-1ZIPZEJEC",
+          "MRN-08427517",
+          "+52 55 4268 5070"
+        ]
+      },
+      {
+        "id": "h4-036",
+        "values": [
+          "lnguyen",
+          "Duc Tran",
+          "+44 7700 900947"
+        ]
+      },
+      {
+        "id": "h4-037",
+        "values": [
+          "Tiago",
+          "Tiago Almeida",
+          "+49 170 0675146"
+        ]
+      },
+      {
+        "id": "h4-038",
+        "values": [
+          "207.9.7.188"
+        ]
+      },
+      {
+        "id": "h4-039",
+        "values": [
+          "683958880",
+          "+81 90-9384-1967",
+          "Sofia Ribeiro"
+        ]
+      },
+      {
+        "id": "h4-040",
+        "values": [
+          "104 rue des Aub\u00e9pines, 35895 Bordeaux"
+        ]
+      },
+      {
+        "id": "h4-041",
+        "values": [
+          "Min-Jun Kim",
+          "+91 03603 47717",
+          "Charity Bell",
+          "Honor Blackwood",
+          "Bliss Carter",
+          "lnguyen"
+        ]
+      },
+      {
+        "id": "h4-042",
+        "values": [
+          "malvarez",
+          "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",
+          "+55 11 9 5963-6955"
+        ]
+      },
+      {
+        "id": "h4-043",
+        "values": [
+          "sito",
+          "+61 477 715 965"
+        ]
+      },
+      {
+        "id": "h4-044",
+        "values": [
+          "Olumide Adeleke",
+          "07/23/1979",
+          "River Stone",
+          "23/11/1985"
+        ]
+      },
+      {
+        "id": "h4-045",
+        "values": [
+          "wash"
+        ]
+      },
+      {
+        "id": "h4-046",
+        "values": [
+          "bcelik"
+        ]
+      },
+      {
+        "id": "h4-047",
+        "values": [
+          "Eichenweg 16, 73422 Aachen"
+        ]
+      },
+      {
+        "id": "h4-048",
+        "values": [
+          "ACf791d8b372e6c530c651c3a1d1d6ca3d",
+          "oerzJzOwLcFsJfJUN5qc4kt389wnZyqQ"
+        ]
+      },
+      {
+        "id": "h4-049",
+        "values": [
+          "Eleni Kostas",
+          "Bliss Carter"
+        ]
+      },
+      {
+        "id": "h4-050",
+        "values": [
+          "Santiago Morales",
+          "MRN-70687455",
+          "+52 55 8777 5498",
+          "Calle de los \u00c1lamos 299, Col. Condesa, Ciudad de M\u00e9xico, C.P. 92818"
+        ]
+      },
+      {
+        "id": "h4-051",
+        "values": [
+          "Mia Fischer",
+          "CA DL X8664678"
+        ]
+      },
+      {
+        "id": "h4-052",
+        "values": [
+          "Emil",
+          "Lucas Pereira",
+          "+81 90-8450-9359"
+        ]
+      },
+      {
+        "id": "h4-053",
+        "values": [
+          "Sanne Bakker",
+          "Bakker",
+          "Sanne",
+          "+55 11 9 6459-5213",
+          "Travessa do Farol, 1021, Belo Horizonte - AM, 77917-618",
+          "1999-02-10"
+        ]
+      },
+      {
+        "id": "h4-054",
+        "values": [
+          "Jakub Kowalczyk",
+          "+49 170 2368309"
+        ]
+      },
+      {
+        "id": "h4-055",
+        "values": [
+          "Irina Sokolova",
+          "Sokolova",
+          "Irina"
+        ]
+      },
+      {
+        "id": "h4-056",
+        "values": [
+          "\u0639\u0645\u0631 \u062d\u062f\u0627\u062f",
+          "Rao",
+          "Ishita",
+          "+81 90-7939-1179",
+          "\u3012613-3903 \u5e83\u5cf6\u5e02\u4e2d\u533a\u4e00\u756a\u753a3-8-18"
+        ]
+      },
+      {
+        "id": "h4-057",
+        "values": [
+          "Reza Karimi"
+        ]
+      },
+      {
+        "id": "h4-058",
+        "values": [
+          "+44 7700 900209"
+        ]
+      },
+      {
+        "id": "h4-059",
+        "values": [
+          "Lea Martin",
+          "12/02/1981",
+          "18 rue des Forges, 65249 Bordeaux"
+        ]
+      },
+      {
+        "id": "h4-060",
+        "values": [
+          "Sneha Kulkarni",
+          "MBR-2GZ5R6DH"
+        ]
+      },
+      {
+        "id": "h4-061",
+        "values": [
+          "Aisha Rahman",
+          "CA DL S3588392",
+          "+61 472 083 591"
+        ]
+      },
+      {
+        "id": "h4-062",
+        "values": [
+          "MRN-38330247",
+          "POL-WCYAPQ2N4FY",
+          "+52 55 8249 3245"
+        ]
+      },
+      {
+        "id": "h4-063",
+        "values": [
+          "Abena Frimpong"
+        ]
+      },
+      {
+        "id": "h4-064",
+        "values": [
+          "Santiago",
+          "Morales",
+          "\u0395\u03bb\u03ad\u03bd\u03b7 \u039a\u03ce\u03c3\u03c4\u03b1",
+          "+81 90-4638-3869",
+          "Juliana Costa"
+        ]
+      },
+      {
+        "id": "h4-065",
+        "values": [
+          "Mateo Alvarez",
+          "4 avenue des Ch\u00eanes, 17561 Strasbourg",
+          "+55 11 9 3847-2381"
+        ]
+      },
+      {
+        "id": "h4-066",
+        "values": [
+          "MRN-25843411",
+          "INS-OZ5VV4RKCYMD"
+        ]
+      },
+      {
+        "id": "h4-067",
+        "values": [
+          "Seestra\u00dfe 57, 37172 Regensburg",
+          "+49 170 1521928",
+          "MBR-ALPLCBLKIW"
+        ]
+      },
+      {
+        "id": "h4-068",
+        "values": [
+          "01/19/1998",
+          "MBR-SXWFNZ8BF3B",
+          "+52 55 8419 2544"
+        ]
+      },
+      {
+        "id": "h4-069",
+        "values": [
+          "Ana Reyes",
+          "River Stone",
+          "areyes"
+        ]
+      },
+      {
+        "id": "h4-070",
+        "values": [
+          "0a+_mCS69aqNX^6OJ+"
+        ]
+      },
+      {
+        "id": "h4-071",
+        "values": [
+          "jfernandez",
+          "ACa491a2c726ef8226b7f9b6ed8efec377",
+          "Duc Tran",
+          "+44 7700 900331"
+        ]
+      },
+      {
+        "id": "h4-073",
+        "values": [
+          "Dtlfug%zlEqMLL",
+          "Dawit Haile"
+        ]
+      },
+      {
+        "id": "h4-074",
+        "values": [
+          "+91 41304 30411"
+        ]
+      },
+      {
+        "id": "h4-076",
+        "values": [
+          "+61 449 115 998",
+          "dtran"
+        ]
+      },
+      {
+        "id": "h4-077",
+        "values": [
+          "AC9fe7eb61f222198d8b850fe7cda949ab",
+          "rQgmZMm0EW3dlm3Lzyxbufyj3YSkWgLH"
+        ]
+      },
+      {
+        "id": "h4-078",
+        "values": [
+          "yowusu",
+          "+55 11 9 7570-1635",
+          "167.78.11.18"
+        ]
+      },
+      {
+        "id": "h4-079",
+        "values": [
+          "Nicha Srisai"
+        ]
+      },
+      {
+        "id": "h4-080",
+        "values": [
+          "oshevchenko",
+          "249831125",
+          "609 312 665",
+          "+61 410 758 481"
+        ]
+      }
+    ],
+    "ms_per_item": 0.1
+  },
+  {
+    "adapter": "maisecrets",
+    "items": 80,
+    "items_leaked": 77,
+    "values_total": 328,
+    "values_leaked": 181,
+    "blocked": 0,
+    "negatives": 40,
+    "false_alarms": 3,
+    "by_category": {
+      "docker-build-log": {
+        "items": 4,
+        "leaked": 4
+      },
+      "k8s-configmap": {
+        "items": 2,
+        "leaked": 2
+      },
+      "k8s-event": {
+        "items": 2,
+        "leaked": 2
+      },
+      "prometheus-alert": {
+        "items": 2,
+        "leaked": 1
+      },
+      "grafana-alert": {
+        "items": 2,
+        "leaked": 2
+      },
+      "datadog-log": {
+        "items": 2,
+        "leaked": 2
+      },
+      "newrelic-log": {
+        "items": 2,
+        "leaked": 1
+      },
+      "terraform-plan": {
+        "items": 4,
+        "leaked": 4
+      },
+      "cloudformation": {
+        "items": 4,
+        "leaked": 4
+      },
+      "nginx-access": {
+        "items": 2,
+        "leaked": 2
+      },
+      "apache-error": {
+        "items": 1,
+        "leaked": 0
+      },
+      "apache-access": {
+        "items": 1,
+        "leaked": 1
+      },
+      "postgres-slowlog": {
+        "items": 4,
+        "leaked": 4
+      },
+      "mongodb-doc": {
+        "items": 4,
+        "leaked": 4
+      },
+      "elasticsearch-hit": {
+        "items": 4,
+        "leaked": 4
+      },
+      "jira-ticket": {
+        "items": 2,
+        "leaked": 2
+      },
+      "linear-ticket": {
+        "items": 2,
+        "leaked": 2
+      },
+      "zendesk-ticket": {
+        "items": 2,
+        "leaked": 2
+      },
+      "intercom-ticket": {
+        "items": 2,
+        "leaked": 2
+      },
+      "ics-invite": {
+        "items": 4,
+        "leaked": 4
+      },
+      "vcard": {
+        "items": 4,
+        "leaked": 4
+      },
+      "pdf-bank-statement": {
+        "items": 3,
+        "leaked": 3
+      },
+      "insurance-claim": {
+        "items": 3,
+        "leaked": 3
+      },
+      "school-enrollment": {
+        "items": 3,
+        "leaked": 3
+      },
+      "pharmacy-rx": {
+        "items": 3,
+        "leaked": 3
+      },
+      "git-blame": {
+        "items": 2,
+        "leaked": 2
+      },
+      "git-log": {
+        "items": 1,
+        "leaked": 1
+      },
+      "jupyter-traceback": {
+        "items": 3,
+        "leaked": 3
+      },
+      "postman-env": {
+        "items": 3,
+        "leaked": 3
+      },
+      "kafka-payload": {
+        "items": 3,
+        "leaked": 3
+      },
+      "negative": {
+        "items": 40,
+        "leaked": 3
+      }
+    },
+    "leaks": [
+      {
+        "id": "h4-001",
+        "values": [
+          "ZGhhaWxlOlFaUFRHd3ZZNmE9JExQNHY="
+        ]
+      },
+      {
+        "id": "h4-002",
+        "values": [
+          "ghp_zkMNArN6zxC5WrKkiJ\\\n  d9o5cxj1jsU74A2Cqp",
+          "tmahmoud"
+        ]
+      },
+      {
+        "id": "h4-003",
+        "values": [
+          "psharma",
+          "Pooja Sharma"
+        ]
+      },
+      {
+        "id": "h4-004",
+        "values": [
+          "mandersen"
+        ]
+      },
+      {
+        "id": "h4-005",
+        "values": [
+          "Nikos Papadopoulos"
+        ]
+      },
+      {
+        "id": "h4-006",
+        "values": [
+          "oadeleke"
+        ]
+      },
+      {
+        "id": "h4-007",
+        "values": [
+          "AC5d0944ee6f23cad399eafbc50a47182e",
+          "Nikos Papadopoulos"
+        ]
+      },
+      {
+        "id": "h4-008",
+        "values": [
+          "danggraini"
+        ]
+      },
+      {
+        "id": "h4-010",
+        "values": [
+          "Ioana Radu"
+        ]
+      },
+      {
+        "id": "h4-011",
+        "values": [
+          "zlewandowska",
+          "Zofia Lewandowska"
+        ]
+      },
+      {
+        "id": "h4-012",
+        "values": [
+          "Bliss Carter"
+        ]
+      },
+      {
+        "id": "h4-013",
+        "values": [
+          "Giulia Romano",
+          "sk-ant-api03-8o5I1gjyEmd6VYeNEAqFRsakNCfXyiHo09UCdNxV"
+        ]
+      },
+      {
+        "id": "h4-014",
+        "values": [
+          "malvarez",
+          "4a099646822e93b97c485f7f18fd759b6a07be107c180683"
+        ]
+      },
+      {
+        "id": "h4-015",
+        "values": [
+          "mlaurent"
+        ]
+      },
+      {
+        "id": "h4-017",
+        "values": [
+          "ghU8S^OadE_1$DF",
+          "=%Pkm*Z%D7OKMm",
+          "ybenali",
+          "ylevi"
+        ]
+      },
+      {
+        "id": "h4-018",
+        "values": [
+          "sk-proj-iozJA5BWwV5nmSMfbJu_XKy0gN4XTBJORayJl9gSOqeFmL44"
+        ]
+      },
+      {
+        "id": "h4-019",
+        "values": [
+          "slee",
+          "Soo-Ah Lee"
+        ]
+      },
+      {
+        "id": "h4-020",
+        "values": [
+          "nbergstrom"
+        ]
+      },
+      {
+        "id": "h4-021",
+        "values": [
+          "rgupta"
+        ]
+      },
+      {
+        "id": "h4-022",
+        "values": [
+          "sk-ant-api03-FfmYTWwKO9KPd7b2CdO7NNF2fF5TeME8gHmf4ZXG"
+        ]
+      },
+      {
+        "id": "h4-023",
+        "values": [
+          "AKIAO0RDFPBNZODOQ4D7",
+          "Linh Nguyen"
+        ]
+      },
+      {
+        "id": "h4-024",
+        "values": [
+          "Taras Kovalenko",
+          "+55 11 9 2636-7777"
+        ]
+      },
+      {
+        "id": "h4-025",
+        "values": [
+          "talmeida"
+        ]
+      },
+      {
+        "id": "h4-027",
+        "values": [
+          "sooah.lee%40driftwell.app",
+          "Soo-Ah Lee"
+        ]
+      },
+      {
+        "id": "h4-028",
+        "values": [
+          "mvillanueva"
+        ]
+      },
+      {
+        "id": "h4-029",
+        "values": [
+          "mlaurent"
+        ]
+      },
+      {
+        "id": "h4-030",
+        "values": [
+          "Sanne Bakker"
+        ]
+      },
+      {
+        "id": "h4-031",
+        "values": [
+          "HIC-0PZPQLWD"
+        ]
+      },
+      {
+        "id": "h4-032",
+        "values": [
+          "Adaeze Uche",
+          "14/09/1984"
+        ]
+      },
+      {
+        "id": "h4-033",
+        "values": [
+          "Dina Khalil",
+          "4853 Stonechat Terrace, Bisbee, AZ 63657",
+          "1986-12-20",
+          "938 827 581"
+        ]
+      },
+      {
+        "id": "h4-034",
+        "values": [
+          "bcelik",
+          "Noa Cohen"
+        ]
+      },
+      {
+        "id": "h4-035",
+        "values": [
+          "POL-1ZIPZEJEC",
+          "Selam Tesfaye",
+          "MRN-08427517"
+        ]
+      },
+      {
+        "id": "h4-036",
+        "values": [
+          "lnguyen",
+          "Duc Tran"
+        ]
+      },
+      {
+        "id": "h4-037",
+        "values": [
+          "Tiago",
+          "Tiago Almeida"
+        ]
+      },
+      {
+        "id": "h4-038",
+        "values": [
+          "dvisser"
+        ]
+      },
+      {
+        "id": "h4-039",
+        "values": [
+          "Rohan Bhatt",
+          "683958880",
+          "Sofia Ribeiro"
+        ]
+      },
+      {
+        "id": "h4-040",
+        "values": [
+          "104 rue des Aub\u00e9pines, 35895 Bordeaux"
+        ]
+      },
+      {
+        "id": "h4-041",
+        "values": [
+          "Linh Nguyen",
+          "Min-Jun Kim",
+          "Charity Bell",
+          "Honor Blackwood",
+          "Bliss Carter",
+          "lnguyen"
+        ]
+      },
+      {
+        "id": "h4-042",
+        "values": [
+          "malvarez",
+          "Mateo Alvarez",
+          "+55 11 9 5963-6955"
+        ]
+      },
+      {
+        "id": "h4-043",
+        "values": [
+          "Sakura Ito",
+          "sito"
+        ]
+      },
+      {
+        "id": "h4-044",
+        "values": [
+          "Olumide Adeleke",
+          "07/23/1979",
+          "River Stone",
+          "23/11/1985",
+          "Skylar Finch",
+          "Willow Ash"
+        ]
+      },
+      {
+        "id": "h4-045",
+        "values": [
+          "Ifeanyi Obi",
+          "wash"
+        ]
+      },
+      {
+        "id": "h4-046",
+        "values": [
+          "Burak Celik",
+          "bcelik"
+        ]
+      },
+      {
+        "id": "h4-047",
+        "values": [
+          "Sara Ahmadi",
+          "133 Grebe Lane, York YO24 4QG",
+          "Eichenweg 16, 73422 Aachen"
+        ]
+      },
+      {
+        "id": "h4-048",
+        "values": [
+          "Nora Bergstrom",
+          "ACf791d8b372e6c530c651c3a1d1d6ca3d",
+          "oerzJzOwLcFsJfJUN5qc4kt389wnZyqQ"
+        ]
+      },
+      {
+        "id": "h4-049",
+        "values": [
+          "Eleni Kostas",
+          "Bliss Carter"
+        ]
+      },
+      {
+        "id": "h4-050",
+        "values": [
+          "Santiago Morales",
+          "MRN-70687455",
+          "1966-01-28",
+          "Calle de los \u00c1lamos 299, Col. Condesa, Ciudad de M\u00e9xico, C.P. 92818"
+        ]
+      },
+      {
+        "id": "h4-051",
+        "values": [
+          "Mia Fischer",
+          "5/44 Grevillea Road, Fremantle QLD 7627",
+          "CA DL X8664678"
+        ]
+      },
+      {
+        "id": "h4-052",
+        "values": [
+          "Emil",
+          "Lucas Pereira"
+        ]
+      },
+      {
+        "id": "h4-053",
+        "values": [
+          "Sanne Bakker",
+          "Bakker",
+          "Sanne",
+          "+55 11 9 6459-5213",
+          "Travessa do Farol, 1021, Belo Horizonte - AM, 77917-618",
+          "1999-02-10"
+        ]
+      },
+      {
+        "id": "h4-054",
+        "values": [
+          "Jakub Kowalczyk",
+          "xoxp-325170801185-6262559580631-JcEHJGqfd7HhkpXnwN4zg9jO"
+        ]
+      },
+      {
+        "id": "h4-055",
+        "values": [
+          "Irina Sokolova",
+          "Sokolova",
+          "Irina",
+          "57 Allen Avenue, Ikeja, Lagos"
+        ]
+      },
+      {
+        "id": "h4-056",
+        "values": [
+          "\u0639\u0645\u0631 \u062d\u062f\u0627\u062f",
+          "Rao",
+          "Ishita",
+          "\u3012613-3903 \u5e83\u5cf6\u5e02\u4e2d\u533a\u4e00\u756a\u753a3-8-18"
+        ]
+      },
+      {
+        "id": "h4-057",
+        "values": [
+          "Reza Karimi",
+          "5988 Harbor Mist Way, Boone, AZ 68158",
+          "01/27/2000"
+        ]
+      },
+      {
+        "id": "h4-058",
+        "values": [
+          "Noa Cohen"
+        ]
+      },
+      {
+        "id": "h4-059",
+        "values": [
+          "Lea Martin",
+          "12/02/1981",
+          "18 rue des Forges, 65249 Bordeaux"
+        ]
+      },
+      {
+        "id": "h4-060",
+        "values": [
+          "Sneha Kulkarni",
+          "MBR-2GZ5R6DH",
+          "1975-07-22"
+        ]
+      },
+      {
+        "id": "h4-061",
+        "values": [
+          "Aisha Rahman",
+          "15/40 Grevillea Road, Albany NSW 4714"
+        ]
+      },
+      {
+        "id": "h4-062",
+        "values": [
+          "Daiki Fujita",
+          "MRN-38330247",
+          "POL-WCYAPQ2N4FY",
+          "Alexei Morozov"
+        ]
+      },
+      {
+        "id": "h4-063",
+        "values": [
+          "Abena Frimpong",
+          "01/13/1976",
+          "Daniela Vargas",
+          "2405 Dunlin Blvd, Lanesboro, NM 65477"
+        ]
+      },
+      {
+        "id": "h4-064",
+        "values": [
+          "Santiago",
+          "Morales",
+          "\u0395\u03bb\u03ad\u03bd\u03b7 \u039a\u03ce\u03c3\u03c4\u03b1",
+          "Juliana Costa"
+        ]
+      },
+      {
+        "id": "h4-065",
+        "values": [
+          "Mateo Alvarez",
+          "15/11/1968",
+          "4 avenue des Ch\u00eanes, 17561 Strasbourg",
+          "+55 11 9 3847-2381"
+        ]
+      },
+      {
+        "id": "h4-066",
+        "values": [
+          "Aditya Rao",
+          "1963-02-16",
+          "MRN-25843411",
+          "Aisha Rahman",
+          "INS-OZ5VV4RKCYMD"
+        ]
+      },
+      {
+        "id": "h4-067",
+        "values": [
+          "Omar Haddad",
+          "Seestra\u00dfe 57, 37172 Regensburg",
+          "MBR-ALPLCBLKIW"
+        ]
+      },
+      {
+        "id": "h4-068",
+        "values": [
+          "Vlad Popa",
+          "01/19/1998",
+          "MBR-SXWFNZ8BF3B"
+        ]
+      },
+      {
+        "id": "h4-069",
+        "values": [
+          "Ana Reyes",
+          "River Stone",
+          "areyes"
+        ]
+      },
+      {
+        "id": "h4-070",
+        "values": [
+          "Sara Ahmadi",
+          "0a+_mCS69aqNX^6OJ+"
+        ]
+      },
+      {
+        "id": "h4-071",
+        "values": [
+          "jfernandez",
+          "ACa491a2c726ef8226b7f9b6ed8efec377",
+          "Duc Tran"
+        ]
+      },
+      {
+        "id": "h4-072",
+        "values": [
+          "jcosta"
+        ]
+      },
+      {
+        "id": "h4-073",
+        "values": [
+          "vcruz",
+          "Dtlfug%zlEqMLL",
+          "Dawit Haile"
+        ]
+      },
+      {
+        "id": "h4-074",
+        "values": [
+          "iobi",
+          "Santiago Morales",
+          "1972-11-01"
+        ]
+      },
+      {
+        "id": "h4-075",
+        "values": [
+          "sk-proj-DxJHEatszj2VjDaXA8r32_V1nGBJkEnofDUBU4Bq61lQtDQB"
+        ]
+      },
+      {
+        "id": "h4-076",
+        "values": [
+          "dtran"
+        ]
+      },
+      {
+        "id": "h4-077",
+        "values": [
+          "AC9fe7eb61f222198d8b850fe7cda949ab",
+          "rQgmZMm0EW3dlm3Lzyxbufyj3YSkWgLH"
+        ]
+      },
+      {
+        "id": "h4-078",
+        "values": [
+          "yowusu",
+          "Yaw Owusu",
+          "+55 11 9 7570-1635",
+          "sk-ant-api03-Pc7ZtoE_0twZlezxv5vP5_R4CQaPC9MocTGeOmyf"
+        ]
+      },
+      {
+        "id": "h4-079",
+        "values": [
+          "Nicha Srisai"
+        ]
+      },
+      {
+        "id": "h4-080",
+        "values": [
+          "oshevchenko",
+          "249831125",
+          "609 312 665"
+        ]
+      }
+    ],
+    "ms_per_item": 0.3
+  },
+  {
+    "adapter": "redact-hook (default)",
+    "items": 80,
+    "items_leaked": 80,
+    "values_total": 328,
+    "values_leaked": 255,
+    "blocked": 0,
+    "negatives": 40,
+    "false_alarms": 6,
+    "by_category": {
+      "docker-build-log": {
+        "items": 4,
+        "leaked": 4
+      },
+      "k8s-configmap": {
+        "items": 2,
+        "leaked": 2
+      },
+      "k8s-event": {
+        "items": 2,
+        "leaked": 2
+      },
+      "prometheus-alert": {
+        "items": 2,
+        "leaked": 2
+      },
+      "grafana-alert": {
+        "items": 2,
+        "leaked": 2
+      },
+      "datadog-log": {
+        "items": 2,
+        "leaked": 2
+      },
+      "newrelic-log": {
+        "items": 2,
+        "leaked": 2
+      },
+      "terraform-plan": {
+        "items": 4,
+        "leaked": 4
+      },
+      "cloudformation": {
+        "items": 4,
+        "leaked": 4
+      },
+      "nginx-access": {
+        "items": 2,
+        "leaked": 2
+      },
+      "apache-error": {
+        "items": 1,
+        "leaked": 1
+      },
+      "apache-access": {
+        "items": 1,
+        "leaked": 1
+      },
+      "postgres-slowlog": {
+        "items": 4,
+        "leaked": 4
+      },
+      "mongodb-doc": {
+        "items": 4,
+        "leaked": 4
+      },
+      "elasticsearch-hit": {
+        "items": 4,
+        "leaked": 4
+      },
+      "jira-ticket": {
+        "items": 2,
+        "leaked": 2
+      },
+      "linear-ticket": {
+        "items": 2,
+        "leaked": 2
+      },
+      "zendesk-ticket": {
+        "items": 2,
+        "leaked": 2
+      },
+      "intercom-ticket": {
+        "items": 2,
+        "leaked": 2
+      },
+      "ics-invite": {
+        "items": 4,
+        "leaked": 4
+      },
+      "vcard": {
+        "items": 4,
+        "leaked": 4
+      },
+      "pdf-bank-statement": {
+        "items": 3,
+        "leaked": 3
+      },
+      "insurance-claim": {
+        "items": 3,
+        "leaked": 3
+      },
+      "school-enrollment": {
+        "items": 3,
+        "leaked": 3
+      },
+      "pharmacy-rx": {
+        "items": 3,
+        "leaked": 3
+      },
+      "git-blame": {
+        "items": 2,
+        "leaked": 2
+      },
+      "git-log": {
+        "items": 1,
+        "leaked": 1
+      },
+      "jupyter-traceback": {
+        "items": 3,
+        "leaked": 3
+      },
+      "postman-env": {
+        "items": 3,
+        "leaked": 3
+      },
+      "kafka-payload": {
+        "items": 3,
+        "leaked": 3
+      },
+      "negative": {
+        "items": 40,
+        "leaked": 6
+      }
+    },
+    "leaks": [
+      {
+        "id": "h4-001",
+        "values": [
+          "ZGhhaWxlOlFaUFRHd3ZZNmE9JExQNHY=",
+          "dawit.haile@vantacore.com"
+        ]
+      },
+      {
+        "id": "h4-002",
+        "values": [
+          "tmahmoud",
+          "tariq.mahmoud@cloudspire.io"
+        ]
+      },
+      {
+        "id": "h4-003",
+        "values": [
+          "psharma",
+          "Pooja Sharma"
+        ]
+      },
+      {
+        "id": "h4-004",
+        "values": [
+          "mandersen"
+        ]
+      },
+      {
+        "id": "h4-005",
+        "values": [
+          "nikos.papadopoulos@duskfield.dev",
+          "Nikos Papadopoulos"
+        ]
+      },
+      {
+        "id": "h4-006",
+        "values": [
+          "193.82.9.213",
+          "oadeleke",
+          "olumide.adeleke@vantacore.com"
+        ]
+      },
+      {
+        "id": "h4-007",
+        "values": [
+          "AC5d0944ee6f23cad399eafbc50a47182e",
+          "Nikos Papadopoulos",
+          "nikos.papadopoulos@foxdenlabs.io"
+        ]
+      },
+      {
+        "id": "h4-008",
+        "values": [
+          "danggraini",
+          "dewi.anggraini@foxdenlabs.io"
+        ]
+      },
+      {
+        "id": "h4-009",
+        "values": [
+          "deniz.yilmaz@alderpoint.dev"
+        ]
+      },
+      {
+        "id": "h4-010",
+        "values": [
+          "Ioana Radu",
+          "ioana.radu@corvidlabs.dev"
+        ]
+      },
+      {
+        "id": "h4-011",
+        "values": [
+          "69.158.65.116",
+          "zlewandowska",
+          "Zofia Lewandowska"
+        ]
+      },
+      {
+        "id": "h4-012",
+        "values": [
+          "Bliss Carter",
+          "bliss.carter@larkspur.digital"
+        ]
+      },
+      {
+        "id": "h4-013",
+        "values": [
+          "giulia.romano@alderpoint.dev",
+          "Giulia Romano"
+        ]
+      },
+      {
+        "id": "h4-014",
+        "values": [
+          "malvarez",
+          "i!kyBV7DyKVcqNoixmQ",
+          "4a099646822e93b97c485f7f18fd759b6a07be107c180683"
+        ]
+      },
+      {
+        "id": "h4-015",
+        "values": [
+          "mlaurent",
+          "139.142.143.245"
+        ]
+      },
+      {
+        "id": "h4-016",
+        "values": [
+          "charity.bell@sablewing.io"
+        ]
+      },
+      {
+        "id": "h4-017",
+        "values": [
+          "ghU8S^OadE_1$DF",
+          "=%Pkm*Z%D7OKMm",
+          "ybenali",
+          "ylevi",
+          "yasmine.benali@pinecrestlabs.dev"
+        ]
+      },
+      {
+        "id": "h4-018",
+        "values": [
+          "mark.villanueva@emberline.dev"
+        ]
+      },
+      {
+        "id": "h4-019",
+        "values": [
+          "slee",
+          "Soo-Ah Lee"
+        ]
+      },
+      {
+        "id": "h4-020",
+        "values": [
+          "nbergstrom",
+          "nora.bergstrom@duskfield.dev",
+          "191.95.135.138"
+        ]
+      },
+      {
+        "id": "h4-021",
+        "values": [
+          "rgupta",
+          "bSCZVWl_0xabp!"
+        ]
+      },
+      {
+        "id": "h4-022",
+        "values": [
+          "theo.girard@harborlight.ai"
+        ]
+      },
+      {
+        "id": "h4-023",
+        "values": [
+          "Linh Nguyen"
+        ]
+      },
+      {
+        "id": "h4-024",
+        "values": [
+          "Taras Kovalenko",
+          "taras.kovalenko@corvidlabs.dev"
+        ]
+      },
+      {
+        "id": "h4-025",
+        "values": [
+          "135.87.49.56",
+          "talmeida"
+        ]
+      },
+      {
+        "id": "h4-026",
+        "values": [
+          "33.70.238.171",
+          "reza.karimi@larkspur.digital"
+        ]
+      },
+      {
+        "id": "h4-027",
+        "values": [
+          "25.56.47.168",
+          "sooah.lee%40driftwell.app",
+          "Soo-Ah Lee"
+        ]
+      },
+      {
+        "id": "h4-028",
+        "values": [
+          "139.205.190.45",
+          "mvillanueva",
+          "mark.villanueva@alderpoint.dev"
+        ]
+      },
+      {
+        "id": "h4-029",
+        "values": [
+          "manon.laurent@cloudspire.io",
+          "146-49-8087",
+          "mlaurent",
+          "33.225.2.191"
+        ]
+      },
+      {
+        "id": "h4-030",
+        "values": [
+          "Sanne Bakker"
+        ]
+      },
+      {
+        "id": "h4-031",
+        "values": [
+          "HIC-0PZPQLWD",
+          "lucas.pereira@copperfinch.io"
+        ]
+      },
+      {
+        "id": "h4-032",
+        "values": [
+          "Adaeze Uche",
+          "14/09/1984",
+          "DE90619976620697434016"
+        ]
+      },
+      {
+        "id": "h4-033",
+        "values": [
+          "Dina Khalil",
+          "dina.khalil@quillback.io",
+          "4853 Stonechat Terrace, Bisbee, AZ 63657",
+          "1986-12-20",
+          "938 827 581"
+        ]
+      },
+      {
+        "id": "h4-034",
+        "values": [
+          "bcelik",
+          "47.250.220.200",
+          "Noa Cohen",
+          "noa.cohen@driftwell.app"
+        ]
+      },
+      {
+        "id": "h4-035",
+        "values": [
+          "POL-1ZIPZEJEC",
+          "Selam Tesfaye",
+          "MRN-08427517"
+        ]
+      },
+      {
+        "id": "h4-036",
+        "values": [
+          "lnguyen",
+          "duc.tran@duskfield.dev",
+          "Duc Tran"
+        ]
+      },
+      {
+        "id": "h4-037",
+        "values": [
+          "tiago.almeida@corvidlabs.dev",
+          "Tiago",
+          "Tiago Almeida"
+        ]
+      },
+      {
+        "id": "h4-038",
+        "values": [
+          "207.9.7.188",
+          "dvisser"
+        ]
+      },
+      {
+        "id": "h4-039",
+        "values": [
+          "Rohan Bhatt",
+          "683958880",
+          "Sofia Ribeiro"
+        ]
+      },
+      {
+        "id": "h4-040",
+        "values": [
+          "leon.meyer@harborlight.ai",
+          "FR3816208672714581634877353",
+          "104 rue des Aub\u00e9pines, 35895 Bordeaux"
+        ]
+      },
+      {
+        "id": "h4-041",
+        "values": [
+          "Linh Nguyen",
+          "linh.nguyen@harborlight.ai",
+          "Min-Jun Kim",
+          "Charity Bell",
+          "Honor Blackwood",
+          "Bliss Carter",
+          "minjun.kim@alderpoint.dev",
+          "lnguyen"
+        ]
+      },
+      {
+        "id": "h4-042",
+        "values": [
+          "malvarez",
+          "Mateo Alvarez"
+        ]
+      },
+      {
+        "id": "h4-043",
+        "values": [
+          "hana.kobayashi@copperfinch.io",
+          "Sakura Ito",
+          "sito"
+        ]
+      },
+      {
+        "id": "h4-044",
+        "values": [
+          "Olumide Adeleke",
+          "07/23/1979",
+          "River Stone",
+          "23/11/1985",
+          "Skylar Finch",
+          "olumide.adeleke@driftwell.app",
+          "Willow Ash",
+          "astrid.lund@larkspur.digital"
+        ]
+      },
+      {
+        "id": "h4-045",
+        "values": [
+          "Ifeanyi Obi",
+          "ifeanyi.obi@pinecrestlabs.dev",
+          "wash"
+        ]
+      },
+      {
+        "id": "h4-046",
+        "values": [
+          "burak.celik@emberline.dev",
+          "Burak Celik",
+          "bcelik"
+        ]
+      },
+      {
+        "id": "h4-047",
+        "values": [
+          "Sara Ahmadi",
+          "sara.ahmadi@copperfinch.io",
+          "133 Grebe Lane, York YO24 4QG",
+          "Eichenweg 16, 73422 Aachen"
+        ]
+      },
+      {
+        "id": "h4-048",
+        "values": [
+          "nora.bergstrom@duskfield.dev",
+          "Nora Bergstrom",
+          "ACf791d8b372e6c530c651c3a1d1d6ca3d",
+          "oerzJzOwLcFsJfJUN5qc4kt389wnZyqQ"
+        ]
+      },
+      {
+        "id": "h4-049",
+        "values": [
+          "Eleni Kostas",
+          "eleni.kostas@alderpoint.dev",
+          "Bliss Carter",
+          "bliss.carter@emberline.dev"
+        ]
+      },
+      {
+        "id": "h4-050",
+        "values": [
+          "Santiago Morales",
+          "MRN-70687455",
+          "1966-01-28",
+          "Calle de los \u00c1lamos 299, Col. Condesa, Ciudad de M\u00e9xico, C.P. 92818"
+        ]
+      },
+      {
+        "id": "h4-051",
+        "values": [
+          "Mia Fischer",
+          "emil.hansen@foxdenlabs.io",
+          "mia.fischer@pinecrestlabs.dev",
+          "5/44 Grevillea Road, Fremantle QLD 7627",
+          "CA DL X8664678"
+        ]
+      },
+      {
+        "id": "h4-052",
+        "values": [
+          "Emil",
+          "Lucas Pereira",
+          "emil.hansen@driftwell.app"
+        ]
+      },
+      {
+        "id": "h4-053",
+        "values": [
+          "Sanne Bakker",
+          "Bakker",
+          "Sanne",
+          "sanne.bakker@larkspur.digital",
+          "Travessa do Farol, 1021, Belo Horizonte - AM, 77917-618",
+          "1999-02-10"
+        ]
+      },
+      {
+        "id": "h4-054",
+        "values": [
+          "Jakub Kowalczyk",
+          "jakub.kowalczyk@corvidlabs.dev"
+        ]
+      },
+      {
+        "id": "h4-055",
+        "values": [
+          "Irina Sokolova",
+          "Sokolova",
+          "Irina",
+          "irina.sokolova@duskfield.dev",
+          "57 Allen Avenue, Ikeja, Lagos"
+        ]
+      },
+      {
+        "id": "h4-056",
+        "values": [
+          "\u0639\u0645\u0631 \u062d\u062f\u0627\u062f",
+          "Rao",
+          "Ishita",
+          "ishita.rao@vantacore.com",
+          "\u3012613-3903 \u5e83\u5cf6\u5e02\u4e2d\u533a\u4e00\u756a\u753a3-8-18"
+        ]
+      },
+      {
+        "id": "h4-057",
+        "values": [
+          "Reza Karimi",
+          "5988 Harbor Mist Way, Boone, AZ 68158",
+          "01/27/2000",
+          "reza.karimi@ternstone.dev"
+        ]
+      },
+      {
+        "id": "h4-058",
+        "values": [
+          "Noa Cohen",
+          "noa.cohen@harborlight.ai",
+          "GB31601177512594192713",
+          "261-76-7783"
+        ]
+      },
+      {
+        "id": "h4-059",
+        "values": [
+          "Lea Martin",
+          "12/02/1981",
+          "IT9413489907457368641669327",
+          "18 rue des Forges, 65249 Bordeaux",
+          "lea.martin@corvidlabs.dev"
+        ]
+      },
+      {
+        "id": "h4-060",
+        "values": [
+          "Sneha Kulkarni",
+          "MBR-2GZ5R6DH",
+          "1975-07-22",
+          "mona.elsayed@larkspur.digital"
+        ]
+      },
+      {
+        "id": "h4-061",
+        "values": [
+          "Aisha Rahman",
+          "CA DL S3588392",
+          "15/40 Grevillea Road, Albany NSW 4714",
+          "aisha.rahman@larkspur.digital"
+        ]
+      },
+      {
+        "id": "h4-062",
+        "values": [
+          "Daiki Fujita",
+          "MRN-38330247",
+          "POL-WCYAPQ2N4FY",
+          "daiki.fujita@driftwell.app",
+          "Alexei Morozov"
+        ]
+      },
+      {
+        "id": "h4-063",
+        "values": [
+          "Abena Frimpong",
+          "01/13/1976",
+          "Daniela Vargas",
+          "daniela.vargas@pinecrestlabs.dev",
+          "2405 Dunlin Blvd, Lanesboro, NM 65477"
+        ]
+      },
+      {
+        "id": "h4-064",
+        "values": [
+          "Santiago",
+          "Morales",
+          "\u0395\u03bb\u03ad\u03bd\u03b7 \u039a\u03ce\u03c3\u03c4\u03b1",
+          "Juliana Costa",
+          "santiago.morales@vantacore.com"
+        ]
+      },
+      {
+        "id": "h4-065",
+        "values": [
+          "Mateo Alvarez",
+          "15/11/1968",
+          "4 avenue des Ch\u00eanes, 17561 Strasbourg",
+          "mateo.alvarez@copperfinch.io"
+        ]
+      },
+      {
+        "id": "h4-066",
+        "values": [
+          "Aditya Rao",
+          "1963-02-16",
+          "MRN-25843411",
+          "Aisha Rahman",
+          "aisha.rahman@larkspur.digital",
+          "INS-OZ5VV4RKCYMD"
+        ]
+      },
+      {
+        "id": "h4-067",
+        "values": [
+          "Omar Haddad",
+          "Seestra\u00dfe 57, 37172 Regensburg",
+          "MBR-ALPLCBLKIW",
+          "omar.haddad@sablewing.io"
+        ]
+      },
+      {
+        "id": "h4-068",
+        "values": [
+          "Vlad Popa",
+          "01/19/1998",
+          "MBR-SXWFNZ8BF3B",
+          "vlad.popa@quillback.io"
+        ]
+      },
+      {
+        "id": "h4-069",
+        "values": [
+          "Ana Reyes",
+          "River Stone",
+          "ana.reyes@duskfield.dev",
+          "areyes"
+        ]
+      },
+      {
+        "id": "h4-070",
+        "values": [
+          "Sara Ahmadi",
+          "sara.ahmadi@cloudspire.io",
+          "0a+_mCS69aqNX^6OJ+"
+        ]
+      },
+      {
+        "id": "h4-071",
+        "values": [
+          "jfernandez",
+          "ACa491a2c726ef8226b7f9b6ed8efec377",
+          "Duc Tran"
+        ]
+      },
+      {
+        "id": "h4-072",
+        "values": [
+          "jcosta",
+          "juliana.costa@quillback.io"
+        ]
+      },
+      {
+        "id": "h4-073",
+        "values": [
+          "dawit.haile@alderpoint.dev",
+          "vcruz",
+          "Dtlfug%zlEqMLL",
+          "Dawit Haile"
+        ]
+      },
+      {
+        "id": "h4-074",
+        "values": [
+          "iobi",
+          "Santiago Morales",
+          "171-35-1214",
+          "1972-11-01",
+          "santiago.morales@driftwell.app"
+        ]
+      },
+      {
+        "id": "h4-075",
+        "values": [
+          "anna.wisniewska@sablewing.io"
+        ]
+      },
+      {
+        "id": "h4-076",
+        "values": [
+          "dtran"
+        ]
+      },
+      {
+        "id": "h4-077",
+        "values": [
+          "AC9fe7eb61f222198d8b850fe7cda949ab",
+          "rQgmZMm0EW3dlm3Lzyxbufyj3YSkWgLH",
+          "mikkel.andersen@copperline.io"
+        ]
+      },
+      {
+        "id": "h4-078",
+        "values": [
+          "yowusu",
+          "yaw.owusu@larkspur.digital",
+          "Yaw Owusu",
+          "167.78.11.18"
+        ]
+      },
+      {
+        "id": "h4-079",
+        "values": [
+          "Nicha Srisai",
+          "nicha.srisai@driftwell.app"
+        ]
+      },
+      {
+        "id": "h4-080",
+        "values": [
+          "oshevchenko",
+          "249831125",
+          "609 312 665",
+          "olena.shevchenko@copperfinch.io"
+        ]
+      }
+    ],
+    "ms_per_item": 0.0
+  },
+  {
+    "adapter": "redact-hook (aggressive)",
+    "items": 80,
+    "items_leaked": 80,
+    "values_total": 328,
+    "values_leaked": 254,
+    "blocked": 0,
+    "negatives": 40,
+    "false_alarms": 8,
+    "by_category": {
+      "docker-build-log": {
+        "items": 4,
+        "leaked": 4
+      },
+      "k8s-configmap": {
+        "items": 2,
+        "leaked": 2
+      },
+      "k8s-event": {
+        "items": 2,
+        "leaked": 2
+      },
+      "prometheus-alert": {
+        "items": 2,
+        "leaked": 2
+      },
+      "grafana-alert": {
+        "items": 2,
+        "leaked": 2
+      },
+      "datadog-log": {
+        "items": 2,
+        "leaked": 2
+      },
+      "newrelic-log": {
+        "items": 2,
+        "leaked": 2
+      },
+      "terraform-plan": {
+        "items": 4,
+        "leaked": 4
+      },
+      "cloudformation": {
+        "items": 4,
+        "leaked": 4
+      },
+      "nginx-access": {
+        "items": 2,
+        "leaked": 2
+      },
+      "apache-error": {
+        "items": 1,
+        "leaked": 1
+      },
+      "apache-access": {
+        "items": 1,
+        "leaked": 1
+      },
+      "postgres-slowlog": {
+        "items": 4,
+        "leaked": 4
+      },
+      "mongodb-doc": {
+        "items": 4,
+        "leaked": 4
+      },
+      "elasticsearch-hit": {
+        "items": 4,
+        "leaked": 4
+      },
+      "jira-ticket": {
+        "items": 2,
+        "leaked": 2
+      },
+      "linear-ticket": {
+        "items": 2,
+        "leaked": 2
+      },
+      "zendesk-ticket": {
+        "items": 2,
+        "leaked": 2
+      },
+      "intercom-ticket": {
+        "items": 2,
+        "leaked": 2
+      },
+      "ics-invite": {
+        "items": 4,
+        "leaked": 4
+      },
+      "vcard": {
+        "items": 4,
+        "leaked": 4
+      },
+      "pdf-bank-statement": {
+        "items": 3,
+        "leaked": 3
+      },
+      "insurance-claim": {
+        "items": 3,
+        "leaked": 3
+      },
+      "school-enrollment": {
+        "items": 3,
+        "leaked": 3
+      },
+      "pharmacy-rx": {
+        "items": 3,
+        "leaked": 3
+      },
+      "git-blame": {
+        "items": 2,
+        "leaked": 2
+      },
+      "git-log": {
+        "items": 1,
+        "leaked": 1
+      },
+      "jupyter-traceback": {
+        "items": 3,
+        "leaked": 3
+      },
+      "postman-env": {
+        "items": 3,
+        "leaked": 3
+      },
+      "kafka-payload": {
+        "items": 3,
+        "leaked": 3
+      },
+      "negative": {
+        "items": 40,
+        "leaked": 8
+      }
+    },
+    "leaks": [
+      {
+        "id": "h4-001",
+        "values": [
+          "ZGhhaWxlOlFaUFRHd3ZZNmE9JExQNHY=",
+          "dawit.haile@vantacore.com"
+        ]
+      },
+      {
+        "id": "h4-002",
+        "values": [
+          "tmahmoud",
+          "tariq.mahmoud@cloudspire.io"
+        ]
+      },
+      {
+        "id": "h4-003",
+        "values": [
+          "psharma",
+          "Pooja Sharma"
+        ]
+      },
+      {
+        "id": "h4-004",
+        "values": [
+          "mandersen"
+        ]
+      },
+      {
+        "id": "h4-005",
+        "values": [
+          "nikos.papadopoulos@duskfield.dev",
+          "Nikos Papadopoulos"
+        ]
+      },
+      {
+        "id": "h4-006",
+        "values": [
+          "193.82.9.213",
+          "oadeleke",
+          "olumide.adeleke@vantacore.com"
+        ]
+      },
+      {
+        "id": "h4-007",
+        "values": [
+          "AC5d0944ee6f23cad399eafbc50a47182e",
+          "Nikos Papadopoulos",
+          "nikos.papadopoulos@foxdenlabs.io"
+        ]
+      },
+      {
+        "id": "h4-008",
+        "values": [
+          "danggraini",
+          "dewi.anggraini@foxdenlabs.io"
+        ]
+      },
+      {
+        "id": "h4-009",
+        "values": [
+          "deniz.yilmaz@alderpoint.dev"
+        ]
+      },
+      {
+        "id": "h4-010",
+        "values": [
+          "Ioana Radu",
+          "ioana.radu@corvidlabs.dev"
+        ]
+      },
+      {
+        "id": "h4-011",
+        "values": [
+          "69.158.65.116",
+          "zlewandowska",
+          "Zofia Lewandowska"
+        ]
+      },
+      {
+        "id": "h4-012",
+        "values": [
+          "Bliss Carter",
+          "bliss.carter@larkspur.digital"
+        ]
+      },
+      {
+        "id": "h4-013",
+        "values": [
+          "giulia.romano@alderpoint.dev",
+          "Giulia Romano"
+        ]
+      },
+      {
+        "id": "h4-014",
+        "values": [
+          "malvarez",
+          "i!kyBV7DyKVcqNoixmQ",
+          "4a099646822e93b97c485f7f18fd759b6a07be107c180683"
+        ]
+      },
+      {
+        "id": "h4-015",
+        "values": [
+          "mlaurent",
+          "139.142.143.245"
+        ]
+      },
+      {
+        "id": "h4-016",
+        "values": [
+          "charity.bell@sablewing.io"
+        ]
+      },
+      {
+        "id": "h4-017",
+        "values": [
+          "ghU8S^OadE_1$DF",
+          "=%Pkm*Z%D7OKMm",
+          "ybenali",
+          "ylevi",
+          "yasmine.benali@pinecrestlabs.dev"
+        ]
+      },
+      {
+        "id": "h4-018",
+        "values": [
+          "mark.villanueva@emberline.dev"
+        ]
+      },
+      {
+        "id": "h4-019",
+        "values": [
+          "slee",
+          "Soo-Ah Lee"
+        ]
+      },
+      {
+        "id": "h4-020",
+        "values": [
+          "nbergstrom",
+          "nora.bergstrom@duskfield.dev",
+          "191.95.135.138"
+        ]
+      },
+      {
+        "id": "h4-021",
+        "values": [
+          "rgupta",
+          "bSCZVWl_0xabp!"
+        ]
+      },
+      {
+        "id": "h4-022",
+        "values": [
+          "theo.girard@harborlight.ai"
+        ]
+      },
+      {
+        "id": "h4-023",
+        "values": [
+          "Linh Nguyen"
+        ]
+      },
+      {
+        "id": "h4-024",
+        "values": [
+          "Taras Kovalenko",
+          "taras.kovalenko@corvidlabs.dev"
+        ]
+      },
+      {
+        "id": "h4-025",
+        "values": [
+          "135.87.49.56",
+          "talmeida"
+        ]
+      },
+      {
+        "id": "h4-026",
+        "values": [
+          "33.70.238.171",
+          "reza.karimi@larkspur.digital"
+        ]
+      },
+      {
+        "id": "h4-027",
+        "values": [
+          "25.56.47.168",
+          "sooah.lee%40driftwell.app",
+          "Soo-Ah Lee"
+        ]
+      },
+      {
+        "id": "h4-028",
+        "values": [
+          "139.205.190.45",
+          "mvillanueva",
+          "mark.villanueva@alderpoint.dev"
+        ]
+      },
+      {
+        "id": "h4-029",
+        "values": [
+          "manon.laurent@cloudspire.io",
+          "146-49-8087",
+          "mlaurent",
+          "33.225.2.191"
+        ]
+      },
+      {
+        "id": "h4-030",
+        "values": [
+          "Sanne Bakker"
+        ]
+      },
+      {
+        "id": "h4-031",
+        "values": [
+          "HIC-0PZPQLWD",
+          "lucas.pereira@copperfinch.io"
+        ]
+      },
+      {
+        "id": "h4-032",
+        "values": [
+          "Adaeze Uche",
+          "14/09/1984",
+          "DE90619976620697434016"
+        ]
+      },
+      {
+        "id": "h4-033",
+        "values": [
+          "Dina Khalil",
+          "dina.khalil@quillback.io",
+          "4853 Stonechat Terrace, Bisbee, AZ 63657",
+          "1986-12-20",
+          "938 827 581"
+        ]
+      },
+      {
+        "id": "h4-034",
+        "values": [
+          "bcelik",
+          "47.250.220.200",
+          "Noa Cohen",
+          "noa.cohen@driftwell.app"
+        ]
+      },
+      {
+        "id": "h4-035",
+        "values": [
+          "POL-1ZIPZEJEC",
+          "Selam Tesfaye",
+          "MRN-08427517"
+        ]
+      },
+      {
+        "id": "h4-036",
+        "values": [
+          "lnguyen",
+          "duc.tran@duskfield.dev",
+          "Duc Tran"
+        ]
+      },
+      {
+        "id": "h4-037",
+        "values": [
+          "tiago.almeida@corvidlabs.dev",
+          "Tiago",
+          "Tiago Almeida"
+        ]
+      },
+      {
+        "id": "h4-038",
+        "values": [
+          "207.9.7.188",
+          "dvisser"
+        ]
+      },
+      {
+        "id": "h4-039",
+        "values": [
+          "Rohan Bhatt",
+          "683958880",
+          "Sofia Ribeiro"
+        ]
+      },
+      {
+        "id": "h4-040",
+        "values": [
+          "leon.meyer@harborlight.ai",
+          "FR3816208672714581634877353",
+          "104 rue des Aub\u00e9pines, 35895 Bordeaux"
+        ]
+      },
+      {
+        "id": "h4-041",
+        "values": [
+          "Linh Nguyen",
+          "linh.nguyen@harborlight.ai",
+          "Min-Jun Kim",
+          "Charity Bell",
+          "Honor Blackwood",
+          "Bliss Carter",
+          "minjun.kim@alderpoint.dev",
+          "lnguyen"
+        ]
+      },
+      {
+        "id": "h4-042",
+        "values": [
+          "malvarez",
+          "Mateo Alvarez"
+        ]
+      },
+      {
+        "id": "h4-043",
+        "values": [
+          "hana.kobayashi@copperfinch.io",
+          "Sakura Ito",
+          "sito"
+        ]
+      },
+      {
+        "id": "h4-044",
+        "values": [
+          "Olumide Adeleke",
+          "07/23/1979",
+          "River Stone",
+          "23/11/1985",
+          "Skylar Finch",
+          "olumide.adeleke@driftwell.app",
+          "Willow Ash",
+          "astrid.lund@larkspur.digital"
+        ]
+      },
+      {
+        "id": "h4-045",
+        "values": [
+          "Ifeanyi Obi",
+          "ifeanyi.obi@pinecrestlabs.dev",
+          "wash"
+        ]
+      },
+      {
+        "id": "h4-046",
+        "values": [
+          "burak.celik@emberline.dev",
+          "Burak Celik",
+          "bcelik"
+        ]
+      },
+      {
+        "id": "h4-047",
+        "values": [
+          "Sara Ahmadi",
+          "sara.ahmadi@copperfinch.io",
+          "133 Grebe Lane, York YO24 4QG",
+          "Eichenweg 16, 73422 Aachen"
+        ]
+      },
+      {
+        "id": "h4-048",
+        "values": [
+          "nora.bergstrom@duskfield.dev",
+          "Nora Bergstrom",
+          "ACf791d8b372e6c530c651c3a1d1d6ca3d",
+          "oerzJzOwLcFsJfJUN5qc4kt389wnZyqQ"
+        ]
+      },
+      {
+        "id": "h4-049",
+        "values": [
+          "Eleni Kostas",
+          "eleni.kostas@alderpoint.dev",
+          "Bliss Carter",
+          "bliss.carter@emberline.dev"
+        ]
+      },
+      {
+        "id": "h4-050",
+        "values": [
+          "Santiago Morales",
+          "MRN-70687455",
+          "1966-01-28",
+          "Calle de los \u00c1lamos 299, Col. Condesa, Ciudad de M\u00e9xico, C.P. 92818"
+        ]
+      },
+      {
+        "id": "h4-051",
+        "values": [
+          "Mia Fischer",
+          "emil.hansen@foxdenlabs.io",
+          "mia.fischer@pinecrestlabs.dev",
+          "5/44 Grevillea Road, Fremantle QLD 7627",
+          "CA DL X8664678"
+        ]
+      },
+      {
+        "id": "h4-052",
+        "values": [
+          "Emil",
+          "Lucas Pereira",
+          "emil.hansen@driftwell.app"
+        ]
+      },
+      {
+        "id": "h4-053",
+        "values": [
+          "Sanne Bakker",
+          "Bakker",
+          "Sanne",
+          "sanne.bakker@larkspur.digital",
+          "Travessa do Farol, 1021, Belo Horizonte - AM, 77917-618",
+          "1999-02-10"
+        ]
+      },
+      {
+        "id": "h4-054",
+        "values": [
+          "Jakub Kowalczyk",
+          "jakub.kowalczyk@corvidlabs.dev"
+        ]
+      },
+      {
+        "id": "h4-055",
+        "values": [
+          "Irina Sokolova",
+          "Sokolova",
+          "Irina",
+          "irina.sokolova@duskfield.dev",
+          "57 Allen Avenue, Ikeja, Lagos"
+        ]
+      },
+      {
+        "id": "h4-056",
+        "values": [
+          "\u0639\u0645\u0631 \u062d\u062f\u0627\u062f",
+          "Rao",
+          "Ishita",
+          "ishita.rao@vantacore.com",
+          "\u3012613-3903 \u5e83\u5cf6\u5e02\u4e2d\u533a\u4e00\u756a\u753a3-8-18"
+        ]
+      },
+      {
+        "id": "h4-057",
+        "values": [
+          "Reza Karimi",
+          "5988 Harbor Mist Way, Boone, AZ 68158",
+          "01/27/2000",
+          "reza.karimi@ternstone.dev"
+        ]
+      },
+      {
+        "id": "h4-058",
+        "values": [
+          "Noa Cohen",
+          "noa.cohen@harborlight.ai",
+          "GB31601177512594192713",
+          "261-76-7783"
+        ]
+      },
+      {
+        "id": "h4-059",
+        "values": [
+          "Lea Martin",
+          "12/02/1981",
+          "IT9413489907457368641669327",
+          "18 rue des Forges, 65249 Bordeaux",
+          "lea.martin@corvidlabs.dev"
+        ]
+      },
+      {
+        "id": "h4-060",
+        "values": [
+          "Sneha Kulkarni",
+          "MBR-2GZ5R6DH",
+          "1975-07-22",
+          "mona.elsayed@larkspur.digital"
+        ]
+      },
+      {
+        "id": "h4-061",
+        "values": [
+          "Aisha Rahman",
+          "CA DL S3588392",
+          "15/40 Grevillea Road, Albany NSW 4714",
+          "aisha.rahman@larkspur.digital"
+        ]
+      },
+      {
+        "id": "h4-062",
+        "values": [
+          "Daiki Fujita",
+          "MRN-38330247",
+          "POL-WCYAPQ2N4FY",
+          "daiki.fujita@driftwell.app",
+          "Alexei Morozov"
+        ]
+      },
+      {
+        "id": "h4-063",
+        "values": [
+          "Abena Frimpong",
+          "01/13/1976",
+          "Daniela Vargas",
+          "daniela.vargas@pinecrestlabs.dev",
+          "2405 Dunlin Blvd, Lanesboro, NM 65477"
+        ]
+      },
+      {
+        "id": "h4-064",
+        "values": [
+          "Santiago",
+          "Morales",
+          "\u0395\u03bb\u03ad\u03bd\u03b7 \u039a\u03ce\u03c3\u03c4\u03b1",
+          "Juliana Costa",
+          "santiago.morales@vantacore.com"
+        ]
+      },
+      {
+        "id": "h4-065",
+        "values": [
+          "Mateo Alvarez",
+          "15/11/1968",
+          "4 avenue des Ch\u00eanes, 17561 Strasbourg",
+          "mateo.alvarez@copperfinch.io"
+        ]
+      },
+      {
+        "id": "h4-066",
+        "values": [
+          "Aditya Rao",
+          "1963-02-16",
+          "MRN-25843411",
+          "Aisha Rahman",
+          "aisha.rahman@larkspur.digital",
+          "INS-OZ5VV4RKCYMD"
+        ]
+      },
+      {
+        "id": "h4-067",
+        "values": [
+          "Omar Haddad",
+          "Seestra\u00dfe 57, 37172 Regensburg",
+          "MBR-ALPLCBLKIW",
+          "omar.haddad@sablewing.io"
+        ]
+      },
+      {
+        "id": "h4-068",
+        "values": [
+          "Vlad Popa",
+          "01/19/1998",
+          "MBR-SXWFNZ8BF3B",
+          "vlad.popa@quillback.io"
+        ]
+      },
+      {
+        "id": "h4-069",
+        "values": [
+          "Ana Reyes",
+          "River Stone",
+          "ana.reyes@duskfield.dev",
+          "areyes"
+        ]
+      },
+      {
+        "id": "h4-070",
+        "values": [
+          "Sara Ahmadi",
+          "sara.ahmadi@cloudspire.io",
+          "0a+_mCS69aqNX^6OJ+"
+        ]
+      },
+      {
+        "id": "h4-071",
+        "values": [
+          "jfernandez",
+          "ACa491a2c726ef8226b7f9b6ed8efec377",
+          "Duc Tran"
+        ]
+      },
+      {
+        "id": "h4-072",
+        "values": [
+          "jcosta",
+          "juliana.costa@quillback.io"
+        ]
+      },
+      {
+        "id": "h4-073",
+        "values": [
+          "dawit.haile@alderpoint.dev",
+          "vcruz",
+          "Dtlfug%zlEqMLL",
+          "Dawit Haile"
+        ]
+      },
+      {
+        "id": "h4-074",
+        "values": [
+          "iobi",
+          "Santiago Morales",
+          "171-35-1214",
+          "1972-11-01",
+          "santiago.morales@driftwell.app"
+        ]
+      },
+      {
+        "id": "h4-075",
+        "values": [
+          "anna.wisniewska@sablewing.io"
+        ]
+      },
+      {
+        "id": "h4-076",
+        "values": [
+          "dtran"
+        ]
+      },
+      {
+        "id": "h4-077",
+        "values": [
+          "AC9fe7eb61f222198d8b850fe7cda949ab",
+          "mikkel.andersen@copperline.io"
+        ]
+      },
+      {
+        "id": "h4-078",
+        "values": [
+          "yowusu",
+          "yaw.owusu@larkspur.digital",
+          "Yaw Owusu",
+          "167.78.11.18"
+        ]
+      },
+      {
+        "id": "h4-079",
+        "values": [
+          "Nicha Srisai",
+          "nicha.srisai@driftwell.app"
+        ]
+      },
+      {
+        "id": "h4-080",
+        "values": [
+          "oshevchenko",
+          "249831125",
+          "609 312 665",
+          "olena.shevchenko@copperfinch.io"
+        ]
+      }
+    ],
+    "ms_per_item": 0.1
+  }
+]

@@ -1,0 +1,3604 @@
+[
+  {
+    "adapter": "sensitive-canary (blocks)",
+    "items": 80,
+    "items_leaked": 23,
+    "values_total": 219,
+    "values_leaked": 66,
+    "blocked": 57,
+    "negatives": 40,
+    "false_alarms": 4,
+    "by_category": {
+      "chat-transcript": {
+        "items": 6,
+        "leaked": 4
+      },
+      "sql-dump": {
+        "items": 6,
+        "leaked": 2
+      },
+      "negative": {
+        "items": 40,
+        "leaked": 4
+      },
+      "docker-compose": {
+        "items": 4,
+        "leaked": 1
+      },
+      "invoice": {
+        "items": 4,
+        "leaked": 3
+      },
+      "crash-report": {
+        "items": 4,
+        "leaked": 0
+      },
+      "http-log": {
+        "items": 6,
+        "leaked": 3
+      },
+      "aws-credentials": {
+        "items": 3,
+        "leaked": 0
+      },
+      "k8s-secret": {
+        "items": 4,
+        "leaked": 0
+      },
+      "jupyter": {
+        "items": 4,
+        "leaked": 1
+      },
+      "csv": {
+        "items": 6,
+        "leaked": 5
+      },
+      "npmrc": {
+        "items": 2,
+        "leaked": 0
+      },
+      "postman": {
+        "items": 4,
+        "leaked": 0
+      },
+      "netrc": {
+        "items": 1,
+        "leaked": 1
+      },
+      "pypirc": {
+        "items": 2,
+        "leaked": 0
+      },
+      "slack-export": {
+        "items": 5,
+        "leaked": 2
+      },
+      "terraform-state": {
+        "items": 4,
+        "leaked": 0
+      },
+      "git-config": {
+        "items": 3,
+        "leaked": 0
+      },
+      "resume": {
+        "items": 2,
+        "leaked": 0
+      },
+      "email": {
+        "items": 8,
+        "leaked": 0
+      },
+      "medical-intake": {
+        "items": 2,
+        "leaked": 1
+      }
+    },
+    "leaks": [
+      {
+        "id": "h2-001",
+        "values": [
+          "#jN75ehV\nKjl#X7?-"
+        ]
+      },
+      {
+        "id": "h2-005",
+        "values": [
+          "KTEKW5562Y",
+          "Anika Sharma",
+          "48/9, 1st Cross, Indiranagar, Mumbai 8, Karnataka 560016"
+        ]
+      },
+      {
+        "id": "h2-007",
+        "values": [
+          "Rose Nakamura",
+          "5644 Maple Ave, Fairview, OR 92691"
+        ]
+      },
+      {
+        "id": "h2-015",
+        "values": [
+          "Ngozi Eze",
+          "RE 62 91 56 A"
+        ]
+      },
+      {
+        "id": "h2-019",
+        "values": [
+          "167 rue de la Paix, 09639 Nantes",
+          "+33 6 22 81 96 59"
+        ]
+      },
+      {
+        "id": "h2-024",
+        "values": [
+          "DE53409749930972896230",
+          "DE63913075626368970283",
+          "Hana Sato",
+          "Omar Farouk",
+          "+49 151 85280948",
+          "+49 151 53627409"
+        ]
+      },
+      {
+        "id": "h2-025",
+        "values": [
+          "Z2hwX1BtdU1FR2o5ZENnWjUxdlRmR1BsY3BUQ0NISE5reHg2c3lBWA=="
+        ]
+      },
+      {
+        "id": "h2-027",
+        "values": [
+          "7964 0165 8209",
+          "Wei Chen"
+        ]
+      },
+      {
+        "id": "h2-031",
+        "values": [
+          "Aisha Bello",
+          "Rua XV de Novembro, 1540, apto 123, Rio de Janeiro - SP, 27485-847",
+          "+55 11 98206-4442"
+        ]
+      },
+      {
+        "id": "h2-033",
+        "values": [
+          "8527 8585 4973",
+          "5348 4344 3759",
+          "PLRZX4419V",
+          "RMMLY2404W",
+          "+91 90848 57208",
+          "+91 93719 04990",
+          "Mei Lin",
+          "Rose Nakamura"
+        ]
+      },
+      {
+        "id": "h2-034",
+        "values": [
+          "Fatima Al-Hassan",
+          "Calle de la Luna 71, 3\u00ba A, 28027 Madrid",
+          "+34 697629787"
+        ]
+      },
+      {
+        "id": "h2-036",
+        "values": [
+          "Ravi Patel",
+          "Rua das Flores, 1420, apto 16, Rio de Janeiro - SP, 58619-425",
+          "+55 11 97983-7609"
+        ]
+      },
+      {
+        "id": "h2-040",
+        "values": [
+          "203.202.7.68",
+          "cc3f:863a:c315:be31:3779:77b7:f165:cd0"
+        ]
+      },
+      {
+        "id": "h2-043",
+        "values": [
+          "c+W9aTMX1&*C!C",
+          "I3!dXRZv7q&dY="
+        ]
+      },
+      {
+        "id": "h2-056",
+        "values": [
+          "174.203.187.24",
+          "c3ZjX2JpbGxpbmc6Nk16WDluRVcrVCtMTGM="
+        ]
+      },
+      {
+        "id": "h2-069",
+        "values": [
+          "Amara Okafor",
+          "4681 1775 8912",
+          "OQHTB8470B",
+          "+91 95143 02907"
+        ]
+      },
+      {
+        "id": "h2-076",
+        "values": [
+          "4lOSi-*LMuwU$C",
+          "yuki.tanaka"
+        ]
+      },
+      {
+        "id": "h2-086",
+        "values": [
+          "GE 78 94 75 B",
+          "KB 85 67 28 B",
+          "Marie-Claire Dubois",
+          "Ren\u00e9e Dubois"
+        ]
+      },
+      {
+        "id": "h2-093",
+        "values": [
+          "Yuki Tanaka",
+          "Bahnhofstra\u00dfe 108, 83874 Berlin",
+          "DE29824225358414384249",
+          "81 829 922 997"
+        ]
+      },
+      {
+        "id": "h2-102",
+        "values": [
+          "Carlos Mendoza",
+          "27.10.1989",
+          "Bahnhofstra\u00dfe 7, 16624 Hamburg",
+          "+49 151 97813295",
+          "47 016 873 392"
+        ]
+      },
+      {
+        "id": "h2-106",
+        "values": [
+          "sk-live-U5tGtQAuzSsJimAQ8yRV5lNK"
+        ]
+      },
+      {
+        "id": "h2-114",
+        "values": [
+          "150.73.118.119",
+          "sk-live-OqDqQa5ZD5sRIkeC8wLtO9BS"
+        ]
+      },
+      {
+        "id": "h2-117",
+        "values": [
+          "Rajesh Menon",
+          "+49 151 26288992"
+        ]
+      }
+    ],
+    "ms_per_item": 0.5
+  },
+  {
+    "adapter": "claude-code-redact (+pii)",
+    "items": 80,
+    "items_leaked": 64,
+    "values_total": 219,
+    "values_leaked": 115,
+    "blocked": 0,
+    "negatives": 40,
+    "false_alarms": 10,
+    "by_category": {
+      "chat-transcript": {
+        "items": 6,
+        "leaked": 5
+      },
+      "sql-dump": {
+        "items": 6,
+        "leaked": 5
+      },
+      "negative": {
+        "items": 40,
+        "leaked": 10
+      },
+      "docker-compose": {
+        "items": 4,
+        "leaked": 2
+      },
+      "invoice": {
+        "items": 4,
+        "leaked": 4
+      },
+      "crash-report": {
+        "items": 4,
+        "leaked": 4
+      },
+      "http-log": {
+        "items": 6,
+        "leaked": 6
+      },
+      "aws-credentials": {
+        "items": 3,
+        "leaked": 3
+      },
+      "k8s-secret": {
+        "items": 4,
+        "leaked": 3
+      },
+      "jupyter": {
+        "items": 4,
+        "leaked": 2
+      },
+      "csv": {
+        "items": 6,
+        "leaked": 6
+      },
+      "npmrc": {
+        "items": 2,
+        "leaked": 0
+      },
+      "postman": {
+        "items": 4,
+        "leaked": 1
+      },
+      "netrc": {
+        "items": 1,
+        "leaked": 1
+      },
+      "pypirc": {
+        "items": 2,
+        "leaked": 1
+      },
+      "slack-export": {
+        "items": 5,
+        "leaked": 3
+      },
+      "terraform-state": {
+        "items": 4,
+        "leaked": 3
+      },
+      "git-config": {
+        "items": 3,
+        "leaked": 3
+      },
+      "resume": {
+        "items": 2,
+        "leaked": 2
+      },
+      "email": {
+        "items": 8,
+        "leaked": 8
+      },
+      "medical-intake": {
+        "items": 2,
+        "leaked": 2
+      }
+    },
+    "leaks": [
+      {
+        "id": "h2-001",
+        "values": [
+          "#jN75ehV\nKjl#X7?-"
+        ]
+      },
+      {
+        "id": "h2-004",
+        "values": [
+          "AH#!Ggl2JfaQqH"
+        ]
+      },
+      {
+        "id": "h2-005",
+        "values": [
+          "KTEKW5562Y",
+          "Anika Sharma",
+          "48/9, 1st Cross, Indiranagar, Mumbai 8, Karnataka 560016"
+        ]
+      },
+      {
+        "id": "h2-007",
+        "values": [
+          "Rose Nakamura",
+          "5644 Maple Ave, Fairview, OR 92691"
+        ]
+      },
+      {
+        "id": "h2-008",
+        "values": [
+          "C:\\Users\\\u674e\u4f1f"
+        ]
+      },
+      {
+        "id": "h2-009",
+        "values": [
+          "sk-live-oIpt9ZYE51mxR8KCDXsXyGHA"
+        ]
+      },
+      {
+        "id": "h2-010",
+        "values": [
+          "20.72.115.221"
+        ]
+      },
+      {
+        "id": "h2-012",
+        "values": [
+          "NGDpyOp&xyB9J^KmyLDUwMb&qJfg-Lq!nb+K894R"
+        ]
+      },
+      {
+        "id": "h2-015",
+        "values": [
+          "Ngozi Eze",
+          "RE 62 91 56 A"
+        ]
+      },
+      {
+        "id": "h2-019",
+        "values": [
+          "167 rue de la Paix, 09639 Nantes"
+        ]
+      },
+      {
+        "id": "h2-024",
+        "values": [
+          "Hana Sato",
+          "Omar Farouk",
+          "+49 151 85280948",
+          "+49 151 53627409"
+        ]
+      },
+      {
+        "id": "h2-027",
+        "values": [
+          "7964 0165 8209",
+          "Wei Chen"
+        ]
+      },
+      {
+        "id": "h2-030",
+        "values": [
+          "Amara Okafor"
+        ]
+      },
+      {
+        "id": "h2-031",
+        "values": [
+          "Aisha Bello",
+          "Rua XV de Novembro, 1540, apto 123, Rio de Janeiro - SP, 27485-847"
+        ]
+      },
+      {
+        "id": "h2-032",
+        "values": [
+          "5Jau2RJtBRnlWmTSHf",
+          "\uae40\ubbfc\uc900"
+        ]
+      },
+      {
+        "id": "h2-033",
+        "values": [
+          "PLRZX4419V",
+          "Mei Lin",
+          "Rose Nakamura"
+        ]
+      },
+      {
+        "id": "h2-034",
+        "values": [
+          "Fatima Al-Hassan",
+          "Calle de la Luna 71, 3\u00ba A, 28027 Madrid",
+          "+34 697629787"
+        ]
+      },
+      {
+        "id": "h2-036",
+        "values": [
+          "Ravi Patel",
+          "Rua das Flores, 1420, apto 16, Rio de Janeiro - SP, 58619-425"
+        ]
+      },
+      {
+        "id": "h2-037",
+        "values": [
+          "y%U@4gAI-qK4!pdEuN-b-0lCo7pt@L$I198F6-sX"
+        ]
+      },
+      {
+        "id": "h2-038",
+        "values": [
+          "bWF0ZW8ucm9zc2k6SWFLTT8hdDUmOVNRLSo="
+        ]
+      },
+      {
+        "id": "h2-040",
+        "values": [
+          "203.202.7.68",
+          "cc3f:863a:c315:be31:3779:77b7:f165:cd0"
+        ]
+      },
+      {
+        "id": "h2-041",
+        "values": [
+          "Olga Petrova",
+          "717744905"
+        ]
+      },
+      {
+        "id": "h2-042",
+        "values": [
+          "Amara Okafor"
+        ]
+      },
+      {
+        "id": "h2-043",
+        "values": [
+          "c+W9aTMX1&*C!C",
+          "I3!dXRZv7q&dY="
+        ]
+      },
+      {
+        "id": "h2-044",
+        "values": [
+          "eXVraS50YW5ha2FAY2luZGVycGVhay5kZXY=",
+          "eXVraS50YW5ha2E="
+        ]
+      },
+      {
+        "id": "h2-047",
+        "values": [
+          "Grace Osei",
+          "1975-01-23",
+          "Anika Sharma",
+          "1992-11-12",
+          "Ngozi Eze",
+          "1999-11-20"
+        ]
+      },
+      {
+        "id": "h2-050",
+        "values": [
+          "Priya Nair"
+        ]
+      },
+      {
+        "id": "h2-051",
+        "values": [
+          "Marie-Claire Dubois"
+        ]
+      },
+      {
+        "id": "h2-053",
+        "values": [
+          "sk-live-zQPxC5HChpoevbLJoLoaeTOd"
+        ]
+      },
+      {
+        "id": "h2-054",
+        "values": [
+          "Marie-Claire Dubois",
+          "Lindenweg 47, 82512 Hamburg",
+          "+49 151 61854861"
+        ]
+      },
+      {
+        "id": "h2-056",
+        "values": [
+          "174.203.187.24"
+        ]
+      },
+      {
+        "id": "h2-057",
+        "values": [
+          "/Users/francois.leclerc"
+        ]
+      },
+      {
+        "id": "h2-060",
+        "values": [
+          "Hope Adeyemi"
+        ]
+      },
+      {
+        "id": "h2-061",
+        "values": [
+          "Fatima Al-Hassan",
+          "Wei Chen"
+        ]
+      },
+      {
+        "id": "h2-062",
+        "values": [
+          "Elena Popescu"
+        ]
+      },
+      {
+        "id": "h2-066",
+        "values": [
+          "21 818 835 521"
+        ]
+      },
+      {
+        "id": "h2-069",
+        "values": [
+          "Amara Okafor"
+        ]
+      },
+      {
+        "id": "h2-073",
+        "values": [
+          "rose.nakamura"
+        ]
+      },
+      {
+        "id": "h2-074",
+        "values": [
+          "21.195.123.128",
+          "lukasz.nowak%40thistlevale.dev",
+          "%2B919268540924"
+        ]
+      },
+      {
+        "id": "h2-075",
+        "values": [
+          "Priya Nair",
+          "1177 Willow Drive, Riverside, CA 91830"
+        ]
+      },
+      {
+        "id": "h2-076",
+        "values": [
+          "4lOSi-*LMuwU$C",
+          "yuki.tanaka"
+        ]
+      },
+      {
+        "id": "h2-077",
+        "values": [
+          "Rajesh Menon",
+          "4113 Hickory Way, Fairview, OR 48985"
+        ]
+      },
+      {
+        "id": "h2-078",
+        "values": [
+          "8c*gSCifdFzctEq8o=B7GVvouNn?dN+WYzjFnMp=",
+          "%I&973IPFlJ5F7=WRd@Px!BTHRJJ_b%ykE0!_E8!"
+        ]
+      },
+      {
+        "id": "h2-080",
+        "values": [
+          "Ren\u00e9e Dubois",
+          "March 27, 1973",
+          "1687 Willow Drive, Springfield, IL 60351",
+          "Mateo Rossi"
+        ]
+      },
+      {
+        "id": "h2-081",
+        "values": [
+          "Mei Lin",
+          "37/9, 1st Cross, Wilson Garden, Pune 3, Karnataka 560034",
+          "02/06/1983"
+        ]
+      },
+      {
+        "id": "h2-084",
+        "values": [
+          "Carlos Mendoza"
+        ]
+      },
+      {
+        "id": "h2-086",
+        "values": [
+          "GE 78 94 75 B",
+          "KB 85 67 28 B",
+          "Marie-Claire Dubois",
+          "Ren\u00e9e Dubois"
+        ]
+      },
+      {
+        "id": "h2-087",
+        "values": [
+          "renee.dubois"
+        ]
+      },
+      {
+        "id": "h2-088",
+        "values": [
+          "X6152809",
+          "Priya Nair"
+        ]
+      },
+      {
+        "id": "h2-089",
+        "values": [
+          "DO1xkxwnQrS7RPeMOkIUpkDyr7OSJoRu1XXdo0cZ"
+        ]
+      },
+      {
+        "id": "h2-091",
+        "values": [
+          "Elena Popescu",
+          "Bahnhofstra\u00dfe 86, 43408 Hamburg",
+          "+49 151 30486849"
+        ]
+      },
+      {
+        "id": "h2-093",
+        "values": [
+          "Yuki Tanaka",
+          "Bahnhofstra\u00dfe 108, 83874 Berlin",
+          "81 829 922 997"
+        ]
+      },
+      {
+        "id": "h2-094",
+        "values": [
+          "/home/kwame.asante"
+        ]
+      },
+      {
+        "id": "h2-097",
+        "values": [
+          "/home/rajesh.menon"
+        ]
+      },
+      {
+        "id": "h2-099",
+        "values": [
+          "VIP client \\\"Priya Nair\\\" prefers calls after 6pm"
+        ]
+      },
+      {
+        "id": "h2-102",
+        "values": [
+          "Carlos Mendoza",
+          "27.10.1989",
+          "Bahnhofstra\u00dfe 7, 16624 Hamburg",
+          "+49 151 97813295",
+          "47 016 873 392"
+        ]
+      },
+      {
+        "id": "h2-103",
+        "values": [
+          "138.63.232.95"
+        ]
+      },
+      {
+        "id": "h2-104",
+        "values": [
+          "wei.chen"
+        ]
+      },
+      {
+        "id": "h2-106",
+        "values": [
+          "sk-live-U5tGtQAuzSsJimAQ8yRV5lNK"
+        ]
+      },
+      {
+        "id": "h2-111",
+        "values": [
+          "Bj\u00f6rn Lindqvist"
+        ]
+      },
+      {
+        "id": "h2-112",
+        "values": [
+          "July 24, 1983"
+        ]
+      },
+      {
+        "id": "h2-114",
+        "values": [
+          "150.73.118.119"
+        ]
+      },
+      {
+        "id": "h2-116",
+        "values": [
+          "53 Church Road, Bristol S1 6W"
+        ]
+      },
+      {
+        "id": "h2-117",
+        "values": [
+          "Rajesh Menon",
+          "+49 151 26288992"
+        ]
+      }
+    ],
+    "ms_per_item": 0.1
+  },
+  {
+    "adapter": "claude-code-redact (secrets)",
+    "items": 80,
+    "items_leaked": 65,
+    "values_total": 219,
+    "values_leaked": 172,
+    "blocked": 0,
+    "negatives": 40,
+    "false_alarms": 1,
+    "by_category": {
+      "chat-transcript": {
+        "items": 6,
+        "leaked": 5
+      },
+      "sql-dump": {
+        "items": 6,
+        "leaked": 5
+      },
+      "negative": {
+        "items": 40,
+        "leaked": 1
+      },
+      "docker-compose": {
+        "items": 4,
+        "leaked": 2
+      },
+      "invoice": {
+        "items": 4,
+        "leaked": 4
+      },
+      "crash-report": {
+        "items": 4,
+        "leaked": 4
+      },
+      "http-log": {
+        "items": 6,
+        "leaked": 6
+      },
+      "aws-credentials": {
+        "items": 3,
+        "leaked": 3
+      },
+      "k8s-secret": {
+        "items": 4,
+        "leaked": 4
+      },
+      "jupyter": {
+        "items": 4,
+        "leaked": 2
+      },
+      "csv": {
+        "items": 6,
+        "leaked": 6
+      },
+      "npmrc": {
+        "items": 2,
+        "leaked": 0
+      },
+      "postman": {
+        "items": 4,
+        "leaked": 1
+      },
+      "netrc": {
+        "items": 1,
+        "leaked": 1
+      },
+      "pypirc": {
+        "items": 2,
+        "leaked": 1
+      },
+      "slack-export": {
+        "items": 5,
+        "leaked": 3
+      },
+      "terraform-state": {
+        "items": 4,
+        "leaked": 3
+      },
+      "git-config": {
+        "items": 3,
+        "leaked": 3
+      },
+      "resume": {
+        "items": 2,
+        "leaked": 2
+      },
+      "email": {
+        "items": 8,
+        "leaked": 8
+      },
+      "medical-intake": {
+        "items": 2,
+        "leaked": 2
+      }
+    },
+    "leaks": [
+      {
+        "id": "h2-001",
+        "values": [
+          "#jN75ehV\nKjl#X7?-"
+        ]
+      },
+      {
+        "id": "h2-004",
+        "values": [
+          "AH#!Ggl2JfaQqH"
+        ]
+      },
+      {
+        "id": "h2-005",
+        "values": [
+          "KTEKW5562Y",
+          "Anika Sharma",
+          "48/9, 1st Cross, Indiranagar, Mumbai 8, Karnataka 560016"
+        ]
+      },
+      {
+        "id": "h2-007",
+        "values": [
+          "Rose Nakamura",
+          "5644 Maple Ave, Fairview, OR 92691"
+        ]
+      },
+      {
+        "id": "h2-008",
+        "values": [
+          "C:\\Users\\\u674e\u4f1f"
+        ]
+      },
+      {
+        "id": "h2-009",
+        "values": [
+          "sk-live-oIpt9ZYE51mxR8KCDXsXyGHA"
+        ]
+      },
+      {
+        "id": "h2-010",
+        "values": [
+          "20.72.115.221"
+        ]
+      },
+      {
+        "id": "h2-012",
+        "values": [
+          "NGDpyOp&xyB9J^KmyLDUwMb&qJfg-Lq!nb+K894R"
+        ]
+      },
+      {
+        "id": "h2-014",
+        "values": [
+          "rajesh.menon@nordhaven.io"
+        ]
+      },
+      {
+        "id": "h2-015",
+        "values": [
+          "Ngozi Eze",
+          "RE 62 91 56 A"
+        ]
+      },
+      {
+        "id": "h2-019",
+        "values": [
+          "167 rue de la Paix, 09639 Nantes",
+          "+33 6 22 81 96 59"
+        ]
+      },
+      {
+        "id": "h2-024",
+        "values": [
+          "DE53409749930972896230",
+          "DE63913075626368970283",
+          "Hana Sato",
+          "Omar Farouk",
+          "+49 151 85280948",
+          "+49 151 53627409"
+        ]
+      },
+      {
+        "id": "h2-027",
+        "values": [
+          "7964 0165 8209",
+          "Wei Chen"
+        ]
+      },
+      {
+        "id": "h2-030",
+        "values": [
+          "5532 9318 3933 5298",
+          "DE47042284210205395024",
+          "Amara Okafor"
+        ]
+      },
+      {
+        "id": "h2-031",
+        "values": [
+          "Aisha Bello",
+          "Rua XV de Novembro, 1540, apto 123, Rio de Janeiro - SP, 27485-847",
+          "+55 11 98206-4442"
+        ]
+      },
+      {
+        "id": "h2-032",
+        "values": [
+          "5Jau2RJtBRnlWmTSHf",
+          "\uae40\ubbfc\uc900"
+        ]
+      },
+      {
+        "id": "h2-033",
+        "values": [
+          "8527 8585 4973",
+          "5348 4344 3759",
+          "PLRZX4419V",
+          "RMMLY2404W",
+          "+91 90848 57208",
+          "+91 93719 04990",
+          "Mei Lin",
+          "Rose Nakamura"
+        ]
+      },
+      {
+        "id": "h2-034",
+        "values": [
+          "Fatima Al-Hassan",
+          "Calle de la Luna 71, 3\u00ba A, 28027 Madrid",
+          "+34 697629787"
+        ]
+      },
+      {
+        "id": "h2-036",
+        "values": [
+          "Ravi Patel",
+          "Rua das Flores, 1420, apto 16, Rio de Janeiro - SP, 58619-425",
+          "+55 11 97983-7609"
+        ]
+      },
+      {
+        "id": "h2-037",
+        "values": [
+          "y%U@4gAI-qK4!pdEuN-b-0lCo7pt@L$I198F6-sX"
+        ]
+      },
+      {
+        "id": "h2-038",
+        "values": [
+          "bWF0ZW8ucm9zc2k6SWFLTT8hdDUmOVNRLSo=",
+          "mateo.rossi@nordhaven.io"
+        ]
+      },
+      {
+        "id": "h2-040",
+        "values": [
+          "203.202.7.68",
+          "cc3f:863a:c315:be31:3779:77b7:f165:cd0"
+        ]
+      },
+      {
+        "id": "h2-041",
+        "values": [
+          "+55 11 97048-3232",
+          "Olga Petrova",
+          "5292 1277 9979 9553",
+          "717744905"
+        ]
+      },
+      {
+        "id": "h2-042",
+        "values": [
+          "Amara Okafor",
+          "amara.okafor@lumivex.dev",
+          "+33 6 62 52 70 22"
+        ]
+      },
+      {
+        "id": "h2-043",
+        "values": [
+          "c+W9aTMX1&*C!C",
+          "I3!dXRZv7q&dY="
+        ]
+      },
+      {
+        "id": "h2-044",
+        "values": [
+          "eXVraS50YW5ha2FAY2luZGVycGVhay5kZXY=",
+          "eXVraS50YW5ha2E="
+        ]
+      },
+      {
+        "id": "h2-047",
+        "values": [
+          "Grace Osei",
+          "grace.osei@thistlevale.dev",
+          "+44 20 7946 8017",
+          "1975-01-23",
+          "Anika Sharma",
+          "anika.sharma@quartzfern.io",
+          "+44 20 7946 1627",
+          "1992-11-12",
+          "Ngozi Eze",
+          "ngozi.eze@maplevault.io",
+          "+1 (555) 011-7450",
+          "1999-11-20"
+        ]
+      },
+      {
+        "id": "h2-050",
+        "values": [
+          "Priya Nair"
+        ]
+      },
+      {
+        "id": "h2-051",
+        "values": [
+          "Marie-Claire Dubois",
+          "marieclaire.dubois@kastrodyne.com"
+        ]
+      },
+      {
+        "id": "h2-053",
+        "values": [
+          "sk-live-zQPxC5HChpoevbLJoLoaeTOd",
+          "priya.nair@velmora.dev"
+        ]
+      },
+      {
+        "id": "h2-054",
+        "values": [
+          "Marie-Claire Dubois",
+          "marieclaire.dubois@kastrodyne.com",
+          "Lindenweg 47, 82512 Hamburg",
+          "+49 151 61854861"
+        ]
+      },
+      {
+        "id": "h2-056",
+        "values": [
+          "174.203.187.24"
+        ]
+      },
+      {
+        "id": "h2-057",
+        "values": [
+          "/Users/francois.leclerc"
+        ]
+      },
+      {
+        "id": "h2-060",
+        "values": [
+          "Hope Adeyemi",
+          "hope.adeyemi@emberloop.io",
+          "+44 20 7946 9977"
+        ]
+      },
+      {
+        "id": "h2-061",
+        "values": [
+          "ES7458527722170430305486",
+          "IT2687403450541566765277584",
+          "fatima.alhassan@kastrodyne.com",
+          "wei.chen@thistlevale.dev",
+          "Fatima Al-Hassan",
+          "Wei Chen"
+        ]
+      },
+      {
+        "id": "h2-062",
+        "values": [
+          "FR7904945198327315851493689",
+          "elena.popescu@velmora.dev",
+          "Elena Popescu"
+        ]
+      },
+      {
+        "id": "h2-066",
+        "values": [
+          "21 818 835 521",
+          "bjorn.lindqvist@thistlevale.dev"
+        ]
+      },
+      {
+        "id": "h2-069",
+        "values": [
+          "Amara Okafor",
+          "4681 1775 8912",
+          "OQHTB8470B",
+          "+91 95143 02907"
+        ]
+      },
+      {
+        "id": "h2-073",
+        "values": [
+          "rose.nakamura"
+        ]
+      },
+      {
+        "id": "h2-074",
+        "values": [
+          "21.195.123.128",
+          "lukasz.nowak%40thistlevale.dev",
+          "%2B919268540924"
+        ]
+      },
+      {
+        "id": "h2-075",
+        "values": [
+          "Priya Nair",
+          "330-78-2431",
+          "1177 Willow Drive, Riverside, CA 91830"
+        ]
+      },
+      {
+        "id": "h2-076",
+        "values": [
+          "4lOSi-*LMuwU$C",
+          "yuki.tanaka"
+        ]
+      },
+      {
+        "id": "h2-077",
+        "values": [
+          "5109439690784474",
+          "Rajesh Menon",
+          "4113 Hickory Way, Fairview, OR 48985"
+        ]
+      },
+      {
+        "id": "h2-078",
+        "values": [
+          "8c*gSCifdFzctEq8o=B7GVvouNn?dN+WYzjFnMp=",
+          "%I&973IPFlJ5F7=WRd@Px!BTHRJJ_b%ykE0!_E8!"
+        ]
+      },
+      {
+        "id": "h2-080",
+        "values": [
+          "Ren\u00e9e Dubois",
+          "March 27, 1973",
+          "461-32-2309",
+          "1687 Willow Drive, Springfield, IL 60351",
+          "+1 (555) 019-5123",
+          "renee.dubois@thistlevale.dev",
+          "Mateo Rossi",
+          "+1 (555) 017-8433"
+        ]
+      },
+      {
+        "id": "h2-081",
+        "values": [
+          "Mei Lin",
+          "mei.lin@sagefen.dev",
+          "37/9, 1st Cross, Wilson Garden, Pune 3, Karnataka 560034",
+          "+91 98201 84955",
+          "02/06/1983"
+        ]
+      },
+      {
+        "id": "h2-084",
+        "values": [
+          "Carlos Mendoza",
+          "carlos.mendoza@copperquill.io"
+        ]
+      },
+      {
+        "id": "h2-086",
+        "values": [
+          "GE 78 94 75 B",
+          "KB 85 67 28 B",
+          "Marie-Claire Dubois",
+          "Ren\u00e9e Dubois"
+        ]
+      },
+      {
+        "id": "h2-087",
+        "values": [
+          "pqmYVR_Usz$Z#f",
+          "renee.dubois"
+        ]
+      },
+      {
+        "id": "h2-088",
+        "values": [
+          "X6152809",
+          "priya.nair@velmora.dev",
+          "+1 (555) 011-6730",
+          "Priya Nair"
+        ]
+      },
+      {
+        "id": "h2-089",
+        "values": [
+          "DO1xkxwnQrS7RPeMOkIUpkDyr7OSJoRu1XXdo0cZ"
+        ]
+      },
+      {
+        "id": "h2-091",
+        "values": [
+          "Elena Popescu",
+          "Bahnhofstra\u00dfe 86, 43408 Hamburg",
+          "+49 151 30486849"
+        ]
+      },
+      {
+        "id": "h2-093",
+        "values": [
+          "Yuki Tanaka",
+          "Bahnhofstra\u00dfe 108, 83874 Berlin",
+          "DE29824225358414384249",
+          "81 829 922 997"
+        ]
+      },
+      {
+        "id": "h2-094",
+        "values": [
+          "/home/kwame.asante"
+        ]
+      },
+      {
+        "id": "h2-097",
+        "values": [
+          "/home/rajesh.menon"
+        ]
+      },
+      {
+        "id": "h2-099",
+        "values": [
+          "VIP client \\\"Priya Nair\\\" prefers calls after 6pm"
+        ]
+      },
+      {
+        "id": "h2-102",
+        "values": [
+          "Carlos Mendoza",
+          "27.10.1989",
+          "Bahnhofstra\u00dfe 7, 16624 Hamburg",
+          "+49 151 97813295",
+          "47 016 873 392"
+        ]
+      },
+      {
+        "id": "h2-103",
+        "values": [
+          "138.63.232.95"
+        ]
+      },
+      {
+        "id": "h2-104",
+        "values": [
+          "wei.chen"
+        ]
+      },
+      {
+        "id": "h2-106",
+        "values": [
+          "sk-live-U5tGtQAuzSsJimAQ8yRV5lNK"
+        ]
+      },
+      {
+        "id": "h2-111",
+        "values": [
+          "5254-5991-0229-0148",
+          "Bj\u00f6rn Lindqvist",
+          "bjorn.lindqvist@thistlevale.dev"
+        ]
+      },
+      {
+        "id": "h2-112",
+        "values": [
+          "424-44-7431",
+          "July 24, 1983",
+          "aisha.bello@lumivex.dev",
+          "li.wei@copperquill.io"
+        ]
+      },
+      {
+        "id": "h2-114",
+        "values": [
+          "150.73.118.119"
+        ]
+      },
+      {
+        "id": "h2-116",
+        "values": [
+          "53 Church Road, Bristol S1 6W"
+        ]
+      },
+      {
+        "id": "h2-117",
+        "values": [
+          "Rajesh Menon",
+          "+49 151 26288992"
+        ]
+      }
+    ],
+    "ms_per_item": 0.1
+  },
+  {
+    "adapter": "cloakroom full",
+    "items": 80,
+    "items_leaked": 6,
+    "values_total": 219,
+    "values_leaked": 6,
+    "blocked": 0,
+    "negatives": 40,
+    "false_alarms": 18,
+    "by_category": {
+      "chat-transcript": {
+        "items": 6,
+        "leaked": 0
+      },
+      "sql-dump": {
+        "items": 6,
+        "leaked": 0
+      },
+      "negative": {
+        "items": 40,
+        "leaked": 18
+      },
+      "docker-compose": {
+        "items": 4,
+        "leaked": 0
+      },
+      "invoice": {
+        "items": 4,
+        "leaked": 0
+      },
+      "crash-report": {
+        "items": 4,
+        "leaked": 4
+      },
+      "http-log": {
+        "items": 6,
+        "leaked": 0
+      },
+      "aws-credentials": {
+        "items": 3,
+        "leaked": 0
+      },
+      "k8s-secret": {
+        "items": 4,
+        "leaked": 0
+      },
+      "jupyter": {
+        "items": 4,
+        "leaked": 0
+      },
+      "csv": {
+        "items": 6,
+        "leaked": 0
+      },
+      "npmrc": {
+        "items": 2,
+        "leaked": 0
+      },
+      "postman": {
+        "items": 4,
+        "leaked": 0
+      },
+      "netrc": {
+        "items": 1,
+        "leaked": 0
+      },
+      "pypirc": {
+        "items": 2,
+        "leaked": 0
+      },
+      "slack-export": {
+        "items": 5,
+        "leaked": 0
+      },
+      "terraform-state": {
+        "items": 4,
+        "leaked": 0
+      },
+      "git-config": {
+        "items": 3,
+        "leaked": 2
+      },
+      "resume": {
+        "items": 2,
+        "leaked": 0
+      },
+      "email": {
+        "items": 8,
+        "leaked": 0
+      },
+      "medical-intake": {
+        "items": 2,
+        "leaked": 0
+      }
+    },
+    "leaks": [
+      {
+        "id": "h2-008",
+        "values": [
+          "C:\\Users\\\u674e\u4f1f"
+        ]
+      },
+      {
+        "id": "h2-057",
+        "values": [
+          "/Users/francois.leclerc"
+        ]
+      },
+      {
+        "id": "h2-087",
+        "values": [
+          "renee.dubois"
+        ]
+      },
+      {
+        "id": "h2-094",
+        "values": [
+          "/home/kwame.asante"
+        ]
+      },
+      {
+        "id": "h2-097",
+        "values": [
+          "/home/rajesh.menon"
+        ]
+      },
+      {
+        "id": "h2-104",
+        "values": [
+          "wei.chen"
+        ]
+      }
+    ],
+    "ms_per_item": 68.4
+  },
+  {
+    "adapter": "cloakroom rules",
+    "items": 80,
+    "items_leaked": 55,
+    "values_total": 219,
+    "values_leaked": 112,
+    "blocked": 0,
+    "negatives": 40,
+    "false_alarms": 7,
+    "by_category": {
+      "chat-transcript": {
+        "items": 6,
+        "leaked": 5
+      },
+      "sql-dump": {
+        "items": 6,
+        "leaked": 5
+      },
+      "negative": {
+        "items": 40,
+        "leaked": 7
+      },
+      "docker-compose": {
+        "items": 4,
+        "leaked": 0
+      },
+      "invoice": {
+        "items": 4,
+        "leaked": 4
+      },
+      "crash-report": {
+        "items": 4,
+        "leaked": 4
+      },
+      "http-log": {
+        "items": 6,
+        "leaked": 6
+      },
+      "aws-credentials": {
+        "items": 3,
+        "leaked": 0
+      },
+      "k8s-secret": {
+        "items": 4,
+        "leaked": 3
+      },
+      "jupyter": {
+        "items": 4,
+        "leaked": 2
+      },
+      "csv": {
+        "items": 6,
+        "leaked": 6
+      },
+      "npmrc": {
+        "items": 2,
+        "leaked": 0
+      },
+      "postman": {
+        "items": 4,
+        "leaked": 1
+      },
+      "netrc": {
+        "items": 1,
+        "leaked": 1
+      },
+      "pypirc": {
+        "items": 2,
+        "leaked": 1
+      },
+      "slack-export": {
+        "items": 5,
+        "leaked": 2
+      },
+      "terraform-state": {
+        "items": 4,
+        "leaked": 1
+      },
+      "git-config": {
+        "items": 3,
+        "leaked": 3
+      },
+      "resume": {
+        "items": 2,
+        "leaked": 2
+      },
+      "email": {
+        "items": 8,
+        "leaked": 7
+      },
+      "medical-intake": {
+        "items": 2,
+        "leaked": 2
+      }
+    },
+    "leaks": [
+      {
+        "id": "h2-001",
+        "values": [
+          "#jN75ehV\nKjl#X7?-"
+        ]
+      },
+      {
+        "id": "h2-005",
+        "values": [
+          "KTEKW5562Y",
+          "Anika Sharma",
+          "48/9, 1st Cross, Indiranagar, Mumbai 8, Karnataka 560016"
+        ]
+      },
+      {
+        "id": "h2-007",
+        "values": [
+          "Rose Nakamura"
+        ]
+      },
+      {
+        "id": "h2-008",
+        "values": [
+          "C:\\Users\\\u674e\u4f1f"
+        ]
+      },
+      {
+        "id": "h2-010",
+        "values": [
+          "20.72.115.221"
+        ]
+      },
+      {
+        "id": "h2-015",
+        "values": [
+          "Ngozi Eze",
+          "RE 62 91 56 A"
+        ]
+      },
+      {
+        "id": "h2-019",
+        "values": [
+          "167 rue de la Paix, 09639 Nantes",
+          "+33 6 22 81 96 59"
+        ]
+      },
+      {
+        "id": "h2-024",
+        "values": [
+          "Hana Sato",
+          "Omar Farouk",
+          "+49 151 85280948",
+          "+49 151 53627409"
+        ]
+      },
+      {
+        "id": "h2-025",
+        "values": [
+          "Z2hwX1BtdU1FR2o5ZENnWjUxdlRmR1BsY3BUQ0NISE5reHg2c3lBWA=="
+        ]
+      },
+      {
+        "id": "h2-027",
+        "values": [
+          "7964 0165 8209",
+          "Wei Chen"
+        ]
+      },
+      {
+        "id": "h2-030",
+        "values": [
+          "Amara Okafor"
+        ]
+      },
+      {
+        "id": "h2-031",
+        "values": [
+          "Aisha Bello",
+          "Rua XV de Novembro, 1540, apto 123, Rio de Janeiro - SP, 27485-847",
+          "+55 11 98206-4442"
+        ]
+      },
+      {
+        "id": "h2-032",
+        "values": [
+          "\uae40\ubbfc\uc900"
+        ]
+      },
+      {
+        "id": "h2-033",
+        "values": [
+          "8527 8585 4973",
+          "5348 4344 3759",
+          "PLRZX4419V",
+          "RMMLY2404W",
+          "+91 90848 57208",
+          "+91 93719 04990"
+        ]
+      },
+      {
+        "id": "h2-034",
+        "values": [
+          "Fatima Al-Hassan",
+          "Calle de la Luna 71, 3\u00ba A, 28027 Madrid",
+          "+34 697629787"
+        ]
+      },
+      {
+        "id": "h2-036",
+        "values": [
+          "Ravi Patel",
+          "Rua das Flores, 1420, apto 16, Rio de Janeiro - SP, 58619-425",
+          "+55 11 97983-7609"
+        ]
+      },
+      {
+        "id": "h2-038",
+        "values": [
+          "bWF0ZW8ucm9zc2k6SWFLTT8hdDUmOVNRLSo="
+        ]
+      },
+      {
+        "id": "h2-040",
+        "values": [
+          "203.202.7.68",
+          "cc3f:863a:c315:be31:3779:77b7:f165:cd0"
+        ]
+      },
+      {
+        "id": "h2-041",
+        "values": [
+          "+55 11 97048-3232",
+          "Olga Petrova",
+          "717744905"
+        ]
+      },
+      {
+        "id": "h2-042",
+        "values": [
+          "Amara Okafor",
+          "+33 6 62 52 70 22"
+        ]
+      },
+      {
+        "id": "h2-043",
+        "values": [
+          "c+W9aTMX1&*C!C",
+          "I3!dXRZv7q&dY="
+        ]
+      },
+      {
+        "id": "h2-044",
+        "values": [
+          "eXVraS50YW5ha2FAY2luZGVycGVhay5kZXY=",
+          "eXVraS50YW5ha2E="
+        ]
+      },
+      {
+        "id": "h2-047",
+        "values": [
+          "Grace Osei",
+          "+44 20 7946 8017",
+          "1975-01-23",
+          "Anika Sharma",
+          "+44 20 7946 1627",
+          "1992-11-12",
+          "Ngozi Eze",
+          "1999-11-20"
+        ]
+      },
+      {
+        "id": "h2-051",
+        "values": [
+          "Marie-Claire Dubois"
+        ]
+      },
+      {
+        "id": "h2-054",
+        "values": [
+          "Marie-Claire Dubois",
+          "Lindenweg 47, 82512 Hamburg",
+          "+49 151 61854861"
+        ]
+      },
+      {
+        "id": "h2-056",
+        "values": [
+          "174.203.187.24",
+          "c3ZjX2JpbGxpbmc6Nk16WDluRVcrVCtMTGM="
+        ]
+      },
+      {
+        "id": "h2-057",
+        "values": [
+          "/Users/francois.leclerc"
+        ]
+      },
+      {
+        "id": "h2-060",
+        "values": [
+          "+44 20 7946 9977"
+        ]
+      },
+      {
+        "id": "h2-061",
+        "values": [
+          "Fatima Al-Hassan",
+          "Wei Chen"
+        ]
+      },
+      {
+        "id": "h2-062",
+        "values": [
+          "Elena Popescu"
+        ]
+      },
+      {
+        "id": "h2-066",
+        "values": [
+          "21 818 835 521"
+        ]
+      },
+      {
+        "id": "h2-069",
+        "values": [
+          "Amara Okafor",
+          "4681 1775 8912",
+          "OQHTB8470B",
+          "+91 95143 02907"
+        ]
+      },
+      {
+        "id": "h2-073",
+        "values": [
+          "rose.nakamura"
+        ]
+      },
+      {
+        "id": "h2-074",
+        "values": [
+          "21.195.123.128",
+          "lukasz.nowak%40thistlevale.dev",
+          "%2B919268540924"
+        ]
+      },
+      {
+        "id": "h2-075",
+        "values": [
+          "Priya Nair"
+        ]
+      },
+      {
+        "id": "h2-076",
+        "values": [
+          "4lOSi-*LMuwU$C",
+          "yuki.tanaka"
+        ]
+      },
+      {
+        "id": "h2-077",
+        "values": [
+          "Rajesh Menon"
+        ]
+      },
+      {
+        "id": "h2-080",
+        "values": [
+          "Ren\u00e9e Dubois",
+          "March 27, 1973"
+        ]
+      },
+      {
+        "id": "h2-081",
+        "values": [
+          "Mei Lin",
+          "37/9, 1st Cross, Wilson Garden, Pune 3, Karnataka 560034",
+          "+91 98201 84955"
+        ]
+      },
+      {
+        "id": "h2-086",
+        "values": [
+          "GE 78 94 75 B",
+          "KB 85 67 28 B",
+          "Marie-Claire Dubois",
+          "Ren\u00e9e Dubois"
+        ]
+      },
+      {
+        "id": "h2-087",
+        "values": [
+          "renee.dubois"
+        ]
+      },
+      {
+        "id": "h2-088",
+        "values": [
+          "X6152809",
+          "Priya Nair"
+        ]
+      },
+      {
+        "id": "h2-089",
+        "values": [
+          "DO1xkxwnQrS7RPeMOkIUpkDyr7OSJoRu1XXdo0cZ"
+        ]
+      },
+      {
+        "id": "h2-091",
+        "values": [
+          "Elena Popescu",
+          "Bahnhofstra\u00dfe 86, 43408 Hamburg",
+          "+49 151 30486849"
+        ]
+      },
+      {
+        "id": "h2-093",
+        "values": [
+          "Yuki Tanaka",
+          "Bahnhofstra\u00dfe 108, 83874 Berlin",
+          "81 829 922 997"
+        ]
+      },
+      {
+        "id": "h2-094",
+        "values": [
+          "/home/kwame.asante"
+        ]
+      },
+      {
+        "id": "h2-097",
+        "values": [
+          "/home/rajesh.menon"
+        ]
+      },
+      {
+        "id": "h2-099",
+        "values": [
+          "VIP client \\\"Priya Nair\\\" prefers calls after 6pm"
+        ]
+      },
+      {
+        "id": "h2-102",
+        "values": [
+          "Carlos Mendoza",
+          "27.10.1989",
+          "Bahnhofstra\u00dfe 7, 16624 Hamburg",
+          "+49 151 97813295",
+          "47 016 873 392"
+        ]
+      },
+      {
+        "id": "h2-103",
+        "values": [
+          "138.63.232.95"
+        ]
+      },
+      {
+        "id": "h2-104",
+        "values": [
+          "wei.chen"
+        ]
+      },
+      {
+        "id": "h2-111",
+        "values": [
+          "Bj\u00f6rn Lindqvist"
+        ]
+      },
+      {
+        "id": "h2-112",
+        "values": [
+          "July 24, 1983"
+        ]
+      },
+      {
+        "id": "h2-114",
+        "values": [
+          "150.73.118.119"
+        ]
+      },
+      {
+        "id": "h2-117",
+        "values": [
+          "+49 151 26288992"
+        ]
+      }
+    ],
+    "ms_per_item": 0.0
+  },
+  {
+    "adapter": "maisecrets",
+    "items": 80,
+    "items_leaked": 55,
+    "values_total": 219,
+    "values_leaked": 101,
+    "blocked": 0,
+    "negatives": 40,
+    "false_alarms": 6,
+    "by_category": {
+      "chat-transcript": {
+        "items": 6,
+        "leaked": 6
+      },
+      "sql-dump": {
+        "items": 6,
+        "leaked": 5
+      },
+      "negative": {
+        "items": 40,
+        "leaked": 6
+      },
+      "docker-compose": {
+        "items": 4,
+        "leaked": 1
+      },
+      "invoice": {
+        "items": 4,
+        "leaked": 4
+      },
+      "crash-report": {
+        "items": 4,
+        "leaked": 4
+      },
+      "http-log": {
+        "items": 6,
+        "leaked": 1
+      },
+      "aws-credentials": {
+        "items": 3,
+        "leaked": 0
+      },
+      "k8s-secret": {
+        "items": 4,
+        "leaked": 2
+      },
+      "jupyter": {
+        "items": 4,
+        "leaked": 2
+      },
+      "csv": {
+        "items": 6,
+        "leaked": 6
+      },
+      "npmrc": {
+        "items": 2,
+        "leaked": 0
+      },
+      "postman": {
+        "items": 4,
+        "leaked": 1
+      },
+      "netrc": {
+        "items": 1,
+        "leaked": 1
+      },
+      "pypirc": {
+        "items": 2,
+        "leaked": 1
+      },
+      "slack-export": {
+        "items": 5,
+        "leaked": 3
+      },
+      "terraform-state": {
+        "items": 4,
+        "leaked": 3
+      },
+      "git-config": {
+        "items": 3,
+        "leaked": 3
+      },
+      "resume": {
+        "items": 2,
+        "leaked": 2
+      },
+      "email": {
+        "items": 8,
+        "leaked": 8
+      },
+      "medical-intake": {
+        "items": 2,
+        "leaked": 2
+      }
+    },
+    "leaks": [
+      {
+        "id": "h2-001",
+        "values": [
+          "#jN75ehV\nKjl#X7?-"
+        ]
+      },
+      {
+        "id": "h2-004",
+        "values": [
+          "MnrHon-tIKAR",
+          "sk-proj-IunWe8Cz6SNDCdyZQJiJSZQdoHwHen3SO3oXyGf3azU3iQOp"
+        ]
+      },
+      {
+        "id": "h2-005",
+        "values": [
+          "KTEKW5562Y",
+          "Anika Sharma",
+          "48/9, 1st Cross, Indiranagar, Mumbai 8, Karnataka 560016"
+        ]
+      },
+      {
+        "id": "h2-007",
+        "values": [
+          "Rose Nakamura",
+          "5644 Maple Ave, Fairview, OR 92691"
+        ]
+      },
+      {
+        "id": "h2-008",
+        "values": [
+          "C:\\Users\\\u674e\u4f1f"
+        ]
+      },
+      {
+        "id": "h2-009",
+        "values": [
+          "sk-proj-KGtQksSNYqkNWQql2UcUNxBR-yCrtjLmeRqWtuxv4f0UE4K5",
+          "sk-live-oIpt9ZYE51mxR8KCDXsXyGHA"
+        ]
+      },
+      {
+        "id": "h2-015",
+        "values": [
+          "Ngozi Eze",
+          "RE 62 91 56 A"
+        ]
+      },
+      {
+        "id": "h2-019",
+        "values": [
+          "167 rue de la Paix, 09639 Nantes"
+        ]
+      },
+      {
+        "id": "h2-024",
+        "values": [
+          "Hana Sato",
+          "Omar Farouk"
+        ]
+      },
+      {
+        "id": "h2-025",
+        "values": [
+          "Z2hwX1BtdU1FR2o5ZENnWjUxdlRmR1BsY3BUQ0NISE5reHg2c3lBWA=="
+        ]
+      },
+      {
+        "id": "h2-027",
+        "values": [
+          "7964 0165 8209",
+          "Wei Chen"
+        ]
+      },
+      {
+        "id": "h2-030",
+        "values": [
+          "Amara Okafor"
+        ]
+      },
+      {
+        "id": "h2-031",
+        "values": [
+          "Aisha Bello",
+          "Rua XV de Novembro, 1540, apto 123, Rio de Janeiro - SP, 27485-847"
+        ]
+      },
+      {
+        "id": "h2-032",
+        "values": [
+          "\uae40\ubbfc\uc900"
+        ]
+      },
+      {
+        "id": "h2-033",
+        "values": [
+          "8527 8585 4973",
+          "5348 4344 3759",
+          "PLRZX4419V",
+          "RMMLY2404W",
+          "Mei Lin",
+          "Rose Nakamura"
+        ]
+      },
+      {
+        "id": "h2-034",
+        "values": [
+          "Fatima Al-Hassan",
+          "Calle de la Luna 71, 3\u00ba A, 28027 Madrid"
+        ]
+      },
+      {
+        "id": "h2-036",
+        "values": [
+          "Ravi Patel",
+          "Rua das Flores, 1420, apto 16, Rio de Janeiro - SP, 58619-425"
+        ]
+      },
+      {
+        "id": "h2-038",
+        "values": [
+          "bWF0ZW8ucm9zc2k6SWFLTT8hdDUmOVNRLSo="
+        ]
+      },
+      {
+        "id": "h2-041",
+        "values": [
+          "Olga Petrova"
+        ]
+      },
+      {
+        "id": "h2-042",
+        "values": [
+          "Amara Okafor"
+        ]
+      },
+      {
+        "id": "h2-043",
+        "values": [
+          "c+W9aTMX1&*C!C",
+          "I3!dXRZv7q&dY="
+        ]
+      },
+      {
+        "id": "h2-044",
+        "values": [
+          "eXVraS50YW5ha2FAY2luZGVycGVhay5kZXY="
+        ]
+      },
+      {
+        "id": "h2-047",
+        "values": [
+          "Grace Osei",
+          "1975-01-23",
+          "Anika Sharma",
+          "1992-11-12",
+          "Ngozi Eze",
+          "1999-11-20"
+        ]
+      },
+      {
+        "id": "h2-050",
+        "values": [
+          "Priya Nair"
+        ]
+      },
+      {
+        "id": "h2-051",
+        "values": [
+          "Marie-Claire Dubois"
+        ]
+      },
+      {
+        "id": "h2-053",
+        "values": [
+          "sk-live-zQPxC5HChpoevbLJoLoaeTOd"
+        ]
+      },
+      {
+        "id": "h2-054",
+        "values": [
+          "Marie-Claire Dubois",
+          "Lindenweg 47, 82512 Hamburg"
+        ]
+      },
+      {
+        "id": "h2-057",
+        "values": [
+          "/Users/francois.leclerc"
+        ]
+      },
+      {
+        "id": "h2-060",
+        "values": [
+          "Hope Adeyemi"
+        ]
+      },
+      {
+        "id": "h2-061",
+        "values": [
+          "Fatima Al-Hassan",
+          "Wei Chen"
+        ]
+      },
+      {
+        "id": "h2-062",
+        "values": [
+          "Elena Popescu"
+        ]
+      },
+      {
+        "id": "h2-066",
+        "values": [
+          "21 818 835 521"
+        ]
+      },
+      {
+        "id": "h2-069",
+        "values": [
+          "Amara Okafor",
+          "4681 1775 8912",
+          "OQHTB8470B"
+        ]
+      },
+      {
+        "id": "h2-073",
+        "values": [
+          "rose.nakamura"
+        ]
+      },
+      {
+        "id": "h2-074",
+        "values": [
+          "lukasz.nowak%40thistlevale.dev",
+          "%2B919268540924"
+        ]
+      },
+      {
+        "id": "h2-075",
+        "values": [
+          "Priya Nair",
+          "1177 Willow Drive, Riverside, CA 91830"
+        ]
+      },
+      {
+        "id": "h2-076",
+        "values": [
+          "4lOSi-*LMuwU$C",
+          "yuki.tanaka"
+        ]
+      },
+      {
+        "id": "h2-077",
+        "values": [
+          "Rajesh Menon",
+          "4113 Hickory Way, Fairview, OR 48985"
+        ]
+      },
+      {
+        "id": "h2-080",
+        "values": [
+          "Ren\u00e9e Dubois",
+          "March 27, 1973",
+          "1687 Willow Drive, Springfield, IL 60351",
+          "Mateo Rossi"
+        ]
+      },
+      {
+        "id": "h2-081",
+        "values": [
+          "Mei Lin",
+          "37/9, 1st Cross, Wilson Garden, Pune 3, Karnataka 560034",
+          "02/06/1983"
+        ]
+      },
+      {
+        "id": "h2-084",
+        "values": [
+          "sk-proj-CYhaAMBrGLPpa_3wqWDTjYf3c6jO2Z1LoZcPv6Ul3nF3ZkYN",
+          "Carlos Mendoza"
+        ]
+      },
+      {
+        "id": "h2-086",
+        "values": [
+          "GE 78 94 75 B",
+          "KB 85 67 28 B",
+          "Marie-Claire Dubois",
+          "Ren\u00e9e Dubois"
+        ]
+      },
+      {
+        "id": "h2-087",
+        "values": [
+          "renee.dubois"
+        ]
+      },
+      {
+        "id": "h2-088",
+        "values": [
+          "X6152809",
+          "Priya Nair"
+        ]
+      },
+      {
+        "id": "h2-091",
+        "values": [
+          "Elena Popescu",
+          "Bahnhofstra\u00dfe 86, 43408 Hamburg"
+        ]
+      },
+      {
+        "id": "h2-093",
+        "values": [
+          "Yuki Tanaka",
+          "Bahnhofstra\u00dfe 108, 83874 Berlin",
+          "81 829 922 997"
+        ]
+      },
+      {
+        "id": "h2-094",
+        "values": [
+          "/home/kwame.asante"
+        ]
+      },
+      {
+        "id": "h2-097",
+        "values": [
+          "/home/rajesh.menon"
+        ]
+      },
+      {
+        "id": "h2-099",
+        "values": [
+          "VIP client \\\"Priya Nair\\\" prefers calls after 6pm"
+        ]
+      },
+      {
+        "id": "h2-102",
+        "values": [
+          "Carlos Mendoza",
+          "27.10.1989",
+          "Bahnhofstra\u00dfe 7, 16624 Hamburg",
+          "47 016 873 392"
+        ]
+      },
+      {
+        "id": "h2-104",
+        "values": [
+          "wei.chen"
+        ]
+      },
+      {
+        "id": "h2-111",
+        "values": [
+          "Bj\u00f6rn Lindqvist"
+        ]
+      },
+      {
+        "id": "h2-112",
+        "values": [
+          "July 24, 1983"
+        ]
+      },
+      {
+        "id": "h2-116",
+        "values": [
+          "53 Church Road, Bristol S1 6W"
+        ]
+      },
+      {
+        "id": "h2-117",
+        "values": [
+          "Rajesh Menon"
+        ]
+      }
+    ],
+    "ms_per_item": 0.4
+  },
+  {
+    "adapter": "redact-hook (default)",
+    "items": 80,
+    "items_leaked": 63,
+    "values_total": 219,
+    "values_leaked": 141,
+    "blocked": 0,
+    "negatives": 40,
+    "false_alarms": 8,
+    "by_category": {
+      "chat-transcript": {
+        "items": 6,
+        "leaked": 5
+      },
+      "sql-dump": {
+        "items": 6,
+        "leaked": 5
+      },
+      "negative": {
+        "items": 40,
+        "leaked": 8
+      },
+      "docker-compose": {
+        "items": 4,
+        "leaked": 1
+      },
+      "invoice": {
+        "items": 4,
+        "leaked": 4
+      },
+      "crash-report": {
+        "items": 4,
+        "leaked": 4
+      },
+      "http-log": {
+        "items": 6,
+        "leaked": 6
+      },
+      "aws-credentials": {
+        "items": 3,
+        "leaked": 3
+      },
+      "k8s-secret": {
+        "items": 4,
+        "leaked": 4
+      },
+      "jupyter": {
+        "items": 4,
+        "leaked": 2
+      },
+      "csv": {
+        "items": 6,
+        "leaked": 6
+      },
+      "npmrc": {
+        "items": 2,
+        "leaked": 0
+      },
+      "postman": {
+        "items": 4,
+        "leaked": 1
+      },
+      "netrc": {
+        "items": 1,
+        "leaked": 0
+      },
+      "pypirc": {
+        "items": 2,
+        "leaked": 1
+      },
+      "slack-export": {
+        "items": 5,
+        "leaked": 3
+      },
+      "terraform-state": {
+        "items": 4,
+        "leaked": 3
+      },
+      "git-config": {
+        "items": 3,
+        "leaked": 3
+      },
+      "resume": {
+        "items": 2,
+        "leaked": 2
+      },
+      "email": {
+        "items": 8,
+        "leaked": 8
+      },
+      "medical-intake": {
+        "items": 2,
+        "leaked": 2
+      }
+    },
+    "leaks": [
+      {
+        "id": "h2-001",
+        "values": [
+          "#jN75ehV\nKjl#X7?-"
+        ]
+      },
+      {
+        "id": "h2-004",
+        "values": [
+          "MnrHon-tIKAR",
+          "AH#!Ggl2JfaQqH"
+        ]
+      },
+      {
+        "id": "h2-005",
+        "values": [
+          "KTEKW5562Y",
+          "Anika Sharma",
+          "48/9, 1st Cross, Indiranagar, Mumbai 8, Karnataka 560016"
+        ]
+      },
+      {
+        "id": "h2-007",
+        "values": [
+          "Rose Nakamura",
+          "5644 Maple Ave, Fairview, OR 92691"
+        ]
+      },
+      {
+        "id": "h2-008",
+        "values": [
+          "C:\\Users\\\u674e\u4f1f"
+        ]
+      },
+      {
+        "id": "h2-010",
+        "values": [
+          "20.72.115.221"
+        ]
+      },
+      {
+        "id": "h2-012",
+        "values": [
+          "NGDpyOp&xyB9J^KmyLDUwMb&qJfg-Lq!nb+K894R"
+        ]
+      },
+      {
+        "id": "h2-014",
+        "values": [
+          "rajesh.menon@nordhaven.io"
+        ]
+      },
+      {
+        "id": "h2-015",
+        "values": [
+          "Ngozi Eze",
+          "RE 62 91 56 A"
+        ]
+      },
+      {
+        "id": "h2-019",
+        "values": [
+          "167 rue de la Paix, 09639 Nantes"
+        ]
+      },
+      {
+        "id": "h2-024",
+        "values": [
+          "DE53409749930972896230",
+          "DE63913075626368970283",
+          "Hana Sato",
+          "Omar Farouk"
+        ]
+      },
+      {
+        "id": "h2-025",
+        "values": [
+          "Z2hwX1BtdU1FR2o5ZENnWjUxdlRmR1BsY3BUQ0NISE5reHg2c3lBWA=="
+        ]
+      },
+      {
+        "id": "h2-027",
+        "values": [
+          "7964 0165 8209",
+          "Wei Chen"
+        ]
+      },
+      {
+        "id": "h2-030",
+        "values": [
+          "DE47042284210205395024",
+          "Amara Okafor"
+        ]
+      },
+      {
+        "id": "h2-031",
+        "values": [
+          "Aisha Bello",
+          "Rua XV de Novembro, 1540, apto 123, Rio de Janeiro - SP, 27485-847"
+        ]
+      },
+      {
+        "id": "h2-032",
+        "values": [
+          "5Jau2RJtBRnlWmTSHf",
+          "\uae40\ubbfc\uc900"
+        ]
+      },
+      {
+        "id": "h2-033",
+        "values": [
+          "8527 8585 4973",
+          "5348 4344 3759",
+          "PLRZX4419V",
+          "RMMLY2404W",
+          "Mei Lin",
+          "Rose Nakamura"
+        ]
+      },
+      {
+        "id": "h2-034",
+        "values": [
+          "Fatima Al-Hassan",
+          "Calle de la Luna 71, 3\u00ba A, 28027 Madrid"
+        ]
+      },
+      {
+        "id": "h2-036",
+        "values": [
+          "Ravi Patel",
+          "Rua das Flores, 1420, apto 16, Rio de Janeiro - SP, 58619-425"
+        ]
+      },
+      {
+        "id": "h2-037",
+        "values": [
+          "y%U@4gAI-qK4!pdEuN-b-0lCo7pt@L$I198F6-sX"
+        ]
+      },
+      {
+        "id": "h2-038",
+        "values": [
+          "bWF0ZW8ucm9zc2k6SWFLTT8hdDUmOVNRLSo=",
+          "mateo.rossi@nordhaven.io"
+        ]
+      },
+      {
+        "id": "h2-040",
+        "values": [
+          "203.202.7.68",
+          "cc3f:863a:c315:be31:3779:77b7:f165:cd0"
+        ]
+      },
+      {
+        "id": "h2-041",
+        "values": [
+          "Olga Petrova",
+          "717744905"
+        ]
+      },
+      {
+        "id": "h2-042",
+        "values": [
+          "Amara Okafor",
+          "amara.okafor@lumivex.dev"
+        ]
+      },
+      {
+        "id": "h2-044",
+        "values": [
+          "eXVraS50YW5ha2FAY2luZGVycGVhay5kZXY=",
+          "eXVraS50YW5ha2E="
+        ]
+      },
+      {
+        "id": "h2-047",
+        "values": [
+          "Grace Osei",
+          "grace.osei@thistlevale.dev",
+          "1975-01-23",
+          "Anika Sharma",
+          "anika.sharma@quartzfern.io",
+          "1992-11-12",
+          "Ngozi Eze",
+          "ngozi.eze@maplevault.io",
+          "1999-11-20"
+        ]
+      },
+      {
+        "id": "h2-050",
+        "values": [
+          "Priya Nair"
+        ]
+      },
+      {
+        "id": "h2-051",
+        "values": [
+          "Marie-Claire Dubois",
+          "marieclaire.dubois@kastrodyne.com"
+        ]
+      },
+      {
+        "id": "h2-053",
+        "values": [
+          "priya.nair@velmora.dev"
+        ]
+      },
+      {
+        "id": "h2-054",
+        "values": [
+          "Marie-Claire Dubois",
+          "marieclaire.dubois@kastrodyne.com",
+          "Lindenweg 47, 82512 Hamburg"
+        ]
+      },
+      {
+        "id": "h2-056",
+        "values": [
+          "174.203.187.24"
+        ]
+      },
+      {
+        "id": "h2-057",
+        "values": [
+          "/Users/francois.leclerc"
+        ]
+      },
+      {
+        "id": "h2-060",
+        "values": [
+          "Hope Adeyemi",
+          "hope.adeyemi@emberloop.io"
+        ]
+      },
+      {
+        "id": "h2-061",
+        "values": [
+          "ES7458527722170430305486",
+          "IT2687403450541566765277584",
+          "fatima.alhassan@kastrodyne.com",
+          "wei.chen@thistlevale.dev",
+          "Fatima Al-Hassan",
+          "Wei Chen"
+        ]
+      },
+      {
+        "id": "h2-062",
+        "values": [
+          "FR7904945198327315851493689",
+          "elena.popescu@velmora.dev",
+          "Elena Popescu"
+        ]
+      },
+      {
+        "id": "h2-066",
+        "values": [
+          "21 818 835 521",
+          "bjorn.lindqvist@thistlevale.dev"
+        ]
+      },
+      {
+        "id": "h2-069",
+        "values": [
+          "Amara Okafor",
+          "4681 1775 8912",
+          "OQHTB8470B"
+        ]
+      },
+      {
+        "id": "h2-073",
+        "values": [
+          "rose.nakamura"
+        ]
+      },
+      {
+        "id": "h2-074",
+        "values": [
+          "21.195.123.128",
+          "lukasz.nowak%40thistlevale.dev",
+          "%2B919268540924"
+        ]
+      },
+      {
+        "id": "h2-075",
+        "values": [
+          "Priya Nair",
+          "330-78-2431",
+          "1177 Willow Drive, Riverside, CA 91830"
+        ]
+      },
+      {
+        "id": "h2-076",
+        "values": [
+          "4lOSi-*LMuwU$C",
+          "yuki.tanaka"
+        ]
+      },
+      {
+        "id": "h2-077",
+        "values": [
+          "Rajesh Menon",
+          "4113 Hickory Way, Fairview, OR 48985"
+        ]
+      },
+      {
+        "id": "h2-078",
+        "values": [
+          "8c*gSCifdFzctEq8o=B7GVvouNn?dN+WYzjFnMp=",
+          "%I&973IPFlJ5F7=WRd@Px!BTHRJJ_b%ykE0!_E8!"
+        ]
+      },
+      {
+        "id": "h2-080",
+        "values": [
+          "Ren\u00e9e Dubois",
+          "March 27, 1973",
+          "461-32-2309",
+          "1687 Willow Drive, Springfield, IL 60351",
+          "renee.dubois@thistlevale.dev",
+          "Mateo Rossi"
+        ]
+      },
+      {
+        "id": "h2-081",
+        "values": [
+          "Mei Lin",
+          "mei.lin@sagefen.dev",
+          "02/06/1983"
+        ]
+      },
+      {
+        "id": "h2-084",
+        "values": [
+          "41IB$oS3oK!^Nf",
+          "Carlos Mendoza",
+          "carlos.mendoza@copperquill.io"
+        ]
+      },
+      {
+        "id": "h2-086",
+        "values": [
+          "GE 78 94 75 B",
+          "KB 85 67 28 B",
+          "Marie-Claire Dubois",
+          "Ren\u00e9e Dubois"
+        ]
+      },
+      {
+        "id": "h2-087",
+        "values": [
+          "renee.dubois"
+        ]
+      },
+      {
+        "id": "h2-088",
+        "values": [
+          "X6152809",
+          "priya.nair@velmora.dev",
+          "Priya Nair"
+        ]
+      },
+      {
+        "id": "h2-089",
+        "values": [
+          "DO1xkxwnQrS7RPeMOkIUpkDyr7OSJoRu1XXdo0cZ"
+        ]
+      },
+      {
+        "id": "h2-091",
+        "values": [
+          "Elena Popescu",
+          "Bahnhofstra\u00dfe 86, 43408 Hamburg"
+        ]
+      },
+      {
+        "id": "h2-093",
+        "values": [
+          "Yuki Tanaka",
+          "Bahnhofstra\u00dfe 108, 83874 Berlin",
+          "DE29824225358414384249",
+          "81 829 922 997"
+        ]
+      },
+      {
+        "id": "h2-094",
+        "values": [
+          "/home/kwame.asante"
+        ]
+      },
+      {
+        "id": "h2-097",
+        "values": [
+          "/home/rajesh.menon"
+        ]
+      },
+      {
+        "id": "h2-099",
+        "values": [
+          "VIP client \\\"Priya Nair\\\" prefers calls after 6pm"
+        ]
+      },
+      {
+        "id": "h2-102",
+        "values": [
+          "Carlos Mendoza",
+          "27.10.1989",
+          "Bahnhofstra\u00dfe 7, 16624 Hamburg",
+          "47 016 873 392"
+        ]
+      },
+      {
+        "id": "h2-103",
+        "values": [
+          "138.63.232.95"
+        ]
+      },
+      {
+        "id": "h2-104",
+        "values": [
+          "wei.chen"
+        ]
+      },
+      {
+        "id": "h2-111",
+        "values": [
+          "Bj\u00f6rn Lindqvist",
+          "bjorn.lindqvist@thistlevale.dev"
+        ]
+      },
+      {
+        "id": "h2-112",
+        "values": [
+          "424-44-7431",
+          "July 24, 1983",
+          "aisha.bello@lumivex.dev",
+          "li.wei@copperquill.io"
+        ]
+      },
+      {
+        "id": "h2-114",
+        "values": [
+          "150.73.118.119"
+        ]
+      },
+      {
+        "id": "h2-116",
+        "values": [
+          "53 Church Road, Bristol S1 6W"
+        ]
+      },
+      {
+        "id": "h2-117",
+        "values": [
+          "Rajesh Menon"
+        ]
+      }
+    ],
+    "ms_per_item": 0.0
+  },
+  {
+    "adapter": "redact-hook (aggressive)",
+    "items": 80,
+    "items_leaked": 61,
+    "values_total": 219,
+    "values_leaked": 137,
+    "blocked": 0,
+    "negatives": 40,
+    "false_alarms": 8,
+    "by_category": {
+      "chat-transcript": {
+        "items": 6,
+        "leaked": 4
+      },
+      "sql-dump": {
+        "items": 6,
+        "leaked": 5
+      },
+      "negative": {
+        "items": 40,
+        "leaked": 8
+      },
+      "docker-compose": {
+        "items": 4,
+        "leaked": 1
+      },
+      "invoice": {
+        "items": 4,
+        "leaked": 4
+      },
+      "crash-report": {
+        "items": 4,
+        "leaked": 4
+      },
+      "http-log": {
+        "items": 6,
+        "leaked": 6
+      },
+      "aws-credentials": {
+        "items": 3,
+        "leaked": 3
+      },
+      "k8s-secret": {
+        "items": 4,
+        "leaked": 3
+      },
+      "jupyter": {
+        "items": 4,
+        "leaked": 2
+      },
+      "csv": {
+        "items": 6,
+        "leaked": 6
+      },
+      "npmrc": {
+        "items": 2,
+        "leaked": 0
+      },
+      "postman": {
+        "items": 4,
+        "leaked": 1
+      },
+      "netrc": {
+        "items": 1,
+        "leaked": 0
+      },
+      "pypirc": {
+        "items": 2,
+        "leaked": 1
+      },
+      "slack-export": {
+        "items": 5,
+        "leaked": 3
+      },
+      "terraform-state": {
+        "items": 4,
+        "leaked": 3
+      },
+      "git-config": {
+        "items": 3,
+        "leaked": 3
+      },
+      "resume": {
+        "items": 2,
+        "leaked": 2
+      },
+      "email": {
+        "items": 8,
+        "leaked": 8
+      },
+      "medical-intake": {
+        "items": 2,
+        "leaked": 2
+      }
+    },
+    "leaks": [
+      {
+        "id": "h2-001",
+        "values": [
+          "#jN75ehV\nKjl#X7?-"
+        ]
+      },
+      {
+        "id": "h2-004",
+        "values": [
+          "MnrHon-tIKAR",
+          "AH#!Ggl2JfaQqH"
+        ]
+      },
+      {
+        "id": "h2-005",
+        "values": [
+          "KTEKW5562Y",
+          "Anika Sharma",
+          "48/9, 1st Cross, Indiranagar, Mumbai 8, Karnataka 560016"
+        ]
+      },
+      {
+        "id": "h2-007",
+        "values": [
+          "Rose Nakamura",
+          "5644 Maple Ave, Fairview, OR 92691"
+        ]
+      },
+      {
+        "id": "h2-008",
+        "values": [
+          "C:\\Users\\\u674e\u4f1f"
+        ]
+      },
+      {
+        "id": "h2-010",
+        "values": [
+          "20.72.115.221"
+        ]
+      },
+      {
+        "id": "h2-012",
+        "values": [
+          "NGDpyOp&xyB9J^KmyLDUwMb&qJfg-Lq!nb+K894R"
+        ]
+      },
+      {
+        "id": "h2-014",
+        "values": [
+          "rajesh.menon@nordhaven.io"
+        ]
+      },
+      {
+        "id": "h2-015",
+        "values": [
+          "Ngozi Eze",
+          "RE 62 91 56 A"
+        ]
+      },
+      {
+        "id": "h2-019",
+        "values": [
+          "167 rue de la Paix, 09639 Nantes"
+        ]
+      },
+      {
+        "id": "h2-024",
+        "values": [
+          "DE53409749930972896230",
+          "DE63913075626368970283",
+          "Hana Sato",
+          "Omar Farouk"
+        ]
+      },
+      {
+        "id": "h2-027",
+        "values": [
+          "7964 0165 8209",
+          "Wei Chen"
+        ]
+      },
+      {
+        "id": "h2-030",
+        "values": [
+          "DE47042284210205395024",
+          "Amara Okafor"
+        ]
+      },
+      {
+        "id": "h2-031",
+        "values": [
+          "Aisha Bello",
+          "Rua XV de Novembro, 1540, apto 123, Rio de Janeiro - SP, 27485-847"
+        ]
+      },
+      {
+        "id": "h2-032",
+        "values": [
+          "5Jau2RJtBRnlWmTSHf",
+          "\uae40\ubbfc\uc900"
+        ]
+      },
+      {
+        "id": "h2-033",
+        "values": [
+          "8527 8585 4973",
+          "5348 4344 3759",
+          "PLRZX4419V",
+          "RMMLY2404W",
+          "Mei Lin",
+          "Rose Nakamura"
+        ]
+      },
+      {
+        "id": "h2-034",
+        "values": [
+          "Fatima Al-Hassan",
+          "Calle de la Luna 71, 3\u00ba A, 28027 Madrid"
+        ]
+      },
+      {
+        "id": "h2-036",
+        "values": [
+          "Ravi Patel",
+          "Rua das Flores, 1420, apto 16, Rio de Janeiro - SP, 58619-425"
+        ]
+      },
+      {
+        "id": "h2-037",
+        "values": [
+          "y%U@4gAI-qK4!pdEuN-b-0lCo7pt@L$I198F6-sX"
+        ]
+      },
+      {
+        "id": "h2-038",
+        "values": [
+          "mateo.rossi@nordhaven.io"
+        ]
+      },
+      {
+        "id": "h2-040",
+        "values": [
+          "203.202.7.68",
+          "cc3f:863a:c315:be31:3779:77b7:f165:cd0"
+        ]
+      },
+      {
+        "id": "h2-041",
+        "values": [
+          "Olga Petrova",
+          "717744905"
+        ]
+      },
+      {
+        "id": "h2-042",
+        "values": [
+          "Amara Okafor",
+          "amara.okafor@lumivex.dev"
+        ]
+      },
+      {
+        "id": "h2-044",
+        "values": [
+          "eXVraS50YW5ha2E="
+        ]
+      },
+      {
+        "id": "h2-047",
+        "values": [
+          "Grace Osei",
+          "grace.osei@thistlevale.dev",
+          "1975-01-23",
+          "Anika Sharma",
+          "anika.sharma@quartzfern.io",
+          "1992-11-12",
+          "Ngozi Eze",
+          "ngozi.eze@maplevault.io",
+          "1999-11-20"
+        ]
+      },
+      {
+        "id": "h2-050",
+        "values": [
+          "Priya Nair"
+        ]
+      },
+      {
+        "id": "h2-051",
+        "values": [
+          "Marie-Claire Dubois",
+          "marieclaire.dubois@kastrodyne.com"
+        ]
+      },
+      {
+        "id": "h2-053",
+        "values": [
+          "priya.nair@velmora.dev"
+        ]
+      },
+      {
+        "id": "h2-054",
+        "values": [
+          "Marie-Claire Dubois",
+          "marieclaire.dubois@kastrodyne.com",
+          "Lindenweg 47, 82512 Hamburg"
+        ]
+      },
+      {
+        "id": "h2-056",
+        "values": [
+          "174.203.187.24"
+        ]
+      },
+      {
+        "id": "h2-057",
+        "values": [
+          "/Users/francois.leclerc"
+        ]
+      },
+      {
+        "id": "h2-060",
+        "values": [
+          "Hope Adeyemi",
+          "hope.adeyemi@emberloop.io"
+        ]
+      },
+      {
+        "id": "h2-061",
+        "values": [
+          "ES7458527722170430305486",
+          "IT2687403450541566765277584",
+          "fatima.alhassan@kastrodyne.com",
+          "wei.chen@thistlevale.dev",
+          "Fatima Al-Hassan",
+          "Wei Chen"
+        ]
+      },
+      {
+        "id": "h2-062",
+        "values": [
+          "FR7904945198327315851493689",
+          "elena.popescu@velmora.dev",
+          "Elena Popescu"
+        ]
+      },
+      {
+        "id": "h2-066",
+        "values": [
+          "21 818 835 521",
+          "bjorn.lindqvist@thistlevale.dev"
+        ]
+      },
+      {
+        "id": "h2-069",
+        "values": [
+          "Amara Okafor",
+          "4681 1775 8912",
+          "OQHTB8470B"
+        ]
+      },
+      {
+        "id": "h2-073",
+        "values": [
+          "rose.nakamura"
+        ]
+      },
+      {
+        "id": "h2-074",
+        "values": [
+          "21.195.123.128",
+          "lukasz.nowak%40thistlevale.dev",
+          "%2B919268540924"
+        ]
+      },
+      {
+        "id": "h2-075",
+        "values": [
+          "Priya Nair",
+          "330-78-2431",
+          "1177 Willow Drive, Riverside, CA 91830"
+        ]
+      },
+      {
+        "id": "h2-076",
+        "values": [
+          "4lOSi-*LMuwU$C",
+          "yuki.tanaka"
+        ]
+      },
+      {
+        "id": "h2-077",
+        "values": [
+          "Rajesh Menon",
+          "4113 Hickory Way, Fairview, OR 48985"
+        ]
+      },
+      {
+        "id": "h2-078",
+        "values": [
+          "8c*gSCifdFzctEq8o=B7GVvouNn?dN+WYzjFnMp=",
+          "%I&973IPFlJ5F7=WRd@Px!BTHRJJ_b%ykE0!_E8!"
+        ]
+      },
+      {
+        "id": "h2-080",
+        "values": [
+          "Ren\u00e9e Dubois",
+          "March 27, 1973",
+          "461-32-2309",
+          "1687 Willow Drive, Springfield, IL 60351",
+          "renee.dubois@thistlevale.dev",
+          "Mateo Rossi"
+        ]
+      },
+      {
+        "id": "h2-081",
+        "values": [
+          "Mei Lin",
+          "mei.lin@sagefen.dev",
+          "02/06/1983"
+        ]
+      },
+      {
+        "id": "h2-084",
+        "values": [
+          "41IB$oS3oK!^Nf",
+          "Carlos Mendoza",
+          "carlos.mendoza@copperquill.io"
+        ]
+      },
+      {
+        "id": "h2-086",
+        "values": [
+          "GE 78 94 75 B",
+          "KB 85 67 28 B",
+          "Marie-Claire Dubois",
+          "Ren\u00e9e Dubois"
+        ]
+      },
+      {
+        "id": "h2-087",
+        "values": [
+          "renee.dubois"
+        ]
+      },
+      {
+        "id": "h2-088",
+        "values": [
+          "X6152809",
+          "priya.nair@velmora.dev",
+          "Priya Nair"
+        ]
+      },
+      {
+        "id": "h2-091",
+        "values": [
+          "Elena Popescu",
+          "Bahnhofstra\u00dfe 86, 43408 Hamburg"
+        ]
+      },
+      {
+        "id": "h2-093",
+        "values": [
+          "Yuki Tanaka",
+          "Bahnhofstra\u00dfe 108, 83874 Berlin",
+          "DE29824225358414384249",
+          "81 829 922 997"
+        ]
+      },
+      {
+        "id": "h2-094",
+        "values": [
+          "/home/kwame.asante"
+        ]
+      },
+      {
+        "id": "h2-097",
+        "values": [
+          "/home/rajesh.menon"
+        ]
+      },
+      {
+        "id": "h2-099",
+        "values": [
+          "VIP client \\\"Priya Nair\\\" prefers calls after 6pm"
+        ]
+      },
+      {
+        "id": "h2-102",
+        "values": [
+          "Carlos Mendoza",
+          "27.10.1989",
+          "Bahnhofstra\u00dfe 7, 16624 Hamburg",
+          "47 016 873 392"
+        ]
+      },
+      {
+        "id": "h2-103",
+        "values": [
+          "138.63.232.95"
+        ]
+      },
+      {
+        "id": "h2-104",
+        "values": [
+          "wei.chen"
+        ]
+      },
+      {
+        "id": "h2-111",
+        "values": [
+          "Bj\u00f6rn Lindqvist",
+          "bjorn.lindqvist@thistlevale.dev"
+        ]
+      },
+      {
+        "id": "h2-112",
+        "values": [
+          "424-44-7431",
+          "July 24, 1983",
+          "aisha.bello@lumivex.dev",
+          "li.wei@copperquill.io"
+        ]
+      },
+      {
+        "id": "h2-114",
+        "values": [
+          "150.73.118.119"
+        ]
+      },
+      {
+        "id": "h2-116",
+        "values": [
+          "53 Church Road, Bristol S1 6W"
+        ]
+      },
+      {
+        "id": "h2-117",
+        "values": [
+          "Rajesh Menon"
+        ]
+      }
+    ],
+    "ms_per_item": 0.1
+  }
+]

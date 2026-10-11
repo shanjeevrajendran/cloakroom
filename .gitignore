@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+.venv/
+bench/competitors/
+bench/competitors/
+.venv/
+*.egg-info/
+build/
+uv.lock
+demo/run/
+.DS_Store

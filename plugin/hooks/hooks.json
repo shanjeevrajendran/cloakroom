@@ -1,0 +1,50 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "set -- `# <#`\nif command -v cloakroom >/dev/null 2>&1; then cloakroom hook start; else printf '%s\\n' '{\"systemMessage\": \"cloakroom: not installed or not on PATH; every tool call will be denied until it is. Install: uv tool install cloakroom[model]\"}'; fi; exit 0\n: <<'#PS_END'\n#>\n$u = New-Object System.Text.UTF8Encoding $false; [Console]::InputEncoding = $u; [Console]::OutputEncoding = $u; $OutputEncoding = $u; if (Get-Command cloakroom -ErrorAction SilentlyContinue) { [Console]::In.ReadToEnd() | & cloakroom hook start } else { '{\"systemMessage\": \"cloakroom: not installed or not on PATH; every tool call will be denied until it is. Install: uv tool install cloakroom[model]\"}' }; exit 0\n#PS_END",
+            "timeout": 30
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "set -- `# <#`\nif command -v cloakroom >/dev/null 2>&1; then cloakroom hook prompt; else printf '%s\\n' '{\"decision\": \"block\", \"reason\": \"Cloakroom is not installed or not on PATH, so this was stopped to keep data private. Fix: run cloakroom doctor.\"}'; fi; exit 0\n: <<'#PS_END'\n#>\n$u = New-Object System.Text.UTF8Encoding $false; [Console]::InputEncoding = $u; [Console]::OutputEncoding = $u; $OutputEncoding = $u; if (Get-Command cloakroom -ErrorAction SilentlyContinue) { [Console]::In.ReadToEnd() | & cloakroom hook prompt } else { '{\"decision\": \"block\", \"reason\": \"Cloakroom is not installed or not on PATH, so this was stopped to keep data private. Fix: run cloakroom doctor.\"}' }; exit 0\n#PS_END",
+            "timeout": 60
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "set -- `# <#`\nif command -v cloakroom >/dev/null 2>&1; then cloakroom hook pre; else printf '%s\\n' '{\"hookSpecificOutput\": {\"hookEventName\": \"PreToolUse\", \"permissionDecision\": \"deny\", \"permissionDecisionReason\": \"Cloakroom is not installed or not on PATH, so this was stopped to keep data private. Fix: run cloakroom doctor.\"}}'; fi; exit 0\n: <<'#PS_END'\n#>\n$u = New-Object System.Text.UTF8Encoding $false; [Console]::InputEncoding = $u; [Console]::OutputEncoding = $u; $OutputEncoding = $u; if (Get-Command cloakroom -ErrorAction SilentlyContinue) { [Console]::In.ReadToEnd() | & cloakroom hook pre } else { '{\"hookSpecificOutput\": {\"hookEventName\": \"PreToolUse\", \"permissionDecision\": \"deny\", \"permissionDecisionReason\": \"Cloakroom is not installed or not on PATH, so this was stopped to keep data private. Fix: run cloakroom doctor.\"}}' }; exit 0\n#PS_END",
+            "timeout": 60
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "set -- `# <#`\nif command -v cloakroom >/dev/null 2>&1; then cloakroom hook post; else printf '%s\\n' '{\"hookSpecificOutput\": {\"hookEventName\": \"PostToolUse\", \"updatedToolOutput\": \"[Cloakroom is not installed or not on PATH, so this was stopped to keep data private. Fix: run cloakroom doctor.]\"}}'; fi; exit 0\n: <<'#PS_END'\n#>\n$u = New-Object System.Text.UTF8Encoding $false; [Console]::InputEncoding = $u; [Console]::OutputEncoding = $u; $OutputEncoding = $u; if (Get-Command cloakroom -ErrorAction SilentlyContinue) { [Console]::In.ReadToEnd() | & cloakroom hook post } else { '{\"hookSpecificOutput\": {\"hookEventName\": \"PostToolUse\", \"updatedToolOutput\": \"[Cloakroom is not installed or not on PATH, so this was stopped to keep data private. Fix: run cloakroom doctor.]\"}}' }; exit 0\n#PS_END",
+            "timeout": 120
+          }
+        ]
+      }
+    ]
+  }
+}

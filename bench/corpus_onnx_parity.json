@@ -1,0 +1,2160 @@
+{
+ "ms_per_item": {
+  "torch-cpu": 231.0,
+  "torch-fp32": 408.6,
+  "onnx-fp32": 366.3,
+  "onnx-int8": 159.1
+ },
+ "parity": {
+  "torch-fp32 vs torch-cpu": {
+   "all": {
+    "same": 681,
+    "ref_only": 8,
+    "new_only": 9,
+    "parity": 0.9756,
+    "diffs": [
+     {
+      "id": "env_file-006",
+      "ref_only": [
+       [
+        "secret",
+        70,
+        176,
+        "sk-ant-api03-CeIJgAvV58i3LT-2Fl2LwGsZfrAucmKE7iSMUqKie4qktGx8PnTUWim94wq1HgXETqZkeObgYpVJdHKPVE-VQb9vMlkR1"
+       ]
+      ],
+      "new_only": [
+       [
+        "secret",
+        52,
+        176,
+        "ANTHROPIC_API_KEY=sk-ant-api03-CeIJgAvV58i3LT-2Fl2LwGsZfrAucmKE7iSMUqKie4qktGx8PnTUWim94wq1HgXETqZkeObgYpVJdHKPVE-VQb9vMlkR1"
+       ]
+      ]
+     },
+     {
+      "id": "env_file-008",
+      "ref_only": [
+       [
+        "secret",
+        103,
+        326,
+        "HF_TOKEN=hf_SlO9iD73k5NDwzXjz5EAZ0xhg8rvQnOPpH\nSESSION_JWT=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiAiNTU3MjczMTgiLCAibmFtZSI6ICJJbmdyaWQgUmFtYW4iLCAiaWF0IjogMTc5NDQ3NDQxOH0.I_T4PrZucdn8O6cRxzBvPIDeqcmxw3qLL7KuUKpcO4k"
+       ]
+      ],
+      "new_only": [
+       [
+        "secret",
+        103,
+        149,
+        "HF_TOKEN=hf_SlO9iD73k5NDwzXjz5EAZ0xhg8rvQnOPpH"
+       ],
+       [
+        "secret",
+        150,
+        326,
+        "SESSION_JWT=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiAiNTU3MjczMTgiLCAibmFtZSI6ICJJbmdyaWQgUmFtYW4iLCAiaWF0IjogMTc5NDQ3NDQxOH0.I_T4PrZucdn8O6cRxzBvPIDeqcmxw3qLL7KuUKpcO4k"
+       ]
+      ]
+     },
+     {
+      "id": "env_file-011",
+      "ref_only": [
+       [
+        "secret",
+        199,
+        217,
+        "lvFexX674GAwPXuOj!"
+       ]
+      ],
+      "new_only": [
+       [
+        "secret",
+        187,
+        217,
+        "DB_PASSWORD=lvFexX674GAwPXuOj!"
+       ]
+      ]
+     },
+     {
+      "id": "app_log-008",
+      "ref_only": [
+       [
+        "private_date",
+        578,
+        597,
+        "026-10-01T11:16:34Z"
+       ]
+      ],
+      "new_only": [
+       [
+        "private_date",
+        577,
+        597,
+        "2026-10-01T11:16:34Z"
+       ]
+      ]
+     },
+     {
+      "id": "csv_export-003",
+      "ref_only": [],
+      "new_only": [
+       [
+        "private_person",
+        498,
+        502,
+        "1004"
+       ]
+      ]
+     },
+     {
+      "id": "source_code-003",
+      "ref_only": [
+       [
+        "secret",
+        244,
+        264,
+        "AKIAPDYS5JFTJIG6QENJ"
+       ]
+      ],
+      "new_only": [
+       [
+        "secret",
+        244,
+        266,
+        "AKIAPDYS5JFTJIG6QENJ\")"
+       ]
+      ]
+     },
+     {
+      "id": "doc_note-004",
+      "ref_only": [
+       [
+        "account_number",
+        7,
+        12,
+        "#4821"
+       ]
+      ],
+      "new_only": [
+       [
+        "account_number",
+        8,
+        12,
+        "4821"
+       ]
+      ]
+     },
+     {
+      "id": "negative-003",
+      "ref_only": [
+       [
+        "private_person",
+        56,
+        71,
+        "dependabot[bot]"
+       ],
+       [
+        "private_person",
+        73,
+        91,
+        "support@github.com"
+       ]
+      ],
+      "new_only": [
+       [
+        "private_person",
+        56,
+        70,
+        "dependabot[bot"
+       ]
+      ]
+     }
+    ]
+   },
+   "acted": {
+    "same": 681,
+    "ref_only": 8,
+    "new_only": 9,
+    "parity": 0.9756,
+    "diffs": [
+     {
+      "id": "env_file-006",
+      "ref_only": [
+       [
+        "secret",
+        70,
+        176,
+        "sk-ant-api03-CeIJgAvV58i3LT-2Fl2LwGsZfrAucmKE7iSMUqKie4qktGx8PnTUWim94wq1HgXETqZkeObgYpVJdHKPVE-VQb9vMlkR1"
+       ]
+      ],
+      "new_only": [
+       [
+        "secret",
+        52,
+        176,
+        "ANTHROPIC_API_KEY=sk-ant-api03-CeIJgAvV58i3LT-2Fl2LwGsZfrAucmKE7iSMUqKie4qktGx8PnTUWim94wq1HgXETqZkeObgYpVJdHKPVE-VQb9vMlkR1"
+       ]
+      ]
+     },
+     {
+      "id": "env_file-008",
+      "ref_only": [
+       [
+        "secret",
+        103,
+        326,
+        "HF_TOKEN=hf_SlO9iD73k5NDwzXjz5EAZ0xhg8rvQnOPpH\nSESSION_JWT=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiAiNTU3MjczMTgiLCAibmFtZSI6ICJJbmdyaWQgUmFtYW4iLCAiaWF0IjogMTc5NDQ3NDQxOH0.I_T4PrZucdn8O6cRxzBvPIDeqcmxw3qLL7KuUKpcO4k"
+       ]
+      ],
+      "new_only": [
+       [
+        "secret",
+        103,
+        149,
+        "HF_TOKEN=hf_SlO9iD73k5NDwzXjz5EAZ0xhg8rvQnOPpH"
+       ],
+       [
+        "secret",
+        150,
+        326,
+        "SESSION_JWT=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiAiNTU3MjczMTgiLCAibmFtZSI6ICJJbmdyaWQgUmFtYW4iLCAiaWF0IjogMTc5NDQ3NDQxOH0.I_T4PrZucdn8O6cRxzBvPIDeqcmxw3qLL7KuUKpcO4k"
+       ]
+      ]
+     },
+     {
+      "id": "env_file-011",
+      "ref_only": [
+       [
+        "secret",
+        199,
+        217,
+        "lvFexX674GAwPXuOj!"
+       ]
+      ],
+      "new_only": [
+       [
+        "secret",
+        187,
+        217,
+        "DB_PASSWORD=lvFexX674GAwPXuOj!"
+       ]
+      ]
+     },
+     {
+      "id": "app_log-008",
+      "ref_only": [
+       [
+        "private_date",
+        578,
+        597,
+        "026-10-01T11:16:34Z"
+       ]
+      ],
+      "new_only": [
+       [
+        "private_date",
+        577,
+        597,
+        "2026-10-01T11:16:34Z"
+       ]
+      ]
+     },
+     {
+      "id": "csv_export-003",
+      "ref_only": [],
+      "new_only": [
+       [
+        "private_person",
+        498,
+        502,
+        "1004"
+       ]
+      ]
+     },
+     {
+      "id": "source_code-003",
+      "ref_only": [
+       [
+        "secret",
+        244,
+        264,
+        "AKIAPDYS5JFTJIG6QENJ"
+       ]
+      ],
+      "new_only": [
+       [
+        "secret",
+        244,
+        266,
+        "AKIAPDYS5JFTJIG6QENJ\")"
+       ]
+      ]
+     },
+     {
+      "id": "doc_note-004",
+      "ref_only": [
+       [
+        "account_number",
+        7,
+        12,
+        "#4821"
+       ]
+      ],
+      "new_only": [
+       [
+        "account_number",
+        8,
+        12,
+        "4821"
+       ]
+      ]
+     },
+     {
+      "id": "negative-003",
+      "ref_only": [
+       [
+        "private_person",
+        56,
+        71,
+        "dependabot[bot]"
+       ],
+       [
+        "private_person",
+        73,
+        91,
+        "support@github.com"
+       ]
+      ],
+      "new_only": [
+       [
+        "private_person",
+        56,
+        70,
+        "dependabot[bot"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "onnx-fp32 vs torch-cpu": {
+   "all": {
+    "same": 681,
+    "ref_only": 8,
+    "new_only": 9,
+    "parity": 0.9756,
+    "diffs": [
+     {
+      "id": "env_file-006",
+      "ref_only": [
+       [
+        "secret",
+        70,
+        176,
+        "sk-ant-api03-CeIJgAvV58i3LT-2Fl2LwGsZfrAucmKE7iSMUqKie4qktGx8PnTUWim94wq1HgXETqZkeObgYpVJdHKPVE-VQb9vMlkR1"
+       ]
+      ],
+      "new_only": [
+       [
+        "secret",
+        52,
+        176,
+        "ANTHROPIC_API_KEY=sk-ant-api03-CeIJgAvV58i3LT-2Fl2LwGsZfrAucmKE7iSMUqKie4qktGx8PnTUWim94wq1HgXETqZkeObgYpVJdHKPVE-VQb9vMlkR1"
+       ]
+      ]
+     },
+     {
+      "id": "env_file-008",
+      "ref_only": [
+       [
+        "secret",
+        103,
+        326,
+        "HF_TOKEN=hf_SlO9iD73k5NDwzXjz5EAZ0xhg8rvQnOPpH\nSESSION_JWT=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiAiNTU3MjczMTgiLCAibmFtZSI6ICJJbmdyaWQgUmFtYW4iLCAiaWF0IjogMTc5NDQ3NDQxOH0.I_T4PrZucdn8O6cRxzBvPIDeqcmxw3qLL7KuUKpcO4k"
+       ]
+      ],
+      "new_only": [
+       [
+        "secret",
+        103,
+        149,
+        "HF_TOKEN=hf_SlO9iD73k5NDwzXjz5EAZ0xhg8rvQnOPpH"
+       ],
+       [
+        "secret",
+        150,
+        326,
+        "SESSION_JWT=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiAiNTU3MjczMTgiLCAibmFtZSI6ICJJbmdyaWQgUmFtYW4iLCAiaWF0IjogMTc5NDQ3NDQxOH0.I_T4PrZucdn8O6cRxzBvPIDeqcmxw3qLL7KuUKpcO4k"
+       ]
+      ]
+     },
+     {
+      "id": "env_file-011",
+      "ref_only": [
+       [
+        "secret",
+        199,
+        217,
+        "lvFexX674GAwPXuOj!"
+       ]
+      ],
+      "new_only": [
+       [
+        "secret",
+        187,
+        217,
+        "DB_PASSWORD=lvFexX674GAwPXuOj!"
+       ]
+      ]
+     },
+     {
+      "id": "app_log-008",
+      "ref_only": [
+       [
+        "private_date",
+        578,
+        597,
+        "026-10-01T11:16:34Z"
+       ]
+      ],
+      "new_only": [
+       [
+        "private_date",
+        577,
+        597,
+        "2026-10-01T11:16:34Z"
+       ]
+      ]
+     },
+     {
+      "id": "csv_export-003",
+      "ref_only": [],
+      "new_only": [
+       [
+        "private_person",
+        498,
+        502,
+        "1004"
+       ]
+      ]
+     },
+     {
+      "id": "source_code-003",
+      "ref_only": [
+       [
+        "secret",
+        244,
+        264,
+        "AKIAPDYS5JFTJIG6QENJ"
+       ]
+      ],
+      "new_only": [
+       [
+        "secret",
+        244,
+        266,
+        "AKIAPDYS5JFTJIG6QENJ\")"
+       ]
+      ]
+     },
+     {
+      "id": "doc_note-004",
+      "ref_only": [
+       [
+        "account_number",
+        7,
+        12,
+        "#4821"
+       ]
+      ],
+      "new_only": [
+       [
+        "account_number",
+        8,
+        12,
+        "4821"
+       ]
+      ]
+     },
+     {
+      "id": "negative-003",
+      "ref_only": [
+       [
+        "private_person",
+        56,
+        71,
+        "dependabot[bot]"
+       ],
+       [
+        "private_person",
+        73,
+        91,
+        "support@github.com"
+       ]
+      ],
+      "new_only": [
+       [
+        "private_person",
+        56,
+        70,
+        "dependabot[bot"
+       ]
+      ]
+     }
+    ]
+   },
+   "acted": {
+    "same": 681,
+    "ref_only": 8,
+    "new_only": 9,
+    "parity": 0.9756,
+    "diffs": [
+     {
+      "id": "env_file-006",
+      "ref_only": [
+       [
+        "secret",
+        70,
+        176,
+        "sk-ant-api03-CeIJgAvV58i3LT-2Fl2LwGsZfrAucmKE7iSMUqKie4qktGx8PnTUWim94wq1HgXETqZkeObgYpVJdHKPVE-VQb9vMlkR1"
+       ]
+      ],
+      "new_only": [
+       [
+        "secret",
+        52,
+        176,
+        "ANTHROPIC_API_KEY=sk-ant-api03-CeIJgAvV58i3LT-2Fl2LwGsZfrAucmKE7iSMUqKie4qktGx8PnTUWim94wq1HgXETqZkeObgYpVJdHKPVE-VQb9vMlkR1"
+       ]
+      ]
+     },
+     {
+      "id": "env_file-008",
+      "ref_only": [
+       [
+        "secret",
+        103,
+        326,
+        "HF_TOKEN=hf_SlO9iD73k5NDwzXjz5EAZ0xhg8rvQnOPpH\nSESSION_JWT=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiAiNTU3MjczMTgiLCAibmFtZSI6ICJJbmdyaWQgUmFtYW4iLCAiaWF0IjogMTc5NDQ3NDQxOH0.I_T4PrZucdn8O6cRxzBvPIDeqcmxw3qLL7KuUKpcO4k"
+       ]
+      ],
+      "new_only": [
+       [
+        "secret",
+        103,
+        149,
+        "HF_TOKEN=hf_SlO9iD73k5NDwzXjz5EAZ0xhg8rvQnOPpH"
+       ],
+       [
+        "secret",
+        150,
+        326,
+        "SESSION_JWT=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiAiNTU3MjczMTgiLCAibmFtZSI6ICJJbmdyaWQgUmFtYW4iLCAiaWF0IjogMTc5NDQ3NDQxOH0.I_T4PrZucdn8O6cRxzBvPIDeqcmxw3qLL7KuUKpcO4k"
+       ]
+      ]
+     },
+     {
+      "id": "env_file-011",
+      "ref_only": [
+       [
+        "secret",
+        199,
+        217,
+        "lvFexX674GAwPXuOj!"
+       ]
+      ],
+      "new_only": [
+       [
+        "secret",
+        187,
+        217,
+        "DB_PASSWORD=lvFexX674GAwPXuOj!"
+       ]
+      ]
+     },
+     {
+      "id": "app_log-008",
+      "ref_only": [
+       [
+        "private_date",
+        578,
+        597,
+        "026-10-01T11:16:34Z"
+       ]
+      ],
+      "new_only": [
+       [
+        "private_date",
+        577,
+        597,
+        "2026-10-01T11:16:34Z"
+       ]
+      ]
+     },
+     {
+      "id": "csv_export-003",
+      "ref_only": [],
+      "new_only": [
+       [
+        "private_person",
+        498,
+        502,
+        "1004"
+       ]
+      ]
+     },
+     {
+      "id": "source_code-003",
+      "ref_only": [
+       [
+        "secret",
+        244,
+        264,
+        "AKIAPDYS5JFTJIG6QENJ"
+       ]
+      ],
+      "new_only": [
+       [
+        "secret",
+        244,
+        266,
+        "AKIAPDYS5JFTJIG6QENJ\")"
+       ]
+      ]
+     },
+     {
+      "id": "doc_note-004",
+      "ref_only": [
+       [
+        "account_number",
+        7,
+        12,
+        "#4821"
+       ]
+      ],
+      "new_only": [
+       [
+        "account_number",
+        8,
+        12,
+        "4821"
+       ]
+      ]
+     },
+     {
+      "id": "negative-003",
+      "ref_only": [
+       [
+        "private_person",
+        56,
+        71,
+        "dependabot[bot]"
+       ],
+       [
+        "private_person",
+        73,
+        91,
+        "support@github.com"
+       ]
+      ],
+      "new_only": [
+       [
+        "private_person",
+        56,
+        70,
+        "dependabot[bot"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "onnx-int8 vs torch-cpu": {
+   "all": {
+    "same": 671,
+    "ref_only": 18,
+    "new_only": 18,
+    "parity": 0.9491,
+    "diffs": [
+     {
+      "id": "env_file-002",
+      "ref_only": [
+       [
+        "secret",
+        54,
+        102,
+        "RIPE_SECRET_KEY=sk_live_7kcS0CjYUKGUAJztqobp9aoa"
+       ],
+       [
+        "secret",
+        103,
+        355,
+        "SESSION_JWT=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiAiMTc4MTMzMTUiLCAibmFtZSI6ICJBaXNoYSBMaW5kcXZpc3QiLCAiaWF0IjogMTc2MTY2MDUwM30.LXnRpysAN0Fq7nBDBmdqSKK7v7n_hZtS1MyqG6e_BbM\nSLACK_BOT_TOKEN=xoxb-905859204713-685143809225-LqET0qWP0wOa1OgIzsYVaDH7"
+       ]
+      ],
+      "new_only": [
+       [
+        "secret",
+        54,
+        355,
+        "RIPE_SECRET_KEY=sk_live_7kcS0CjYUKGUAJztqobp9aoa\nSESSION_JWT=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiAiMTc4MTMzMTUiLCAibmFtZSI6ICJBaXNoYSBMaW5kcXZpc3QiLCAiaWF0IjogMTc2MTY2MDUwM30.LXnRpysAN0Fq7nBDBmdqSKK7v7n_hZtS1MyqG6e_BbM\nSLACK_BOT_TOKEN=xoxb-905859204713-685143809225-LqET0qWP0wOa1OgIzsYVaDH7"
+       ]
+      ]
+     },
+     {
+      "id": "env_file-004",
+      "ref_only": [
+       [
+        "secret",
+        64,
+        82,
+        "^XoQBX9ExJBi#!AtT#"
+       ]
+      ],
+      "new_only": [
+       [
+        "secret",
+        47,
+        51,
+        "3000"
+       ],
+       [
+        "secret",
+        52,
+        82,
+        "DB_PASSWORD=^XoQBX9ExJBi#!AtT#"
+       ]
+      ]
+     },
+     {
+      "id": "env_file-005",
+      "ref_only": [],
+      "new_only": [
+       [
+        "secret",
+        47,
+        51,
+        "3000"
+       ]
+      ]
+     },
+     {
+      "id": "env_file-007",
+      "ref_only": [
+       [
+        "secret",
+        52,
+        227,
+        "SESSION_JWT=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiAiNzE2MDMwNTEiLCAibmFtZSI6ICJLd2FtZSBSYW1hbiIsICJpYXQiOiAxNzUxODA4NzE0fQ.7I-YmBw-BqqKZFUHq7Y-Q1k9xu84RBTB7JLb9apL5U9"
+       ],
+       [
+        "secret",
+        228,
+        290,
+        "AWS_SECRET_ACCESS_KEY=jCuICWmTltqFIrMcjYSKMuRkf+IJj25SwA+lDOB3"
+       ]
+      ],
+      "new_only": [
+       [
+        "secret",
+        52,
+        290,
+        "SESSION_JWT=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiAiNzE2MDMwNTEiLCAibmFtZSI6ICJLd2FtZSBSYW1hbiIsICJpYXQiOiAxNzUxODA4NzE0fQ.7I-YmBw-BqqKZFUHq7Y-Q1k9xu84RBTB7JLb9apL5U9\nAWS_SECRET_ACCESS_KEY=jCuICWmTltqFIrMcjYSKMuRkf+IJj25SwA+lDOB3"
+       ]
+      ]
+     },
+     {
+      "id": "env_file-008",
+      "ref_only": [
+       [
+        "secret",
+        103,
+        326,
+        "HF_TOKEN=hf_SlO9iD73k5NDwzXjz5EAZ0xhg8rvQnOPpH\nSESSION_JWT=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiAiNTU3MjczMTgiLCAibmFtZSI6ICJJbmdyaWQgUmFtYW4iLCAiaWF0IjogMTc5NDQ3NDQxOH0.I_T4PrZucdn8O6cRxzBvPIDeqcmxw3qLL7KuUKpcO4k"
+       ]
+      ],
+      "new_only": [
+       [
+        "secret",
+        103,
+        149,
+        "HF_TOKEN=hf_SlO9iD73k5NDwzXjz5EAZ0xhg8rvQnOPpH"
+       ],
+       [
+        "secret",
+        150,
+        326,
+        "SESSION_JWT=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiAiNTU3MjczMTgiLCAibmFtZSI6ICJJbmdyaWQgUmFtYW4iLCAiaWF0IjogMTc5NDQ3NDQxOH0.I_T4PrZucdn8O6cRxzBvPIDeqcmxw3qLL7KuUKpcO4k"
+       ]
+      ]
+     },
+     {
+      "id": "env_file-010",
+      "ref_only": [
+       [
+        "secret",
+        63,
+        208,
+        "=Ew1TVYCLY392OTodk*\nGITHUB_TOKEN=ghp_liqdaYC1IZ3dbio7ORBXv5xR6VgLEEmYZOvA\nSLACK_BOT_TOKEN=xoxb-695510946226-463349244074-KgSFht7rnhkFQ1q3aDBMsgUk"
+       ]
+      ],
+      "new_only": [
+       [
+        "secret",
+        63,
+        136,
+        "=Ew1TVYCLY392OTodk*\nGITHUB_TOKEN=ghp_liqdaYC1IZ3dbio7ORBXv5xR6VgLEEmYZOvA"
+       ],
+       [
+        "secret",
+        137,
+        208,
+        "SLACK_BOT_TOKEN=xoxb-695510946226-463349244074-KgSFht7rnhkFQ1q3aDBMsgUk"
+       ]
+      ]
+     },
+     {
+      "id": "csv_export-003",
+      "ref_only": [],
+      "new_only": [
+       [
+        "private_person",
+        498,
+        502,
+        "1004"
+       ]
+      ]
+     },
+     {
+      "id": "csv_export-006",
+      "ref_only": [
+       [
+        "account_number",
+        262,
+        266,
+        "1002"
+       ]
+      ],
+      "new_only": [
+       [
+        "private_person",
+        262,
+        266,
+        "1002"
+       ]
+      ]
+     },
+     {
+      "id": "csv_export-007",
+      "ref_only": [
+       [
+        "account_number",
+        262,
+        266,
+        "1002"
+       ]
+      ],
+      "new_only": [
+       [
+        "private_person",
+        262,
+        266,
+        "1002"
+       ]
+      ]
+     },
+     {
+      "id": "csv_export-008",
+      "ref_only": [
+       [
+        "account_number",
+        249,
+        253,
+        "1002"
+       ]
+      ],
+      "new_only": [
+       [
+        "private_person",
+        249,
+        253,
+        "1002"
+       ]
+      ]
+     },
+     {
+      "id": "csv_export-009",
+      "ref_only": [
+       [
+        "private_email",
+        281,
+        310,
+        "arjun.whitfield@brightpath.io"
+       ],
+       [
+        "private_person",
+        265,
+        280,
+        "Arjun Whitfield"
+       ]
+      ],
+      "new_only": [
+       [
+        "private_person",
+        265,
+        310,
+        "Arjun Whitfield,arjun.whitfield@brightpath.io"
+       ]
+      ]
+     },
+     {
+      "id": "source_code-003",
+      "ref_only": [
+       [
+        "secret",
+        244,
+        264,
+        "AKIAPDYS5JFTJIG6QENJ"
+       ]
+      ],
+      "new_only": [
+       [
+        "secret",
+        244,
+        266,
+        "AKIAPDYS5JFTJIG6QENJ\")"
+       ]
+      ]
+     },
+     {
+      "id": "shell_git-005",
+      "ref_only": [
+       [
+        "private_person",
+        109,
+        116,
+        "ebaab1d"
+       ]
+      ],
+      "new_only": []
+     },
+     {
+      "id": "shell_env-004",
+      "ref_only": [
+       [
+        "secret",
+        97,
+        115,
+        "kmwH^byQZ1F*ooFt60"
+       ]
+      ],
+      "new_only": [
+       [
+        "secret",
+        86,
+        115,
+        "PGPASSWORD=kmwH^byQZ1F*ooFt60"
+       ]
+      ]
+     },
+     {
+      "id": "doc_note-001",
+      "ref_only": [
+       [
+        "account_number",
+        114,
+        117,
+        "I-9"
+       ]
+      ],
+      "new_only": []
+     },
+     {
+      "id": "doc_note-007",
+      "ref_only": [
+       [
+        "private_date",
+        41,
+        51,
+        "1995-09-06"
+       ]
+      ],
+      "new_only": [
+       [
+        "private_date",
+        37,
+        51,
+        "DOB 1995-09-06"
+       ]
+      ]
+     },
+     {
+      "id": "doc_note-011",
+      "ref_only": [
+       [
+        "private_date",
+        47,
+        53,
+        "Monday"
+       ]
+      ],
+      "new_only": []
+     },
+     {
+      "id": "negative-020",
+      "ref_only": [],
+      "new_only": [
+       [
+        "private_address",
+        55,
+        57,
+        "NW"
+       ]
+      ]
+     }
+    ]
+   },
+   "acted": {
+    "same": 671,
+    "ref_only": 18,
+    "new_only": 18,
+    "parity": 0.9491,
+    "diffs": [
+     {
+      "id": "env_file-002",
+      "ref_only": [
+       [
+        "secret",
+        54,
+        102,
+        "RIPE_SECRET_KEY=sk_live_7kcS0CjYUKGUAJztqobp9aoa"
+       ],
+       [
+        "secret",
+        103,
+        355,
+        "SESSION_JWT=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiAiMTc4MTMzMTUiLCAibmFtZSI6ICJBaXNoYSBMaW5kcXZpc3QiLCAiaWF0IjogMTc2MTY2MDUwM30.LXnRpysAN0Fq7nBDBmdqSKK7v7n_hZtS1MyqG6e_BbM\nSLACK_BOT_TOKEN=xoxb-905859204713-685143809225-LqET0qWP0wOa1OgIzsYVaDH7"
+       ]
+      ],
+      "new_only": [
+       [
+        "secret",
+        54,
+        355,
+        "RIPE_SECRET_KEY=sk_live_7kcS0CjYUKGUAJztqobp9aoa\nSESSION_JWT=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiAiMTc4MTMzMTUiLCAibmFtZSI6ICJBaXNoYSBMaW5kcXZpc3QiLCAiaWF0IjogMTc2MTY2MDUwM30.LXnRpysAN0Fq7nBDBmdqSKK7v7n_hZtS1MyqG6e_BbM\nSLACK_BOT_TOKEN=xoxb-905859204713-685143809225-LqET0qWP0wOa1OgIzsYVaDH7"
+       ]
+      ]
+     },
+     {
+      "id": "env_file-004",
+      "ref_only": [
+       [
+        "secret",
+        64,
+        82,
+        "^XoQBX9ExJBi#!AtT#"
+       ]
+      ],
+      "new_only": [
+       [
+        "secret",
+        47,
+        51,
+        "3000"
+       ],
+       [
+        "secret",
+        52,
+        82,
+        "DB_PASSWORD=^XoQBX9ExJBi#!AtT#"
+       ]
+      ]
+     },
+     {
+      "id": "env_file-005",
+      "ref_only": [],
+      "new_only": [
+       [
+        "secret",
+        47,
+        51,
+        "3000"
+       ]
+      ]
+     },
+     {
+      "id": "env_file-007",
+      "ref_only": [
+       [
+        "secret",
+        52,
+        227,
+        "SESSION_JWT=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiAiNzE2MDMwNTEiLCAibmFtZSI6ICJLd2FtZSBSYW1hbiIsICJpYXQiOiAxNzUxODA4NzE0fQ.7I-YmBw-BqqKZFUHq7Y-Q1k9xu84RBTB7JLb9apL5U9"
+       ],
+       [
+        "secret",
+        228,
+        290,
+        "AWS_SECRET_ACCESS_KEY=jCuICWmTltqFIrMcjYSKMuRkf+IJj25SwA+lDOB3"
+       ]
+      ],
+      "new_only": [
+       [
+        "secret",
+        52,
+        290,
+        "SESSION_JWT=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiAiNzE2MDMwNTEiLCAibmFtZSI6ICJLd2FtZSBSYW1hbiIsICJpYXQiOiAxNzUxODA4NzE0fQ.7I-YmBw-BqqKZFUHq7Y-Q1k9xu84RBTB7JLb9apL5U9\nAWS_SECRET_ACCESS_KEY=jCuICWmTltqFIrMcjYSKMuRkf+IJj25SwA+lDOB3"
+       ]
+      ]
+     },
+     {
+      "id": "env_file-008",
+      "ref_only": [
+       [
+        "secret",
+        103,
+        326,
+        "HF_TOKEN=hf_SlO9iD73k5NDwzXjz5EAZ0xhg8rvQnOPpH\nSESSION_JWT=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiAiNTU3MjczMTgiLCAibmFtZSI6ICJJbmdyaWQgUmFtYW4iLCAiaWF0IjogMTc5NDQ3NDQxOH0.I_T4PrZucdn8O6cRxzBvPIDeqcmxw3qLL7KuUKpcO4k"
+       ]
+      ],
+      "new_only": [
+       [
+        "secret",
+        103,
+        149,
+        "HF_TOKEN=hf_SlO9iD73k5NDwzXjz5EAZ0xhg8rvQnOPpH"
+       ],
+       [
+        "secret",
+        150,
+        326,
+        "SESSION_JWT=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiAiNTU3MjczMTgiLCAibmFtZSI6ICJJbmdyaWQgUmFtYW4iLCAiaWF0IjogMTc5NDQ3NDQxOH0.I_T4PrZucdn8O6cRxzBvPIDeqcmxw3qLL7KuUKpcO4k"
+       ]
+      ]
+     },
+     {
+      "id": "env_file-010",
+      "ref_only": [
+       [
+        "secret",
+        63,
+        208,
+        "=Ew1TVYCLY392OTodk*\nGITHUB_TOKEN=ghp_liqdaYC1IZ3dbio7ORBXv5xR6VgLEEmYZOvA\nSLACK_BOT_TOKEN=xoxb-695510946226-463349244074-KgSFht7rnhkFQ1q3aDBMsgUk"
+       ]
+      ],
+      "new_only": [
+       [
+        "secret",
+        63,
+        136,
+        "=Ew1TVYCLY392OTodk*\nGITHUB_TOKEN=ghp_liqdaYC1IZ3dbio7ORBXv5xR6VgLEEmYZOvA"
+       ],
+       [
+        "secret",
+        137,
+        208,
+        "SLACK_BOT_TOKEN=xoxb-695510946226-463349244074-KgSFht7rnhkFQ1q3aDBMsgUk"
+       ]
+      ]
+     },
+     {
+      "id": "csv_export-003",
+      "ref_only": [],
+      "new_only": [
+       [
+        "private_person",
+        498,
+        502,
+        "1004"
+       ]
+      ]
+     },
+     {
+      "id": "csv_export-006",
+      "ref_only": [
+       [
+        "account_number",
+        262,
+        266,
+        "1002"
+       ]
+      ],
+      "new_only": [
+       [
+        "private_person",
+        262,
+        266,
+        "1002"
+       ]
+      ]
+     },
+     {
+      "id": "csv_export-007",
+      "ref_only": [
+       [
+        "account_number",
+        262,
+        266,
+        "1002"
+       ]
+      ],
+      "new_only": [
+       [
+        "private_person",
+        262,
+        266,
+        "1002"
+       ]
+      ]
+     },
+     {
+      "id": "csv_export-008",
+      "ref_only": [
+       [
+        "account_number",
+        249,
+        253,
+        "1002"
+       ]
+      ],
+      "new_only": [
+       [
+        "private_person",
+        249,
+        253,
+        "1002"
+       ]
+      ]
+     },
+     {
+      "id": "csv_export-009",
+      "ref_only": [
+       [
+        "private_email",
+        281,
+        310,
+        "arjun.whitfield@brightpath.io"
+       ],
+       [
+        "private_person",
+        265,
+        280,
+        "Arjun Whitfield"
+       ]
+      ],
+      "new_only": [
+       [
+        "private_person",
+        265,
+        310,
+        "Arjun Whitfield,arjun.whitfield@brightpath.io"
+       ]
+      ]
+     },
+     {
+      "id": "source_code-003",
+      "ref_only": [
+       [
+        "secret",
+        244,
+        264,
+        "AKIAPDYS5JFTJIG6QENJ"
+       ]
+      ],
+      "new_only": [
+       [
+        "secret",
+        244,
+        266,
+        "AKIAPDYS5JFTJIG6QENJ\")"
+       ]
+      ]
+     },
+     {
+      "id": "shell_git-005",
+      "ref_only": [
+       [
+        "private_person",
+        109,
+        116,
+        "ebaab1d"
+       ]
+      ],
+      "new_only": []
+     },
+     {
+      "id": "shell_env-004",
+      "ref_only": [
+       [
+        "secret",
+        97,
+        115,
+        "kmwH^byQZ1F*ooFt60"
+       ]
+      ],
+      "new_only": [
+       [
+        "secret",
+        86,
+        115,
+        "PGPASSWORD=kmwH^byQZ1F*ooFt60"
+       ]
+      ]
+     },
+     {
+      "id": "doc_note-001",
+      "ref_only": [
+       [
+        "account_number",
+        114,
+        117,
+        "I-9"
+       ]
+      ],
+      "new_only": []
+     },
+     {
+      "id": "doc_note-007",
+      "ref_only": [
+       [
+        "private_date",
+        41,
+        51,
+        "1995-09-06"
+       ]
+      ],
+      "new_only": [
+       [
+        "private_date",
+        37,
+        51,
+        "DOB 1995-09-06"
+       ]
+      ]
+     },
+     {
+      "id": "doc_note-011",
+      "ref_only": [
+       [
+        "private_date",
+        47,
+        53,
+        "Monday"
+       ]
+      ],
+      "new_only": []
+     },
+     {
+      "id": "negative-020",
+      "ref_only": [],
+      "new_only": [
+       [
+        "private_address",
+        55,
+        57,
+        "NW"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "onnx-fp32 vs torch-fp32": {
+   "all": {
+    "same": 690,
+    "ref_only": 0,
+    "new_only": 0,
+    "parity": 1.0,
+    "diffs": []
+   },
+   "acted": {
+    "same": 690,
+    "ref_only": 0,
+    "new_only": 0,
+    "parity": 1.0,
+    "diffs": []
+   }
+  },
+  "onnx-int8 vs torch-fp32": {
+   "all": {
+    "same": 669,
+    "ref_only": 21,
+    "new_only": 20,
+    "parity": 0.9423,
+    "diffs": [
+     {
+      "id": "env_file-002",
+      "ref_only": [
+       [
+        "secret",
+        54,
+        102,
+        "RIPE_SECRET_KEY=sk_live_7kcS0CjYUKGUAJztqobp9aoa"
+       ],
+       [
+        "secret",
+        103,
+        355,
+        "SESSION_JWT=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiAiMTc4MTMzMTUiLCAibmFtZSI6ICJBaXNoYSBMaW5kcXZpc3QiLCAiaWF0IjogMTc2MTY2MDUwM30.LXnRpysAN0Fq7nBDBmdqSKK7v7n_hZtS1MyqG6e_BbM\nSLACK_BOT_TOKEN=xoxb-905859204713-685143809225-LqET0qWP0wOa1OgIzsYVaDH7"
+       ]
+      ],
+      "new_only": [
+       [
+        "secret",
+        54,
+        355,
+        "RIPE_SECRET_KEY=sk_live_7kcS0CjYUKGUAJztqobp9aoa\nSESSION_JWT=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiAiMTc4MTMzMTUiLCAibmFtZSI6ICJBaXNoYSBMaW5kcXZpc3QiLCAiaWF0IjogMTc2MTY2MDUwM30.LXnRpysAN0Fq7nBDBmdqSKK7v7n_hZtS1MyqG6e_BbM\nSLACK_BOT_TOKEN=xoxb-905859204713-685143809225-LqET0qWP0wOa1OgIzsYVaDH7"
+       ]
+      ]
+     },
+     {
+      "id": "env_file-004",
+      "ref_only": [
+       [
+        "secret",
+        64,
+        82,
+        "^XoQBX9ExJBi#!AtT#"
+       ]
+      ],
+      "new_only": [
+       [
+        "secret",
+        47,
+        51,
+        "3000"
+       ],
+       [
+        "secret",
+        52,
+        82,
+        "DB_PASSWORD=^XoQBX9ExJBi#!AtT#"
+       ]
+      ]
+     },
+     {
+      "id": "env_file-005",
+      "ref_only": [],
+      "new_only": [
+       [
+        "secret",
+        47,
+        51,
+        "3000"
+       ]
+      ]
+     },
+     {
+      "id": "env_file-006",
+      "ref_only": [
+       [
+        "secret",
+        52,
+        176,
+        "ANTHROPIC_API_KEY=sk-ant-api03-CeIJgAvV58i3LT-2Fl2LwGsZfrAucmKE7iSMUqKie4qktGx8PnTUWim94wq1HgXETqZkeObgYpVJdHKPVE-VQb9vMlkR1"
+       ]
+      ],
+      "new_only": [
+       [
+        "secret",
+        70,
+        176,
+        "sk-ant-api03-CeIJgAvV58i3LT-2Fl2LwGsZfrAucmKE7iSMUqKie4qktGx8PnTUWim94wq1HgXETqZkeObgYpVJdHKPVE-VQb9vMlkR1"
+       ]
+      ]
+     },
+     {
+      "id": "env_file-007",
+      "ref_only": [
+       [
+        "secret",
+        52,
+        227,
+        "SESSION_JWT=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiAiNzE2MDMwNTEiLCAibmFtZSI6ICJLd2FtZSBSYW1hbiIsICJpYXQiOiAxNzUxODA4NzE0fQ.7I-YmBw-BqqKZFUHq7Y-Q1k9xu84RBTB7JLb9apL5U9"
+       ],
+       [
+        "secret",
+        228,
+        290,
+        "AWS_SECRET_ACCESS_KEY=jCuICWmTltqFIrMcjYSKMuRkf+IJj25SwA+lDOB3"
+       ]
+      ],
+      "new_only": [
+       [
+        "secret",
+        52,
+        290,
+        "SESSION_JWT=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiAiNzE2MDMwNTEiLCAibmFtZSI6ICJLd2FtZSBSYW1hbiIsICJpYXQiOiAxNzUxODA4NzE0fQ.7I-YmBw-BqqKZFUHq7Y-Q1k9xu84RBTB7JLb9apL5U9\nAWS_SECRET_ACCESS_KEY=jCuICWmTltqFIrMcjYSKMuRkf+IJj25SwA+lDOB3"
+       ]
+      ]
+     },
+     {
+      "id": "env_file-010",
+      "ref_only": [
+       [
+        "secret",
+        63,
+        208,
+        "=Ew1TVYCLY392OTodk*\nGITHUB_TOKEN=ghp_liqdaYC1IZ3dbio7ORBXv5xR6VgLEEmYZOvA\nSLACK_BOT_TOKEN=xoxb-695510946226-463349244074-KgSFht7rnhkFQ1q3aDBMsgUk"
+       ]
+      ],
+      "new_only": [
+       [
+        "secret",
+        63,
+        136,
+        "=Ew1TVYCLY392OTodk*\nGITHUB_TOKEN=ghp_liqdaYC1IZ3dbio7ORBXv5xR6VgLEEmYZOvA"
+       ],
+       [
+        "secret",
+        137,
+        208,
+        "SLACK_BOT_TOKEN=xoxb-695510946226-463349244074-KgSFht7rnhkFQ1q3aDBMsgUk"
+       ]
+      ]
+     },
+     {
+      "id": "env_file-011",
+      "ref_only": [
+       [
+        "secret",
+        187,
+        217,
+        "DB_PASSWORD=lvFexX674GAwPXuOj!"
+       ]
+      ],
+      "new_only": [
+       [
+        "secret",
+        199,
+        217,
+        "lvFexX674GAwPXuOj!"
+       ]
+      ]
+     },
+     {
+      "id": "app_log-008",
+      "ref_only": [
+       [
+        "private_date",
+        577,
+        597,
+        "2026-10-01T11:16:34Z"
+       ]
+      ],
+      "new_only": [
+       [
+        "private_date",
+        578,
+        597,
+        "026-10-01T11:16:34Z"
+       ]
+      ]
+     },
+     {
+      "id": "csv_export-006",
+      "ref_only": [
+       [
+        "account_number",
+        262,
+        266,
+        "1002"
+       ]
+      ],
+      "new_only": [
+       [
+        "private_person",
+        262,
+        266,
+        "1002"
+       ]
+      ]
+     },
+     {
+      "id": "csv_export-007",
+      "ref_only": [
+       [
+        "account_number",
+        262,
+        266,
+        "1002"
+       ]
+      ],
+      "new_only": [
+       [
+        "private_person",
+        262,
+        266,
+        "1002"
+       ]
+      ]
+     },
+     {
+      "id": "csv_export-008",
+      "ref_only": [
+       [
+        "account_number",
+        249,
+        253,
+        "1002"
+       ]
+      ],
+      "new_only": [
+       [
+        "private_person",
+        249,
+        253,
+        "1002"
+       ]
+      ]
+     },
+     {
+      "id": "csv_export-009",
+      "ref_only": [
+       [
+        "private_email",
+        281,
+        310,
+        "arjun.whitfield@brightpath.io"
+       ],
+       [
+        "private_person",
+        265,
+        280,
+        "Arjun Whitfield"
+       ]
+      ],
+      "new_only": [
+       [
+        "private_person",
+        265,
+        310,
+        "Arjun Whitfield,arjun.whitfield@brightpath.io"
+       ]
+      ]
+     },
+     {
+      "id": "shell_git-005",
+      "ref_only": [
+       [
+        "private_person",
+        109,
+        116,
+        "ebaab1d"
+       ]
+      ],
+      "new_only": []
+     },
+     {
+      "id": "shell_env-004",
+      "ref_only": [
+       [
+        "secret",
+        97,
+        115,
+        "kmwH^byQZ1F*ooFt60"
+       ]
+      ],
+      "new_only": [
+       [
+        "secret",
+        86,
+        115,
+        "PGPASSWORD=kmwH^byQZ1F*ooFt60"
+       ]
+      ]
+     },
+     {
+      "id": "doc_note-001",
+      "ref_only": [
+       [
+        "account_number",
+        114,
+        117,
+        "I-9"
+       ]
+      ],
+      "new_only": []
+     },
+     {
+      "id": "doc_note-004",
+      "ref_only": [
+       [
+        "account_number",
+        8,
+        12,
+        "4821"
+       ]
+      ],
+      "new_only": [
+       [
+        "account_number",
+        7,
+        12,
+        "#4821"
+       ]
+      ]
+     },
+     {
+      "id": "doc_note-007",
+      "ref_only": [
+       [
+        "private_date",
+        41,
+        51,
+        "1995-09-06"
+       ]
+      ],
+      "new_only": [
+       [
+        "private_date",
+        37,
+        51,
+        "DOB 1995-09-06"
+       ]
+      ]
+     },
+     {
+      "id": "doc_note-011",
+      "ref_only": [
+       [
+        "private_date",
+        47,
+        53,
+        "Monday"
+       ]
+      ],
+      "new_only": []
+     },
+     {
+      "id": "negative-003",
+      "ref_only": [
+       [
+        "private_person",
+        56,
+        70,
+        "dependabot[bot"
+       ]
+      ],
+      "new_only": [
+       [
+        "private_person",
+        56,
+        71,
+        "dependabot[bot]"
+       ],
+       [
+        "private_person",
+        73,
+        91,
+        "support@github.com"
+       ]
+      ]
+     },
+     {
+      "id": "negative-020",
+      "ref_only": [],
+      "new_only": [
+       [
+        "private_address",
+        55,
+        57,
+        "NW"
+       ]
+      ]
+     }
+    ]
+   },
+   "acted": {
+    "same": 669,
+    "ref_only": 21,
+    "new_only": 20,
+    "parity": 0.9423,
+    "diffs": [
+     {
+      "id": "env_file-002",
+      "ref_only": [
+       [
+        "secret",
+        54,
+        102,
+        "RIPE_SECRET_KEY=sk_live_7kcS0CjYUKGUAJztqobp9aoa"
+       ],
+       [
+        "secret",
+        103,
+        355,
+        "SESSION_JWT=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiAiMTc4MTMzMTUiLCAibmFtZSI6ICJBaXNoYSBMaW5kcXZpc3QiLCAiaWF0IjogMTc2MTY2MDUwM30.LXnRpysAN0Fq7nBDBmdqSKK7v7n_hZtS1MyqG6e_BbM\nSLACK_BOT_TOKEN=xoxb-905859204713-685143809225-LqET0qWP0wOa1OgIzsYVaDH7"
+       ]
+      ],
+      "new_only": [
+       [
+        "secret",
+        54,
+        355,
+        "RIPE_SECRET_KEY=sk_live_7kcS0CjYUKGUAJztqobp9aoa\nSESSION_JWT=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiAiMTc4MTMzMTUiLCAibmFtZSI6ICJBaXNoYSBMaW5kcXZpc3QiLCAiaWF0IjogMTc2MTY2MDUwM30.LXnRpysAN0Fq7nBDBmdqSKK7v7n_hZtS1MyqG6e_BbM\nSLACK_BOT_TOKEN=xoxb-905859204713-685143809225-LqET0qWP0wOa1OgIzsYVaDH7"
+       ]
+      ]
+     },
+     {
+      "id": "env_file-004",
+      "ref_only": [
+       [
+        "secret",
+        64,
+        82,
+        "^XoQBX9ExJBi#!AtT#"
+       ]
+      ],
+      "new_only": [
+       [
+        "secret",
+        47,
+        51,
+        "3000"
+       ],
+       [
+        "secret",
+        52,
+        82,
+        "DB_PASSWORD=^XoQBX9ExJBi#!AtT#"
+       ]
+      ]
+     },
+     {
+      "id": "env_file-005",
+      "ref_only": [],
+      "new_only": [
+       [
+        "secret",
+        47,
+        51,
+        "3000"
+       ]
+      ]
+     },
+     {
+      "id": "env_file-006",
+      "ref_only": [
+       [
+        "secret",
+        52,
+        176,
+        "ANTHROPIC_API_KEY=sk-ant-api03-CeIJgAvV58i3LT-2Fl2LwGsZfrAucmKE7iSMUqKie4qktGx8PnTUWim94wq1HgXETqZkeObgYpVJdHKPVE-VQb9vMlkR1"
+       ]
+      ],
+      "new_only": [
+       [
+        "secret",
+        70,
+        176,
+        "sk-ant-api03-CeIJgAvV58i3LT-2Fl2LwGsZfrAucmKE7iSMUqKie4qktGx8PnTUWim94wq1HgXETqZkeObgYpVJdHKPVE-VQb9vMlkR1"
+       ]
+      ]
+     },
+     {
+      "id": "env_file-007",
+      "ref_only": [
+       [
+        "secret",
+        52,
+        227,
+        "SESSION_JWT=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiAiNzE2MDMwNTEiLCAibmFtZSI6ICJLd2FtZSBSYW1hbiIsICJpYXQiOiAxNzUxODA4NzE0fQ.7I-YmBw-BqqKZFUHq7Y-Q1k9xu84RBTB7JLb9apL5U9"
+       ],
+       [
+        "secret",
+        228,
+        290,
+        "AWS_SECRET_ACCESS_KEY=jCuICWmTltqFIrMcjYSKMuRkf+IJj25SwA+lDOB3"
+       ]
+      ],
+      "new_only": [
+       [
+        "secret",
+        52,
+        290,
+        "SESSION_JWT=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiAiNzE2MDMwNTEiLCAibmFtZSI6ICJLd2FtZSBSYW1hbiIsICJpYXQiOiAxNzUxODA4NzE0fQ.7I-YmBw-BqqKZFUHq7Y-Q1k9xu84RBTB7JLb9apL5U9\nAWS_SECRET_ACCESS_KEY=jCuICWmTltqFIrMcjYSKMuRkf+IJj25SwA+lDOB3"
+       ]
+      ]
+     },
+     {
+      "id": "env_file-010",
+      "ref_only": [
+       [
+        "secret",
+        63,
+        208,
+        "=Ew1TVYCLY392OTodk*\nGITHUB_TOKEN=ghp_liqdaYC1IZ3dbio7ORBXv5xR6VgLEEmYZOvA\nSLACK_BOT_TOKEN=xoxb-695510946226-463349244074-KgSFht7rnhkFQ1q3aDBMsgUk"
+       ]
+      ],
+      "new_only": [
+       [
+        "secret",
+        63,
+        136,
+        "=Ew1TVYCLY392OTodk*\nGITHUB_TOKEN=ghp_liqdaYC1IZ3dbio7ORBXv5xR6VgLEEmYZOvA"
+       ],
+       [
+        "secret",
+        137,
+        208,
+        "SLACK_BOT_TOKEN=xoxb-695510946226-463349244074-KgSFht7rnhkFQ1q3aDBMsgUk"
+       ]
+      ]
+     },
+     {
+      "id": "env_file-011",
+      "ref_only": [
+       [
+        "secret",
+        187,
+        217,
+        "DB_PASSWORD=lvFexX674GAwPXuOj!"
+       ]
+      ],
+      "new_only": [
+       [
+        "secret",
+        199,
+        217,
+        "lvFexX674GAwPXuOj!"
+       ]
+      ]
+     },
+     {
+      "id": "app_log-008",
+      "ref_only": [
+       [
+        "private_date",
+        577,
+        597,
+        "2026-10-01T11:16:34Z"
+       ]
+      ],
+      "new_only": [
+       [
+        "private_date",
+        578,
+        597,
+        "026-10-01T11:16:34Z"
+       ]
+      ]
+     },
+     {
+      "id": "csv_export-006",
+      "ref_only": [
+       [
+        "account_number",
+        262,
+        266,
+        "1002"
+       ]
+      ],
+      "new_only": [
+       [
+        "private_person",
+        262,
+        266,
+        "1002"
+       ]
+      ]
+     },
+     {
+      "id": "csv_export-007",
+      "ref_only": [
+       [
+        "account_number",
+        262,
+        266,
+        "1002"
+       ]
+      ],
+      "new_only": [
+       [
+        "private_person",
+        262,
+        266,
+        "1002"
+       ]
+      ]
+     },
+     {
+      "id": "csv_export-008",
+      "ref_only": [
+       [
+        "account_number",
+        249,
+        253,
+        "1002"
+       ]
+      ],
+      "new_only": [
+       [
+        "private_person",
+        249,
+        253,
+        "1002"
+       ]
+      ]
+     },
+     {
+      "id": "csv_export-009",
+      "ref_only": [
+       [
+        "private_email",
+        281,
+        310,
+        "arjun.whitfield@brightpath.io"
+       ],
+       [
+        "private_person",
+        265,
+        280,
+        "Arjun Whitfield"
+       ]
+      ],
+      "new_only": [
+       [
+        "private_person",
+        265,
+        310,
+        "Arjun Whitfield,arjun.whitfield@brightpath.io"
+       ]
+      ]
+     },
+     {
+      "id": "shell_git-005",
+      "ref_only": [
+       [
+        "private_person",
+        109,
+        116,
+        "ebaab1d"
+       ]
+      ],
+      "new_only": []
+     },
+     {
+      "id": "shell_env-004",
+      "ref_only": [
+       [
+        "secret",
+        97,
+        115,
+        "kmwH^byQZ1F*ooFt60"
+       ]
+      ],
+      "new_only": [
+       [
+        "secret",
+        86,
+        115,
+        "PGPASSWORD=kmwH^byQZ1F*ooFt60"
+       ]
+      ]
+     },
+     {
+      "id": "doc_note-001",
+      "ref_only": [
+       [
+        "account_number",
+        114,
+        117,
+        "I-9"
+       ]
+      ],
+      "new_only": []
+     },
+     {
+      "id": "doc_note-004",
+      "ref_only": [
+       [
+        "account_number",
+        8,
+        12,
+        "4821"
+       ]
+      ],
+      "new_only": [
+       [
+        "account_number",
+        7,
+        12,
+        "#4821"
+       ]
+      ]
+     },
+     {
+      "id": "doc_note-007",
+      "ref_only": [
+       [
+        "private_date",
+        41,
+        51,
+        "1995-09-06"
+       ]
+      ],
+      "new_only": [
+       [
+        "private_date",
+        37,
+        51,
+        "DOB 1995-09-06"
+       ]
+      ]
+     },
+     {
+      "id": "doc_note-011",
+      "ref_only": [
+       [
+        "private_date",
+        47,
+        53,
+        "Monday"
+       ]
+      ],
+      "new_only": []
+     },
+     {
+      "id": "negative-003",
+      "ref_only": [
+       [
+        "private_person",
+        56,
+        70,
+        "dependabot[bot"
+       ]
+      ],
+      "new_only": [
+       [
+        "private_person",
+        56,
+        71,
+        "dependabot[bot]"
+       ],
+       [
+        "private_person",
+        73,
+        91,
+        "support@github.com"
+       ]
+      ]
+     },
+     {
+      "id": "negative-020",
+      "ref_only": [],
+      "new_only": [
+       [
+        "private_address",
+        55,
+        57,
+        "NW"
+       ]
+      ]
+     }
+    ]
+   }
+  }
+ }
+}

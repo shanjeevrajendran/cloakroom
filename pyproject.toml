@@ -1,0 +1,45 @@
+[build-system]
+requires = ["setuptools>=77"]  # SPDX license expression + license-files (PEP 639)
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cloakroom"
+version = "0.1.0"
+description = "Local privacy gate for AI coding agents: secrets and PII are masked before the model sees them, restored only for local tools."
+readme = "README.md"
+license = "Apache-2.0"
+license-files = ["LICENSE", "NOTICE"]
+requires-python = ">=3.10"
+authors = [{name = "The Cloakroom authors"}]
+keywords = ["privacy", "pii", "secrets", "redaction", "claude-code", "ai-agents", "dlp"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Operating System :: MacOS",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+    "Topic :: Security",
+]
+dependencies = ["cryptography>=42", "keyring>=24"]
+
+[project.optional-dependencies]
+# CPU: ONNX Runtime, no PyTorch at runtime (the ONNX file comes from scripts/export_onnx.py)
+model = ["onnxruntime>=1.20", "tokenizers>=0.20", "numpy", "huggingface_hub"]
+# MPS/CUDA, and the one-off ONNX export
+torch = ["torch>=2.5", "transformers>=5.2", "safetensors", "huggingface_hub"]
+
+[project.urls]
+Homepage = "https://github.com/shanjeevrajendran/cloakroom"
+Issues = "https://github.com/shanjeevrajendran/cloakroom/issues"
+Benchmark = "https://github.com/shanjeevrajendran/cloakroom/blob/main/bench/RESULTS.md"
+
+[project.scripts]
+cloakroom = "cloakroom.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[dependency-groups]
+dev = ["pytest"]

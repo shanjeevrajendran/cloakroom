@@ -1,0 +1,18 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "cloakroom",
+  "description": "Local privacy gate for AI coding agents: secrets and PII are masked before the model sees them, restored only for local tools.",
+  "owner": {
+    "name": "shanjeevrajendran",
+    "url": "https://github.com/shanjeevrajendran"
+  },
+  "plugins": [
+    {
+      "name": "cloakroom",
+      "source": "./plugin",
+      "description": "Masks secrets and personal data in prompts, file reads and command output before Claude sees them; restores the real values only for local tools (Write, Edit, Bash). Needs the cloakroom command: uv tool install 'cloakroom[model]'.",
+      "category": "security",
+      "tags": ["privacy", "pii", "secrets", "redaction", "security"]
+    }
+  ]
+}

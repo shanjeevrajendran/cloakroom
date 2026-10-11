@@ -1,0 +1,644 @@
+[
+  {
+    "adapter": "cloakroom full",
+    "items": 92,
+    "items_leaked": 0,
+    "values_total": 530,
+    "values_leaked": 0,
+    "blocked": 0,
+    "negatives": 20,
+    "false_alarms": 1,
+    "by_category": {
+      "env_file": {
+        "items": 12,
+        "leaked": 0
+      },
+      "json_config": {
+        "items": 10,
+        "leaked": 0
+      },
+      "app_log": {
+        "items": 14,
+        "leaked": 0
+      },
+      "csv_export": {
+        "items": 10,
+        "leaked": 0
+      },
+      "source_code": {
+        "items": 12,
+        "leaked": 0
+      },
+      "shell_git": {
+        "items": 10,
+        "leaked": 0
+      },
+      "shell_env": {
+        "items": 8,
+        "leaked": 0
+      },
+      "doc_note": {
+        "items": 12,
+        "leaked": 0
+      },
+      "private_key": {
+        "items": 4,
+        "leaked": 0
+      },
+      "negative": {
+        "items": 20,
+        "leaked": 1
+      }
+    },
+    "leaks": [],
+    "ms_per_item": 39.9
+  },
+  {
+    "adapter": "cloakroom rules",
+    "items": 92,
+    "items_leaked": 67,
+    "values_total": 530,
+    "values_leaked": 198,
+    "blocked": 0,
+    "negatives": 20,
+    "false_alarms": 0,
+    "by_category": {
+      "env_file": {
+        "items": 12,
+        "leaked": 0
+      },
+      "json_config": {
+        "items": 10,
+        "leaked": 10
+      },
+      "app_log": {
+        "items": 14,
+        "leaked": 13
+      },
+      "csv_export": {
+        "items": 10,
+        "leaked": 10
+      },
+      "source_code": {
+        "items": 12,
+        "leaked": 12
+      },
+      "shell_git": {
+        "items": 10,
+        "leaked": 10
+      },
+      "shell_env": {
+        "items": 8,
+        "leaked": 0
+      },
+      "doc_note": {
+        "items": 12,
+        "leaked": 12
+      },
+      "private_key": {
+        "items": 4,
+        "leaked": 0
+      },
+      "negative": {
+        "items": 20,
+        "leaked": 0
+      }
+    },
+    "leaks": [
+      {
+        "id": "json_config-001",
+        "values": [
+          "Mateo Whitfield"
+        ]
+      },
+      {
+        "id": "json_config-002",
+        "values": [
+          "Aisha Mbeki"
+        ]
+      },
+      {
+        "id": "json_config-003",
+        "values": [
+          "Arjun Mbeki"
+        ]
+      },
+      {
+        "id": "json_config-004",
+        "values": [
+          "Fatima Mbeki"
+        ]
+      },
+      {
+        "id": "json_config-005",
+        "values": [
+          "Tomasz Ellery"
+        ]
+      },
+      {
+        "id": "json_config-006",
+        "values": [
+          "Kenji Novak"
+        ]
+      },
+      {
+        "id": "json_config-007",
+        "values": [
+          "Mateo Ferreira"
+        ]
+      },
+      {
+        "id": "json_config-008",
+        "values": [
+          "Tomasz Whitfield"
+        ]
+      },
+      {
+        "id": "json_config-009",
+        "values": [
+          "Zanele Kowalczyk"
+        ]
+      },
+      {
+        "id": "json_config-010",
+        "values": [
+          "Hannah Lindqvist"
+        ]
+      },
+      {
+        "id": "app_log-001",
+        "values": [
+          "Connor Lindqvist"
+        ]
+      },
+      {
+        "id": "app_log-002",
+        "values": [
+          "Ingrid Sorensen",
+          "Marcus Haddad",
+          "Ingrid Okafor"
+        ]
+      },
+      {
+        "id": "app_log-003",
+        "values": [
+          "Priya Kowalczyk",
+          "Marcus Kowalczyk",
+          "Dmitri Novak"
+        ]
+      },
+      {
+        "id": "app_log-004",
+        "values": [
+          "Mateo Tanaka"
+        ]
+      },
+      {
+        "id": "app_log-005",
+        "values": [
+          "Marcus Tanaka",
+          "Rafael Duarte"
+        ]
+      },
+      {
+        "id": "app_log-006",
+        "values": [
+          "Mei Ferreira",
+          "Connor Vasquez"
+        ]
+      },
+      {
+        "id": "app_log-007",
+        "values": [
+          "Fatima Duarte",
+          "Elena Kowalczyk"
+        ]
+      },
+      {
+        "id": "app_log-008",
+        "values": [
+          "Priya Haddad"
+        ]
+      },
+      {
+        "id": "app_log-009",
+        "values": [
+          "Hannah Adeyemi",
+          "Rafael Novak"
+        ]
+      },
+      {
+        "id": "app_log-010",
+        "values": [
+          "Elena Iyer"
+        ]
+      },
+      {
+        "id": "app_log-011",
+        "values": [
+          "Tomasz Raman"
+        ]
+      },
+      {
+        "id": "app_log-012",
+        "values": [
+          "Fatima Raman",
+          "Ingrid Ellery"
+        ]
+      },
+      {
+        "id": "app_log-014",
+        "values": [
+          "Connor Ferreira",
+          "Sofia Duarte"
+        ]
+      },
+      {
+        "id": "csv_export-001",
+        "values": [
+          "Mateo Haddad",
+          "8956 Oak Street, Madison, WI 53703",
+          "1983-10-09",
+          "Aisha Lindqvist",
+          "3324 Oak Street, Madison, WI 53703",
+          "1968-05-13",
+          "Hannah Mbeki",
+          "2187 Cedar Court, Portland, OR 97205",
+          "1985-03-11"
+        ]
+      },
+      {
+        "id": "csv_export-002",
+        "values": [
+          "Sofia Okafor",
+          "1196 Maple Avenue, Portland, OR 97205",
+          "1957-04-08",
+          "Kwame Lindqvist",
+          "9869 Harbor Road, Portland, OR 97205",
+          "1960-10-14",
+          "Lucia Castellano",
+          "2863 Oak Street, Boulder, CO 80302",
+          "2002-05-19",
+          "Priya Tanaka",
+          "3163 Maple Avenue, Madison, WI 53703",
+          "1981-09-08",
+          "Oluwaseun Tanaka",
+          "5805 Maple Avenue, Boulder, CO 80302",
+          "1956-02-21"
+        ]
+      },
+      {
+        "id": "csv_export-003",
+        "values": [
+          "Rafael Tanaka",
+          "4908 Oak Street, Austin, TX 78701",
+          "1957-12-15",
+          "Sofia Adeyemi",
+          "2083 Linden Lane, Portland, OR 97205",
+          "1979-12-03",
+          "Kenji Tanaka",
+          "8587 Maple Avenue, Boulder, CO 80302",
+          "1967-02-28",
+          "Lucia Whitfield",
+          "7198 Willow Way, Boulder, CO 80302",
+          "2001-06-23",
+          "Kenji Castellano",
+          "3755 Cedar Court, Austin, TX 78701",
+          "1953-06-27"
+        ]
+      },
+      {
+        "id": "csv_export-004",
+        "values": [
+          "Fatima Haddad",
+          "7164 Linden Lane, Madison, WI 53703",
+          "1982-09-05",
+          "Elena Ferreira",
+          "8450 Maple Avenue, Boulder, CO 80302",
+          "1987-11-21",
+          "Arjun Kowalczyk",
+          "2150 Willow Way, Madison, WI 53703",
+          "1987-03-27"
+        ]
+      },
+      {
+        "id": "csv_export-005",
+        "values": [
+          "Fatima Iyer",
+          "3769 Willow Way, Boulder, CO 80302",
+          "1962-04-17",
+          "Connor Kowalczyk",
+          "1193 Linden Lane, Raleigh, NC 27601",
+          "1956-06-22",
+          "Lucia Adeyemi",
+          "4960 Cedar Court, Madison, WI 53703",
+          "1954-02-27"
+        ]
+      },
+      {
+        "id": "csv_export-006",
+        "values": [
+          "Lucia Lindqvist",
+          "720 Willow Way, Raleigh, NC 27601",
+          "1993-09-21",
+          "Dmitri Okafor",
+          "4450 Oak Street, Raleigh, NC 27601",
+          "1972-02-16",
+          "Fatima Brennan",
+          "429 Linden Lane, Madison, WI 53703",
+          "1974-02-25"
+        ]
+      },
+      {
+        "id": "csv_export-007",
+        "values": [
+          "Aisha Okafor",
+          "7771 Harbor Road, Portland, OR 97205",
+          "1985-09-12",
+          "Fatima Raman",
+          "6399 Linden Lane, Madison, WI 53703",
+          "1998-12-08",
+          "Lucia Raman",
+          "6045 Willow Way, Raleigh, NC 27601",
+          "1953-09-25"
+        ]
+      },
+      {
+        "id": "csv_export-008",
+        "values": [
+          "Fatima Iyer",
+          "916 Maple Avenue, Madison, WI 53703",
+          "1985-09-07",
+          "Mei Iyer",
+          "5186 Harbor Road, Raleigh, NC 27601",
+          "1995-03-02",
+          "Lucia Vasquez",
+          "5310 Oak Street, Portland, OR 97205",
+          "1997-12-15"
+        ]
+      },
+      {
+        "id": "csv_export-009",
+        "values": [
+          "Kenji Iyer",
+          "177 Willow Way, Madison, WI 53703",
+          "1990-05-19",
+          "Rafael Raman",
+          "8334 Willow Way, Boulder, CO 80302",
+          "1999-07-02",
+          "Arjun Whitfield",
+          "9716 Maple Avenue, Madison, WI 53703",
+          "1984-10-28"
+        ]
+      },
+      {
+        "id": "csv_export-010",
+        "values": [
+          "Hannah Lindqvist",
+          "9422 Cedar Court, Madison, WI 53703",
+          "1974-05-10",
+          "Hannah Whitfield",
+          "6860 Willow Way, Austin, TX 78701",
+          "1998-12-13",
+          "Aisha Sorensen",
+          "129 Linden Lane, Portland, OR 97205",
+          "1987-01-03",
+          "Connor Vasquez",
+          "3055 Cedar Court, Austin, TX 78701",
+          "1969-09-14"
+        ]
+      },
+      {
+        "id": "source_code-001",
+        "values": [
+          "Ingrid Vasquez"
+        ]
+      },
+      {
+        "id": "source_code-002",
+        "values": [
+          "Ingrid Sorensen"
+        ]
+      },
+      {
+        "id": "source_code-003",
+        "values": [
+          "Priya Vasquez"
+        ]
+      },
+      {
+        "id": "source_code-004",
+        "values": [
+          "Aisha Tanaka"
+        ]
+      },
+      {
+        "id": "source_code-005",
+        "values": [
+          "Connor Mbeki"
+        ]
+      },
+      {
+        "id": "source_code-006",
+        "values": [
+          "Dmitri Ellery"
+        ]
+      },
+      {
+        "id": "source_code-007",
+        "values": [
+          "Arjun Okafor"
+        ]
+      },
+      {
+        "id": "source_code-008",
+        "values": [
+          "Mei Raman"
+        ]
+      },
+      {
+        "id": "source_code-009",
+        "values": [
+          "Dmitri Lindqvist"
+        ]
+      },
+      {
+        "id": "source_code-010",
+        "values": [
+          "Kenji Iyer"
+        ]
+      },
+      {
+        "id": "source_code-011",
+        "values": [
+          "Zanele Novak"
+        ]
+      },
+      {
+        "id": "source_code-012",
+        "values": [
+          "Elena Vasquez"
+        ]
+      },
+      {
+        "id": "shell_git-001",
+        "values": [
+          "Ingrid Novak",
+          "Connor Sorensen"
+        ]
+      },
+      {
+        "id": "shell_git-002",
+        "values": [
+          "Ingrid Adeyemi",
+          "Kenji Ellery"
+        ]
+      },
+      {
+        "id": "shell_git-003",
+        "values": [
+          "Ingrid Castellano",
+          "Lucia Haddad"
+        ]
+      },
+      {
+        "id": "shell_git-004",
+        "values": [
+          "Ingrid Sorensen",
+          "Mei Duarte"
+        ]
+      },
+      {
+        "id": "shell_git-005",
+        "values": [
+          "Mei Mbeki",
+          "Arjun Raman"
+        ]
+      },
+      {
+        "id": "shell_git-006",
+        "values": [
+          "Lucia Iyer",
+          "Hannah Whitfield"
+        ]
+      },
+      {
+        "id": "shell_git-007",
+        "values": [
+          "Tomasz Sorensen",
+          "Mei Brennan"
+        ]
+      },
+      {
+        "id": "shell_git-008",
+        "values": [
+          "Hannah Raman",
+          "Kenji Vasquez"
+        ]
+      },
+      {
+        "id": "shell_git-009",
+        "values": [
+          "Rafael Iyer",
+          "Mateo Lindqvist"
+        ]
+      },
+      {
+        "id": "shell_git-010",
+        "values": [
+          "Lucia Brennan",
+          "Fatima Castellano"
+        ]
+      },
+      {
+        "id": "doc_note-001",
+        "values": [
+          "Dmitri Vasquez",
+          "1435 Maple Avenue, Raleigh, NC 27601"
+        ]
+      },
+      {
+        "id": "doc_note-002",
+        "values": [
+          "Dmitri Ferreira",
+          "1998-02-03",
+          "9317 Maple Avenue, Madison, WI 53703"
+        ]
+      },
+      {
+        "id": "doc_note-003",
+        "values": [
+          "Lucia Adeyemi",
+          "1984-12-09",
+          "926 Willow Way, Madison, WI 53703"
+        ]
+      },
+      {
+        "id": "doc_note-004",
+        "values": [
+          "Connor Mbeki"
+        ]
+      },
+      {
+        "id": "doc_note-005",
+        "values": [
+          "Hannah Brennan",
+          "1981-11-16",
+          "634 Oak Street, Boulder, CO 80302"
+        ]
+      },
+      {
+        "id": "doc_note-006",
+        "values": [
+          "Tomasz Vasquez",
+          "8885 Cedar Court, Portland, OR 97205"
+        ]
+      },
+      {
+        "id": "doc_note-007",
+        "values": [
+          "Dmitri Kowalczyk",
+          "GB38NWBK70317264611491"
+        ]
+      },
+      {
+        "id": "doc_note-008",
+        "values": [
+          "Priya Adeyemi",
+          "1955-03-22",
+          "3004 Maple Avenue, Boulder, CO 80302"
+        ]
+      },
+      {
+        "id": "doc_note-009",
+        "values": [
+          "Oluwaseun Okafor",
+          "GB98NWBK38829759159097"
+        ]
+      },
+      {
+        "id": "doc_note-010",
+        "values": [
+          "Rafael Haddad",
+          "2320 Linden Lane, Madison, WI 53703"
+        ]
+      },
+      {
+        "id": "doc_note-011",
+        "values": [
+          "Mei Brennan",
+          "1966-05-13",
+          "745 Harbor Road, Madison, WI 53703"
+        ]
+      },
+      {
+        "id": "doc_note-012",
+        "values": [
+          "Kwame Tanaka",
+          "266 Oak Street, Austin, TX 78701"
+        ]
+      }
+    ],
+    "ms_per_item": 0.1
+  }
+]

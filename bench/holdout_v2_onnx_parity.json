@@ -1,0 +1,1422 @@
+{
+ "ms_per_item": {
+  "torch-cpu": 183.9,
+  "torch-fp32": 351.6,
+  "onnx-fp32": 283.5,
+  "onnx-int8": 145.4
+ },
+ "parity": {
+  "torch-fp32 vs torch-cpu": {
+   "all": {
+    "same": 395,
+    "ref_only": 2,
+    "new_only": 3,
+    "parity": 0.9875,
+    "diffs": [
+     {
+      "id": "h2-019",
+      "ref_only": [],
+      "new_only": [
+       [
+        "private_date",
+        67,
+        77,
+        "09/10/2026"
+       ]
+      ]
+     },
+     {
+      "id": "h2-024",
+      "ref_only": [
+       [
+        "private_person",
+        24,
+        34,
+        "Hana Sato;"
+       ]
+      ],
+      "new_only": [
+       [
+        "private_person",
+        24,
+        33,
+        "Hana Sato"
+       ]
+      ]
+     },
+     {
+      "id": "h2-115",
+      "ref_only": [
+       [
+        "account_number",
+        51,
+        65,
+        "4111 1111 1111"
+       ]
+      ],
+      "new_only": [
+       [
+        "account_number",
+        51,
+        60,
+        "4111 1111"
+       ]
+      ]
+     }
+    ]
+   },
+   "acted": {
+    "same": 394,
+    "ref_only": 2,
+    "new_only": 3,
+    "parity": 0.9875,
+    "diffs": [
+     {
+      "id": "h2-019",
+      "ref_only": [],
+      "new_only": [
+       [
+        "private_date",
+        67,
+        77,
+        "09/10/2026"
+       ]
+      ]
+     },
+     {
+      "id": "h2-024",
+      "ref_only": [
+       [
+        "private_person",
+        24,
+        34,
+        "Hana Sato;"
+       ]
+      ],
+      "new_only": [
+       [
+        "private_person",
+        24,
+        33,
+        "Hana Sato"
+       ]
+      ]
+     },
+     {
+      "id": "h2-115",
+      "ref_only": [
+       [
+        "account_number",
+        51,
+        65,
+        "4111 1111 1111"
+       ]
+      ],
+      "new_only": [
+       [
+        "account_number",
+        51,
+        60,
+        "4111 1111"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "onnx-fp32 vs torch-cpu": {
+   "all": {
+    "same": 395,
+    "ref_only": 2,
+    "new_only": 3,
+    "parity": 0.9875,
+    "diffs": [
+     {
+      "id": "h2-019",
+      "ref_only": [],
+      "new_only": [
+       [
+        "private_date",
+        67,
+        77,
+        "09/10/2026"
+       ]
+      ]
+     },
+     {
+      "id": "h2-024",
+      "ref_only": [
+       [
+        "private_person",
+        24,
+        34,
+        "Hana Sato;"
+       ]
+      ],
+      "new_only": [
+       [
+        "private_person",
+        24,
+        33,
+        "Hana Sato"
+       ]
+      ]
+     },
+     {
+      "id": "h2-115",
+      "ref_only": [
+       [
+        "account_number",
+        51,
+        65,
+        "4111 1111 1111"
+       ]
+      ],
+      "new_only": [
+       [
+        "account_number",
+        51,
+        60,
+        "4111 1111"
+       ]
+      ]
+     }
+    ]
+   },
+   "acted": {
+    "same": 394,
+    "ref_only": 2,
+    "new_only": 3,
+    "parity": 0.9875,
+    "diffs": [
+     {
+      "id": "h2-019",
+      "ref_only": [],
+      "new_only": [
+       [
+        "private_date",
+        67,
+        77,
+        "09/10/2026"
+       ]
+      ]
+     },
+     {
+      "id": "h2-024",
+      "ref_only": [
+       [
+        "private_person",
+        24,
+        34,
+        "Hana Sato;"
+       ]
+      ],
+      "new_only": [
+       [
+        "private_person",
+        24,
+        33,
+        "Hana Sato"
+       ]
+      ]
+     },
+     {
+      "id": "h2-115",
+      "ref_only": [
+       [
+        "account_number",
+        51,
+        65,
+        "4111 1111 1111"
+       ]
+      ],
+      "new_only": [
+       [
+        "account_number",
+        51,
+        60,
+        "4111 1111"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "onnx-int8 vs torch-cpu": {
+   "all": {
+    "same": 384,
+    "ref_only": 13,
+    "new_only": 17,
+    "parity": 0.9275,
+    "diffs": [
+     {
+      "id": "h2-001",
+      "ref_only": [
+       [
+        "private_date",
+        1,
+        11,
+        "2026-10-09"
+       ],
+       [
+        "private_date",
+        12,
+        17,
+        "11:15"
+       ]
+      ],
+      "new_only": [
+       [
+        "private_date",
+        1,
+        17,
+        "2026-10-09 11:15"
+       ]
+      ]
+     },
+     {
+      "id": "h2-010",
+      "ref_only": [
+       [
+        "secret",
+        109,
+        378,
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJsdWthc3oubm93YWtAdGhpc3RsZXZhbGUuZGV2IiwibmFtZSI6Ilx1MDE0MXVrYXN6IE5vd2FrIiwiaWF0IjoxNzY0MDk2OTUzLCJleHAiOjE3NjQxMDA1NTMsImlzcyI6ImF1dGgubm9yZGhhdmVuLmlvIiwicm9sZSI6Im1lbWJlciJ9.GoT6hyM5fGlbqeCQE3iKrmaO4spUNRguZwyEK2pY0Sw"
+       ]
+      ],
+      "new_only": [
+       [
+        "secret",
+        102,
+        378,
+        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJsdWthc3oubm93YWtAdGhpc3RsZXZhbGUuZGV2IiwibmFtZSI6Ilx1MDE0MXVrYXN6IE5vd2FrIiwiaWF0IjoxNzY0MDk2OTUzLCJleHAiOjE3NjQxMDA1NTMsImlzcyI6ImF1dGgubm9yZGhhdmVuLmlvIiwicm9sZSI6Im1lbWJlciJ9.GoT6hyM5fGlbqeCQE3iKrmaO4spUNRguZwyEK2pY0Sw"
+       ]
+      ]
+     },
+     {
+      "id": "h2-011",
+      "ref_only": [
+       [
+        "private_phone",
+        45,
+        59,
+        "9999 9999 9999"
+       ]
+      ],
+      "new_only": []
+     },
+     {
+      "id": "h2-019",
+      "ref_only": [],
+      "new_only": [
+       [
+        "private_date",
+        67,
+        83,
+        "09/10/2026 14:21"
+       ]
+      ]
+     },
+     {
+      "id": "h2-024",
+      "ref_only": [
+       [
+        "private_person",
+        24,
+        34,
+        "Hana Sato;"
+       ]
+      ],
+      "new_only": [
+       [
+        "private_person",
+        24,
+        33,
+        "Hana Sato"
+       ]
+      ]
+     },
+     {
+      "id": "h2-028",
+      "ref_only": [
+       [
+        "secret",
+        187,
+        239,
+        "postgres://etl_svc:p%40ss%3Aw0rd%21@db.internal:5432"
+       ]
+      ],
+      "new_only": [
+       [
+        "secret",
+        187,
+        249,
+        "postgres://etl_svc:p%40ss%3Aw0rd%21@db.internal:5432/warehouse"
+       ]
+      ]
+     },
+     {
+      "id": "h2-035",
+      "ref_only": [],
+      "new_only": [
+       [
+        "private_date",
+        13,
+        28,
+        "7 November 1867"
+       ]
+      ]
+     },
+     {
+      "id": "h2-041",
+      "ref_only": [
+       [
+        "private_date",
+        65,
+        75,
+        "2026-10-09"
+       ]
+      ],
+      "new_only": [
+       [
+        "private_date",
+        65,
+        81,
+        "2026-10-09 10:03"
+       ]
+      ]
+     },
+     {
+      "id": "h2-046",
+      "ref_only": [],
+      "new_only": [
+       [
+        "private_address",
+        49,
+        79,
+        "Westmoreland\nCounty, Virginia."
+       ]
+      ]
+     },
+     {
+      "id": "h2-054",
+      "ref_only": [
+       [
+        "private_phone",
+        57,
+        101,
+        "+49 151 61854861\nLindenweg 47, 82512 Hamburg"
+       ]
+      ],
+      "new_only": [
+       [
+        "private_address",
+        74,
+        101,
+        "Lindenweg 47, 82512 Hamburg"
+       ],
+       [
+        "private_phone",
+        57,
+        73,
+        "+49 151 61854861"
+       ]
+      ]
+     },
+     {
+      "id": "h2-079",
+      "ref_only": [
+       [
+        "private_url",
+        19,
+        48,
+        "http://127.0.0.1:8080/healthz"
+       ]
+      ],
+      "new_only": [
+       [
+        "private_url",
+        19,
+        26,
+        "http://"
+       ],
+       [
+        "private_url",
+        26,
+        48,
+        "127.0.0.1:8080/healthz"
+       ]
+      ]
+     },
+     {
+      "id": "h2-088",
+      "ref_only": [
+       [
+        "account_number",
+        144,
+        152,
+        "QX-88213"
+       ]
+      ],
+      "new_only": [
+       [
+        "private_address",
+        144,
+        152,
+        "QX-88213"
+       ]
+      ]
+     },
+     {
+      "id": "h2-101",
+      "ref_only": [
+       [
+        "private_date",
+        25,
+        38,
+        "14 March 1879"
+       ]
+      ],
+      "new_only": [
+       [
+        "private_date",
+        25,
+        33,
+        "14 March"
+       ]
+      ]
+     },
+     {
+      "id": "h2-105",
+      "ref_only": [],
+      "new_only": [
+       [
+        "secret",
+        15,
+        30,
+        "sk-live-...8f3a"
+       ]
+      ]
+     },
+     {
+      "id": "h2-114",
+      "ref_only": [
+       [
+        "secret",
+        107,
+        139,
+        "sk-live-OqDqQa5ZD5sRIkeC8wLtO9BS"
+       ]
+      ],
+      "new_only": [
+       [
+        "secret",
+        100,
+        139,
+        "Bearer sk-live-OqDqQa5ZD5sRIkeC8wLtO9BS"
+       ]
+      ]
+     },
+     {
+      "id": "h2-115",
+      "ref_only": [
+       [
+        "account_number",
+        51,
+        65,
+        "4111 1111 1111"
+       ]
+      ],
+      "new_only": [
+       [
+        "account_number",
+        51,
+        70,
+        "4111 1111 1111 1111"
+       ]
+      ]
+     }
+    ]
+   },
+   "acted": {
+    "same": 383,
+    "ref_only": 13,
+    "new_only": 17,
+    "parity": 0.9274,
+    "diffs": [
+     {
+      "id": "h2-001",
+      "ref_only": [
+       [
+        "private_date",
+        1,
+        11,
+        "2026-10-09"
+       ],
+       [
+        "private_date",
+        12,
+        17,
+        "11:15"
+       ]
+      ],
+      "new_only": [
+       [
+        "private_date",
+        1,
+        17,
+        "2026-10-09 11:15"
+       ]
+      ]
+     },
+     {
+      "id": "h2-010",
+      "ref_only": [
+       [
+        "secret",
+        109,
+        378,
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJsdWthc3oubm93YWtAdGhpc3RsZXZhbGUuZGV2IiwibmFtZSI6Ilx1MDE0MXVrYXN6IE5vd2FrIiwiaWF0IjoxNzY0MDk2OTUzLCJleHAiOjE3NjQxMDA1NTMsImlzcyI6ImF1dGgubm9yZGhhdmVuLmlvIiwicm9sZSI6Im1lbWJlciJ9.GoT6hyM5fGlbqeCQE3iKrmaO4spUNRguZwyEK2pY0Sw"
+       ]
+      ],
+      "new_only": [
+       [
+        "secret",
+        102,
+        378,
+        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJsdWthc3oubm93YWtAdGhpc3RsZXZhbGUuZGV2IiwibmFtZSI6Ilx1MDE0MXVrYXN6IE5vd2FrIiwiaWF0IjoxNzY0MDk2OTUzLCJleHAiOjE3NjQxMDA1NTMsImlzcyI6ImF1dGgubm9yZGhhdmVuLmlvIiwicm9sZSI6Im1lbWJlciJ9.GoT6hyM5fGlbqeCQE3iKrmaO4spUNRguZwyEK2pY0Sw"
+       ]
+      ]
+     },
+     {
+      "id": "h2-011",
+      "ref_only": [
+       [
+        "private_phone",
+        45,
+        59,
+        "9999 9999 9999"
+       ]
+      ],
+      "new_only": []
+     },
+     {
+      "id": "h2-019",
+      "ref_only": [],
+      "new_only": [
+       [
+        "private_date",
+        67,
+        83,
+        "09/10/2026 14:21"
+       ]
+      ]
+     },
+     {
+      "id": "h2-024",
+      "ref_only": [
+       [
+        "private_person",
+        24,
+        34,
+        "Hana Sato;"
+       ]
+      ],
+      "new_only": [
+       [
+        "private_person",
+        24,
+        33,
+        "Hana Sato"
+       ]
+      ]
+     },
+     {
+      "id": "h2-028",
+      "ref_only": [
+       [
+        "secret",
+        187,
+        239,
+        "postgres://etl_svc:p%40ss%3Aw0rd%21@db.internal:5432"
+       ]
+      ],
+      "new_only": [
+       [
+        "secret",
+        187,
+        249,
+        "postgres://etl_svc:p%40ss%3Aw0rd%21@db.internal:5432/warehouse"
+       ]
+      ]
+     },
+     {
+      "id": "h2-035",
+      "ref_only": [],
+      "new_only": [
+       [
+        "private_date",
+        13,
+        28,
+        "7 November 1867"
+       ]
+      ]
+     },
+     {
+      "id": "h2-041",
+      "ref_only": [
+       [
+        "private_date",
+        65,
+        75,
+        "2026-10-09"
+       ]
+      ],
+      "new_only": [
+       [
+        "private_date",
+        65,
+        81,
+        "2026-10-09 10:03"
+       ]
+      ]
+     },
+     {
+      "id": "h2-046",
+      "ref_only": [],
+      "new_only": [
+       [
+        "private_address",
+        49,
+        79,
+        "Westmoreland\nCounty, Virginia."
+       ]
+      ]
+     },
+     {
+      "id": "h2-054",
+      "ref_only": [
+       [
+        "private_phone",
+        57,
+        101,
+        "+49 151 61854861\nLindenweg 47, 82512 Hamburg"
+       ]
+      ],
+      "new_only": [
+       [
+        "private_address",
+        74,
+        101,
+        "Lindenweg 47, 82512 Hamburg"
+       ],
+       [
+        "private_phone",
+        57,
+        73,
+        "+49 151 61854861"
+       ]
+      ]
+     },
+     {
+      "id": "h2-079",
+      "ref_only": [
+       [
+        "private_url",
+        19,
+        48,
+        "http://127.0.0.1:8080/healthz"
+       ]
+      ],
+      "new_only": [
+       [
+        "private_url",
+        19,
+        26,
+        "http://"
+       ],
+       [
+        "private_url",
+        26,
+        48,
+        "127.0.0.1:8080/healthz"
+       ]
+      ]
+     },
+     {
+      "id": "h2-088",
+      "ref_only": [
+       [
+        "account_number",
+        144,
+        152,
+        "QX-88213"
+       ]
+      ],
+      "new_only": [
+       [
+        "private_address",
+        144,
+        152,
+        "QX-88213"
+       ]
+      ]
+     },
+     {
+      "id": "h2-101",
+      "ref_only": [
+       [
+        "private_date",
+        25,
+        38,
+        "14 March 1879"
+       ]
+      ],
+      "new_only": [
+       [
+        "private_date",
+        25,
+        33,
+        "14 March"
+       ]
+      ]
+     },
+     {
+      "id": "h2-105",
+      "ref_only": [],
+      "new_only": [
+       [
+        "secret",
+        15,
+        30,
+        "sk-live-...8f3a"
+       ]
+      ]
+     },
+     {
+      "id": "h2-114",
+      "ref_only": [
+       [
+        "secret",
+        107,
+        139,
+        "sk-live-OqDqQa5ZD5sRIkeC8wLtO9BS"
+       ]
+      ],
+      "new_only": [
+       [
+        "secret",
+        100,
+        139,
+        "Bearer sk-live-OqDqQa5ZD5sRIkeC8wLtO9BS"
+       ]
+      ]
+     },
+     {
+      "id": "h2-115",
+      "ref_only": [
+       [
+        "account_number",
+        51,
+        65,
+        "4111 1111 1111"
+       ]
+      ],
+      "new_only": [
+       [
+        "account_number",
+        51,
+        70,
+        "4111 1111 1111 1111"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "onnx-fp32 vs torch-fp32": {
+   "all": {
+    "same": 398,
+    "ref_only": 0,
+    "new_only": 0,
+    "parity": 1.0,
+    "diffs": []
+   },
+   "acted": {
+    "same": 397,
+    "ref_only": 0,
+    "new_only": 0,
+    "parity": 1.0,
+    "diffs": []
+   }
+  },
+  "onnx-int8 vs torch-fp32": {
+   "all": {
+    "same": 385,
+    "ref_only": 13,
+    "new_only": 16,
+    "parity": 0.93,
+    "diffs": [
+     {
+      "id": "h2-001",
+      "ref_only": [
+       [
+        "private_date",
+        1,
+        11,
+        "2026-10-09"
+       ],
+       [
+        "private_date",
+        12,
+        17,
+        "11:15"
+       ]
+      ],
+      "new_only": [
+       [
+        "private_date",
+        1,
+        17,
+        "2026-10-09 11:15"
+       ]
+      ]
+     },
+     {
+      "id": "h2-010",
+      "ref_only": [
+       [
+        "secret",
+        109,
+        378,
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJsdWthc3oubm93YWtAdGhpc3RsZXZhbGUuZGV2IiwibmFtZSI6Ilx1MDE0MXVrYXN6IE5vd2FrIiwiaWF0IjoxNzY0MDk2OTUzLCJleHAiOjE3NjQxMDA1NTMsImlzcyI6ImF1dGgubm9yZGhhdmVuLmlvIiwicm9sZSI6Im1lbWJlciJ9.GoT6hyM5fGlbqeCQE3iKrmaO4spUNRguZwyEK2pY0Sw"
+       ]
+      ],
+      "new_only": [
+       [
+        "secret",
+        102,
+        378,
+        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJsdWthc3oubm93YWtAdGhpc3RsZXZhbGUuZGV2IiwibmFtZSI6Ilx1MDE0MXVrYXN6IE5vd2FrIiwiaWF0IjoxNzY0MDk2OTUzLCJleHAiOjE3NjQxMDA1NTMsImlzcyI6ImF1dGgubm9yZGhhdmVuLmlvIiwicm9sZSI6Im1lbWJlciJ9.GoT6hyM5fGlbqeCQE3iKrmaO4spUNRguZwyEK2pY0Sw"
+       ]
+      ]
+     },
+     {
+      "id": "h2-011",
+      "ref_only": [
+       [
+        "private_phone",
+        45,
+        59,
+        "9999 9999 9999"
+       ]
+      ],
+      "new_only": []
+     },
+     {
+      "id": "h2-019",
+      "ref_only": [
+       [
+        "private_date",
+        67,
+        77,
+        "09/10/2026"
+       ]
+      ],
+      "new_only": [
+       [
+        "private_date",
+        67,
+        83,
+        "09/10/2026 14:21"
+       ]
+      ]
+     },
+     {
+      "id": "h2-028",
+      "ref_only": [
+       [
+        "secret",
+        187,
+        239,
+        "postgres://etl_svc:p%40ss%3Aw0rd%21@db.internal:5432"
+       ]
+      ],
+      "new_only": [
+       [
+        "secret",
+        187,
+        249,
+        "postgres://etl_svc:p%40ss%3Aw0rd%21@db.internal:5432/warehouse"
+       ]
+      ]
+     },
+     {
+      "id": "h2-035",
+      "ref_only": [],
+      "new_only": [
+       [
+        "private_date",
+        13,
+        28,
+        "7 November 1867"
+       ]
+      ]
+     },
+     {
+      "id": "h2-041",
+      "ref_only": [
+       [
+        "private_date",
+        65,
+        75,
+        "2026-10-09"
+       ]
+      ],
+      "new_only": [
+       [
+        "private_date",
+        65,
+        81,
+        "2026-10-09 10:03"
+       ]
+      ]
+     },
+     {
+      "id": "h2-046",
+      "ref_only": [],
+      "new_only": [
+       [
+        "private_address",
+        49,
+        79,
+        "Westmoreland\nCounty, Virginia."
+       ]
+      ]
+     },
+     {
+      "id": "h2-054",
+      "ref_only": [
+       [
+        "private_phone",
+        57,
+        101,
+        "+49 151 61854861\nLindenweg 47, 82512 Hamburg"
+       ]
+      ],
+      "new_only": [
+       [
+        "private_address",
+        74,
+        101,
+        "Lindenweg 47, 82512 Hamburg"
+       ],
+       [
+        "private_phone",
+        57,
+        73,
+        "+49 151 61854861"
+       ]
+      ]
+     },
+     {
+      "id": "h2-079",
+      "ref_only": [
+       [
+        "private_url",
+        19,
+        48,
+        "http://127.0.0.1:8080/healthz"
+       ]
+      ],
+      "new_only": [
+       [
+        "private_url",
+        19,
+        26,
+        "http://"
+       ],
+       [
+        "private_url",
+        26,
+        48,
+        "127.0.0.1:8080/healthz"
+       ]
+      ]
+     },
+     {
+      "id": "h2-088",
+      "ref_only": [
+       [
+        "account_number",
+        144,
+        152,
+        "QX-88213"
+       ]
+      ],
+      "new_only": [
+       [
+        "private_address",
+        144,
+        152,
+        "QX-88213"
+       ]
+      ]
+     },
+     {
+      "id": "h2-101",
+      "ref_only": [
+       [
+        "private_date",
+        25,
+        38,
+        "14 March 1879"
+       ]
+      ],
+      "new_only": [
+       [
+        "private_date",
+        25,
+        33,
+        "14 March"
+       ]
+      ]
+     },
+     {
+      "id": "h2-105",
+      "ref_only": [],
+      "new_only": [
+       [
+        "secret",
+        15,
+        30,
+        "sk-live-...8f3a"
+       ]
+      ]
+     },
+     {
+      "id": "h2-114",
+      "ref_only": [
+       [
+        "secret",
+        107,
+        139,
+        "sk-live-OqDqQa5ZD5sRIkeC8wLtO9BS"
+       ]
+      ],
+      "new_only": [
+       [
+        "secret",
+        100,
+        139,
+        "Bearer sk-live-OqDqQa5ZD5sRIkeC8wLtO9BS"
+       ]
+      ]
+     },
+     {
+      "id": "h2-115",
+      "ref_only": [
+       [
+        "account_number",
+        51,
+        60,
+        "4111 1111"
+       ]
+      ],
+      "new_only": [
+       [
+        "account_number",
+        51,
+        70,
+        "4111 1111 1111 1111"
+       ]
+      ]
+     }
+    ]
+   },
+   "acted": {
+    "same": 384,
+    "ref_only": 13,
+    "new_only": 16,
+    "parity": 0.9298,
+    "diffs": [
+     {
+      "id": "h2-001",
+      "ref_only": [
+       [
+        "private_date",
+        1,
+        11,
+        "2026-10-09"
+       ],
+       [
+        "private_date",
+        12,
+        17,
+        "11:15"
+       ]
+      ],
+      "new_only": [
+       [
+        "private_date",
+        1,
+        17,
+        "2026-10-09 11:15"
+       ]
+      ]
+     },
+     {
+      "id": "h2-010",
+      "ref_only": [
+       [
+        "secret",
+        109,
+        378,
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJsdWthc3oubm93YWtAdGhpc3RsZXZhbGUuZGV2IiwibmFtZSI6Ilx1MDE0MXVrYXN6IE5vd2FrIiwiaWF0IjoxNzY0MDk2OTUzLCJleHAiOjE3NjQxMDA1NTMsImlzcyI6ImF1dGgubm9yZGhhdmVuLmlvIiwicm9sZSI6Im1lbWJlciJ9.GoT6hyM5fGlbqeCQE3iKrmaO4spUNRguZwyEK2pY0Sw"
+       ]
+      ],
+      "new_only": [
+       [
+        "secret",
+        102,
+        378,
+        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJsdWthc3oubm93YWtAdGhpc3RsZXZhbGUuZGV2IiwibmFtZSI6Ilx1MDE0MXVrYXN6IE5vd2FrIiwiaWF0IjoxNzY0MDk2OTUzLCJleHAiOjE3NjQxMDA1NTMsImlzcyI6ImF1dGgubm9yZGhhdmVuLmlvIiwicm9sZSI6Im1lbWJlciJ9.GoT6hyM5fGlbqeCQE3iKrmaO4spUNRguZwyEK2pY0Sw"
+       ]
+      ]
+     },
+     {
+      "id": "h2-011",
+      "ref_only": [
+       [
+        "private_phone",
+        45,
+        59,
+        "9999 9999 9999"
+       ]
+      ],
+      "new_only": []
+     },
+     {
+      "id": "h2-019",
+      "ref_only": [
+       [
+        "private_date",
+        67,
+        77,
+        "09/10/2026"
+       ]
+      ],
+      "new_only": [
+       [
+        "private_date",
+        67,
+        83,
+        "09/10/2026 14:21"
+       ]
+      ]
+     },
+     {
+      "id": "h2-028",
+      "ref_only": [
+       [
+        "secret",
+        187,
+        239,
+        "postgres://etl_svc:p%40ss%3Aw0rd%21@db.internal:5432"
+       ]
+      ],
+      "new_only": [
+       [
+        "secret",
+        187,
+        249,
+        "postgres://etl_svc:p%40ss%3Aw0rd%21@db.internal:5432/warehouse"
+       ]
+      ]
+     },
+     {
+      "id": "h2-035",
+      "ref_only": [],
+      "new_only": [
+       [
+        "private_date",
+        13,
+        28,
+        "7 November 1867"
+       ]
+      ]
+     },
+     {
+      "id": "h2-041",
+      "ref_only": [
+       [
+        "private_date",
+        65,
+        75,
+        "2026-10-09"
+       ]
+      ],
+      "new_only": [
+       [
+        "private_date",
+        65,
+        81,
+        "2026-10-09 10:03"
+       ]
+      ]
+     },
+     {
+      "id": "h2-046",
+      "ref_only": [],
+      "new_only": [
+       [
+        "private_address",
+        49,
+        79,
+        "Westmoreland\nCounty, Virginia."
+       ]
+      ]
+     },
+     {
+      "id": "h2-054",
+      "ref_only": [
+       [
+        "private_phone",
+        57,
+        101,
+        "+49 151 61854861\nLindenweg 47, 82512 Hamburg"
+       ]
+      ],
+      "new_only": [
+       [
+        "private_address",
+        74,
+        101,
+        "Lindenweg 47, 82512 Hamburg"
+       ],
+       [
+        "private_phone",
+        57,
+        73,
+        "+49 151 61854861"
+       ]
+      ]
+     },
+     {
+      "id": "h2-079",
+      "ref_only": [
+       [
+        "private_url",
+        19,
+        48,
+        "http://127.0.0.1:8080/healthz"
+       ]
+      ],
+      "new_only": [
+       [
+        "private_url",
+        19,
+        26,
+        "http://"
+       ],
+       [
+        "private_url",
+        26,
+        48,
+        "127.0.0.1:8080/healthz"
+       ]
+      ]
+     },
+     {
+      "id": "h2-088",
+      "ref_only": [
+       [
+        "account_number",
+        144,
+        152,
+        "QX-88213"
+       ]
+      ],
+      "new_only": [
+       [
+        "private_address",
+        144,
+        152,
+        "QX-88213"
+       ]
+      ]
+     },
+     {
+      "id": "h2-101",
+      "ref_only": [
+       [
+        "private_date",
+        25,
+        38,
+        "14 March 1879"
+       ]
+      ],
+      "new_only": [
+       [
+        "private_date",
+        25,
+        33,
+        "14 March"
+       ]
+      ]
+     },
+     {
+      "id": "h2-105",
+      "ref_only": [],
+      "new_only": [
+       [
+        "secret",
+        15,
+        30,
+        "sk-live-...8f3a"
+       ]
+      ]
+     },
+     {
+      "id": "h2-114",
+      "ref_only": [
+       [
+        "secret",
+        107,
+        139,
+        "sk-live-OqDqQa5ZD5sRIkeC8wLtO9BS"
+       ]
+      ],
+      "new_only": [
+       [
+        "secret",
+        100,
+        139,
+        "Bearer sk-live-OqDqQa5ZD5sRIkeC8wLtO9BS"
+       ]
+      ]
+     },
+     {
+      "id": "h2-115",
+      "ref_only": [
+       [
+        "account_number",
+        51,
+        60,
+        "4111 1111"
+       ]
+      ],
+      "new_only": [
+       [
+        "account_number",
+        51,
+        70,
+        "4111 1111 1111 1111"
+       ]
+      ]
+     }
+    ]
+   }
+  }
+ }
+}

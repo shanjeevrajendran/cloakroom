@@ -1,0 +1,4890 @@
+[
+  {
+    "adapter": "sensitive-canary (blocks)",
+    "items": 80,
+    "items_leaked": 18,
+    "values_total": 314,
+    "values_leaked": 65,
+    "blocked": 62,
+    "negatives": 40,
+    "false_alarms": 5,
+    "by_category": {
+      "negative": {
+        "items": 40,
+        "leaked": 5
+      },
+      "whatsapp": {
+        "items": 3,
+        "leaked": 2
+      },
+      "discord": {
+        "items": 3,
+        "leaked": 0
+      },
+      "figma-comments": {
+        "items": 3,
+        "leaked": 1
+      },
+      "confluence": {
+        "items": 3,
+        "leaked": 0
+      },
+      "notion": {
+        "items": 3,
+        "leaked": 0
+      },
+      "call-center": {
+        "items": 3,
+        "leaked": 2
+      },
+      "miro-comments": {
+        "items": 2,
+        "leaked": 0
+      },
+      "vercel-log": {
+        "items": 2,
+        "leaked": 1
+      },
+      "1password-cli": {
+        "items": 2,
+        "leaked": 0
+      },
+      "pip-log": {
+        "items": 2,
+        "leaked": 0
+      },
+      "dockerfile": {
+        "items": 2,
+        "leaked": 0
+      },
+      "npm-log": {
+        "items": 2,
+        "leaked": 0
+      },
+      "vault-cli": {
+        "items": 2,
+        "leaked": 1
+      },
+      "docker-compose": {
+        "items": 2,
+        "leaked": 0
+      },
+      "k8s-audit": {
+        "items": 3,
+        "leaked": 1
+      },
+      "voicemail": {
+        "items": 2,
+        "leaked": 0
+      },
+      "utility-bill": {
+        "items": 2,
+        "leaked": 1
+      },
+      "immigration": {
+        "items": 2,
+        "leaked": 1
+      },
+      "payroll": {
+        "items": 3,
+        "leaked": 2
+      },
+      "adoption": {
+        "items": 2,
+        "leaked": 0
+      },
+      "rental-app": {
+        "items": 2,
+        "leaked": 1
+      },
+      "clinical-crf": {
+        "items": 2,
+        "leaked": 0
+      },
+      "netlify-log": {
+        "items": 2,
+        "leaked": 0
+      },
+      "trello": {
+        "items": 3,
+        "leaked": 1
+      },
+      "gdocs-comments": {
+        "items": 3,
+        "leaked": 0
+      },
+      "asana": {
+        "items": 2,
+        "leaked": 1
+      },
+      "azure-activity": {
+        "items": 2,
+        "leaked": 0
+      },
+      "gcp-audit": {
+        "items": 2,
+        "leaked": 0
+      },
+      "cloudtrail": {
+        "items": 3,
+        "leaked": 0
+      },
+      "bigquery-history": {
+        "items": 3,
+        "leaked": 1
+      },
+      "snowflake-history": {
+        "items": 3,
+        "leaked": 1
+      },
+      "firebase-rtdb": {
+        "items": 2,
+        "leaked": 0
+      },
+      "redis-monitor": {
+        "items": 3,
+        "leaked": 1
+      }
+    },
+    "leaks": [
+      {
+        "id": "h6-003",
+        "values": [
+          "Ravi R. Menon",
+          "1618 Wexford Lane, Raleigh, NC 27601",
+          "05/04/1991",
+          "+55 21 4083-2897"
+        ]
+      },
+      {
+        "id": "h6-011",
+        "values": [
+          "eleni.papadopoulou6",
+          "\u0395\u03bb\u03ad\u03bd\u03b7 \u03a0\u03b1\u03c0\u03b1\u03b4\u03bf\u03c0\u03bf\u03cd\u03bb\u03bf\u03c5",
+          "+49 89 733943",
+          "Oscar Michael Lindgren"
+        ]
+      },
+      {
+        "id": "h6-020",
+        "values": [
+          "Carlos Mendez",
+          "+55 11 99097-2277",
+          "Anika Marie Sharma"
+        ]
+      },
+      {
+        "id": "h6-023",
+        "values": [
+          "CS 45 74 46 B",
+          "+44 7561 554834",
+          "Sofia Papadopoulos"
+        ]
+      },
+      {
+        "id": "h6-061",
+        "values": [
+          "meilin.zhou",
+          "Salt_lVi9UMB45"
+        ]
+      },
+      {
+        "id": "h6-073",
+        "values": [
+          "sarah.lindqvist35",
+          "Kessler?dlbRswI01j24",
+          "Sarah Michael Lindqvist",
+          "+61 457 940 643"
+        ]
+      },
+      {
+        "id": "h6-090",
+        "values": [
+          "Grace Mwangi",
+          "SA 71 74 57 B",
+          "8 Willow Court, Manchester M14 5PQ Suite 73",
+          "GB68F8QDSISCKD20HS5PQT"
+        ]
+      },
+      {
+        "id": "h6-094",
+        "values": [
+          "\u0414\u043c\u0438\u0442\u0440\u0438\u0439 \u0421\u043e\u043a\u043e\u043b\u043e\u0432",
+          "D21496944",
+          "1992-05-04",
+          "WE 32 48 97 A",
+          "8 Willow Court, Manchester M14 5PQ Suite 836",
+          "+44 7801 997035",
+          "Emma David Johansson"
+        ]
+      },
+      {
+        "id": "h6-097",
+        "values": [
+          "Sofia Kai Papadopoulos",
+          "597 120 768",
+          "45 Chapel Street, Melbourne VIC 3181 Unit 160",
+          "+61 416 772 117"
+        ]
+      },
+      {
+        "id": "h6-103",
+        "values": [
+          "Kenji Kai Nakamura",
+          "Rua das Palmeiras, 230, Sao Paulo, SP 01311-000 Suite 712",
+          "+55 11 97248-3845"
+        ]
+      },
+      {
+        "id": "h6-106",
+        "values": [
+          "Tara Desai",
+          "CA903-8440-720",
+          "Av. Insurgentes Sur 1457, Ciudad de Mexico, CDMX 03920 Suite 741",
+          "+52 55 3407 9465",
+          "11 Oct 1998"
+        ]
+      },
+      {
+        "id": "h6-014",
+        "values": [
+          "Jose Garcia",
+          "S25376409",
+          "15 Apr 1968"
+        ]
+      },
+      {
+        "id": "h6-039",
+        "values": [
+          "Tara Lee Desai",
+          "45 Chapel Street, Melbourne VIC 3181, Apt. 429",
+          "+61 491 114 666",
+          "513 339 233"
+        ]
+      },
+      {
+        "id": "h6-060",
+        "values": [
+          "8.230.66.23",
+          "aisha.bello"
+        ]
+      },
+      {
+        "id": "h6-064",
+        "values": [
+          "nadia.rahal",
+          "sk-live-omUJYidiHHllA0emYn14nxOt",
+          "Julia K. Kowalska",
+          "23.31.205.100"
+        ]
+      },
+      {
+        "id": "h6-098",
+        "values": [
+          "FR05BPA5RE1NR7GGWTB9BM4W2E2",
+          "2 48 03 06 455 708 34",
+          "Diego Ramirez"
+        ]
+      },
+      {
+        "id": "h6-105",
+        "values": [
+          "170.106.221.86",
+          "Ember%0eWzV6g4lU59",
+          "priya.raghavan28"
+        ]
+      },
+      {
+        "id": "h6-108",
+        "values": [
+          "samuel.osei76",
+          "Samuel James Osei",
+          "2 52 01 69 991 313 73"
+        ]
+      }
+    ],
+    "ms_per_item": 0.5
+  },
+  {
+    "adapter": "claude-code-redact (+pii)",
+    "items": 80,
+    "items_leaked": 73,
+    "values_total": 314,
+    "values_leaked": 194,
+    "blocked": 0,
+    "negatives": 40,
+    "false_alarms": 7,
+    "by_category": {
+      "negative": {
+        "items": 40,
+        "leaked": 7
+      },
+      "whatsapp": {
+        "items": 3,
+        "leaked": 3
+      },
+      "discord": {
+        "items": 3,
+        "leaked": 2
+      },
+      "figma-comments": {
+        "items": 3,
+        "leaked": 3
+      },
+      "confluence": {
+        "items": 3,
+        "leaked": 3
+      },
+      "notion": {
+        "items": 3,
+        "leaked": 3
+      },
+      "call-center": {
+        "items": 3,
+        "leaked": 3
+      },
+      "miro-comments": {
+        "items": 2,
+        "leaked": 2
+      },
+      "vercel-log": {
+        "items": 2,
+        "leaked": 2
+      },
+      "1password-cli": {
+        "items": 2,
+        "leaked": 1
+      },
+      "pip-log": {
+        "items": 2,
+        "leaked": 2
+      },
+      "dockerfile": {
+        "items": 2,
+        "leaked": 1
+      },
+      "npm-log": {
+        "items": 2,
+        "leaked": 1
+      },
+      "vault-cli": {
+        "items": 2,
+        "leaked": 2
+      },
+      "docker-compose": {
+        "items": 2,
+        "leaked": 1
+      },
+      "k8s-audit": {
+        "items": 3,
+        "leaked": 3
+      },
+      "voicemail": {
+        "items": 2,
+        "leaked": 2
+      },
+      "utility-bill": {
+        "items": 2,
+        "leaked": 2
+      },
+      "immigration": {
+        "items": 2,
+        "leaked": 2
+      },
+      "payroll": {
+        "items": 3,
+        "leaked": 3
+      },
+      "adoption": {
+        "items": 2,
+        "leaked": 2
+      },
+      "rental-app": {
+        "items": 2,
+        "leaked": 2
+      },
+      "clinical-crf": {
+        "items": 2,
+        "leaked": 2
+      },
+      "netlify-log": {
+        "items": 2,
+        "leaked": 1
+      },
+      "trello": {
+        "items": 3,
+        "leaked": 2
+      },
+      "gdocs-comments": {
+        "items": 3,
+        "leaked": 3
+      },
+      "asana": {
+        "items": 2,
+        "leaked": 2
+      },
+      "azure-activity": {
+        "items": 2,
+        "leaked": 2
+      },
+      "gcp-audit": {
+        "items": 2,
+        "leaked": 2
+      },
+      "cloudtrail": {
+        "items": 3,
+        "leaked": 3
+      },
+      "bigquery-history": {
+        "items": 3,
+        "leaked": 3
+      },
+      "snowflake-history": {
+        "items": 3,
+        "leaked": 3
+      },
+      "firebase-rtdb": {
+        "items": 2,
+        "leaked": 2
+      },
+      "redis-monitor": {
+        "items": 3,
+        "leaked": 3
+      }
+    },
+    "leaks": [
+      {
+        "id": "h6-003",
+        "values": [
+          "Ravi R. Menon",
+          "1618 Wexford Lane, Raleigh, NC 27601",
+          "05/04/1991"
+        ]
+      },
+      {
+        "id": "h6-004",
+        "values": [
+          "ravi.menon",
+          "Emma Johansson"
+        ]
+      },
+      {
+        "id": "h6-011",
+        "values": [
+          "eleni.papadopoulou6",
+          "\u0395\u03bb\u03ad\u03bd\u03b7 \u03a0\u03b1\u03c0\u03b1\u03b4\u03bf\u03c0\u03bf\u03cd\u03bb\u03bf\u03c5",
+          "+49 89 733943",
+          "Oscar Michael Lindgren"
+        ]
+      },
+      {
+        "id": "h6-012",
+        "values": [
+          "Ava Rossi",
+          "+49 172 4792710",
+          "Kastanienallee 42, 10435 Berlin Apt 223",
+          "68102250296"
+        ]
+      },
+      {
+        "id": "h6-013",
+        "values": [
+          "robert.adeyinka",
+          "Robert Adeyinka"
+        ]
+      },
+      {
+        "id": "h6-015",
+        "values": [
+          "Joy Adeyemi"
+        ]
+      },
+      {
+        "id": "h6-016",
+        "values": [
+          "Nia Mensah",
+          "1982-05-10",
+          "Robert J. Adeyinka",
+          "28 Mar 1984",
+          "Camila Torres",
+          "25.06.1995"
+        ]
+      },
+      {
+        "id": "h6-020",
+        "values": [
+          "Carlos Mendez",
+          "Anika Marie Sharma"
+        ]
+      },
+      {
+        "id": "h6-021",
+        "values": [
+          "thomas.berger",
+          "Thomas Berger",
+          "107.107.206.111"
+        ]
+      },
+      {
+        "id": "h6-023",
+        "values": [
+          "CS 45 74 46 B",
+          "+44 7561 554834",
+          "Sofia Papadopoulos"
+        ]
+      },
+      {
+        "id": "h6-024",
+        "values": [
+          "Yuki Mori"
+        ]
+      },
+      {
+        "id": "h6-026",
+        "values": [
+          "Tara Grace Desai",
+          "tara.desai10",
+          "216.203.236.135",
+          "Julia Kowalska"
+        ]
+      },
+      {
+        "id": "h6-027",
+        "values": [
+          "yossi.cohen56",
+          "\u05d9\u05d5\u05e1\u05d9 \u05db\u05d4\u05df",
+          "\u0623\u062d\u0645\u062f \u062d\u0633\u0646"
+        ]
+      },
+      {
+        "id": "h6-030",
+        "values": [
+          "Peter Novak",
+          "+44 7994 425212",
+          "Jennifer J. Park",
+          "+44 7221 797418",
+          "Liam O'Connor",
+          "+44 7922 552768"
+        ]
+      },
+      {
+        "id": "h6-032",
+        "values": [
+          "Diego J. Ramirez",
+          "+1 213-\n612-5357",
+          "diego.ramirez"
+        ]
+      },
+      {
+        "id": "h6-040",
+        "values": [
+          "Camila James Torres",
+          "10/26/1982"
+        ]
+      },
+      {
+        "id": "h6-041",
+        "values": [
+          "sk-live-h3r2jk8qqtGJyJBSYTiH3vTL"
+        ]
+      },
+      {
+        "id": "h6-044",
+        "values": [
+          "haruto.sato32",
+          "Brook?c6Syb624"
+        ]
+      },
+      {
+        "id": "h6-045",
+        "values": [
+          "jennifer.park46",
+          "p%40ssw0rd%2128"
+        ]
+      },
+      {
+        "id": "h6-061",
+        "values": [
+          "meilin.zhou",
+          "Salt_lVi9UMB45"
+        ]
+      },
+      {
+        "id": "h6-062",
+        "values": [
+          "chen.wei"
+        ]
+      },
+      {
+        "id": "h6-066",
+        "values": [
+          "bWljaGFlbC5jaGVuMjE=",
+          "michael.chen21"
+        ]
+      },
+      {
+        "id": "h6-067",
+        "values": [
+          "Elena Petrova",
+          "AC-924089"
+        ]
+      },
+      {
+        "id": "h6-069",
+        "values": [
+          "169.146.64.170"
+        ]
+      },
+      {
+        "id": "h6-073",
+        "values": [
+          "sarah.lindqvist35",
+          "Kessler?dlbRswI01j24",
+          "Sarah Michael Lindqvist"
+        ]
+      },
+      {
+        "id": "h6-074",
+        "values": [
+          "Noah Schmidt",
+          "1998-01-10",
+          "MRN-9477414",
+          "428225031"
+        ]
+      },
+      {
+        "id": "h6-078",
+        "values": [
+          "rafael.costa30"
+        ]
+      },
+      {
+        "id": "h6-081",
+        "values": [
+          "AC-152451",
+          "Tomas Marie Novak",
+          "7369 Sunset Ridge Dr, Miami, FL 33131",
+          "D853-1676-541"
+        ]
+      },
+      {
+        "id": "h6-087",
+        "values": [
+          "\u4f50\u85e4\u7f8e\u54b2",
+          "M83784357",
+          "18.07.1961"
+        ]
+      },
+      {
+        "id": "h6-090",
+        "values": [
+          "Grace Mwangi",
+          "SA 71 74 57 B",
+          "8 Willow Court, Manchester M14 5PQ Suite 73"
+        ]
+      },
+      {
+        "id": "h6-091",
+        "values": [
+          "Linda Fischer",
+          "Mei Ann Lin Zhou",
+          "88 Queen Street East, Toronto, ON M5C 1P6 Unit 594",
+          "553296021"
+        ]
+      },
+      {
+        "id": "h6-094",
+        "values": [
+          "\u0414\u043c\u0438\u0442\u0440\u0438\u0439 \u0421\u043e\u043a\u043e\u043b\u043e\u0432",
+          "D21496944",
+          "1992-05-04",
+          "WE 32 48 97 A",
+          "8 Willow Court, Manchester M14 5PQ Suite 836",
+          "+44 7801 997035",
+          "Emma David Johansson"
+        ]
+      },
+      {
+        "id": "h6-096",
+        "values": [
+          "Erik Johansson",
+          "08/23/1965",
+          "5757 1318 7711",
+          "9291566319"
+        ]
+      },
+      {
+        "id": "h6-097",
+        "values": [
+          "Sofia Kai Papadopoulos",
+          "597 120 768",
+          "45 Chapel Street, Melbourne VIC 3181 Unit 160"
+        ]
+      },
+      {
+        "id": "h6-103",
+        "values": [
+          "Kenji Kai Nakamura",
+          "Rua das Palmeiras, 230, Sao Paulo, SP 01311-000 Suite 712"
+        ]
+      },
+      {
+        "id": "h6-106",
+        "values": [
+          "Tara Desai",
+          "CA903-8440-720",
+          "Av. Insurgentes Sur 1457, Ciudad de Mexico, CDMX 03920 Suite 741",
+          "11 Oct 1998"
+        ]
+      },
+      {
+        "id": "h6-112",
+        "values": [
+          "\u674e\u5a1c",
+          "8575 Harbor View Way, Chicago, IL 60614",
+          "12.09.1981"
+        ]
+      },
+      {
+        "id": "h6-115",
+        "values": [
+          "Omar K. Farouk",
+          "09.09.1982",
+          "NC682-8834-130",
+          "1536 Wexford Lane, Miami, FL 33131"
+        ]
+      },
+      {
+        "id": "h6-116",
+        "values": [
+          "MRN-9161569",
+          "24 Oct 1983",
+          "8421126348",
+          "Faith Okonkwo"
+        ]
+      },
+      {
+        "id": "h6-118",
+        "values": [
+          "Anna Mueller"
+        ]
+      },
+      {
+        "id": "h6-119",
+        "values": [
+          "Hope Delacroix",
+          "2 Apr 1978",
+          "Will Thornton",
+          "1970-03-21",
+          "7230 Sunset Ridge Dr, Portland, OR 97205",
+          "Thomas Kai Berger"
+        ]
+      },
+      {
+        "id": "h6-007",
+        "values": [
+          "Kwame Mensah"
+        ]
+      },
+      {
+        "id": "h6-008",
+        "values": [
+          "Olivia Dubois",
+          "olivia.dubois42"
+        ]
+      },
+      {
+        "id": "h6-010",
+        "values": [
+          "Kenji Nakamura",
+          "Lisa Wang"
+        ]
+      },
+      {
+        "id": "h6-014",
+        "values": [
+          "Jose Garcia",
+          "S25376409",
+          "15 Apr 1968"
+        ]
+      },
+      {
+        "id": "h6-018",
+        "values": [
+          "Rafael Costa",
+          "1975-07-20",
+          "Kwame Marie Mensah"
+        ]
+      },
+      {
+        "id": "h6-019",
+        "values": [
+          "5554573413",
+          "MRN-8416615",
+          "2 41 07 44 767 716 12"
+        ]
+      },
+      {
+        "id": "h6-022",
+        "values": [
+          "viktor.petrov20",
+          "Viktor Grace Petrov"
+        ]
+      },
+      {
+        "id": "h6-028",
+        "values": [
+          "Andrei Grace Popov",
+          "102 Sunset Ridge Dr, Chicago, IL 60614",
+          "CXCVT8403Z"
+        ]
+      },
+      {
+        "id": "h6-039",
+        "values": [
+          "Tara Lee Desai",
+          "45 Chapel Street, Melbourne VIC 3181, Apt. 429",
+          "513 339 233"
+        ]
+      },
+      {
+        "id": "h6-042",
+        "values": [
+          "stharborlight793"
+        ]
+      },
+      {
+        "id": "h6-043",
+        "values": [
+          "13.20.238.239",
+          "layla.hassan"
+        ]
+      },
+      {
+        "id": "h6-046",
+        "values": [
+          "+49 179 8913280",
+          "Tara Kai Desai",
+          "51056538334",
+          "B3XmlNqd1YeWPXiy5OVMsvS4TRULnWi1ODRtti7Bq4GHgEcM/ffnl+Ch05Z94oJYyMcVTEQtIAtku9jd10HBZg=="
+        ]
+      },
+      {
+        "id": "h6-047",
+        "values": [
+          "182.130.161.248",
+          "priya.raghavan"
+        ]
+      },
+      {
+        "id": "h6-054",
+        "values": [
+          "kwame.mensah@nordwind-medizin.de"
+        ]
+      },
+      {
+        "id": "h6-059",
+        "values": [
+          "64.172.3.63",
+          "Kenji S. Nakamura"
+        ]
+      },
+      {
+        "id": "h6-060",
+        "values": [
+          "8.230.66.23",
+          "aisha.bello"
+        ]
+      },
+      {
+        "id": "h6-064",
+        "values": [
+          "nadia.rahal",
+          "sk-live-omUJYidiHHllA0emYn14nxOt",
+          "Julia K. Kowalska",
+          "23.31.205.100"
+        ]
+      },
+      {
+        "id": "h6-065",
+        "values": [
+          "thomas.berger25"
+        ]
+      },
+      {
+        "id": "h6-068",
+        "values": [
+          "oscar.lindgren"
+        ]
+      },
+      {
+        "id": "h6-077",
+        "values": [
+          "AmkevZmzfDgUbJ5a"
+        ]
+      },
+      {
+        "id": "h6-079",
+        "values": [
+          "sk-live-Cx3PKpOiwN2o3Cy1woUQ6Hn5"
+        ]
+      },
+      {
+        "id": "h6-082",
+        "values": [
+          "noah.schmidt13",
+          "151.10.101.20"
+        ]
+      },
+      {
+        "id": "h6-085",
+        "values": [
+          "mohammed.haddad",
+          "Mohammed M. Haddad",
+          "05.07.2001"
+        ]
+      },
+      {
+        "id": "h6-086",
+        "values": [
+          "IUUQX6875F",
+          "H.No. 12-34, Banjara Hills, Hyderabad 500034 Apt 719",
+          "6917 1443 3216"
+        ]
+      },
+      {
+        "id": "h6-098",
+        "values": [
+          "2 48 03 06 455 708 34",
+          "Diego Ramirez"
+        ]
+      },
+      {
+        "id": "h6-099",
+        "values": [
+          "Anika J. Sharma",
+          "16.06.1966"
+        ]
+      },
+      {
+        "id": "h6-101",
+        "values": [
+          "175.172.228.177",
+          "c7ca95fb1e60cc2119a98be9"
+        ]
+      },
+      {
+        "id": "h6-105",
+        "values": [
+          "170.106.221.86",
+          "Ember%0eWzV6g4lU59",
+          "priya.raghavan28"
+        ]
+      },
+      {
+        "id": "h6-108",
+        "values": [
+          "samuel.osei76",
+          "Samuel James Osei",
+          "2 52 01 69 991 313 73"
+        ]
+      },
+      {
+        "id": "h6-111",
+        "values": [
+          "samuel.osei8",
+          "217765296",
+          "450 Rue Saint-Pierre, Montreal, QC H2Y 2M9, Apt. 761"
+        ]
+      },
+      {
+        "id": "h6-113",
+        "values": [
+          "47.51.152.96",
+          "andrei.popov40",
+          "975 407 833"
+        ]
+      },
+      {
+        "id": "h6-120",
+        "values": [
+          "tomas.novak96",
+          "25271586145"
+        ]
+      }
+    ],
+    "ms_per_item": 0.1
+  },
+  {
+    "adapter": "claude-code-redact (secrets)",
+    "items": 80,
+    "items_leaked": 76,
+    "values_total": 314,
+    "values_leaked": 278,
+    "blocked": 0,
+    "negatives": 40,
+    "false_alarms": 1,
+    "by_category": {
+      "negative": {
+        "items": 40,
+        "leaked": 1
+      },
+      "whatsapp": {
+        "items": 3,
+        "leaked": 3
+      },
+      "discord": {
+        "items": 3,
+        "leaked": 3
+      },
+      "figma-comments": {
+        "items": 3,
+        "leaked": 3
+      },
+      "confluence": {
+        "items": 3,
+        "leaked": 3
+      },
+      "notion": {
+        "items": 3,
+        "leaked": 3
+      },
+      "call-center": {
+        "items": 3,
+        "leaked": 3
+      },
+      "miro-comments": {
+        "items": 2,
+        "leaked": 2
+      },
+      "vercel-log": {
+        "items": 2,
+        "leaked": 2
+      },
+      "1password-cli": {
+        "items": 2,
+        "leaked": 1
+      },
+      "pip-log": {
+        "items": 2,
+        "leaked": 2
+      },
+      "dockerfile": {
+        "items": 2,
+        "leaked": 1
+      },
+      "npm-log": {
+        "items": 2,
+        "leaked": 1
+      },
+      "vault-cli": {
+        "items": 2,
+        "leaked": 2
+      },
+      "docker-compose": {
+        "items": 2,
+        "leaked": 1
+      },
+      "k8s-audit": {
+        "items": 3,
+        "leaked": 3
+      },
+      "voicemail": {
+        "items": 2,
+        "leaked": 2
+      },
+      "utility-bill": {
+        "items": 2,
+        "leaked": 2
+      },
+      "immigration": {
+        "items": 2,
+        "leaked": 2
+      },
+      "payroll": {
+        "items": 3,
+        "leaked": 3
+      },
+      "adoption": {
+        "items": 2,
+        "leaked": 2
+      },
+      "rental-app": {
+        "items": 2,
+        "leaked": 2
+      },
+      "clinical-crf": {
+        "items": 2,
+        "leaked": 2
+      },
+      "netlify-log": {
+        "items": 2,
+        "leaked": 2
+      },
+      "trello": {
+        "items": 3,
+        "leaked": 3
+      },
+      "gdocs-comments": {
+        "items": 3,
+        "leaked": 3
+      },
+      "asana": {
+        "items": 2,
+        "leaked": 2
+      },
+      "azure-activity": {
+        "items": 2,
+        "leaked": 2
+      },
+      "gcp-audit": {
+        "items": 2,
+        "leaked": 2
+      },
+      "cloudtrail": {
+        "items": 3,
+        "leaked": 3
+      },
+      "bigquery-history": {
+        "items": 3,
+        "leaked": 3
+      },
+      "snowflake-history": {
+        "items": 3,
+        "leaked": 3
+      },
+      "firebase-rtdb": {
+        "items": 2,
+        "leaked": 2
+      },
+      "redis-monitor": {
+        "items": 3,
+        "leaked": 3
+      }
+    },
+    "leaks": [
+      {
+        "id": "h6-003",
+        "values": [
+          "Ravi R. Menon",
+          "1618 Wexford Lane, Raleigh, NC 27601",
+          "05/04/1991",
+          "+55 21 4083-2897"
+        ]
+      },
+      {
+        "id": "h6-004",
+        "values": [
+          "ravi.menon",
+          "+81 3-2879-2392",
+          "ravi.menon@fernhill.co",
+          "Emma Johansson",
+          "+234 1 732 1165"
+        ]
+      },
+      {
+        "id": "h6-005",
+        "values": [
+          "mohammed.haddad@harborlight-labs.io"
+        ]
+      },
+      {
+        "id": "h6-011",
+        "values": [
+          "eleni.papadopoulou6",
+          "\u0395\u03bb\u03ad\u03bd\u03b7 \u03a0\u03b1\u03c0\u03b1\u03b4\u03bf\u03c0\u03bf\u03cd\u03bb\u03bf\u03c5",
+          "+49 89 733943",
+          "Oscar Michael Lindgren"
+        ]
+      },
+      {
+        "id": "h6-012",
+        "values": [
+          "Ava Rossi",
+          "ava.rossi4@driftmark.app",
+          "+49 172 4792710",
+          "Kastanienallee 42, 10435 Berlin Apt 223",
+          "DE069X7X2XBEP8Z9F121UZ",
+          "68102250296"
+        ]
+      },
+      {
+        "id": "h6-013",
+        "values": [
+          "robert.adeyinka",
+          "Robert Adeyinka",
+          "robert.adeyinka@saltspire.net"
+        ]
+      },
+      {
+        "id": "h6-015",
+        "values": [
+          "Joy Adeyemi",
+          "5740 5530 3000 8322",
+          "joy.adeyemi@driftmark.app",
+          "+52 55 3891 7724"
+        ]
+      },
+      {
+        "id": "h6-016",
+        "values": [
+          "Nia Mensah",
+          "nia.mensah@lumenarc.tech",
+          "+1 954-820-2791",
+          "1982-05-10",
+          "Robert J. Adeyinka",
+          "robert.adeyinka41@copperline.systems",
+          "(617) 890-0948",
+          "28 Mar 1984",
+          "Camila Torres",
+          "camila.torres54@brightpath.dev",
+          "+1 980-817-3494",
+          "25.06.1995"
+        ]
+      },
+      {
+        "id": "h6-020",
+        "values": [
+          "Carlos Mendez",
+          "+55 11 99097-2277",
+          "Anika Marie Sharma"
+        ]
+      },
+      {
+        "id": "h6-021",
+        "values": [
+          "thomas.berger",
+          "Thomas Berger",
+          "107.107.206.111",
+          "thomas.berger@saltspire.net"
+        ]
+      },
+      {
+        "id": "h6-023",
+        "values": [
+          "CS 45 74 46 B",
+          "+44 7561 554834",
+          "Sofia Papadopoulos"
+        ]
+      },
+      {
+        "id": "h6-024",
+        "values": [
+          "Yuki Mori",
+          "5318453348233500",
+          "yuki.mori@harborlight-labs.io",
+          "+81 90-8323-1474"
+        ]
+      },
+      {
+        "id": "h6-026",
+        "values": [
+          "Tara Grace Desai",
+          "tara.desai10",
+          "tara.desai10@copperline.systems",
+          "216.203.236.135",
+          "Julia Kowalska"
+        ]
+      },
+      {
+        "id": "h6-027",
+        "values": [
+          "yossi.cohen56",
+          "\u05d9\u05d5\u05e1\u05d9 \u05db\u05d4\u05df",
+          "+81 90-3710-9992",
+          "yossi.cohen56@brightforge.io",
+          "\u0623\u062d\u0645\u062f \u062d\u0633\u0646"
+        ]
+      },
+      {
+        "id": "h6-030",
+        "values": [
+          "Peter Novak",
+          "peter.novak@brightforge.io",
+          "+44 7994 425212",
+          "Jennifer J. Park",
+          "jennifer.park46@copperline.systems",
+          "+44 7221 797418",
+          "Liam O'Connor",
+          "liam.oconnor86@brightforge.io",
+          "+44 7922 552768"
+        ]
+      },
+      {
+        "id": "h6-032",
+        "values": [
+          "Diego J. Ramirez",
+          "diego.ramirez@vantagefield.org",
+          "+1 213-\n612-5357",
+          "diego.ramirez"
+        ]
+      },
+      {
+        "id": "h6-040",
+        "values": [
+          "Camila James Torres",
+          "118-65-8813",
+          "10/26/1982",
+          "+52 55 9022 3806"
+        ]
+      },
+      {
+        "id": "h6-041",
+        "values": [
+          "sk-live-h3r2jk8qqtGJyJBSYTiH3vTL",
+          "aisha.bello@saltspire.net"
+        ]
+      },
+      {
+        "id": "h6-044",
+        "values": [
+          "haruto.sato32",
+          "Brook?c6Syb624",
+          "haruto.sato32@nordwind-medizin.de",
+          "+1 (480) 758-1282"
+        ]
+      },
+      {
+        "id": "h6-045",
+        "values": [
+          "jennifer.park46",
+          "p%40ssw0rd%2128"
+        ]
+      },
+      {
+        "id": "h6-061",
+        "values": [
+          "meilin.zhou",
+          "Salt_lVi9UMB45"
+        ]
+      },
+      {
+        "id": "h6-062",
+        "values": [
+          "chen.wei"
+        ]
+      },
+      {
+        "id": "h6-066",
+        "values": [
+          "bWljaGFlbC5jaGVuMjE=",
+          "michael.chen21"
+        ]
+      },
+      {
+        "id": "h6-067",
+        "values": [
+          "Elena Petrova",
+          "(213) 583-0787",
+          "AC-924089"
+        ]
+      },
+      {
+        "id": "h6-069",
+        "values": [
+          "169.146.64.170",
+          "isabelle.fontaine95@fernhill.co"
+        ]
+      },
+      {
+        "id": "h6-073",
+        "values": [
+          "sarah.lindqvist35",
+          "Kessler?dlbRswI01j24",
+          "Sarah Michael Lindqvist",
+          "+61 457 940 643"
+        ]
+      },
+      {
+        "id": "h6-074",
+        "values": [
+          "Noah Schmidt",
+          "1998-01-10",
+          "MRN-9477414",
+          "428225031",
+          "+1 647-948-8454"
+        ]
+      },
+      {
+        "id": "h6-078",
+        "values": [
+          "rafael.costa30",
+          "rafael.costa30@fernhill.co"
+        ]
+      },
+      {
+        "id": "h6-081",
+        "values": [
+          "AC-152451",
+          "Tomas Marie Novak",
+          "7369 Sunset Ridge Dr, Miami, FL 33131",
+          "(650) 526-2410",
+          "D853-1676-541"
+        ]
+      },
+      {
+        "id": "h6-087",
+        "values": [
+          "\u4f50\u85e4\u7f8e\u54b2",
+          "M83784357",
+          "18.07.1961",
+          "sato.misaki51@nordwind-medizin.de",
+          "+234 1 543 6546"
+        ]
+      },
+      {
+        "id": "h6-090",
+        "values": [
+          "Grace Mwangi",
+          "SA 71 74 57 B",
+          "8 Willow Court, Manchester M14 5PQ Suite 73",
+          "GB68F8QDSISCKD20HS5PQT"
+        ]
+      },
+      {
+        "id": "h6-091",
+        "values": [
+          "Linda Fischer",
+          "Mei Ann Lin Zhou",
+          "meilin.zhou79@brightpath.dev",
+          "+1 514-556-9378",
+          "88 Queen Street East, Toronto, ON M5C 1P6 Unit 594",
+          "553296021"
+        ]
+      },
+      {
+        "id": "h6-094",
+        "values": [
+          "\u0414\u043c\u0438\u0442\u0440\u0438\u0439 \u0421\u043e\u043a\u043e\u043b\u043e\u0432",
+          "D21496944",
+          "1992-05-04",
+          "WE 32 48 97 A",
+          "8 Willow Court, Manchester M14 5PQ Suite 836",
+          "+44 7801 997035",
+          "Emma David Johansson"
+        ]
+      },
+      {
+        "id": "h6-096",
+        "values": [
+          "Erik Johansson",
+          "08/23/1965",
+          "+91 99904 37365",
+          "THVGH2718A",
+          "5757 1318 7711",
+          "9291566319",
+          "erik.johansson@brightpath.dev"
+        ]
+      },
+      {
+        "id": "h6-097",
+        "values": [
+          "Sofia Kai Papadopoulos",
+          "597 120 768",
+          "45 Chapel Street, Melbourne VIC 3181 Unit 160",
+          "+61 416 772 117"
+        ]
+      },
+      {
+        "id": "h6-102",
+        "values": [
+          "haruto.sato@vantagefield.org"
+        ]
+      },
+      {
+        "id": "h6-103",
+        "values": [
+          "Kenji Kai Nakamura",
+          "Rua das Palmeiras, 230, Sao Paulo, SP 01311-000 Suite 712",
+          "+55 11 97248-3845"
+        ]
+      },
+      {
+        "id": "h6-106",
+        "values": [
+          "Tara Desai",
+          "CA903-8440-720",
+          "Av. Insurgentes Sur 1457, Ciudad de Mexico, CDMX 03920 Suite 741",
+          "+52 55 3407 9465",
+          "11 Oct 1998"
+        ]
+      },
+      {
+        "id": "h6-112",
+        "values": [
+          "\u674e\u5a1c",
+          "724-33-3516",
+          "8575 Harbor View Way, Chicago, IL 60614",
+          "12.09.1981"
+        ]
+      },
+      {
+        "id": "h6-115",
+        "values": [
+          "Omar K. Farouk",
+          "09.09.1982",
+          "426-06-1362",
+          "NC682-8834-130",
+          "1536 Wexford Lane, Miami, FL 33131",
+          "(619) 520-5306",
+          "omar.farouk26@saltspire.net"
+        ]
+      },
+      {
+        "id": "h6-116",
+        "values": [
+          "MRN-9161569",
+          "24 Oct 1983",
+          "+1 (212) 278-3477",
+          "8421126348",
+          "Faith Okonkwo"
+        ]
+      },
+      {
+        "id": "h6-118",
+        "values": [
+          "Anna Mueller",
+          "anna.mueller@quantumbrook.io"
+        ]
+      },
+      {
+        "id": "h6-119",
+        "values": [
+          "Hope Delacroix",
+          "2 Apr 1978",
+          "Will Thornton",
+          "1970-03-21",
+          "7230 Sunset Ridge Dr, Portland, OR 97205",
+          "(512) 818-7685",
+          "Thomas Kai Berger"
+        ]
+      },
+      {
+        "id": "h6-007",
+        "values": [
+          "Kwame Mensah",
+          "+91 96335 72263",
+          "kwame.mensah@brightpath.dev"
+        ]
+      },
+      {
+        "id": "h6-008",
+        "values": [
+          "Olivia Dubois",
+          "olivia.dubois42"
+        ]
+      },
+      {
+        "id": "h6-009",
+        "values": [
+          "yuki.tanaka59@kessler-works.com"
+        ]
+      },
+      {
+        "id": "h6-010",
+        "values": [
+          "Kenji Nakamura",
+          "julia.kowalska@fernhill.co",
+          "Lisa Wang"
+        ]
+      },
+      {
+        "id": "h6-014",
+        "values": [
+          "Jose Garcia",
+          "S25376409",
+          "15 Apr 1968"
+        ]
+      },
+      {
+        "id": "h6-018",
+        "values": [
+          "Rafael Costa",
+          "674-07-5916",
+          "1975-07-20",
+          "Kwame Marie Mensah"
+        ]
+      },
+      {
+        "id": "h6-019",
+        "values": [
+          "5554573413",
+          "MRN-8416615",
+          "mateo.hernandez48@harborlight-labs.io",
+          "2 41 07 44 767 716 12",
+          "+234 1 580 7688"
+        ]
+      },
+      {
+        "id": "h6-022",
+        "values": [
+          "viktor.petrov20",
+          "Viktor Grace Petrov"
+        ]
+      },
+      {
+        "id": "h6-028",
+        "values": [
+          "Andrei Grace Popov",
+          "102 Sunset Ridge Dr, Chicago, IL 60614",
+          "+1 (619) 590-8975",
+          "CXCVT8403Z"
+        ]
+      },
+      {
+        "id": "h6-039",
+        "values": [
+          "Tara Lee Desai",
+          "45 Chapel Street, Melbourne VIC 3181, Apt. 429",
+          "+61 491 114 666",
+          "513 339 233"
+        ]
+      },
+      {
+        "id": "h6-042",
+        "values": [
+          "stharborlight793"
+        ]
+      },
+      {
+        "id": "h6-043",
+        "values": [
+          "layla.hassan@nordwind-medizin.de",
+          "13.20.238.239",
+          "layla.hassan"
+        ]
+      },
+      {
+        "id": "h6-046",
+        "values": [
+          "tara.desai5@copperline.systems",
+          "+49 179 8913280",
+          "Tara Kai Desai",
+          "51056538334",
+          "B3XmlNqd1YeWPXiy5OVMsvS4TRULnWi1ODRtti7Bq4GHgEcM/ffnl+Ch05Z94oJYyMcVTEQtIAtku9jd10HBZg=="
+        ]
+      },
+      {
+        "id": "h6-047",
+        "values": [
+          "182.130.161.248",
+          "priya.raghavan",
+          "+1 617-628-2450"
+        ]
+      },
+      {
+        "id": "h6-054",
+        "values": [
+          "kwame.mensah@nordwind-medizin.de"
+        ]
+      },
+      {
+        "id": "h6-059",
+        "values": [
+          "64.172.3.63",
+          "Kenji S. Nakamura",
+          "kenji.nakamura60@vantagefield.org"
+        ]
+      },
+      {
+        "id": "h6-060",
+        "values": [
+          "8.230.66.23",
+          "aisha.bello"
+        ]
+      },
+      {
+        "id": "h6-064",
+        "values": [
+          "nadia.rahal",
+          "sk-live-omUJYidiHHllA0emYn14nxOt",
+          "Julia K. Kowalska",
+          "23.31.205.100"
+        ]
+      },
+      {
+        "id": "h6-065",
+        "values": [
+          "thomas.berger25"
+        ]
+      },
+      {
+        "id": "h6-068",
+        "values": [
+          "oscar.lindgren"
+        ]
+      },
+      {
+        "id": "h6-077",
+        "values": [
+          "AmkevZmzfDgUbJ5a",
+          "yuki.tanaka@lumenarc.tech"
+        ]
+      },
+      {
+        "id": "h6-079",
+        "values": [
+          "sk-live-Cx3PKpOiwN2o3Cy1woUQ6Hn5"
+        ]
+      },
+      {
+        "id": "h6-082",
+        "values": [
+          "noah.schmidt13",
+          "noah.schmidt13@vantagefield.org",
+          "151.10.101.20"
+        ]
+      },
+      {
+        "id": "h6-085",
+        "values": [
+          "mohammed.haddad",
+          "Mohammed M. Haddad",
+          "323-18-1273",
+          "05.07.2001"
+        ]
+      },
+      {
+        "id": "h6-086",
+        "values": [
+          "dmitri.volkov23@copperline.systems",
+          "IUUQX6875F",
+          "H.No. 12-34, Banjara Hills, Hyderabad 500034 Apt 719",
+          "6917 1443 3216"
+        ]
+      },
+      {
+        "id": "h6-098",
+        "values": [
+          "FR05BPA5RE1NR7GGWTB9BM4W2E2",
+          "2 48 03 06 455 708 34",
+          "Diego Ramirez"
+        ]
+      },
+      {
+        "id": "h6-099",
+        "values": [
+          "Anika J. Sharma",
+          "16.06.1966",
+          "+91 96748 38086",
+          "9479 6185 1766"
+        ]
+      },
+      {
+        "id": "h6-101",
+        "values": [
+          "175.172.228.177",
+          "c7ca95fb1e60cc2119a98be9"
+        ]
+      },
+      {
+        "id": "h6-105",
+        "values": [
+          "170.106.221.86",
+          "Ember%0eWzV6g4lU59",
+          "priya.raghavan28"
+        ]
+      },
+      {
+        "id": "h6-108",
+        "values": [
+          "samuel.osei76",
+          "Samuel James Osei",
+          "2 52 01 69 991 313 73"
+        ]
+      },
+      {
+        "id": "h6-111",
+        "values": [
+          "samuel.osei8",
+          "217765296",
+          "450 Rue Saint-Pierre, Montreal, QC H2Y 2M9, Apt. 761",
+          "+1 604-927-9372"
+        ]
+      },
+      {
+        "id": "h6-113",
+        "values": [
+          "47.51.152.96",
+          "andrei.popov40",
+          "peter.novak@nordwind-medizin.de",
+          "(510) 340-3412",
+          "5298159743394284",
+          "975 407 833"
+        ]
+      },
+      {
+        "id": "h6-120",
+        "values": [
+          "tomas.novak96",
+          "tomas.novak96@lumenarc.tech",
+          "25271586145"
+        ]
+      }
+    ],
+    "ms_per_item": 0.1
+  },
+  {
+    "adapter": "cloakroom full",
+    "items": 80,
+    "items_leaked": 3,
+    "values_total": 314,
+    "values_leaked": 3,
+    "blocked": 0,
+    "negatives": 40,
+    "false_alarms": 12,
+    "by_category": {
+      "negative": {
+        "items": 40,
+        "leaked": 12
+      },
+      "whatsapp": {
+        "items": 3,
+        "leaked": 0
+      },
+      "discord": {
+        "items": 3,
+        "leaked": 0
+      },
+      "figma-comments": {
+        "items": 3,
+        "leaked": 0
+      },
+      "confluence": {
+        "items": 3,
+        "leaked": 0
+      },
+      "notion": {
+        "items": 3,
+        "leaked": 0
+      },
+      "call-center": {
+        "items": 3,
+        "leaked": 0
+      },
+      "miro-comments": {
+        "items": 2,
+        "leaked": 0
+      },
+      "vercel-log": {
+        "items": 2,
+        "leaked": 0
+      },
+      "1password-cli": {
+        "items": 2,
+        "leaked": 0
+      },
+      "pip-log": {
+        "items": 2,
+        "leaked": 0
+      },
+      "dockerfile": {
+        "items": 2,
+        "leaked": 0
+      },
+      "npm-log": {
+        "items": 2,
+        "leaked": 0
+      },
+      "vault-cli": {
+        "items": 2,
+        "leaked": 0
+      },
+      "docker-compose": {
+        "items": 2,
+        "leaked": 0
+      },
+      "k8s-audit": {
+        "items": 3,
+        "leaked": 0
+      },
+      "voicemail": {
+        "items": 2,
+        "leaked": 0
+      },
+      "utility-bill": {
+        "items": 2,
+        "leaked": 1
+      },
+      "immigration": {
+        "items": 2,
+        "leaked": 1
+      },
+      "payroll": {
+        "items": 3,
+        "leaked": 0
+      },
+      "adoption": {
+        "items": 2,
+        "leaked": 0
+      },
+      "rental-app": {
+        "items": 2,
+        "leaked": 0
+      },
+      "clinical-crf": {
+        "items": 2,
+        "leaked": 0
+      },
+      "netlify-log": {
+        "items": 2,
+        "leaked": 0
+      },
+      "trello": {
+        "items": 3,
+        "leaked": 0
+      },
+      "gdocs-comments": {
+        "items": 3,
+        "leaked": 0
+      },
+      "asana": {
+        "items": 2,
+        "leaked": 0
+      },
+      "azure-activity": {
+        "items": 2,
+        "leaked": 0
+      },
+      "gcp-audit": {
+        "items": 2,
+        "leaked": 1
+      },
+      "cloudtrail": {
+        "items": 3,
+        "leaked": 0
+      },
+      "bigquery-history": {
+        "items": 3,
+        "leaked": 0
+      },
+      "snowflake-history": {
+        "items": 3,
+        "leaked": 0
+      },
+      "firebase-rtdb": {
+        "items": 2,
+        "leaked": 0
+      },
+      "redis-monitor": {
+        "items": 3,
+        "leaked": 0
+      }
+    },
+    "leaks": [
+      {
+        "id": "h6-081",
+        "values": [
+          "D853-1676-541"
+        ]
+      },
+      {
+        "id": "h6-106",
+        "values": [
+          "CA903-8440-720"
+        ]
+      },
+      {
+        "id": "h6-043",
+        "values": [
+          "layla.hassan"
+        ]
+      }
+    ],
+    "ms_per_item": 62.5
+  },
+  {
+    "adapter": "cloakroom rules",
+    "items": 80,
+    "items_leaked": 66,
+    "values_total": 314,
+    "values_leaked": 175,
+    "blocked": 0,
+    "negatives": 40,
+    "false_alarms": 2,
+    "by_category": {
+      "negative": {
+        "items": 40,
+        "leaked": 2
+      },
+      "whatsapp": {
+        "items": 3,
+        "leaked": 3
+      },
+      "discord": {
+        "items": 3,
+        "leaked": 2
+      },
+      "figma-comments": {
+        "items": 3,
+        "leaked": 3
+      },
+      "confluence": {
+        "items": 3,
+        "leaked": 2
+      },
+      "notion": {
+        "items": 3,
+        "leaked": 3
+      },
+      "call-center": {
+        "items": 3,
+        "leaked": 3
+      },
+      "miro-comments": {
+        "items": 2,
+        "leaked": 2
+      },
+      "vercel-log": {
+        "items": 2,
+        "leaked": 1
+      },
+      "1password-cli": {
+        "items": 2,
+        "leaked": 1
+      },
+      "pip-log": {
+        "items": 2,
+        "leaked": 1
+      },
+      "dockerfile": {
+        "items": 2,
+        "leaked": 1
+      },
+      "npm-log": {
+        "items": 2,
+        "leaked": 0
+      },
+      "vault-cli": {
+        "items": 2,
+        "leaked": 1
+      },
+      "docker-compose": {
+        "items": 2,
+        "leaked": 1
+      },
+      "k8s-audit": {
+        "items": 3,
+        "leaked": 3
+      },
+      "voicemail": {
+        "items": 2,
+        "leaked": 2
+      },
+      "utility-bill": {
+        "items": 2,
+        "leaked": 2
+      },
+      "immigration": {
+        "items": 2,
+        "leaked": 2
+      },
+      "payroll": {
+        "items": 3,
+        "leaked": 3
+      },
+      "adoption": {
+        "items": 2,
+        "leaked": 2
+      },
+      "rental-app": {
+        "items": 2,
+        "leaked": 2
+      },
+      "clinical-crf": {
+        "items": 2,
+        "leaked": 2
+      },
+      "netlify-log": {
+        "items": 2,
+        "leaked": 0
+      },
+      "trello": {
+        "items": 3,
+        "leaked": 2
+      },
+      "gdocs-comments": {
+        "items": 3,
+        "leaked": 3
+      },
+      "asana": {
+        "items": 2,
+        "leaked": 2
+      },
+      "azure-activity": {
+        "items": 2,
+        "leaked": 2
+      },
+      "gcp-audit": {
+        "items": 2,
+        "leaked": 1
+      },
+      "cloudtrail": {
+        "items": 3,
+        "leaked": 3
+      },
+      "bigquery-history": {
+        "items": 3,
+        "leaked": 3
+      },
+      "snowflake-history": {
+        "items": 3,
+        "leaked": 3
+      },
+      "firebase-rtdb": {
+        "items": 2,
+        "leaked": 2
+      },
+      "redis-monitor": {
+        "items": 3,
+        "leaked": 3
+      }
+    },
+    "leaks": [
+      {
+        "id": "h6-003",
+        "values": [
+          "Ravi R. Menon",
+          "05/04/1991",
+          "+55 21 4083-2897"
+        ]
+      },
+      {
+        "id": "h6-004",
+        "values": [
+          "ravi.menon",
+          "+81 3-2879-2392",
+          "Emma Johansson",
+          "+234 1 732 1165"
+        ]
+      },
+      {
+        "id": "h6-011",
+        "values": [
+          "eleni.papadopoulou6",
+          "\u0395\u03bb\u03ad\u03bd\u03b7 \u03a0\u03b1\u03c0\u03b1\u03b4\u03bf\u03c0\u03bf\u03cd\u03bb\u03bf\u03c5",
+          "+49 89 733943",
+          "Oscar Michael Lindgren"
+        ]
+      },
+      {
+        "id": "h6-012",
+        "values": [
+          "+49 172 4792710",
+          "Kastanienallee 42, 10435 Berlin Apt 223",
+          "68102250296"
+        ]
+      },
+      {
+        "id": "h6-015",
+        "values": [
+          "+52 55 3891 7724"
+        ]
+      },
+      {
+        "id": "h6-016",
+        "values": [
+          "Nia Mensah",
+          "1982-05-10",
+          "Robert J. Adeyinka",
+          "28 Mar 1984",
+          "Camila Torres",
+          "25.06.1995"
+        ]
+      },
+      {
+        "id": "h6-020",
+        "values": [
+          "Carlos Mendez",
+          "+55 11 99097-2277",
+          "Anika Marie Sharma"
+        ]
+      },
+      {
+        "id": "h6-021",
+        "values": [
+          "thomas.berger",
+          "Thomas Berger",
+          "107.107.206.111"
+        ]
+      },
+      {
+        "id": "h6-023",
+        "values": [
+          "CS 45 74 46 B",
+          "+44 7561 554834",
+          "Sofia Papadopoulos"
+        ]
+      },
+      {
+        "id": "h6-024",
+        "values": [
+          "Yuki Mori",
+          "+81 90-8323-1474"
+        ]
+      },
+      {
+        "id": "h6-026",
+        "values": [
+          "Tara Grace Desai",
+          "tara.desai10",
+          "216.203.236.135",
+          "Julia Kowalska"
+        ]
+      },
+      {
+        "id": "h6-027",
+        "values": [
+          "yossi.cohen56",
+          "\u05d9\u05d5\u05e1\u05d9 \u05db\u05d4\u05df",
+          "+81 90-3710-9992",
+          "yossi.cohen56@brightforge.io",
+          "\u0623\u062d\u0645\u062f \u062d\u0633\u0646"
+        ]
+      },
+      {
+        "id": "h6-030",
+        "values": [
+          "Peter Novak",
+          "+44 7994 425212",
+          "Jennifer J. Park",
+          "+44 7221 797418",
+          "Liam O'Connor",
+          "+44 7922 552768"
+        ]
+      },
+      {
+        "id": "h6-032",
+        "values": [
+          "Diego J. Ramirez",
+          "+1 213-\n612-5357"
+        ]
+      },
+      {
+        "id": "h6-040",
+        "values": [
+          "Camila James Torres",
+          "10/26/1982",
+          "+52 55 9022 3806"
+        ]
+      },
+      {
+        "id": "h6-044",
+        "values": [
+          "haruto.sato32",
+          "Brook?c6Syb624",
+          "qIkHDIds9Ob64l14eRxWb9FK0mhIYMPKVln+9b+pb7aZCD/JzIDBbZK/WRgZjtTnPvfknaZm8x4YzkRrllx/hw=="
+        ]
+      },
+      {
+        "id": "h6-061",
+        "values": [
+          "meilin.zhou",
+          "Salt_lVi9UMB45"
+        ]
+      },
+      {
+        "id": "h6-062",
+        "values": [
+          "chen.wei"
+        ]
+      },
+      {
+        "id": "h6-066",
+        "values": [
+          "bWljaGFlbC5jaGVuMjE=",
+          "michael.chen21"
+        ]
+      },
+      {
+        "id": "h6-067",
+        "values": [
+          "Elena Petrova",
+          "AC-924089"
+        ]
+      },
+      {
+        "id": "h6-069",
+        "values": [
+          "169.146.64.170"
+        ]
+      },
+      {
+        "id": "h6-073",
+        "values": [
+          "sarah.lindqvist35",
+          "Kessler?dlbRswI01j24",
+          "Sarah Michael Lindqvist",
+          "+61 457 940 643"
+        ]
+      },
+      {
+        "id": "h6-074",
+        "values": [
+          "Noah Schmidt",
+          "MRN-9477414",
+          "428225031"
+        ]
+      },
+      {
+        "id": "h6-081",
+        "values": [
+          "AC-152451",
+          "Tomas Marie Novak",
+          "D853-1676-541"
+        ]
+      },
+      {
+        "id": "h6-087",
+        "values": [
+          "\u4f50\u85e4\u7f8e\u54b2",
+          "M83784357",
+          "18.07.1961",
+          "+234 1 543 6546"
+        ]
+      },
+      {
+        "id": "h6-090",
+        "values": [
+          "SA 71 74 57 B"
+        ]
+      },
+      {
+        "id": "h6-091",
+        "values": [
+          "Linda Fischer",
+          "Mei Ann Lin Zhou",
+          "553296021"
+        ]
+      },
+      {
+        "id": "h6-094",
+        "values": [
+          "\u0414\u043c\u0438\u0442\u0440\u0438\u0439 \u0421\u043e\u043a\u043e\u043b\u043e\u0432",
+          "D21496944",
+          "WE 32 48 97 A",
+          "+44 7801 997035",
+          "Emma David Johansson"
+        ]
+      },
+      {
+        "id": "h6-096",
+        "values": [
+          "Erik Johansson",
+          "+91 99904 37365",
+          "THVGH2718A",
+          "5757 1318 7711",
+          "9291566319"
+        ]
+      },
+      {
+        "id": "h6-097",
+        "values": [
+          "597 120 768",
+          "+61 416 772 117"
+        ]
+      },
+      {
+        "id": "h6-103",
+        "values": [
+          "Kenji Kai Nakamura",
+          "Rua das Palmeiras, 230, Sao Paulo, SP 01311-000 Suite 712",
+          "+55 11 97248-3845"
+        ]
+      },
+      {
+        "id": "h6-106",
+        "values": [
+          "Tara Desai",
+          "CA903-8440-720",
+          "Av. Insurgentes Sur 1457, Ciudad de Mexico, CDMX 03920 Suite 741",
+          "+52 55 3407 9465"
+        ]
+      },
+      {
+        "id": "h6-112",
+        "values": [
+          "\u674e\u5a1c",
+          "12.09.1981"
+        ]
+      },
+      {
+        "id": "h6-115",
+        "values": [
+          "Omar K. Farouk",
+          "09.09.1982",
+          "NC682-8834-130"
+        ]
+      },
+      {
+        "id": "h6-116",
+        "values": [
+          "MRN-9161569",
+          "8421126348",
+          "Faith Okonkwo"
+        ]
+      },
+      {
+        "id": "h6-119",
+        "values": [
+          "Hope Delacroix",
+          "Will Thornton",
+          "Thomas Kai Berger"
+        ]
+      },
+      {
+        "id": "h6-007",
+        "values": [
+          "Kwame Mensah",
+          "+91 96335 72263"
+        ]
+      },
+      {
+        "id": "h6-008",
+        "values": [
+          "Olivia Dubois",
+          "olivia.dubois42"
+        ]
+      },
+      {
+        "id": "h6-010",
+        "values": [
+          "Lisa Wang"
+        ]
+      },
+      {
+        "id": "h6-014",
+        "values": [
+          "Jose Garcia",
+          "S25376409",
+          "15 Apr 1968"
+        ]
+      },
+      {
+        "id": "h6-018",
+        "values": [
+          "Kwame Marie Mensah"
+        ]
+      },
+      {
+        "id": "h6-019",
+        "values": [
+          "5554573413",
+          "MRN-8416615",
+          "2 41 07 44 767 716 12",
+          "+234 1 580 7688"
+        ]
+      },
+      {
+        "id": "h6-022",
+        "values": [
+          "Viktor Grace Petrov"
+        ]
+      },
+      {
+        "id": "h6-028",
+        "values": [
+          "Andrei Grace Popov",
+          "CXCVT8403Z"
+        ]
+      },
+      {
+        "id": "h6-039",
+        "values": [
+          "+61 491 114 666",
+          "513 339 233"
+        ]
+      },
+      {
+        "id": "h6-042",
+        "values": [
+          "stharborlight793",
+          "iItga/StBOxFh/e47zTa84kroukLzvl1AH1lXtIsBZEn/0uYK0YzoyTGi+jku44Cl4njx7nrMyIVwYRGokjerg=="
+        ]
+      },
+      {
+        "id": "h6-043",
+        "values": [
+          "13.20.238.239",
+          "layla.hassan"
+        ]
+      },
+      {
+        "id": "h6-046",
+        "values": [
+          "+49 179 8913280",
+          "51056538334",
+          "B3XmlNqd1YeWPXiy5OVMsvS4TRULnWi1ODRtti7Bq4GHgEcM/ffnl+Ch05Z94oJYyMcVTEQtIAtku9jd10HBZg=="
+        ]
+      },
+      {
+        "id": "h6-047",
+        "values": [
+          "182.130.161.248",
+          "priya.raghavan"
+        ]
+      },
+      {
+        "id": "h6-059",
+        "values": [
+          "64.172.3.63",
+          "Kenji S. Nakamura"
+        ]
+      },
+      {
+        "id": "h6-060",
+        "values": [
+          "8.230.66.23",
+          "aisha.bello"
+        ]
+      },
+      {
+        "id": "h6-064",
+        "values": [
+          "Julia K. Kowalska",
+          "23.31.205.100"
+        ]
+      },
+      {
+        "id": "h6-065",
+        "values": [
+          "thomas.berger25"
+        ]
+      },
+      {
+        "id": "h6-068",
+        "values": [
+          "oscar.lindgren"
+        ]
+      },
+      {
+        "id": "h6-077",
+        "values": [
+          "AmkevZmzfDgUbJ5a"
+        ]
+      },
+      {
+        "id": "h6-082",
+        "values": [
+          "noah.schmidt13",
+          "151.10.101.20"
+        ]
+      },
+      {
+        "id": "h6-085",
+        "values": [
+          "mohammed.haddad",
+          "Mohammed M. Haddad",
+          "05.07.2001"
+        ]
+      },
+      {
+        "id": "h6-086",
+        "values": [
+          "IUUQX6875F",
+          "H.No. 12-34, Banjara Hills, Hyderabad 500034 Apt 719",
+          "6917 1443 3216"
+        ]
+      },
+      {
+        "id": "h6-098",
+        "values": [
+          "2 48 03 06 455 708 34"
+        ]
+      },
+      {
+        "id": "h6-099",
+        "values": [
+          "Anika J. Sharma",
+          "16.06.1966",
+          "+91 96748 38086",
+          "9479 6185 1766"
+        ]
+      },
+      {
+        "id": "h6-101",
+        "values": [
+          "175.172.228.177",
+          "c7ca95fb1e60cc2119a98be9"
+        ]
+      },
+      {
+        "id": "h6-105",
+        "values": [
+          "170.106.221.86",
+          "Ember%0eWzV6g4lU59",
+          "priya.raghavan28"
+        ]
+      },
+      {
+        "id": "h6-108",
+        "values": [
+          "samuel.osei76",
+          "2 52 01 69 991 313 73"
+        ]
+      },
+      {
+        "id": "h6-111",
+        "values": [
+          "samuel.osei8",
+          "217765296",
+          "450 Rue Saint-Pierre, Montreal, QC H2Y 2M9, Apt. 761"
+        ]
+      },
+      {
+        "id": "h6-113",
+        "values": [
+          "47.51.152.96",
+          "andrei.popov40",
+          "975 407 833"
+        ]
+      },
+      {
+        "id": "h6-120",
+        "values": [
+          "tomas.novak96",
+          "25271586145"
+        ]
+      }
+    ],
+    "ms_per_item": 0.1
+  },
+  {
+    "adapter": "maisecrets",
+    "items": 80,
+    "items_leaked": 71,
+    "values_total": 314,
+    "values_leaked": 176,
+    "blocked": 0,
+    "negatives": 40,
+    "false_alarms": 5,
+    "by_category": {
+      "negative": {
+        "items": 40,
+        "leaked": 5
+      },
+      "whatsapp": {
+        "items": 3,
+        "leaked": 3
+      },
+      "discord": {
+        "items": 3,
+        "leaked": 2
+      },
+      "figma-comments": {
+        "items": 3,
+        "leaked": 3
+      },
+      "confluence": {
+        "items": 3,
+        "leaked": 3
+      },
+      "notion": {
+        "items": 3,
+        "leaked": 3
+      },
+      "call-center": {
+        "items": 3,
+        "leaked": 3
+      },
+      "miro-comments": {
+        "items": 2,
+        "leaked": 2
+      },
+      "vercel-log": {
+        "items": 2,
+        "leaked": 1
+      },
+      "1password-cli": {
+        "items": 2,
+        "leaked": 2
+      },
+      "pip-log": {
+        "items": 2,
+        "leaked": 1
+      },
+      "dockerfile": {
+        "items": 2,
+        "leaked": 1
+      },
+      "npm-log": {
+        "items": 2,
+        "leaked": 1
+      },
+      "vault-cli": {
+        "items": 2,
+        "leaked": 2
+      },
+      "docker-compose": {
+        "items": 2,
+        "leaked": 1
+      },
+      "k8s-audit": {
+        "items": 3,
+        "leaked": 3
+      },
+      "voicemail": {
+        "items": 2,
+        "leaked": 2
+      },
+      "utility-bill": {
+        "items": 2,
+        "leaked": 2
+      },
+      "immigration": {
+        "items": 2,
+        "leaked": 2
+      },
+      "payroll": {
+        "items": 3,
+        "leaked": 3
+      },
+      "adoption": {
+        "items": 2,
+        "leaked": 2
+      },
+      "rental-app": {
+        "items": 2,
+        "leaked": 2
+      },
+      "clinical-crf": {
+        "items": 2,
+        "leaked": 2
+      },
+      "netlify-log": {
+        "items": 2,
+        "leaked": 1
+      },
+      "trello": {
+        "items": 3,
+        "leaked": 2
+      },
+      "gdocs-comments": {
+        "items": 3,
+        "leaked": 3
+      },
+      "asana": {
+        "items": 2,
+        "leaked": 2
+      },
+      "azure-activity": {
+        "items": 2,
+        "leaked": 2
+      },
+      "gcp-audit": {
+        "items": 2,
+        "leaked": 1
+      },
+      "cloudtrail": {
+        "items": 3,
+        "leaked": 3
+      },
+      "bigquery-history": {
+        "items": 3,
+        "leaked": 3
+      },
+      "snowflake-history": {
+        "items": 3,
+        "leaked": 3
+      },
+      "firebase-rtdb": {
+        "items": 2,
+        "leaked": 2
+      },
+      "redis-monitor": {
+        "items": 3,
+        "leaked": 3
+      }
+    },
+    "leaks": [
+      {
+        "id": "h6-003",
+        "values": [
+          "Ravi R. Menon",
+          "1618 Wexford Lane, Raleigh, NC 27601",
+          "05/04/1991"
+        ]
+      },
+      {
+        "id": "h6-004",
+        "values": [
+          "ravi.menon",
+          "Emma Johansson"
+        ]
+      },
+      {
+        "id": "h6-011",
+        "values": [
+          "eleni.papadopoulou6",
+          "\u0395\u03bb\u03ad\u03bd\u03b7 \u03a0\u03b1\u03c0\u03b1\u03b4\u03bf\u03c0\u03bf\u03cd\u03bb\u03bf\u03c5",
+          "Oscar Michael Lindgren"
+        ]
+      },
+      {
+        "id": "h6-012",
+        "values": [
+          "Ava Rossi",
+          "Kastanienallee 42, 10435 Berlin Apt 223",
+          "68102250296"
+        ]
+      },
+      {
+        "id": "h6-013",
+        "values": [
+          "robert.adeyinka",
+          "Robert Adeyinka"
+        ]
+      },
+      {
+        "id": "h6-015",
+        "values": [
+          "Joy Adeyemi",
+          "5740 5530 3000 8322"
+        ]
+      },
+      {
+        "id": "h6-016",
+        "values": [
+          "Nia Mensah",
+          "1982-05-10",
+          "Robert J. Adeyinka",
+          "(617) 890-0948",
+          "28 Mar 1984",
+          "Camila Torres",
+          "25.06.1995"
+        ]
+      },
+      {
+        "id": "h6-020",
+        "values": [
+          "Carlos Mendez",
+          "Anika Marie Sharma"
+        ]
+      },
+      {
+        "id": "h6-021",
+        "values": [
+          "thomas.berger",
+          "Thomas Berger"
+        ]
+      },
+      {
+        "id": "h6-023",
+        "values": [
+          "CS 45 74 46 B",
+          "Sofia Papadopoulos"
+        ]
+      },
+      {
+        "id": "h6-024",
+        "values": [
+          "Yuki Mori"
+        ]
+      },
+      {
+        "id": "h6-026",
+        "values": [
+          "Tara Grace Desai",
+          "tara.desai10",
+          "Julia Kowalska"
+        ]
+      },
+      {
+        "id": "h6-027",
+        "values": [
+          "yossi.cohen56",
+          "\u05d9\u05d5\u05e1\u05d9 \u05db\u05d4\u05df",
+          "+81 90-3710-9992",
+          "yossi.cohen56@brightforge.io",
+          "\u0623\u062d\u0645\u062f \u062d\u0633\u0646"
+        ]
+      },
+      {
+        "id": "h6-030",
+        "values": [
+          "Peter Novak",
+          "Jennifer J. Park",
+          "Liam O'Connor"
+        ]
+      },
+      {
+        "id": "h6-032",
+        "values": [
+          "Diego J. Ramirez",
+          "+1 213-\n612-5357",
+          "diego.ramirez"
+        ]
+      },
+      {
+        "id": "h6-040",
+        "values": [
+          "Camila James Torres",
+          "10/26/1982"
+        ]
+      },
+      {
+        "id": "h6-044",
+        "values": [
+          "haruto.sato32",
+          "Brook?c6Syb624"
+        ]
+      },
+      {
+        "id": "h6-045",
+        "values": [
+          "jennifer.park46"
+        ]
+      },
+      {
+        "id": "h6-061",
+        "values": [
+          "meilin.zhou",
+          "Salt_lVi9UMB45"
+        ]
+      },
+      {
+        "id": "h6-062",
+        "values": [
+          "chen.wei"
+        ]
+      },
+      {
+        "id": "h6-066",
+        "values": [
+          "michael.chen21"
+        ]
+      },
+      {
+        "id": "h6-067",
+        "values": [
+          "Elena Petrova",
+          "(213) 583-0787",
+          "AC-924089"
+        ]
+      },
+      {
+        "id": "h6-073",
+        "values": [
+          "sarah.lindqvist35",
+          "Kessler?dlbRswI01j24",
+          "Sarah Michael Lindqvist"
+        ]
+      },
+      {
+        "id": "h6-074",
+        "values": [
+          "Noah Schmidt",
+          "1998-01-10",
+          "MRN-9477414",
+          "428225031"
+        ]
+      },
+      {
+        "id": "h6-078",
+        "values": [
+          "rafael.costa30"
+        ]
+      },
+      {
+        "id": "h6-081",
+        "values": [
+          "AC-152451",
+          "Tomas Marie Novak",
+          "7369 Sunset Ridge Dr, Miami, FL 33131",
+          "(650) 526-2410",
+          "D853-1676-541"
+        ]
+      },
+      {
+        "id": "h6-087",
+        "values": [
+          "\u4f50\u85e4\u7f8e\u54b2",
+          "18.07.1961"
+        ]
+      },
+      {
+        "id": "h6-090",
+        "values": [
+          "Grace Mwangi",
+          "SA 71 74 57 B",
+          "8 Willow Court, Manchester M14 5PQ Suite 73"
+        ]
+      },
+      {
+        "id": "h6-091",
+        "values": [
+          "Linda Fischer",
+          "Mei Ann Lin Zhou",
+          "88 Queen Street East, Toronto, ON M5C 1P6 Unit 594",
+          "553296021"
+        ]
+      },
+      {
+        "id": "h6-094",
+        "values": [
+          "\u0414\u043c\u0438\u0442\u0440\u0438\u0439 \u0421\u043e\u043a\u043e\u043b\u043e\u0432",
+          "1992-05-04",
+          "WE 32 48 97 A",
+          "8 Willow Court, Manchester M14 5PQ Suite 836",
+          "Emma David Johansson"
+        ]
+      },
+      {
+        "id": "h6-096",
+        "values": [
+          "Erik Johansson",
+          "08/23/1965",
+          "THVGH2718A",
+          "5757 1318 7711",
+          "9291566319"
+        ]
+      },
+      {
+        "id": "h6-097",
+        "values": [
+          "Sofia Kai Papadopoulos",
+          "597 120 768",
+          "45 Chapel Street, Melbourne VIC 3181 Unit 160"
+        ]
+      },
+      {
+        "id": "h6-103",
+        "values": [
+          "Kenji Kai Nakamura",
+          "Rua das Palmeiras, 230, Sao Paulo, SP 01311-000 Suite 712"
+        ]
+      },
+      {
+        "id": "h6-106",
+        "values": [
+          "Tara Desai",
+          "Av. Insurgentes Sur 1457, Ciudad de Mexico, CDMX 03920 Suite 741",
+          "11 Oct 1998"
+        ]
+      },
+      {
+        "id": "h6-112",
+        "values": [
+          "\u674e\u5a1c",
+          "8575 Harbor View Way, Chicago, IL 60614",
+          "12.09.1981"
+        ]
+      },
+      {
+        "id": "h6-115",
+        "values": [
+          "Omar K. Farouk",
+          "09.09.1982",
+          "NC682-8834-130",
+          "1536 Wexford Lane, Miami, FL 33131",
+          "(619) 520-5306"
+        ]
+      },
+      {
+        "id": "h6-116",
+        "values": [
+          "MRN-9161569",
+          "24 Oct 1983",
+          "8421126348",
+          "Faith Okonkwo"
+        ]
+      },
+      {
+        "id": "h6-118",
+        "values": [
+          "Anna Mueller"
+        ]
+      },
+      {
+        "id": "h6-119",
+        "values": [
+          "Hope Delacroix",
+          "2 Apr 1978",
+          "Will Thornton",
+          "1970-03-21",
+          "7230 Sunset Ridge Dr, Portland, OR 97205",
+          "(512) 818-7685",
+          "Thomas Kai Berger"
+        ]
+      },
+      {
+        "id": "h6-007",
+        "values": [
+          "Kwame Mensah"
+        ]
+      },
+      {
+        "id": "h6-008",
+        "values": [
+          "Olivia Dubois",
+          "olivia.dubois42"
+        ]
+      },
+      {
+        "id": "h6-010",
+        "values": [
+          "Kenji Nakamura",
+          "Lisa Wang"
+        ]
+      },
+      {
+        "id": "h6-014",
+        "values": [
+          "Jose Garcia",
+          "15 Apr 1968"
+        ]
+      },
+      {
+        "id": "h6-018",
+        "values": [
+          "Rafael Costa",
+          "1975-07-20",
+          "Kwame Marie Mensah"
+        ]
+      },
+      {
+        "id": "h6-019",
+        "values": [
+          "5554573413",
+          "MRN-8416615",
+          "2 41 07 44 767 716 12"
+        ]
+      },
+      {
+        "id": "h6-022",
+        "values": [
+          "viktor.petrov20",
+          "Viktor Grace Petrov"
+        ]
+      },
+      {
+        "id": "h6-028",
+        "values": [
+          "Andrei Grace Popov",
+          "102 Sunset Ridge Dr, Chicago, IL 60614",
+          "CXCVT8403Z"
+        ]
+      },
+      {
+        "id": "h6-039",
+        "values": [
+          "Tara Lee Desai",
+          "45 Chapel Street, Melbourne VIC 3181, Apt. 429",
+          "513 339 233"
+        ]
+      },
+      {
+        "id": "h6-042",
+        "values": [
+          "stharborlight793"
+        ]
+      },
+      {
+        "id": "h6-043",
+        "values": [
+          "layla.hassan"
+        ]
+      },
+      {
+        "id": "h6-046",
+        "values": [
+          "Tara Kai Desai",
+          "51056538334"
+        ]
+      },
+      {
+        "id": "h6-047",
+        "values": [
+          "priya.raghavan"
+        ]
+      },
+      {
+        "id": "h6-059",
+        "values": [
+          "Kenji S. Nakamura"
+        ]
+      },
+      {
+        "id": "h6-060",
+        "values": [
+          "aisha.bello"
+        ]
+      },
+      {
+        "id": "h6-064",
+        "values": [
+          "nadia.rahal",
+          "Julia K. Kowalska"
+        ]
+      },
+      {
+        "id": "h6-065",
+        "values": [
+          "thomas.berger25"
+        ]
+      },
+      {
+        "id": "h6-068",
+        "values": [
+          "oscar.lindgren"
+        ]
+      },
+      {
+        "id": "h6-072",
+        "values": [
+          "xoxp-25186878701-245920769969-pPVi8rmfUeGZVDG4Un8CtxrH"
+        ]
+      },
+      {
+        "id": "h6-077",
+        "values": [
+          "AmkevZmzfDgUbJ5a"
+        ]
+      },
+      {
+        "id": "h6-079",
+        "values": [
+          "sk-proj-qtAzFdqIbJfUYLWbZCZS2XadNDBtCy3wcjxW2ype"
+        ]
+      },
+      {
+        "id": "h6-082",
+        "values": [
+          "noah.schmidt13"
+        ]
+      },
+      {
+        "id": "h6-085",
+        "values": [
+          "mohammed.haddad",
+          "Mohammed M. Haddad",
+          "05.07.2001"
+        ]
+      },
+      {
+        "id": "h6-086",
+        "values": [
+          "IUUQX6875F",
+          "H.No. 12-34, Banjara Hills, Hyderabad 500034 Apt 719",
+          "6917 1443 3216"
+        ]
+      },
+      {
+        "id": "h6-098",
+        "values": [
+          "2 48 03 06 455 708 34",
+          "Diego Ramirez"
+        ]
+      },
+      {
+        "id": "h6-099",
+        "values": [
+          "Anika J. Sharma",
+          "16.06.1966",
+          "9479 6185 1766"
+        ]
+      },
+      {
+        "id": "h6-101",
+        "values": [
+          "c7ca95fb1e60cc2119a98be9"
+        ]
+      },
+      {
+        "id": "h6-105",
+        "values": [
+          "Ember%0eWzV6g4lU59",
+          "priya.raghavan28"
+        ]
+      },
+      {
+        "id": "h6-108",
+        "values": [
+          "samuel.osei76",
+          "Samuel James Osei",
+          "2 52 01 69 991 313 73"
+        ]
+      },
+      {
+        "id": "h6-111",
+        "values": [
+          "samuel.osei8",
+          "217765296",
+          "450 Rue Saint-Pierre, Montreal, QC H2Y 2M9, Apt. 761"
+        ]
+      },
+      {
+        "id": "h6-113",
+        "values": [
+          "andrei.popov40",
+          "(510) 340-3412",
+          "975 407 833"
+        ]
+      },
+      {
+        "id": "h6-120",
+        "values": [
+          "tomas.novak96",
+          "25271586145"
+        ]
+      }
+    ],
+    "ms_per_item": 0.4
+  },
+  {
+    "adapter": "redact-hook (default)",
+    "items": 80,
+    "items_leaked": 79,
+    "values_total": 314,
+    "values_leaked": 242,
+    "blocked": 0,
+    "negatives": 40,
+    "false_alarms": 7,
+    "by_category": {
+      "negative": {
+        "items": 40,
+        "leaked": 7
+      },
+      "whatsapp": {
+        "items": 3,
+        "leaked": 3
+      },
+      "discord": {
+        "items": 3,
+        "leaked": 3
+      },
+      "figma-comments": {
+        "items": 3,
+        "leaked": 3
+      },
+      "confluence": {
+        "items": 3,
+        "leaked": 3
+      },
+      "notion": {
+        "items": 3,
+        "leaked": 3
+      },
+      "call-center": {
+        "items": 3,
+        "leaked": 3
+      },
+      "miro-comments": {
+        "items": 2,
+        "leaked": 2
+      },
+      "vercel-log": {
+        "items": 2,
+        "leaked": 2
+      },
+      "1password-cli": {
+        "items": 2,
+        "leaked": 2
+      },
+      "pip-log": {
+        "items": 2,
+        "leaked": 2
+      },
+      "dockerfile": {
+        "items": 2,
+        "leaked": 2
+      },
+      "npm-log": {
+        "items": 2,
+        "leaked": 2
+      },
+      "vault-cli": {
+        "items": 2,
+        "leaked": 1
+      },
+      "docker-compose": {
+        "items": 2,
+        "leaked": 2
+      },
+      "k8s-audit": {
+        "items": 3,
+        "leaked": 3
+      },
+      "voicemail": {
+        "items": 2,
+        "leaked": 2
+      },
+      "utility-bill": {
+        "items": 2,
+        "leaked": 2
+      },
+      "immigration": {
+        "items": 2,
+        "leaked": 2
+      },
+      "payroll": {
+        "items": 3,
+        "leaked": 3
+      },
+      "adoption": {
+        "items": 2,
+        "leaked": 2
+      },
+      "rental-app": {
+        "items": 2,
+        "leaked": 2
+      },
+      "clinical-crf": {
+        "items": 2,
+        "leaked": 2
+      },
+      "netlify-log": {
+        "items": 2,
+        "leaked": 2
+      },
+      "trello": {
+        "items": 3,
+        "leaked": 3
+      },
+      "gdocs-comments": {
+        "items": 3,
+        "leaked": 3
+      },
+      "asana": {
+        "items": 2,
+        "leaked": 2
+      },
+      "azure-activity": {
+        "items": 2,
+        "leaked": 2
+      },
+      "gcp-audit": {
+        "items": 2,
+        "leaked": 2
+      },
+      "cloudtrail": {
+        "items": 3,
+        "leaked": 3
+      },
+      "bigquery-history": {
+        "items": 3,
+        "leaked": 3
+      },
+      "snowflake-history": {
+        "items": 3,
+        "leaked": 3
+      },
+      "firebase-rtdb": {
+        "items": 2,
+        "leaked": 2
+      },
+      "redis-monitor": {
+        "items": 3,
+        "leaked": 3
+      }
+    },
+    "leaks": [
+      {
+        "id": "h6-003",
+        "values": [
+          "Ravi R. Menon",
+          "1618 Wexford Lane, Raleigh, NC 27601",
+          "05/04/1991"
+        ]
+      },
+      {
+        "id": "h6-004",
+        "values": [
+          "ravi.menon",
+          "ravi.menon@fernhill.co",
+          "Emma Johansson"
+        ]
+      },
+      {
+        "id": "h6-005",
+        "values": [
+          "mohammed.haddad@harborlight-labs.io"
+        ]
+      },
+      {
+        "id": "h6-011",
+        "values": [
+          "eleni.papadopoulou6",
+          "\u0395\u03bb\u03ad\u03bd\u03b7 \u03a0\u03b1\u03c0\u03b1\u03b4\u03bf\u03c0\u03bf\u03cd\u03bb\u03bf\u03c5",
+          "Oscar Michael Lindgren"
+        ]
+      },
+      {
+        "id": "h6-012",
+        "values": [
+          "Ava Rossi",
+          "ava.rossi4@driftmark.app",
+          "Kastanienallee 42, 10435 Berlin Apt 223",
+          "DE069X7X2XBEP8Z9F121UZ",
+          "68102250296"
+        ]
+      },
+      {
+        "id": "h6-013",
+        "values": [
+          "robert.adeyinka",
+          "Robert Adeyinka",
+          "robert.adeyinka@saltspire.net"
+        ]
+      },
+      {
+        "id": "h6-015",
+        "values": [
+          "Joy Adeyemi",
+          "5740 5530 3000 8322",
+          "joy.adeyemi@driftmark.app"
+        ]
+      },
+      {
+        "id": "h6-016",
+        "values": [
+          "Nia Mensah",
+          "nia.mensah@lumenarc.tech",
+          "1982-05-10",
+          "Robert J. Adeyinka",
+          "robert.adeyinka41@copperline.systems",
+          "(617) 890-0948",
+          "28 Mar 1984",
+          "Camila Torres",
+          "camila.torres54@brightpath.dev",
+          "25.06.1995"
+        ]
+      },
+      {
+        "id": "h6-020",
+        "values": [
+          "Carlos Mendez",
+          "Anika Marie Sharma"
+        ]
+      },
+      {
+        "id": "h6-021",
+        "values": [
+          "thomas.berger",
+          "Thomas Berger",
+          "107.107.206.111",
+          "thomas.berger@saltspire.net"
+        ]
+      },
+      {
+        "id": "h6-023",
+        "values": [
+          "CS 45 74 46 B",
+          "Sofia Papadopoulos"
+        ]
+      },
+      {
+        "id": "h6-024",
+        "values": [
+          "Yuki Mori",
+          "yuki.mori@harborlight-labs.io"
+        ]
+      },
+      {
+        "id": "h6-026",
+        "values": [
+          "Tara Grace Desai",
+          "tara.desai10",
+          "tara.desai10@copperline.systems",
+          "216.203.236.135",
+          "Julia Kowalska"
+        ]
+      },
+      {
+        "id": "h6-027",
+        "values": [
+          "yossi.cohen56",
+          "\u05d9\u05d5\u05e1\u05d9 \u05db\u05d4\u05df",
+          "yossi.cohen56@brightforge.io",
+          "\u0623\u062d\u0645\u062f \u062d\u0633\u0646"
+        ]
+      },
+      {
+        "id": "h6-030",
+        "values": [
+          "Peter Novak",
+          "peter.novak@brightforge.io",
+          "Jennifer J. Park",
+          "jennifer.park46@copperline.systems",
+          "Liam O'Connor",
+          "liam.oconnor86@brightforge.io"
+        ]
+      },
+      {
+        "id": "h6-032",
+        "values": [
+          "Diego J. Ramirez",
+          "diego.ramirez@vantagefield.org",
+          "diego.ramirez"
+        ]
+      },
+      {
+        "id": "h6-040",
+        "values": [
+          "Camila James Torres",
+          "118-65-8813",
+          "10/26/1982"
+        ]
+      },
+      {
+        "id": "h6-041",
+        "values": [
+          "aisha.bello@saltspire.net"
+        ]
+      },
+      {
+        "id": "h6-044",
+        "values": [
+          "haruto.sato32",
+          "Brook?c6Syb624",
+          "haruto.sato32@nordwind-medizin.de",
+          "qIkHDIds9Ob64l14eRxWb9FK0mhIYMPKVln+9b+pb7aZCD/JzIDBbZK/WRgZjtTnPvfknaZm8x4YzkRrllx/hw=="
+        ]
+      },
+      {
+        "id": "h6-045",
+        "values": [
+          "jennifer.park46"
+        ]
+      },
+      {
+        "id": "h6-051",
+        "values": [
+          "Ember!Ytohainhj59"
+        ]
+      },
+      {
+        "id": "h6-052",
+        "values": [
+          "e05806c9e86d3d5e48f34608abbcbe80d69cc5ae"
+        ]
+      },
+      {
+        "id": "h6-061",
+        "values": [
+          "meilin.zhou",
+          "Salt_lVi9UMB45"
+        ]
+      },
+      {
+        "id": "h6-062",
+        "values": [
+          "chen.wei"
+        ]
+      },
+      {
+        "id": "h6-066",
+        "values": [
+          "bWljaGFlbC5jaGVuMjE=",
+          "michael.chen21"
+        ]
+      },
+      {
+        "id": "h6-067",
+        "values": [
+          "Elena Petrova",
+          "(213) 583-0787",
+          "AC-924089"
+        ]
+      },
+      {
+        "id": "h6-069",
+        "values": [
+          "169.146.64.170",
+          "isabelle.fontaine95@fernhill.co"
+        ]
+      },
+      {
+        "id": "h6-071",
+        "values": [
+          "Lumen%PCUWpdBHdc37"
+        ]
+      },
+      {
+        "id": "h6-073",
+        "values": [
+          "sarah.lindqvist35",
+          "Kessler?dlbRswI01j24",
+          "Sarah Michael Lindqvist"
+        ]
+      },
+      {
+        "id": "h6-074",
+        "values": [
+          "Noah Schmidt",
+          "1998-01-10",
+          "MRN-9477414",
+          "428225031"
+        ]
+      },
+      {
+        "id": "h6-078",
+        "values": [
+          "rafael.costa30",
+          "rafael.costa30@fernhill.co"
+        ]
+      },
+      {
+        "id": "h6-081",
+        "values": [
+          "AC-152451",
+          "Tomas Marie Novak",
+          "7369 Sunset Ridge Dr, Miami, FL 33131",
+          "(650) 526-2410",
+          "D853-1676-541"
+        ]
+      },
+      {
+        "id": "h6-087",
+        "values": [
+          "\u4f50\u85e4\u7f8e\u54b2",
+          "M83784357",
+          "18.07.1961",
+          "sato.misaki51@nordwind-medizin.de"
+        ]
+      },
+      {
+        "id": "h6-090",
+        "values": [
+          "Grace Mwangi",
+          "SA 71 74 57 B",
+          "8 Willow Court, Manchester M14 5PQ Suite 73",
+          "GB68F8QDSISCKD20HS5PQT"
+        ]
+      },
+      {
+        "id": "h6-091",
+        "values": [
+          "Linda Fischer",
+          "Mei Ann Lin Zhou",
+          "meilin.zhou79@brightpath.dev",
+          "88 Queen Street East, Toronto, ON M5C 1P6 Unit 594",
+          "553296021"
+        ]
+      },
+      {
+        "id": "h6-094",
+        "values": [
+          "\u0414\u043c\u0438\u0442\u0440\u0438\u0439 \u0421\u043e\u043a\u043e\u043b\u043e\u0432",
+          "D21496944",
+          "1992-05-04",
+          "WE 32 48 97 A",
+          "8 Willow Court, Manchester M14 5PQ Suite 836",
+          "Emma David Johansson"
+        ]
+      },
+      {
+        "id": "h6-096",
+        "values": [
+          "Erik Johansson",
+          "08/23/1965",
+          "THVGH2718A",
+          "5757 1318 7711",
+          "9291566319",
+          "erik.johansson@brightpath.dev"
+        ]
+      },
+      {
+        "id": "h6-097",
+        "values": [
+          "Sofia Kai Papadopoulos",
+          "597 120 768",
+          "45 Chapel Street, Melbourne VIC 3181 Unit 160"
+        ]
+      },
+      {
+        "id": "h6-102",
+        "values": [
+          "haruto.sato@vantagefield.org"
+        ]
+      },
+      {
+        "id": "h6-103",
+        "values": [
+          "Kenji Kai Nakamura",
+          "Rua das Palmeiras, 230, Sao Paulo, SP 01311-000 Suite 712"
+        ]
+      },
+      {
+        "id": "h6-106",
+        "values": [
+          "Tara Desai",
+          "CA903-8440-720",
+          "Av. Insurgentes Sur 1457, Ciudad de Mexico, CDMX 03920 Suite 741",
+          "11 Oct 1998"
+        ]
+      },
+      {
+        "id": "h6-112",
+        "values": [
+          "\u674e\u5a1c",
+          "724-33-3516",
+          "8575 Harbor View Way, Chicago, IL 60614",
+          "12.09.1981"
+        ]
+      },
+      {
+        "id": "h6-115",
+        "values": [
+          "Omar K. Farouk",
+          "09.09.1982",
+          "426-06-1362",
+          "NC682-8834-130",
+          "1536 Wexford Lane, Miami, FL 33131",
+          "(619) 520-5306",
+          "omar.farouk26@saltspire.net"
+        ]
+      },
+      {
+        "id": "h6-116",
+        "values": [
+          "MRN-9161569",
+          "24 Oct 1983",
+          "8421126348",
+          "Faith Okonkwo"
+        ]
+      },
+      {
+        "id": "h6-118",
+        "values": [
+          "Anna Mueller",
+          "anna.mueller@quantumbrook.io"
+        ]
+      },
+      {
+        "id": "h6-119",
+        "values": [
+          "Hope Delacroix",
+          "2 Apr 1978",
+          "Will Thornton",
+          "1970-03-21",
+          "7230 Sunset Ridge Dr, Portland, OR 97205",
+          "(512) 818-7685",
+          "Thomas Kai Berger"
+        ]
+      },
+      {
+        "id": "h6-007",
+        "values": [
+          "Kwame Mensah",
+          "kwame.mensah@brightpath.dev"
+        ]
+      },
+      {
+        "id": "h6-008",
+        "values": [
+          "Olivia Dubois",
+          "olivia.dubois42"
+        ]
+      },
+      {
+        "id": "h6-009",
+        "values": [
+          "yuki.tanaka59@kessler-works.com"
+        ]
+      },
+      {
+        "id": "h6-010",
+        "values": [
+          "Kenji Nakamura",
+          "julia.kowalska@fernhill.co",
+          "Lisa Wang"
+        ]
+      },
+      {
+        "id": "h6-014",
+        "values": [
+          "Jose Garcia",
+          "S25376409",
+          "15 Apr 1968"
+        ]
+      },
+      {
+        "id": "h6-018",
+        "values": [
+          "Rafael Costa",
+          "674-07-5916",
+          "1975-07-20",
+          "Kwame Marie Mensah"
+        ]
+      },
+      {
+        "id": "h6-019",
+        "values": [
+          "5554573413",
+          "MRN-8416615",
+          "mateo.hernandez48@harborlight-labs.io",
+          "2 41 07 44 767 716 12"
+        ]
+      },
+      {
+        "id": "h6-022",
+        "values": [
+          "viktor.petrov20",
+          "Viktor Grace Petrov"
+        ]
+      },
+      {
+        "id": "h6-028",
+        "values": [
+          "Andrei Grace Popov",
+          "102 Sunset Ridge Dr, Chicago, IL 60614",
+          "CXCVT8403Z"
+        ]
+      },
+      {
+        "id": "h6-039",
+        "values": [
+          "Tara Lee Desai",
+          "45 Chapel Street, Melbourne VIC 3181, Apt. 429",
+          "513 339 233"
+        ]
+      },
+      {
+        "id": "h6-042",
+        "values": [
+          "stharborlight793",
+          "Drift$bRVuPD16"
+        ]
+      },
+      {
+        "id": "h6-043",
+        "values": [
+          "layla.hassan@nordwind-medizin.de",
+          "13.20.238.239",
+          "layla.hassan"
+        ]
+      },
+      {
+        "id": "h6-046",
+        "values": [
+          "tara.desai5@copperline.systems",
+          "Tara Kai Desai",
+          "51056538334",
+          "B3XmlNqd1YeWPXiy5OVMsvS4TRULnWi1ODRtti7Bq4GHgEcM/ffnl+Ch05Z94oJYyMcVTEQtIAtku9jd10HBZg=="
+        ]
+      },
+      {
+        "id": "h6-047",
+        "values": [
+          "182.130.161.248",
+          "priya.raghavan"
+        ]
+      },
+      {
+        "id": "h6-054",
+        "values": [
+          "kwame.mensah@nordwind-medizin.de"
+        ]
+      },
+      {
+        "id": "h6-059",
+        "values": [
+          "64.172.3.63",
+          "Kenji S. Nakamura",
+          "kenji.nakamura60@vantagefield.org"
+        ]
+      },
+      {
+        "id": "h6-060",
+        "values": [
+          "8.230.66.23",
+          "aisha.bello"
+        ]
+      },
+      {
+        "id": "h6-064",
+        "values": [
+          "nadia.rahal",
+          "Julia K. Kowalska",
+          "23.31.205.100"
+        ]
+      },
+      {
+        "id": "h6-065",
+        "values": [
+          "thomas.berger25"
+        ]
+      },
+      {
+        "id": "h6-068",
+        "values": [
+          "oscar.lindgren"
+        ]
+      },
+      {
+        "id": "h6-072",
+        "values": [
+          "SK19ea787fdd379c74126485a9b16fa63a"
+        ]
+      },
+      {
+        "id": "h6-077",
+        "values": [
+          "AmkevZmzfDgUbJ5a",
+          "yuki.tanaka@lumenarc.tech"
+        ]
+      },
+      {
+        "id": "h6-082",
+        "values": [
+          "noah.schmidt13",
+          "noah.schmidt13@vantagefield.org",
+          "151.10.101.20"
+        ]
+      },
+      {
+        "id": "h6-085",
+        "values": [
+          "mohammed.haddad",
+          "Mohammed M. Haddad",
+          "323-18-1273",
+          "05.07.2001"
+        ]
+      },
+      {
+        "id": "h6-086",
+        "values": [
+          "dmitri.volkov23@copperline.systems",
+          "IUUQX6875F",
+          "H.No. 12-34, Banjara Hills, Hyderabad 500034 Apt 719",
+          "6917 1443 3216"
+        ]
+      },
+      {
+        "id": "h6-098",
+        "values": [
+          "FR05BPA5RE1NR7GGWTB9BM4W2E2",
+          "2 48 03 06 455 708 34",
+          "Diego Ramirez"
+        ]
+      },
+      {
+        "id": "h6-099",
+        "values": [
+          "Anika J. Sharma",
+          "16.06.1966",
+          "9479 6185 1766"
+        ]
+      },
+      {
+        "id": "h6-101",
+        "values": [
+          "175.172.228.177",
+          "c7ca95fb1e60cc2119a98be9"
+        ]
+      },
+      {
+        "id": "h6-105",
+        "values": [
+          "170.106.221.86",
+          "Ember%0eWzV6g4lU59",
+          "priya.raghavan28"
+        ]
+      },
+      {
+        "id": "h6-108",
+        "values": [
+          "samuel.osei76",
+          "Samuel James Osei",
+          "2 52 01 69 991 313 73"
+        ]
+      },
+      {
+        "id": "h6-111",
+        "values": [
+          "samuel.osei8",
+          "217765296",
+          "450 Rue Saint-Pierre, Montreal, QC H2Y 2M9, Apt. 761"
+        ]
+      },
+      {
+        "id": "h6-113",
+        "values": [
+          "47.51.152.96",
+          "andrei.popov40",
+          "peter.novak@nordwind-medizin.de",
+          "(510) 340-3412",
+          "975 407 833"
+        ]
+      },
+      {
+        "id": "h6-120",
+        "values": [
+          "tomas.novak96",
+          "tomas.novak96@lumenarc.tech",
+          "25271586145"
+        ]
+      }
+    ],
+    "ms_per_item": 0.1
+  },
+  {
+    "adapter": "redact-hook (aggressive)",
+    "items": 80,
+    "items_leaked": 77,
+    "values_total": 314,
+    "values_leaked": 232,
+    "blocked": 0,
+    "negatives": 40,
+    "false_alarms": 8,
+    "by_category": {
+      "negative": {
+        "items": 40,
+        "leaked": 8
+      },
+      "whatsapp": {
+        "items": 3,
+        "leaked": 3
+      },
+      "discord": {
+        "items": 3,
+        "leaked": 3
+      },
+      "figma-comments": {
+        "items": 3,
+        "leaked": 3
+      },
+      "confluence": {
+        "items": 3,
+        "leaked": 3
+      },
+      "notion": {
+        "items": 3,
+        "leaked": 3
+      },
+      "call-center": {
+        "items": 3,
+        "leaked": 3
+      },
+      "miro-comments": {
+        "items": 2,
+        "leaked": 2
+      },
+      "vercel-log": {
+        "items": 2,
+        "leaked": 2
+      },
+      "1password-cli": {
+        "items": 2,
+        "leaked": 1
+      },
+      "pip-log": {
+        "items": 2,
+        "leaked": 2
+      },
+      "dockerfile": {
+        "items": 2,
+        "leaked": 2
+      },
+      "npm-log": {
+        "items": 2,
+        "leaked": 2
+      },
+      "vault-cli": {
+        "items": 2,
+        "leaked": 1
+      },
+      "docker-compose": {
+        "items": 2,
+        "leaked": 2
+      },
+      "k8s-audit": {
+        "items": 3,
+        "leaked": 3
+      },
+      "voicemail": {
+        "items": 2,
+        "leaked": 2
+      },
+      "utility-bill": {
+        "items": 2,
+        "leaked": 2
+      },
+      "immigration": {
+        "items": 2,
+        "leaked": 2
+      },
+      "payroll": {
+        "items": 3,
+        "leaked": 3
+      },
+      "adoption": {
+        "items": 2,
+        "leaked": 2
+      },
+      "rental-app": {
+        "items": 2,
+        "leaked": 2
+      },
+      "clinical-crf": {
+        "items": 2,
+        "leaked": 2
+      },
+      "netlify-log": {
+        "items": 2,
+        "leaked": 2
+      },
+      "trello": {
+        "items": 3,
+        "leaked": 3
+      },
+      "gdocs-comments": {
+        "items": 3,
+        "leaked": 3
+      },
+      "asana": {
+        "items": 2,
+        "leaked": 2
+      },
+      "azure-activity": {
+        "items": 2,
+        "leaked": 2
+      },
+      "gcp-audit": {
+        "items": 2,
+        "leaked": 1
+      },
+      "cloudtrail": {
+        "items": 3,
+        "leaked": 3
+      },
+      "bigquery-history": {
+        "items": 3,
+        "leaked": 3
+      },
+      "snowflake-history": {
+        "items": 3,
+        "leaked": 3
+      },
+      "firebase-rtdb": {
+        "items": 2,
+        "leaked": 2
+      },
+      "redis-monitor": {
+        "items": 3,
+        "leaked": 3
+      }
+    },
+    "leaks": [
+      {
+        "id": "h6-003",
+        "values": [
+          "Ravi R. Menon",
+          "1618 Wexford Lane, Raleigh, NC 27601",
+          "05/04/1991"
+        ]
+      },
+      {
+        "id": "h6-004",
+        "values": [
+          "ravi.menon",
+          "ravi.menon@fernhill.co",
+          "Emma Johansson"
+        ]
+      },
+      {
+        "id": "h6-005",
+        "values": [
+          "mohammed.haddad@harborlight-labs.io"
+        ]
+      },
+      {
+        "id": "h6-011",
+        "values": [
+          "eleni.papadopoulou6",
+          "\u0395\u03bb\u03ad\u03bd\u03b7 \u03a0\u03b1\u03c0\u03b1\u03b4\u03bf\u03c0\u03bf\u03cd\u03bb\u03bf\u03c5",
+          "Oscar Michael Lindgren"
+        ]
+      },
+      {
+        "id": "h6-012",
+        "values": [
+          "Ava Rossi",
+          "ava.rossi4@driftmark.app",
+          "Kastanienallee 42, 10435 Berlin Apt 223",
+          "68102250296"
+        ]
+      },
+      {
+        "id": "h6-013",
+        "values": [
+          "robert.adeyinka",
+          "Robert Adeyinka",
+          "robert.adeyinka@saltspire.net"
+        ]
+      },
+      {
+        "id": "h6-015",
+        "values": [
+          "Joy Adeyemi",
+          "5740 5530 3000 8322",
+          "joy.adeyemi@driftmark.app"
+        ]
+      },
+      {
+        "id": "h6-016",
+        "values": [
+          "Nia Mensah",
+          "nia.mensah@lumenarc.tech",
+          "1982-05-10",
+          "Robert J. Adeyinka",
+          "robert.adeyinka41@copperline.systems",
+          "(617) 890-0948",
+          "28 Mar 1984",
+          "Camila Torres",
+          "camila.torres54@brightpath.dev",
+          "25.06.1995"
+        ]
+      },
+      {
+        "id": "h6-020",
+        "values": [
+          "Carlos Mendez",
+          "Anika Marie Sharma"
+        ]
+      },
+      {
+        "id": "h6-021",
+        "values": [
+          "thomas.berger",
+          "Thomas Berger",
+          "107.107.206.111",
+          "thomas.berger@saltspire.net"
+        ]
+      },
+      {
+        "id": "h6-023",
+        "values": [
+          "CS 45 74 46 B",
+          "Sofia Papadopoulos"
+        ]
+      },
+      {
+        "id": "h6-024",
+        "values": [
+          "Yuki Mori",
+          "yuki.mori@harborlight-labs.io"
+        ]
+      },
+      {
+        "id": "h6-026",
+        "values": [
+          "Tara Grace Desai",
+          "tara.desai10",
+          "tara.desai10@copperline.systems",
+          "216.203.236.135",
+          "Julia Kowalska"
+        ]
+      },
+      {
+        "id": "h6-027",
+        "values": [
+          "yossi.cohen56",
+          "\u05d9\u05d5\u05e1\u05d9 \u05db\u05d4\u05df",
+          "yossi.cohen56@brightforge.io",
+          "\u0623\u062d\u0645\u062f \u062d\u0633\u0646"
+        ]
+      },
+      {
+        "id": "h6-030",
+        "values": [
+          "Peter Novak",
+          "peter.novak@brightforge.io",
+          "Jennifer J. Park",
+          "jennifer.park46@copperline.systems",
+          "Liam O'Connor",
+          "liam.oconnor86@brightforge.io"
+        ]
+      },
+      {
+        "id": "h6-032",
+        "values": [
+          "Diego J. Ramirez",
+          "diego.ramirez@vantagefield.org",
+          "diego.ramirez"
+        ]
+      },
+      {
+        "id": "h6-040",
+        "values": [
+          "Camila James Torres",
+          "118-65-8813",
+          "10/26/1982"
+        ]
+      },
+      {
+        "id": "h6-041",
+        "values": [
+          "aisha.bello@saltspire.net"
+        ]
+      },
+      {
+        "id": "h6-044",
+        "values": [
+          "haruto.sato32",
+          "Brook?c6Syb624",
+          "haruto.sato32@nordwind-medizin.de"
+        ]
+      },
+      {
+        "id": "h6-045",
+        "values": [
+          "jennifer.park46"
+        ]
+      },
+      {
+        "id": "h6-051",
+        "values": [
+          "Ember!Ytohainhj59"
+        ]
+      },
+      {
+        "id": "h6-052",
+        "values": [
+          "e05806c9e86d3d5e48f34608abbcbe80d69cc5ae"
+        ]
+      },
+      {
+        "id": "h6-061",
+        "values": [
+          "meilin.zhou",
+          "Salt_lVi9UMB45"
+        ]
+      },
+      {
+        "id": "h6-062",
+        "values": [
+          "chen.wei"
+        ]
+      },
+      {
+        "id": "h6-066",
+        "values": [
+          "michael.chen21"
+        ]
+      },
+      {
+        "id": "h6-067",
+        "values": [
+          "Elena Petrova",
+          "(213) 583-0787",
+          "AC-924089"
+        ]
+      },
+      {
+        "id": "h6-069",
+        "values": [
+          "169.146.64.170",
+          "isabelle.fontaine95@fernhill.co"
+        ]
+      },
+      {
+        "id": "h6-071",
+        "values": [
+          "Lumen%PCUWpdBHdc37"
+        ]
+      },
+      {
+        "id": "h6-073",
+        "values": [
+          "sarah.lindqvist35",
+          "Kessler?dlbRswI01j24",
+          "Sarah Michael Lindqvist"
+        ]
+      },
+      {
+        "id": "h6-074",
+        "values": [
+          "Noah Schmidt",
+          "1998-01-10",
+          "MRN-9477414",
+          "428225031"
+        ]
+      },
+      {
+        "id": "h6-078",
+        "values": [
+          "rafael.costa30",
+          "rafael.costa30@fernhill.co"
+        ]
+      },
+      {
+        "id": "h6-081",
+        "values": [
+          "AC-152451",
+          "Tomas Marie Novak",
+          "7369 Sunset Ridge Dr, Miami, FL 33131",
+          "(650) 526-2410",
+          "D853-1676-541"
+        ]
+      },
+      {
+        "id": "h6-087",
+        "values": [
+          "\u4f50\u85e4\u7f8e\u54b2",
+          "M83784357",
+          "18.07.1961",
+          "sato.misaki51@nordwind-medizin.de"
+        ]
+      },
+      {
+        "id": "h6-090",
+        "values": [
+          "Grace Mwangi",
+          "SA 71 74 57 B",
+          "8 Willow Court, Manchester M14 5PQ Suite 73"
+        ]
+      },
+      {
+        "id": "h6-091",
+        "values": [
+          "Linda Fischer",
+          "Mei Ann Lin Zhou",
+          "meilin.zhou79@brightpath.dev",
+          "88 Queen Street East, Toronto, ON M5C 1P6 Unit 594",
+          "553296021"
+        ]
+      },
+      {
+        "id": "h6-094",
+        "values": [
+          "\u0414\u043c\u0438\u0442\u0440\u0438\u0439 \u0421\u043e\u043a\u043e\u043b\u043e\u0432",
+          "D21496944",
+          "1992-05-04",
+          "WE 32 48 97 A",
+          "8 Willow Court, Manchester M14 5PQ Suite 836",
+          "Emma David Johansson"
+        ]
+      },
+      {
+        "id": "h6-096",
+        "values": [
+          "Erik Johansson",
+          "08/23/1965",
+          "THVGH2718A",
+          "5757 1318 7711",
+          "9291566319",
+          "erik.johansson@brightpath.dev"
+        ]
+      },
+      {
+        "id": "h6-097",
+        "values": [
+          "Sofia Kai Papadopoulos",
+          "597 120 768",
+          "45 Chapel Street, Melbourne VIC 3181 Unit 160"
+        ]
+      },
+      {
+        "id": "h6-102",
+        "values": [
+          "haruto.sato@vantagefield.org"
+        ]
+      },
+      {
+        "id": "h6-103",
+        "values": [
+          "Kenji Kai Nakamura",
+          "Rua das Palmeiras, 230, Sao Paulo, SP 01311-000 Suite 712"
+        ]
+      },
+      {
+        "id": "h6-106",
+        "values": [
+          "Tara Desai",
+          "CA903-8440-720",
+          "Av. Insurgentes Sur 1457, Ciudad de Mexico, CDMX 03920 Suite 741",
+          "11 Oct 1998"
+        ]
+      },
+      {
+        "id": "h6-112",
+        "values": [
+          "\u674e\u5a1c",
+          "724-33-3516",
+          "8575 Harbor View Way, Chicago, IL 60614",
+          "12.09.1981"
+        ]
+      },
+      {
+        "id": "h6-115",
+        "values": [
+          "Omar K. Farouk",
+          "09.09.1982",
+          "426-06-1362",
+          "NC682-8834-130",
+          "1536 Wexford Lane, Miami, FL 33131",
+          "(619) 520-5306",
+          "omar.farouk26@saltspire.net"
+        ]
+      },
+      {
+        "id": "h6-116",
+        "values": [
+          "MRN-9161569",
+          "24 Oct 1983",
+          "8421126348",
+          "Faith Okonkwo"
+        ]
+      },
+      {
+        "id": "h6-118",
+        "values": [
+          "Anna Mueller",
+          "anna.mueller@quantumbrook.io"
+        ]
+      },
+      {
+        "id": "h6-119",
+        "values": [
+          "Hope Delacroix",
+          "2 Apr 1978",
+          "Will Thornton",
+          "1970-03-21",
+          "7230 Sunset Ridge Dr, Portland, OR 97205",
+          "(512) 818-7685",
+          "Thomas Kai Berger"
+        ]
+      },
+      {
+        "id": "h6-007",
+        "values": [
+          "Kwame Mensah",
+          "kwame.mensah@brightpath.dev"
+        ]
+      },
+      {
+        "id": "h6-008",
+        "values": [
+          "Olivia Dubois",
+          "olivia.dubois42"
+        ]
+      },
+      {
+        "id": "h6-009",
+        "values": [
+          "yuki.tanaka59@kessler-works.com"
+        ]
+      },
+      {
+        "id": "h6-010",
+        "values": [
+          "Kenji Nakamura",
+          "julia.kowalska@fernhill.co",
+          "Lisa Wang"
+        ]
+      },
+      {
+        "id": "h6-014",
+        "values": [
+          "Jose Garcia",
+          "S25376409",
+          "15 Apr 1968"
+        ]
+      },
+      {
+        "id": "h6-018",
+        "values": [
+          "Rafael Costa",
+          "674-07-5916",
+          "1975-07-20",
+          "Kwame Marie Mensah"
+        ]
+      },
+      {
+        "id": "h6-019",
+        "values": [
+          "5554573413",
+          "MRN-8416615",
+          "mateo.hernandez48@harborlight-labs.io",
+          "2 41 07 44 767 716 12"
+        ]
+      },
+      {
+        "id": "h6-022",
+        "values": [
+          "viktor.petrov20",
+          "Viktor Grace Petrov"
+        ]
+      },
+      {
+        "id": "h6-028",
+        "values": [
+          "Andrei Grace Popov",
+          "102 Sunset Ridge Dr, Chicago, IL 60614",
+          "CXCVT8403Z"
+        ]
+      },
+      {
+        "id": "h6-039",
+        "values": [
+          "Tara Lee Desai",
+          "45 Chapel Street, Melbourne VIC 3181, Apt. 429",
+          "513 339 233"
+        ]
+      },
+      {
+        "id": "h6-042",
+        "values": [
+          "Drift$bRVuPD16"
+        ]
+      },
+      {
+        "id": "h6-043",
+        "values": [
+          "layla.hassan@nordwind-medizin.de",
+          "13.20.238.239",
+          "layla.hassan"
+        ]
+      },
+      {
+        "id": "h6-046",
+        "values": [
+          "tara.desai5@copperline.systems",
+          "Tara Kai Desai",
+          "51056538334"
+        ]
+      },
+      {
+        "id": "h6-047",
+        "values": [
+          "182.130.161.248",
+          "priya.raghavan"
+        ]
+      },
+      {
+        "id": "h6-059",
+        "values": [
+          "64.172.3.63",
+          "Kenji S. Nakamura",
+          "kenji.nakamura60@vantagefield.org"
+        ]
+      },
+      {
+        "id": "h6-060",
+        "values": [
+          "8.230.66.23",
+          "aisha.bello"
+        ]
+      },
+      {
+        "id": "h6-064",
+        "values": [
+          "nadia.rahal",
+          "Julia K. Kowalska",
+          "23.31.205.100"
+        ]
+      },
+      {
+        "id": "h6-065",
+        "values": [
+          "thomas.berger25"
+        ]
+      },
+      {
+        "id": "h6-068",
+        "values": [
+          "oscar.lindgren"
+        ]
+      },
+      {
+        "id": "h6-077",
+        "values": [
+          "yuki.tanaka@lumenarc.tech"
+        ]
+      },
+      {
+        "id": "h6-082",
+        "values": [
+          "noah.schmidt13",
+          "noah.schmidt13@vantagefield.org",
+          "151.10.101.20"
+        ]
+      },
+      {
+        "id": "h6-085",
+        "values": [
+          "mohammed.haddad",
+          "Mohammed M. Haddad",
+          "323-18-1273",
+          "05.07.2001"
+        ]
+      },
+      {
+        "id": "h6-086",
+        "values": [
+          "dmitri.volkov23@copperline.systems",
+          "IUUQX6875F",
+          "H.No. 12-34, Banjara Hills, Hyderabad 500034 Apt 719",
+          "6917 1443 3216"
+        ]
+      },
+      {
+        "id": "h6-098",
+        "values": [
+          "2 48 03 06 455 708 34",
+          "Diego Ramirez"
+        ]
+      },
+      {
+        "id": "h6-099",
+        "values": [
+          "Anika J. Sharma",
+          "16.06.1966",
+          "9479 6185 1766"
+        ]
+      },
+      {
+        "id": "h6-101",
+        "values": [
+          "175.172.228.177",
+          "c7ca95fb1e60cc2119a98be9"
+        ]
+      },
+      {
+        "id": "h6-105",
+        "values": [
+          "170.106.221.86",
+          "Ember%0eWzV6g4lU59",
+          "priya.raghavan28"
+        ]
+      },
+      {
+        "id": "h6-108",
+        "values": [
+          "samuel.osei76",
+          "Samuel James Osei",
+          "2 52 01 69 991 313 73"
+        ]
+      },
+      {
+        "id": "h6-111",
+        "values": [
+          "samuel.osei8",
+          "217765296",
+          "450 Rue Saint-Pierre, Montreal, QC H2Y 2M9, Apt. 761"
+        ]
+      },
+      {
+        "id": "h6-113",
+        "values": [
+          "47.51.152.96",
+          "andrei.popov40",
+          "peter.novak@nordwind-medizin.de",
+          "(510) 340-3412",
+          "975 407 833"
+        ]
+      },
+      {
+        "id": "h6-120",
+        "values": [
+          "tomas.novak96",
+          "tomas.novak96@lumenarc.tech",
+          "25271586145"
+        ]
+      }
+    ],
+    "ms_per_item": 0.1
+  }
+]

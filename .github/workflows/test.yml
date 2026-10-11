@@ -1,0 +1,61 @@
+name: test
+# Free Actions minutes are limited on a private repo (Windows counts 2x, macOS 10x): pushes to main run Linux
+# only; pull requests and manual runs get every OS and the model-backed job.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+jobs:
+  rules:
+    # Rules mode, hooks, vault encryption and shell safeguards on every OS Claude Code supports.
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ${{ fromJSON(github.event_name == 'push' && '["ubuntu-latest"]' || '["ubuntu-latest", "macos-latest", "windows-latest"]') }}
+        python: ["3.10", "3.13"]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "${{ matrix.python }}"}
+      - run: pip install -e . pytest
+      - run: pytest -q tests
+      - run: cloakroom doctor
+        env: {CLOAKROOM_MODE: rules}
+        continue-on-error: true   # headless runners have no OS secure store; doctor reports the key-file fallback
+      - run: python bench/gen_corpus.py > bench/corpus.jsonl && python bench/run_bench.py cloakroom_rules
+      - name: hook command works in bash, PowerShell 5.1 and 7, with and without cloakroom
+        run: python scripts/check_polyglot.py
+  full:
+    # Model-backed mode on CPU (Linux and Windows), checks the benchmark's zero-leak result holds off Apple silicon.
+    if: github.event_name != 'push'
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - run: pip install -e ".[torch]" --extra-index-url https://download.pytorch.org/whl/cpu
+      - run: python bench/run_bench.py cloakroom_full
+        env: {CLOAKROOM_BACKEND: torch}
+  onnx:
+    # ONNX Runtime backend (int8) on CPU: export once with torch, then check parity and the zero-leak result.
+    if: github.event_name != 'push'
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - run: pip install -e ".[model,torch]" onnx pytest --extra-index-url https://download.pytorch.org/whl/cpu
+      - run: python scripts/export_onnx.py
+      - run: pytest -q tests/test_onnx_backend.py
+      - run: python bench/run_bench.py cloakroom_full
+        env: {CLOAKROOM_BACKEND: onnx}

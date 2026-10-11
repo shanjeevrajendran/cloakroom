@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 400" width="880" height="400" role="img" aria-label="Cloakroom, a privacy layer for Claude Code. v0.1 benchmark on five fresh test sets: 0 of 1,005 personal data values leaked, 4 of 334 keys and IDs leaked, 60 of 200 safe samples masked by mistake.">
+  <title>Cloakroom v0.1: 0 of 1,005 personal data values leaked</title>
+  <defs>
+    <pattern id="grid" width="44" height="44" patternUnits="userSpaceOnUse"><path d="M44 0H0V44" fill="none" stroke="#d2a8ff" stroke-opacity="0.05"/></pattern>
+    <radialGradient id="glow" cx="50%" cy="15%" r="70%"><stop offset="0%" stop-color="#56d364" stop-opacity="0.13"/><stop offset="100%" stop-color="#56d364" stop-opacity="0"/></radialGradient>
+  </defs>
+  <rect width="880" height="400" rx="12" fill="#0d1117"/>
+  <rect width="880" height="400" rx="12" fill="url(#grid)"/>
+  <rect width="880" height="230" rx="12" fill="url(#glow)"/>
+  <g transform="translate(296 44)" fill="none" stroke="#56d364" stroke-width="2.6" stroke-linejoin="round">
+    <path d="M4 6 H40 V16 A6 6 0 0 0 40 28 V38 H4 V28 A6 6 0 0 0 4 16 Z"/>
+    <path d="M14 22 H30" stroke-dasharray="3 3"/>
+  </g>
+  <text x="356" y="80" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="42" font-weight="700" letter-spacing="-0.8" fill="#ffffff">Cloakroom</text>
+  <text x="440" y="118" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="15" fill="#8b949e" text-anchor="middle">A privacy layer for Claude Code</text>
+  <text x="60" y="172" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" letter-spacing="1.6" fill="#8b949e">V0.1 BENCHMARK · FIVE FRESH TEST SETS, EACH RUN ONCE</text>
+  <rect x="60" y="188" width="240" height="118" rx="10" fill="#161b22" stroke="#30363d"/>
+  <text x="80" y="240" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="40" font-weight="700" fill="#56d364">0<tspan font-size="15" font-weight="400" fill="#8b949e" dx="8">of 1,005</tspan></text>
+  <text x="80" y="268" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" fill="#e6edf3">personal data values leaked</text>
+  <text x="80" y="288" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#8b949e">names, emails, phones, addresses</text>
+  <rect x="320" y="188" width="240" height="118" rx="10" fill="#161b22" stroke="#30363d"/>
+  <text x="340" y="240" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="40" font-weight="700" fill="#e6edf3">4<tspan font-size="15" font-weight="400" fill="#8b949e" dx="8">of 334</tspan></text>
+  <text x="340" y="268" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" fill="#e6edf3">secrets and IDs leaked</text>
+  <text x="340" y="288" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#8b949e">API keys, passwords, cards, IDs</text>
+  <rect x="580" y="188" width="240" height="118" rx="10" fill="#161b22" stroke="#30363d"/>
+  <text x="600" y="240" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="40" font-weight="700" fill="#f2cc60">60<tspan font-size="15" font-weight="400" fill="#8b949e" dx="8">of 200</tspan></text>
+  <text x="600" y="268" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" fill="#e6edf3">safe samples masked anyway</text>
+  <text x="600" y="288" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#8b949e">false alarms: the weak spot</text>
+  <rect x="60" y="342" width="4" height="12" fill="#f2cc60"/>
+  <text x="74" y="352" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11.5" fill="#8b949e">the model saw <tspan fill="#f2cc60">PII_PERSON_1</tspan>; reply.md on your disk says <tspan fill="#56d364">Nadia Petrov</tspan></text>
+  <text x="74" y="372" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11.5" fill="#8b949e">synthetic agent traffic · default settings · offline · comparison with other tools below</text>
+</svg>
