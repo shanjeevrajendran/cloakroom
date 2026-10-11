@@ -2,8 +2,8 @@
 
 Each hook command is one string that both bash and PowerShell can run (the idea comes from maisecrets,
 Apache-2.0: https://github.com/Mcpgate-de/maisecrets). Claude Code runs hooks with bash, or with PowerShell on
-Windows without Git Bash. If `cloakroom` isn't installed the command still answers fail-closed itself:
-prompts are blocked and every tool call is denied before it runs, so no output exists to leak.
+Windows without Git Bash. If `cloakroom` isn't installed the command still answers itself: every tool call is denied
+before it runs, so no output exists to leak, and prompts pass with a warning so the user is never locked out.
 
 How the polyglot works: bash runs `set -- \\`# <#\\`` (the backticks hold only a comment), runs its own block and
 exits; the PowerShell block below sits in a heredoc bash never reaches. PowerShell reads `# <#` ... `#>` as a
@@ -13,15 +13,25 @@ comment, skips the bash block, and runs its own.
 """
 import json
 
-MISSING = "Cloakroom is not installed or not on PATH, so this was stopped to keep data private. Fix: run 'cloakroom doctor'."
+FIX = ("Install it with: uv tool install cloakroom[model,torch] (then restart Claude Code), "
+       "or turn the plugin off with /plugin disable cloakroom@cloakroom.")
+WARN = ("cloakroom: NOT protecting this session, the cloakroom program is not installed or not on PATH. "
+        "Tool calls are blocked until it is. " + FIX)
+DENY = ("Cloakroom blocked this tool call: the cloakroom program is not installed or not on PATH, so files and "
+        "command output cannot be checked. " + FIX)
 FALLBACK = {
-    "start": {"systemMessage": "cloakroom: not installed or not on PATH; every tool call will be denied until it is. "
-                               "Install: uv tool install 'cloakroom[model]'"},
-    "prompt": {"decision": "block", "reason": MISSING},
+    "start": {"systemMessage": WARN},
+    # Prompts pass with a warning so the user is never locked out of Claude Code (decision 2026-10-11); the
+    # leak risk is in what tools read, and those stay denied.
+    "prompt": {"systemMessage": WARN, "hookSpecificOutput": {"hookEventName": "UserPromptSubmit",
+               "additionalContext": "The Cloakroom privacy plugin is enabled but its cloakroom program is missing, "
+                                    "so every tool call is denied. If the user wants help: they should run "
+                                    "uv tool install cloakroom[model,torch] in their own terminal and restart "
+                                    "Claude Code, or disable the plugin with /plugin disable cloakroom@cloakroom."}},
     "pre": {"hookSpecificOutput": {"hookEventName": "PreToolUse", "permissionDecision": "deny",
-                                   "permissionDecisionReason": MISSING}},
+                                   "permissionDecisionReason": DENY}},
     # tools never run while cloakroom is missing (pre denies), so there is no real output to withhold here
-    "post": {"hookSpecificOutput": {"hookEventName": "PostToolUse", "updatedToolOutput": f"[{MISSING}]"}},
+    "post": {"hookSpecificOutput": {"hookEventName": "PostToolUse", "updatedToolOutput": f"[{DENY}]"}},
 }
 
 

@@ -21,8 +21,9 @@
   Code can't parse is dropped and the original passes through. Cloakroom never touches those fields and withholds
   per field.
 - If the plugin is installed but the `cloakroom` command isn't on PATH, each hook command (one string valid in both
-  bash and PowerShell, idea from maisecrets, Apache-2.0) answers fail-closed itself: prompts are blocked and every
-  tool call is denied before it runs. Checked in CI for bash, Windows PowerShell 5.1 and PowerShell 7.
+  bash and PowerShell, idea from maisecrets, Apache-2.0) answers by itself: every tool call is denied before it
+  runs, and prompts pass with a warning that gives the install and disable commands, so you're never locked out.
+  Checked in CI for bash, Windows PowerShell 5.1 and PowerShell 7.
 - Windows: run on a real Windows Server 2025 machine before v0.1 (same benchmark result as macOS, Credential Manager
   vault key); the hooks are covered by CI in bash and both PowerShells. Linux: covered by CI, not yet run on a real
   desktop.

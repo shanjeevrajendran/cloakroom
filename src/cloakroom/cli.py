@@ -137,7 +137,7 @@ def _doctor() -> int:
         line(None, "service", "down (starts on first use; or run: cloakroom serve)")
     import shutil
     line(bool(shutil.which("cloakroom")) or None, "on PATH", shutil.which("cloakroom") or
-         "cloakroom isn't on PATH: the hooks fail closed (prompts blocked, tool calls denied); Windows: uv tool update-shell, then a new terminal")
+         "cloakroom isn't on PATH: Claude Code tool calls are denied until it is; Windows: uv tool update-shell, then a new terminal")
     return 0 if ok else 1
 
 

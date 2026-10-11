@@ -1,6 +1,6 @@
 """CI check: every hook command works in each shell Claude Code may use, with and without cloakroom on PATH.
 
-With cloakroom: a post hook masks a planted key. Without: pre denies, prompt blocks.
+With cloakroom: a post hook masks a planted key. Without: pre denies, prompt passes with a warning.
     python scripts/check_polyglot.py
 """
 import json
@@ -45,8 +45,8 @@ for sh in shells:
     print(f"{name:<11} without cloakroom pre denies:    {ok}")
     failures += [] if ok else [(name, "pre-missing", out)]
     out = run(sh, "prompt", {"prompt": "hi"}, no_cloakroom_path)
-    ok = out.get("decision") == "block"
-    print(f"{name:<11} without cloakroom prompt blocks: {ok}")
+    ok = "decision" not in out and "NOT protecting" in out.get("systemMessage", "")
+    print(f"{name:<11} without cloakroom prompt warns:  {ok}")
     failures += [] if ok else [(name, "prompt-missing", out)]
 
 print("shells tested:", [s[0] for s in shells])

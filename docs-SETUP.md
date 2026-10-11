@@ -5,7 +5,7 @@ loaded in a small local service. No GPU needed. Without the extras, use rules-on
 (`CLOAKROOM_MODE=rules`): instant, but it misses names and free-text PII.
 
 The `cloakroom` command must be on PATH where Claude Code runs; `cloakroom doctor` warns if it isn't. Without it
-the hooks fail closed: prompts are blocked and tool calls denied. On Windows, after `uv tool install`, run
+the hooks deny every tool call, and prompts carry a warning. On Windows, after `uv tool install`, run
 `uv tool update-shell` and open a new terminal (pipx: `pipx ensurepath`).
 
 ## Backends

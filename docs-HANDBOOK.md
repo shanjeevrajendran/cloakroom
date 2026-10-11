@@ -136,8 +136,11 @@ numbers, loopback addresses, UUIDs and hashes). To add your own, list them under
 
 ## 9. When something's wrong
 
-- **Every tool call is denied.** `cloakroom` isn't on the PATH Claude Code sees. Run `cloakroom doctor`; on
-  Windows run `uv tool update-shell` (or `pipx ensurepath`) and open a new terminal.
+- **"NOT protecting this session" and every tool call is denied.** The plugin is on but the `cloakroom` program
+  isn't installed, or isn't on the PATH Claude Code sees. Install it (`uv tool install "cloakroom[model,torch]"`)
+  and restart Claude Code; on Windows also run `uv tool update-shell` (or `pipx ensurepath`) and open a new
+  terminal. Or turn the plugin off with `/plugin disable cloakroom@cloakroom`. Your prompts still go through
+  meanwhile, so you can ask Claude for help.
 - **`model: FAIL`.** Install the extra it names, or switch to rules mode.
 - **Windows, PyTorch won't load.** Install the Microsoft Visual C++ Redistributable
   (https://aka.ms/vs/17/release/vc_redist.x64.exe).

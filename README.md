@@ -44,7 +44,8 @@ in a log looks like ordinary text to a regex.
   - **Linux:** Secret Service, covered by CI on every change.
 - **No GPU needed.** On an Apple M-series CPU a check takes about 60 ms.
 - **Catches encoded dumps.** `base64`, `xxd` and `od` output is decoded and checked too.
-- **Fails closed.** If Cloakroom can't run, prompts are blocked and tool calls denied instead of slipping through.
+- **Fails closed.** If Cloakroom isn't running, tool calls are denied instead of slipping through, and every prompt
+  carries a warning with the fix, so you're never locked out of Claude Code.
 
 ## How it works
 
