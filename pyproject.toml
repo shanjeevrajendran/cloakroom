@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "cloakroom"
-version = "0.1.0"
-description = "Local privacy gate for AI coding agents: secrets and PII are masked before the model sees them, restored only for local tools."
+version = "0.1.1"
+description = "A privacy layer for Claude Code: names, emails, addresses and API keys are swapped for placeholders before the model sees them, and restored locally."
 readme = "README.md"
 license = "Apache-2.0"
 license-files = ["LICENSE", "NOTICE"]
@@ -28,7 +28,7 @@ dependencies = ["cryptography>=42", "keyring>=24"]
 # CPU: ONNX Runtime, no PyTorch at runtime (the ONNX file comes from scripts/export_onnx.py)
 model = ["onnxruntime>=1.20", "tokenizers>=0.20", "numpy", "huggingface_hub"]
 # MPS/CUDA, and the one-off ONNX export
-torch = ["torch>=2.5", "transformers>=5.2", "safetensors", "huggingface_hub"]
+torch = ["torch>=2.5", "transformers>=5.2", "safetensors", "huggingface_hub", "onnx>=1.16"]
 
 [project.urls]
 Homepage = "https://github.com/shanjeevrajendran/cloakroom"

@@ -27,7 +27,7 @@ _EDGE_PUNCT = ",;\"'`"  # model spans sometimes take the separator next to a val
 
 
 class ModelUnavailable(RuntimeError):
-    """full mode was asked for but the model can't run. Install cloakroom[model] or use mode='rules'."""
+    """full mode was asked for but the model can't run. Install cloakroom[model,torch] or use mode='rules'."""
 
 
 _MODEL = None
@@ -84,7 +84,7 @@ def _torch_model():
         import torch
         from transformers import AutoModel
     except ImportError as e:
-        raise ModelUnavailable("torch backend needs: pip install 'cloakroom[torch]'") from e
+        raise ModelUnavailable("torch backend needs: pip install 'cloakroom[model,torch]'") from e
     device = "mps" if torch.backends.mps.is_available() else "cuda" if torch.cuda.is_available() else "cpu"
     return AutoModel.from_pretrained(MODEL_ID, revision=MODEL_REVISION, trust_remote_code=True).to(device).eval()
 

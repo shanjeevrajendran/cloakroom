@@ -183,7 +183,7 @@ def end_card():
     d.text((W * S // 2, 250 * S), "Cloakroom", font=f_big, fill=TEXT, anchor="mm")
     d.text((W * S // 2, 318 * S), "A privacy layer for Claude Code", font=f_mid, fill=TEXT, anchor="mm")
     d.text((W * S // 2, 356 * S), "Names, emails, addresses and API keys are swapped out before the model sees them.", font=f_small, fill=DIM, anchor="mm")
-    cmd = 'uv tool install "cloakroom[model]"'
+    cmd = 'uv tool install "cloakroom[model,torch]"'
     cw = f_mono.getlength(cmd)
     d.rounded_rectangle([W * S // 2 - cw // 2 - 16 * S, 410 * S, W * S // 2 + cw // 2 + 16 * S, 446 * S], 8 * S, fill=PANEL, outline=BORDER, width=1 * S)
     d.text((W * S // 2, 428 * S), cmd, font=f_mono, fill=OK_FG, anchor="mm")

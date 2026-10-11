@@ -5,7 +5,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "set -- `# <#`\nif command -v cloakroom >/dev/null 2>&1; then cloakroom hook start; else printf '%s\\n' '{\"systemMessage\": \"cloakroom: not installed or not on PATH; every tool call will be denied until it is. Install: uv tool install cloakroom[model]\"}'; fi; exit 0\n: <<'#PS_END'\n#>\n$u = New-Object System.Text.UTF8Encoding $false; [Console]::InputEncoding = $u; [Console]::OutputEncoding = $u; $OutputEncoding = $u; if (Get-Command cloakroom -ErrorAction SilentlyContinue) { [Console]::In.ReadToEnd() | & cloakroom hook start } else { '{\"systemMessage\": \"cloakroom: not installed or not on PATH; every tool call will be denied until it is. Install: uv tool install cloakroom[model]\"}' }; exit 0\n#PS_END",
+            "command": "set -- `# <#`\nif command -v cloakroom >/dev/null 2>&1; then cloakroom hook start; else printf '%s\\n' '{\"systemMessage\": \"cloakroom: not installed or not on PATH; every tool call will be denied until it is. Install: uv tool install cloakroom[model,torch]\"}'; fi; exit 0\n: <<'#PS_END'\n#>\n$u = New-Object System.Text.UTF8Encoding $false; [Console]::InputEncoding = $u; [Console]::OutputEncoding = $u; $OutputEncoding = $u; if (Get-Command cloakroom -ErrorAction SilentlyContinue) { [Console]::In.ReadToEnd() | & cloakroom hook start } else { '{\"systemMessage\": \"cloakroom: not installed or not on PATH; every tool call will be denied until it is. Install: uv tool install cloakroom[model,torch]\"}' }; exit 0\n#PS_END",
             "timeout": 30
           }
         ]

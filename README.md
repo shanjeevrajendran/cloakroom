@@ -1,13 +1,13 @@
 <div align="center">
 
-<img src="assets/hero.svg" alt="Cloakroom, a privacy layer for Claude Code. v0.1 benchmark on five fresh test sets: 0 of 1,005 personal data values leaked, 4 of 334 secrets and IDs leaked, 60 of 200 safe samples masked by mistake." width="880">
+<img src="https://raw.githubusercontent.com/shanjeevrajendran/cloakroom/main/assets/hero.svg" alt="Cloakroom, a privacy layer for Claude Code. v0.1 benchmark on five fresh test sets: 0 of 1,005 personal data values leaked, 4 of 334 secrets and IDs leaked, 60 of 200 safe samples masked by mistake." width="880">
 
 <p>
   <a href="#get-started">Get started</a> ·
   <a href="#results">Results</a> ·
   <a href="#how-it-works">How it works</a> ·
   <a href="#faq">FAQ</a> ·
-  <a href="docs-LIMITS.md">Known limits</a>
+  <a href="https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-LIMITS.md">Known limits</a>
 </p>
 
 </div>
@@ -19,7 +19,7 @@ Runs on macOS, Windows and Linux.
 **Status:** v0.1. Tested on macOS and a real Windows machine (Linux in CI). It works; expect rough edges.
 
 <div align="center">
-  <img src="assets/demo.gif" alt="Claude Code reads a support ticket and .env through Cloakroom: the model sees PII_PERSON_1 and PII_SECRET_1, and reply.md on disk gets the real customer name back" width="820">
+  <img src="https://raw.githubusercontent.com/shanjeevrajendran/cloakroom/main/assets/demo.gif" alt="Claude Code reads a support ticket and .env through Cloakroom: the model sees PII_PERSON_1 and PII_SECRET_1, and reply.md on disk gets the real customer name back" width="820">
   <br><sub>Claude sees <code>PII_PERSON_1</code>. The reply it writes lands on your disk as "Hi Nadia Petrov".</sub>
 </div>
 
@@ -68,25 +68,39 @@ in a log looks like ordinary text to a regex.
   reply.md on your disk: "Hi Nadia Petrov,"
 ```
 
-Details: [docs-HOW-IT-WORKS.md](docs-HOW-IT-WORKS.md).
+Details: [docs-HOW-IT-WORKS.md](https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-HOW-IT-WORKS.md).
 
 ## Get started
 
 ```bash
-# 1. Install
-uv tool install "cloakroom[model]"        # or: pipx install "cloakroom[model]"
+# 1. Install (about 4 GB with the model; pipx works too)
+uv tool install "cloakroom[model,torch]"
 
-# 2. Check this machine: Python, the key store, the model and the service
+# 2. No GPU? Make the fast CPU model once (a few minutes)
+cloakroom export-onnx
+
+# 3. Check this machine: Python, the key store, the model and the service
 cloakroom doctor
 ```
 
 ```
-# 3. Add the plugin, inside Claude Code
+# 4. Add the plugin, inside Claude Code
 /plugin marketplace add shanjeevrajendran/cloakroom
 /plugin install cloakroom@cloakroom
 ```
 
-Python 3.10+. GPU and CPU backends, Windows notes and a rules-only mode: [docs-SETUP.md](docs-SETUP.md).
+Python 3.10+. Skip step 2 on an Apple Silicon Mac or an NVIDIA GPU.
+
+## Ways to run
+
+- **Full mode** (default): rules plus the local model. Catches keys and personal data written as plain text.
+- **Rules mode** (`CLOAKROOM_MODE=rules`): no model, instant, installs with plain `uv tool install cloakroom`.
+  Catches keys, card numbers and IDs, but misses most names and addresses.
+- **Outside Claude Code:** `cloakroom check FILE` shows what would be masked, `cloakroom explain FILE` shows why,
+  `cloakroom mask FILE` prints what Claude would see.
+- **Dry run** (`CLOAKROOM_DRY_RUN=1`): lets everything through and logs what it would have done.
+
+Exceptions, backends, CI and troubleshooting: [the handbook](https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-HANDBOOK.md).
 
 ## Results
 
@@ -107,7 +121,7 @@ Some of these tools only aim at secrets, so their personal-data column shows sco
 False alarms are Cloakroom's weak spot: it masked 60 of 200 safe samples, such as historical names, landmark
 addresses and documented test keys. A false alarm costs you a placeholder where Claude needed the real text; a
 miss sends the value to the model. Method and every run:
-[bench/RESULTS.md](bench/RESULTS.md). The maintainers of the compared tools were contacted before publishing.
+[bench/RESULTS.md](https://github.com/shanjeevrajendran/cloakroom/blob/main/bench/RESULTS.md). The maintainers of the compared tools were contacted before publishing.
 
 ## FAQ
 
@@ -123,14 +137,15 @@ version). Everything else runs on 127.0.0.1.
 
 **What doesn't it protect?** It stops accidental exposure; it isn't a sandbox. Out of scope: a prompt injection
 set on smuggling data out piece by piece, text you paste into a prompt on purpose (that gets blocked, not
-rewritten), and Claude Code's own local logs. Details: [docs-LIMITS.md](docs-LIMITS.md).
+rewritten), and Claude Code's own local logs. Details: [docs-LIMITS.md](https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-LIMITS.md).
 
-**How do I remove it?** See [Uninstall](docs-SETUP.md#uninstall).
+**How do I remove it?** See [Uninstall](https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-SETUP.md#uninstall).
 
 ## More
 
-- [How it works](docs-HOW-IT-WORKS.md): the detectors, the known-safe filter, the vault and the restore
-- [Setup details](docs-SETUP.md) · [Known limits](docs-LIMITS.md) · [Benchmark](bench/RESULTS.md)
+- [How it works](https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-HOW-IT-WORKS.md): the detectors, the known-safe filter, the vault and the restore
+- [Setup details](https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-SETUP.md) · [Known limits](https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-LIMITS.md) · [Benchmark](https://github.com/shanjeevrajendran/cloakroom/blob/main/bench/RESULTS.md)
+- Found a way around it? Please report it privately: [SECURITY.md](https://github.com/shanjeevrajendran/cloakroom/blob/main/SECURITY.md)
 
 ## Credits
 

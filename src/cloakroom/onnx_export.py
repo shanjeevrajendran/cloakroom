@@ -1,6 +1,6 @@
 """Export PII-Tracer's network (token logits only) to ONNX, then quantize the encoder to int8.
 
-Needs the torch extra once: pip install 'cloakroom[model,torch]' onnx
+Needs the torch extra once: pip install 'cloakroom[model,torch]'
 
     cloakroom export-onnx [--out DIR]      (same as: python scripts/export_onnx.py)
 

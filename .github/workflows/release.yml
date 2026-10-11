@@ -33,3 +33,16 @@ jobs:
       - uses: actions/download-artifact@v4
         with: {name: dist, path: dist/}
       - uses: pypa/gh-action-pypi-publish@release/v1
+
+  github-release:
+    needs: publish
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write   # create the GitHub Release page for the tag
+    steps:
+      - run: |
+          gh release create "$GITHUB_REF_NAME" -R "$GITHUB_REPOSITORY" --title "Cloakroom $GITHUB_REF_NAME" \
+            --notes "Install with uv tool install \"cloakroom[model,torch]\" (see the README). PyPI: https://pypi.org/project/cloakroom/"
+        env:
+          GH_TOKEN: ${{ github.token }}
+
