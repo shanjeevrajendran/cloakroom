@@ -7,7 +7,7 @@ import secrets
 from pathlib import Path
 
 HOME = Path(os.environ.get("CLOAKROOM_HOME", Path.home() / ".cloakroom"))
-DEFAULTS = {"mode": "full", "port": 8787, "allow": []}
+DEFAULTS = {"mode": "full", "port": 37787, "allow": []}  # not 8787: Headroom's proxy defaults to it
 
 
 def load() -> dict:

@@ -103,6 +103,24 @@ Python 3.10+. Skip step 2 on an Apple Silicon Mac or an NVIDIA GPU.
 
 Exceptions, backends, CI and troubleshooting: [the handbook](https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-HANDBOOK.md).
 
+## Dashboard (preview, coming in v0.2)
+
+<div align="center">
+  <img src="https://raw.githubusercontent.com/shanjeevrajendran/cloakroom/main/assets/dashboard-preview.png" alt="Preview of the Cloakroom dashboard: health status, values kept from the model, an alert opened to show what Claude saw next to the file on disk, and the learning panel" width="820">
+  <br><sub>Design preview with example data. Not in the current release yet.</sub>
+</div>
+
+A local page served by Cloakroom itself, on your own machine only:
+
+- **Alerts** colour-coded by severity. Open one to see what Claude saw next to your file, with real values blurred
+  until you click reveal.
+- **Your labels:** mark an alert *correct*, a *false alarm*, or point at something it *missed*.
+- **Learning from your labels:** each label becomes a rule ("never mask Grace Hopper", "always mask ACCT-123456").
+  In *Suggest* you approve every rule; once you've made enough decisions, *Learn quietly* applies them itself,
+  but only after replaying them against your past decisions and a built-in safety set. Rules that would unmask a
+  key, password, card or ID number always wait for you. The detection model itself never changes.
+- **Health at a glance:** mode, backend, port and the last error, with the fix spelled out.
+
 ## Results
 
 Cloakroom and four other Claude Code redaction tools, default settings, the same synthetic agent traffic,

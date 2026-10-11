@@ -62,10 +62,10 @@ def main(argv=None):
         return 0
     if a.cmd == "status":
         cfg = config.load()
-        try:
-            with urllib.request.urlopen(f"http://127.0.0.1:{cfg['port']}/health", timeout=2) as r:
-                health = json.load(r)
-        except OSError:
+        from . import client
+        health = client.health(cfg["port"]) or {"ok": False}
+        if health.get("ok") and health.get("service") != "cloakroom":
+            print(client.port_taken(cfg["port"]), file=sys.stderr)
             health = {"ok": False}
         sessions = len(list((config.HOME / "sessions").glob("*.json"))) if (config.HOME / "sessions").exists() else 0
         print(f"mode: {cfg['mode']}  service: {'up' if health.get('ok') else 'down'}"
@@ -129,12 +129,14 @@ def _doctor() -> int:
             line(True, "model", f"{detail}, loaded in {t1 - t0:.1f} s, one check {1000 * (t2 - t1):.0f} ms")
         except engine.ModelUnavailable as e:
             line(False, "model", f"{e} (or set mode to rules)")
-    try:
-        with urllib.request.urlopen(f"http://127.0.0.1:{cfg['port']}/health", timeout=2) as r:
-            h = json.load(r)
-        line(True, "service", "up" + (", model loaded" if h.get("model") else ""))
-    except OSError:
-        line(None, "service", "down (starts on first use; or run: cloakroom serve)")
+    from . import client
+    h = client.health(cfg["port"])
+    if h is None:
+        line(None, "service", f"down on port {cfg['port']} (starts on first use; or run: cloakroom serve)")
+    elif h.get("service") != "cloakroom":
+        line(False, "service", client.port_taken(cfg["port"]))
+    else:
+        line(True, "service", f"up on port {cfg['port']}" + (", model loaded" if h.get("model") else ""))
     import shutil
     line(bool(shutil.which("cloakroom")) or None, "on PATH", shutil.which("cloakroom") or
          "cloakroom isn't on PATH: Claude Code tool calls are denied until it is; Windows: uv tool update-shell, then a new terminal")

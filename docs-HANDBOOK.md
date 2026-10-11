@@ -118,7 +118,7 @@ numbers, loopback addresses, UUIDs and hashes). To add your own, list them under
 - **Dry run.** `CLOAKROOM_DRY_RUN=1` lets everything through and logs what Cloakroom would have done to
   `~/.cloakroom/dry-run.log`. Useful for trying it on a real project before trusting it.
 - **Separate homes.** `CLOAKROOM_HOME` moves the config, vault and model files; `CLOAKROOM_PORT` moves the local
-  service (default 8787).
+  service (default 37787).
 
 ## 8. Settings reference
 
@@ -126,7 +126,7 @@ numbers, loopback addresses, UUIDs and hashes). To add your own, list them under
 |---|---|---|---|
 | mode | `config.json` `mode`, `CLOAKROOM_MODE`, `--mode` | `full` | `full`, `rules` |
 | allow | `config.json` `allow` | none | exact values, `re:<regex>` |
-| port | `config.json` `port`, `CLOAKROOM_PORT` | `8787` | any free local port |
+| port | `config.json` `port`, `CLOAKROOM_PORT` | `37787` | any free local port |
 | backend | `CLOAKROOM_BACKEND` | `auto` | `auto`, `torch`, `onnx` |
 | ONNX variant | `CLOAKROOM_ONNX` | `fp32` | `fp32`, `int8` |
 | ONNX folder | `CLOAKROOM_ONNX_DIR` | `~/.cloakroom/onnx/<model version>` | a path |
@@ -141,6 +141,9 @@ numbers, loopback addresses, UUIDs and hashes). To add your own, list them under
   and restart Claude Code; on Windows also run `uv tool update-shell` (or `pipx ensurepath`) and open a new
   terminal. Or turn the plugin off with `/plugin disable cloakroom@cloakroom`. Your prompts still go through
   meanwhile, so you can ask Claude for help.
+- **"port ... is used by another program, not Cloakroom".** Another local tool owns Cloakroom's port (for
+  example a proxy). Pick a free one in `~/.cloakroom/config.json`, e.g. `{"port": 37788}`, and restart Claude Code.
+  `cloakroom doctor` shows the port in use.
 - **`model: FAIL`.** Install the extra it names, or switch to rules mode.
 - **Windows, PyTorch won't load.** Install the Microsoft Visual C++ Redistributable
   (https://aka.ms/vs/17/release/vc_redist.x64.exe).

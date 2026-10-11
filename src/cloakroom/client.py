@@ -24,11 +24,36 @@ def _post(path: str, body: dict, timeout: float = 30) -> dict:
         with urllib.request.urlopen(req, timeout=timeout) as r:
             return json.load(r)
     except urllib.error.HTTPError as e:
-        detail = json.load(e) if e.headers.get("Content-Type") == "application/json" else {}
+        try:
+            detail = json.load(e)
+        except Exception:
+            detail = {}
+        if not is_cloakroom(cfg["port"]):
+            raise Unavailable(port_taken(cfg["port"])) from e
         raise Unavailable(detail.get("detail") or detail.get("error") or f"HTTP {e.code}") from e
     except (urllib.error.URLError, OSError) as e:
         start_background()
         raise Unavailable("cloakroom service is starting; try again in a few seconds") from e
+
+
+def health(port: int) -> dict | None:
+    """The service's /health, or None if nothing answers. Another program on the port answers too: check 'service'."""
+    try:
+        with urllib.request.urlopen(f"http://127.0.0.1:{port}/health", timeout=2) as r:
+            h = json.load(r)
+        return h if isinstance(h, dict) else {}
+    except Exception:
+        return None
+
+
+def is_cloakroom(port: int) -> bool:
+    h = health(port)
+    return h is None or h.get("service") == "cloakroom"
+
+
+def port_taken(port: int) -> str:
+    return (f"port {port} is used by another program, not Cloakroom. Pick a free port: set \"port\" in "
+            f"~/.cloakroom/config.json (for example {{\"port\": 37788}}) or CLOAKROOM_PORT, then restart Claude Code")
 
 
 def start_background():

@@ -3,7 +3,7 @@
 
 POST /mask     {"text", "session", "mode"?} -> {"text", "mode", "masked": [[placeholder, kind, source]], "skipped": [...]}
 POST /restore  {"text", "session"}          -> {"text", "unknown": [placeholders not in the vault]}
-GET  /health                                 -> {"ok": true, "model": bool}
+GET  /health                                 -> {"ok": true, "service": "cloakroom", "model": bool}
 """
 from __future__ import annotations
 
@@ -43,7 +43,7 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         if self.path != "/health":
             return self._send(404, {"error": "not found"})
-        self._send(200, {"ok": True, "model": engine._MODEL is not None})
+        self._send(200, {"ok": True, "service": "cloakroom", "model": engine._MODEL is not None})
 
     def do_POST(self):
         if not self._authorized():
