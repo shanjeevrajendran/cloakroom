@@ -251,3 +251,15 @@ def test_tool_output_still_withheld_when_service_down(monkeypatch, capsys):
     out = run_hook("post", {"session_id": "t", "tool_name": "Read",
                             "tool_response": {"file": {"content": "Jane Example, jane@corp.io"}}}, monkeypatch, capsys)
     assert "jane@corp.io" not in json.dumps(out) and "couldn't check" in json.dumps(out)
+
+
+def test_start_hook_returns_at_once_when_service_down(monkeypatch, capsys):
+    import time
+    from cloakroom import client
+    monkeypatch.setattr(client, "start_background", lambda: None)
+    monkeypatch.setattr(client, "health", lambda port: None)
+    monkeypatch.setenv("CLOAKROOM_MODE", "full")
+    monkeypatch.setenv("CLOAKROOM_PORT", "1")
+    t = time.monotonic()
+    out = run_hook("start", {"session_id": "t"}, monkeypatch, capsys)
+    assert time.monotonic() - t < 3 and "background" in out["systemMessage"]

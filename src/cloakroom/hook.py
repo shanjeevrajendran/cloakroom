@@ -231,9 +231,12 @@ def on_start(data: dict) -> dict | None:
     """Session start: warm the service so the first tool call isn't blocked while the model loads."""
     if config.load()["mode"] == "full":
         try:
-            client._post("/mask", {"text": "warm up", "session": data.get("session_id", "default")}, timeout=5)
+            # wait=0: start the service and return at once (the SessionStart hook only has 30 s; the first model
+            # download alone can take longer). Tool calls wait for it instead.
+            client._post("/mask", {"text": "warm up", "session": data.get("session_id", "default")}, timeout=5, wait=0)
         except client.Unavailable:
-            return {"systemMessage": "cloakroom: starting the local model; the first tool call may be held back for a few seconds"}
+            return {"systemMessage": "cloakroom: starting the local model in the background. The very first run also "
+                                     "downloads it once (about a minute); tool calls wait for it."}
     return None
 
 

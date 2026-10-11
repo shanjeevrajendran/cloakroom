@@ -52,7 +52,7 @@ def _once(req, timeout: float, port: int) -> dict:
         raise _Down() from e
 
 
-def _post(path: str, body: dict, timeout: float = 30) -> dict:
+def _post(path: str, body: dict, timeout: float = 30, wait: float | None = None) -> dict:
     cfg = config.load()
     req = urllib.request.Request(f"http://127.0.0.1:{cfg['port']}{path}", json.dumps(body).encode(),
                                  {"Content-Type": "application/json", "X-Cloakroom-Token": config.token()})
@@ -60,7 +60,7 @@ def _post(path: str, body: dict, timeout: float = 30) -> dict:
         return _once(req, timeout, cfg["port"])
     except _Down:
         start_background()
-    if not _wait_until_up(cfg["port"], STARTUP_WAIT):
+    if not _wait_until_up(cfg["port"], STARTUP_WAIT if wait is None else wait):
         raise Unavailable("cloakroom service is starting; try again in a few seconds")
     try:
         return _once(req, timeout, cfg["port"])

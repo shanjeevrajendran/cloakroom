@@ -7,6 +7,9 @@ from __future__ import annotations
 
 import os
 import re
+
+# The model is public: no Hugging Face login needed, so hide the "unauthenticated requests" warning.
+os.environ.setdefault("HF_HUB_VERBOSITY", "error")
 from dataclasses import dataclass, field
 
 from . import rules, safe

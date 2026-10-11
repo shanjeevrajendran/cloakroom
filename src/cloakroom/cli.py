@@ -120,19 +120,25 @@ def _doctor() -> int:
         import time
         try:
             backend = engine.choose_backend()
+            print("...   model: loading (the first run downloads it once, about 1 GB; that can take a minute or two)",
+                  flush=True)
             t0 = time.perf_counter()
             engine._model()
             t1 = time.perf_counter()
-            engine.mask("Contact Jane Example at jane@example.org or +1 415 555 0100.", mode="full")
+            sample = "Contact Jane Example at jane@example.org or +1 415 555 0100."
+            engine.mask(sample, mode="full")  # the first check warms the backend up
             t2 = time.perf_counter()
+            engine.mask(sample, mode="full")
+            t3 = time.perf_counter()
             detail = backend + (f" ({engine._model().path.name})" if backend == "onnx" else "")
-            line(True, "model", f"{detail}, loaded in {t1 - t0:.1f} s, one check {1000 * (t2 - t1):.0f} ms")
+            line(True, "model", f"{detail}, loaded in {t1 - t0:.1f} s, one check {1000 * (t3 - t2):.0f} ms "
+                                f"(first check {1000 * (t2 - t1):.0f} ms, a one-time warm-up)")
         except engine.ModelUnavailable as e:
             line(False, "model", f"{e} (or set mode to rules)")
     from . import client
     h = client.health(cfg["port"])
     if h is None:
-        line(None, "service", f"down on port {cfg['port']} (starts on first use; or run: cloakroom serve)")
+        line(True, "service", f"not running yet (port {cfg['port']}); it starts by itself on first use")
     elif h.get("service") != "cloakroom":
         line(False, "service", client.port_taken(cfg["port"]))
     else:
