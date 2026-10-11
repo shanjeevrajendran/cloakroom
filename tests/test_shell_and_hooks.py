@@ -223,3 +223,31 @@ def test_hookentry_reads_bom_and_fails_closed_on_garbage(monkeypatch, capsys):
     monkeypatch.setattr(sys, "stdin", io.TextIOWrapper(io.BytesIO(b"\xff\xfegarbage")))
     hookentry.run("pre")
     assert json.loads(capsys.readouterr().out)["hookSpecificOutput"]["permissionDecision"] == "deny"
+
+
+def _service_down(monkeypatch):
+    from cloakroom import client, hook
+
+    def boom(*a, **k):
+        raise client.Unavailable("cloakroom service is starting; try again in a few seconds")
+    monkeypatch.setattr(hook.client, "mask", boom)
+
+
+def test_prompt_with_key_still_blocked_when_service_down(monkeypatch, capsys):
+    _service_down(monkeypatch)
+    key = "ghp_" + "R8kL2mQ9vX4nT7bW1cY5zH3jF6dS0aP2eG8u"
+    out = run_hook("prompt", {"session_id": "t", "prompt": f"use this token {key}"}, monkeypatch, capsys)
+    assert out["decision"] == "block" and key not in json.dumps(out)
+
+
+def test_clean_prompt_passes_with_warning_when_service_down(monkeypatch, capsys):
+    _service_down(monkeypatch)
+    out = run_hook("prompt", {"session_id": "t", "prompt": "refactor the parser"}, monkeypatch, capsys)
+    assert "decision" not in out and "NOT fully checked" in out["systemMessage"]
+
+
+def test_tool_output_still_withheld_when_service_down(monkeypatch, capsys):
+    _service_down(monkeypatch)
+    out = run_hook("post", {"session_id": "t", "tool_name": "Read",
+                            "tool_response": {"file": {"content": "Jane Example, jane@corp.io"}}}, monkeypatch, capsys)
+    assert "jane@corp.io" not in json.dumps(out) and "couldn't check" in json.dumps(out)

@@ -244,11 +244,24 @@ def fail_closed(event: str, why: str, data=None) -> dict:
     return closed(event, why, data)
 
 
+def _prompt_rules_only(data: dict, why: str) -> dict:
+    """The service can't check this prompt: run the rules in-process (no model, no service) so a pasted key or card
+    is still blocked, and otherwise let the prompt through with a warning instead of locking the user out."""
+    try:
+        r = engine.mask(data.get("prompt", ""), mode="rules", allow=config.load()["allow"])
+    except Exception:
+        return fail_closed("prompt", why, data)
+    if r.masked:
+        kinds = _summary([k for _, k, _ in r.masked])
+        return {"decision": "block", "reason": f"Cloakroom blocked this prompt: it contains {kinds}. {TIP}"}
+    return fail_closed("prompt", f"{why}; checked with rules only", data)
+
+
 def handle(event: str, data: dict) -> dict | None:
     try:
         out = HANDLERS[event](data)
     except (client.Unavailable, engine.ModelUnavailable) as e:
-        out = fail_closed(event, str(e), data)
+        out = _prompt_rules_only(data, str(e)) if event == "prompt" else fail_closed(event, str(e), data)
     except Exception as e:
         out = fail_closed(event, type(e).__name__, data)
     _log(event, data, out)

@@ -2,6 +2,10 @@
 
 - Prompts can only be blocked, not masked (UserPromptSubmit can't rewrite). A blocked prompt never reaches the
   model, but Claude Code keeps it in its local session records on disk.
+- When the local service can't check (still starting, port held by another program, model failing), tool calls
+  are held back, and prompts are checked with the rules alone in-process: a pasted key, card or ID number is still
+  blocked, other prompts go through with a warning that they weren't fully checked. On a cold start the first
+  check waits up to 40 s for the model to load (`CLOAKROOM_STARTUP_WAIT`) instead of failing.
 - Restored writes: Claude Code's local session log (`~/.claude/projects/...`) records the hook's rewritten tool
   input, so values put back into a file also appear in that log on your disk. They are not sent to the model.
 - Edit: Claude Code validates `old_string` against the file before PreToolUse hooks run, so an `old_string`

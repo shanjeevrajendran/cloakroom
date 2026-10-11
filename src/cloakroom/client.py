@@ -16,10 +16,27 @@ class Unavailable(RuntimeError):
     """The service isn't reachable (it is being started in the background) - callers must fail closed."""
 
 
-def _post(path: str, body: dict, timeout: float = 30) -> dict:
-    cfg = config.load()
-    req = urllib.request.Request(f"http://127.0.0.1:{cfg['port']}{path}", json.dumps(body).encode(),
-                                 {"Content-Type": "application/json", "X-Cloakroom-Token": config.token()})
+STARTUP_WAIT = float(os.environ.get("CLOAKROOM_STARTUP_WAIT", "40"))  # hooks have 60 s; model load takes 4-25 s
+
+
+def _wait_until_up(port: int, seconds: float) -> bool:
+    """After starting the service, wait for it to answer /health as Cloakroom (the first check of a session would
+    otherwise be denied while the model loads)."""
+    import time
+    end = time.monotonic() + seconds
+    while time.monotonic() < end:
+        h = health(port)
+        if h is not None:
+            return h.get("service") == "cloakroom"
+        time.sleep(0.5)
+    return False
+
+
+class _Down(Exception):
+    """Nothing is listening yet."""
+
+
+def _once(req, timeout: float, port: int) -> dict:
     try:
         with urllib.request.urlopen(req, timeout=timeout) as r:
             return json.load(r)
@@ -28,12 +45,27 @@ def _post(path: str, body: dict, timeout: float = 30) -> dict:
             detail = json.load(e)
         except Exception:
             detail = {}
-        if not is_cloakroom(cfg["port"]):
-            raise Unavailable(port_taken(cfg["port"])) from e
+        if not is_cloakroom(port):
+            raise Unavailable(port_taken(port)) from e
         raise Unavailable(detail.get("detail") or detail.get("error") or f"HTTP {e.code}") from e
     except (urllib.error.URLError, OSError) as e:
+        raise _Down() from e
+
+
+def _post(path: str, body: dict, timeout: float = 30) -> dict:
+    cfg = config.load()
+    req = urllib.request.Request(f"http://127.0.0.1:{cfg['port']}{path}", json.dumps(body).encode(),
+                                 {"Content-Type": "application/json", "X-Cloakroom-Token": config.token()})
+    try:
+        return _once(req, timeout, cfg["port"])
+    except _Down:
         start_background()
-        raise Unavailable("cloakroom service is starting; try again in a few seconds") from e
+    if not _wait_until_up(cfg["port"], STARTUP_WAIT):
+        raise Unavailable("cloakroom service is starting; try again in a few seconds")
+    try:
+        return _once(req, timeout, cfg["port"])
+    except _Down as e:
+        raise Unavailable("cloakroom service stopped answering; run: cloakroom doctor") from e
 
 
 def health(port: int) -> dict | None:

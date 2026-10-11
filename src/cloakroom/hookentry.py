@@ -29,12 +29,19 @@ def _withhold(raw, msg):
     return msg
 
 
+def prompt_warning(why):
+    return {"systemMessage": f"cloakroom: this message was NOT fully checked ({why}). Tool calls stay blocked "
+                             "until Cloakroom works again. Run: cloakroom doctor"}
+
+
 def closed(event, why, data):
     msg = f"Cloakroom couldn't check this ({why}), so it was stopped to keep data private."
     if event == "start":
         return {"systemMessage": f"cloakroom: not working ({why}); tool output will be withheld until it is fixed. Run: cloakroom doctor"}
     if event == "prompt":
-        return {"decision": "block", "reason": msg}
+        # Never lock the user out of Claude Code (decision 2026-10-11): the prompt goes through with a warning.
+        # hook.handle() first runs the rules in-process, so a pasted key is still blocked when it can be checked.
+        return prompt_warning(why)
     if event == "post":
         raw = data.get("tool_response") if isinstance(data, dict) else None
         return {"hookSpecificOutput": {"hookEventName": "PostToolUse", "updatedToolOutput": _withhold(raw, f"[{msg}]")}}
