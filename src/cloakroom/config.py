@@ -7,7 +7,7 @@ import secrets
 from pathlib import Path
 
 HOME = Path(os.environ.get("CLOAKROOM_HOME", Path.home() / ".cloakroom"))
-DEFAULTS = {"mode": "full", "port": 37787, "allow": []}  # not 8787: Headroom's proxy defaults to it
+DEFAULTS = {"mode": "full", "port": 37787, "allow": [], "mask_own_username": False, "mask_all_dates": False}  # not 8787: Headroom's proxy defaults to it
 
 
 def load() -> dict:
@@ -21,7 +21,26 @@ def load() -> dict:
         cfg["port"] = int(os.environ["CLOAKROOM_PORT"])
     if cfg["mode"] not in ("full", "rules"):
         raise ValueError("mode must be 'full' or 'rules'")
+    # While the plugin's first-start installer is still fetching the model (plugin/scripts/bootstrap.sh), run on
+    # the rules so the user is protected from the first minute; full mode switches on when the state file goes.
+    # Rules you approved on the dashboard (userrules.py, encrypted): add to the allowlist, and an always-mask list.
+    cfg["always"] = []
+    if (HOME / "rules.bin").exists():
+        from . import userrules
+        allow, always = userrules.effective()
+        cfg["allow"], cfg["always"] = list(cfg["allow"]) + allow, always
+    state = install_state()
+    if cfg["mode"] == "full" and state in ("rules", "model", "model-failed"):
+        cfg["mode"], cfg["installing"] = "rules", state
     return cfg
+
+
+def install_state() -> str | None:
+    """The first-start installer's stage: rules | model | model-failed | failed, or None when it isn't running."""
+    try:
+        return (HOME / "bootstrap.state").read_text().strip() or None
+    except OSError:
+        return None
 
 
 def private_dir(name: str = "") -> Path:

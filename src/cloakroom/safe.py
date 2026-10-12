@@ -99,6 +99,19 @@ def _is_internal_ip(v: str) -> bool:
     return ip.is_loopback or ip.is_private or ip.is_unspecified or ip.is_link_local
 
 
+# "Support Agent", "Service Team", "Phone Number": the model sometimes reads these as names. Only phrases made
+# entirely of these words are skipped, so a real surname that is also a word (Smart, Green) is still masked beside
+# a first name.
+ROLE_WORDS = set("""
+support agent agents team teams log logs conversational conversation chat transcript customer customers client clients
+service services representative rep manager managers officer advisor adviser analyst assistant associate department
+desk staff unknown phone number account user users admin administrator system operator bot helpdesk help center centre
+director head lead specialist consultant clerk teller underwriter broker trader compliance claims adjuster relationship
+branch loan financial sales operations ops hr it legal finance billing technical tech care success due diligence
+the of and for on call caller recipient sender owner member members applicant borrower lender patient guest visitor
+""".split())
+
+
 def reason(value: str, kind: str, keyed: bool) -> str | None:
     """Why this finding is safe to leave as is, or None if it must be masked."""
     v = value.strip().strip("\"'.,;()[]")
@@ -122,8 +135,14 @@ def reason(value: str, kind: str, keyed: bool) -> str | None:
         return "alphabet or counting placeholder"
     if kind == "PERSON" and re.fullmatch(r"[a-z]{1,3}", v):
         return "too short to be a name"
+    if kind == "PERSON" and not re.search(r"[^\W\d_]", v):
+        return "no letters, not a name"
+    if kind == "PERSON" and v == "claude":  # lower case: the CLI, the .claude folder; a person is "Claude"
+        return "the claude command or folder"
     if kind == "PERSON" and v.lower() in FAMOUS_PEOPLE:
         return "historical or public figure"
+    if kind == "PERSON" and all(w in ROLE_WORDS for w in re.findall(r"[a-z]+", v.lower())) and re.search(r"[a-z]", v.lower()):
+        return "job title or generic words, not a name"
     digits = re.sub(r"\D", "", v)
     if kind in ("CARD", "ACCOUNT", "PHONE", "SSN") and len(digits) >= 6 and len(set(digits)) == 1:
         return "repeated-digit placeholder"
@@ -167,8 +186,8 @@ def reason(value: str, kind: str, keyed: bool) -> str | None:
         return "bot account"
     if kind == "URL" and not re.match(r"^[a-z][a-z0-9+.-]*://", v) and re.match(r"^(?:/|~/|\./|\.\./)", v):
         return "local file path"
-    if CODE_LOCATION.match(v):
-        return "code location"
+    if CODE_LOCATION.match(v) and not re.fullmatch(r"\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}(?::\d{2})?", v):
+        return "code location"  # (an ISO date-time like 1994-06-18T00:00:00 is not file:line:col)
     if kind == "ADDRESS" and re.fullmatch(r"\d{5}(?:-\d{4})?", v):
         return "bare ZIP code"
     return None

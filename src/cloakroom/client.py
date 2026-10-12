@@ -105,7 +105,7 @@ def start_background():
 def mask(text: str, session: str) -> dict:
     cfg = config.load()
     if cfg["mode"] == "rules":
-        r = engine.mask(text, Vault(config.vault_path(session)), "rules", cfg["allow"])
+        r = engine.mask(text, Vault(config.vault_path(session)), "rules", cfg["allow"], cfg["always"])
         return {"text": r.text, "mode": "rules", "masked": r.masked, "skipped": r.skipped}
     return _post("/mask", {"text": text, "session": session})
 

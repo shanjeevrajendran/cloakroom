@@ -1,0 +1,53 @@
+# Changelog
+
+## 0.2.0 (2026-10-12)
+
+**Install**
+- The plugin installs Cloakroom itself on first start: rules-only protection within seconds, the model in the
+  background, then full protection switches on by itself. It uses uv, else pipx, else a private virtualenv in
+  `~/.cloakroom` (Python 3.10+), and builds the fast CPU model on machines without an Apple Silicon or NVIDIA GPU.
+  A failed install is reported and retried after 10 minutes. `cloakroom export-onnx --if-no-gpu` skips on a GPU.
+  The service starts as soon as the install finishes, so the first prompt doesn't wait for the model to load.
+- `cloakroom doctor` looks for the program where the plugin does (PATH, uv's tool folder, ~/.local/bin,
+  ~/.cloakroom/venv) instead of warning when it isn't on PATH.
+
+**Dashboard and learning**
+- `cloakroom dashboard`: a local page (127.0.0.1, one-time sign-in link) with every alert, the kinds found and the
+  check time. Real values show only when you click Reveal.
+- Label alerts correct, false alarm or missed. A false alarm suggests a "never mask" rule, a miss an "always mask"
+  rule; you approve, dismiss or undo each one.
+- Learn quietly (after 10 decisions): new rules apply by themselves only after a replay test on your past labels
+  and a set of sample secrets. Rules for keys, passwords, cards and IDs always wait for you.
+- Value-free activity log; labels and rules are encrypted like the vault.
+
+**Fewer blocked prompts**
+- A blocked prompt now says how to get past it: `cr!` at the start sends that prompt as it is, `cr: pause 10m`
+  pauses prompt checks, `cr: resume` ends the pause. Tool output stays masked throughout, and Claude can't change
+  Cloakroom's settings.
+- Prompts holding only names go through (a name next to an email, phone, key or ID still blocks).
+- Plain dates are no longer masked: only birth / death / age dates and dates in someone's record
+  (`"mask_all_dates": true` brings back the old behaviour).
+- Your own login name in a home-folder path is no longer masked (`"mask_own_username": true` to change it); other
+  usernames are labelled USERNAME instead of ACCOUNT.
+- File listings pass as they are: your login and its group in `ls -l`'s owner column, link counts and the
+  lower-case word `claude` (the command, the `.claude` folder) are not names, and a listing whose dates repeat is
+  no longer withheld as encoded output.
+
+**Detection**
+- Values under address keys, birth dates in ISO date-time and written forms, short passwords and PINs under their
+  keys are caught.
+- SWIFT / FIX message field tags are no longer read as account numbers; job titles such as "Support Agent" are no
+  longer read as names.
+- Model matches that ran across CSV rows are split back (rows no longer vanish from what Claude sees), and matches
+  are widened to whole words.
+- Benchmarked on public datasets for the first time: TAB court rulings recall 0.95 / precision 0.81, Gretel finance
+  documents 0.85 / 0.52 (`bench/public/RESULTS.md`).
+
+## 0.1.7 (not released on its own; included in 0.2.0)
+- The plugin page's install hint installs a model (`cloakroom[model,torch]`; `[model]` alone has no model file).
+- plugin.json gains author, homepage and repository.
+- CSV rows no longer merge in masked output; dates are no longer cut mid-word.
+
+## 0.1.0 - 0.1.6
+First public releases: rules plus a local detection model, encrypted vault, restore for local tools, encoded-dump
+checks, fail-closed hooks for bash and PowerShell, `cloakroom doctor`. See the git history for details.

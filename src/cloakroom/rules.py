@@ -49,6 +49,9 @@ SECRET_RULES = [
     ("url-password", "SECRET", r"\b[a-z][a-z0-9+.-]*://[^\s:/@]+:([^\s@/]{3,})@", 1, None),
     ("url-username", "ACCOUNT", r"\b[a-z][a-z0-9+.-]*://([^\s:/@]+):[^\s@/]{3,}@", 1, lambda v: _personal_user(v)),
     # key = value / key: value / "key": "value" where the key names a secret
+    # passwords and PINs are often short: from 4 characters, after markdown or quotes around the key
+    ("keyed-password", "SECRET", r"(?i:\b(?:password|passwd|passcode|passphrase|pin(?:code)?|pwd))" + r"[\"'*_]*\s*[:=]\s*[*_]*\s*"
+     r"(?:\"([^\"\n]{4,64})\"|'([^'\n]{4,64})'|([^\s\"]{4,64}))", 0, None),
     ("keyed-secret", "SECRET",
      r"(?i)(?:pass(?:word|wd|phrase)?|pwd|secret|token|api[_-]?key|access[_-]?key|auth[_-]?token|authorization|bearer|credentials?|private[_-]?key)"
      r"[\w.-]*[\"']?\s*[:=]\s*[\"']?(?:(?:Bearer|Basic|Token)\s+)?([^\s\"',;]{6,})", 1, None),
@@ -87,7 +90,7 @@ PATH_RULES = [
     ("iam-user-resource", "ACCOUNT", r"\baws_iam_(?:user|access_key|user_policy|user_login_profile|user_ssh_key|"
      r"user_group_membership)\.([A-Za-z][\w-]+)", 1, lambda v: _personal_user(v)),
     # the account name in a home directory: /Users/<name>, /home/<name>, C:\Users\<name> (also JSON-escaped \\)
-    ("home-dir-user", "ACCOUNT", r"(?:/Users/|/home/|\b[A-Za-z]:\\{1,2}(?:Users|Documents and Settings)\\{1,2})"
+    ("home-dir-user", "USERNAME", r"(?:/Users/|/home/|\b[A-Za-z]:\\{1,2}(?:Users|Documents and Settings)\\{1,2})"
      r"([^\s/\\\"':<>|*?]{2,})", 1, lambda v: _personal_user(v)),
 ]
 
@@ -95,7 +98,12 @@ _PERSON = r"[A-Z][a-z'-]+(?: [A-Z][a-z'-]+){1,3}"
 _STREET = (r"\b\d{1,6} [A-Z][a-z]+(?: [A-Z][a-z]+)* (?:Street|St|Avenue|Ave|Road|Rd|Lane|Ln|Court|Ct|Way|"
            r"Boulevard|Blvd|Drive|Dr|Place|Pl|Terrace|Circle|Highway|Hwy)\b\.?"
            r"(?:,? (?:Apt|Suite|Unit|#) ?\w+)?(?:, [A-Z][a-z]+(?: [A-Z][a-z]+)*)?(?:,? [A-Z]{2})?(?: \d{5}(?:-\d{4})?)?")
-_DATE = r"(?:\d{4}-\d{2}-\d{2}|\d{1,2}/\d{1,2}/\d{2,4}|\d{1,2} [A-Z][a-z]{2,8} \d{4})"
+_MONTH = r"(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]{0,6}\.?"
+_DATE = (r"(?:\d{4}-\d{2}-\d{2}(?:[T ]\d{2}:\d{2}(?::\d{2})?)?|\d{1,2}/\d{1,2}/\d{2,4}|\d{1,2}\.\d{1,2}\.\d{4}|"
+         r"\d{1,2}(?:st|nd|rd|th)? (?:of )?" + _MONTH + r",? \d{4}|" + _MONTH + r" \d{1,2}(?:st|nd|rd|th)?,? \d{4})")
+# key, then quotes / markdown / an XML tag end, then : or = (optional after a tag or markdown)
+_KEY_SEP = r"[\"'*_]*\s*(?:>|[:=])?\s*[\"'*_]*\s*"
+_KEY_SEP_REQ = r"[\"'*_]*\s*(?:>|[:=])\s*[\"'*_]*\s*"  # the separator is required: "Main Street, Anytown" has no key
 
 # PII that only a context gives away: a field name, a "Name <email>" pair, a street shape, a birth date label.
 CONTEXT_RULES = [
@@ -104,9 +112,18 @@ CONTEXT_RULES = [
      r"new hire|spoke with))[\"'*]*\s*[:=]?\s*[\"'*]*(" + _PERSON + r")", 1, None),
     ("person-email", "PERSON", r"(" + _PERSON + r")\s*[<(][\w.%+-]+@", 1, None),
     ("street-address", "ADDRESS", _STREET, 0, None),
-    ("birth-date", "DATE", r"(?i:\b(?:dob|d\.o\.b\.?|date of birth|birth_?date|born(?: on)?))[\"']?\s*[:=]?\s*[\"']?(" + _DATE + ")", 1, None),
+    ("birth-date", "DATE", r"(?i:\b(?:dob|d\.o\.b\.?|date[ _]of[ _]birth|birth_?date|birthday|born(?: on)?))" + _KEY_SEP
+     + "(" + _DATE + ")", 1, None),
+    # the value under an address key in JSON / YAML / markdown / "Key: value": "street": "Branston Lane"
+    ("address-field", "ADDRESS",
+     r"(?i:(?<![\w.-])(?<!email )(?<!e-mail )(?<!email_)(?<!ip )(?<!ip_)(?<!mac )(?<!web )(?<!wallet )(?<!mailing list )"
+     r"(?:street(?:[ _]?(?:address|name|line\d?))?|address(?:[ _]?line[ _]?\d)?|(?:home|mailing|postal|residential|"
+     r"billing|shipping)[ _]address))" + _KEY_SEP_REQ + r"([^\n\"'<>|{}\[\]]{3,80}?)(?=\s*(?:[\"'<|\n]|,\s*\"|$))", 1,
+     lambda v: any(c.isalpha() for c in v) and not any(c in v for c in "@&=") and "://" not in v),
 ]
 
+# found under a key that says what the value is: shape-based "looks like a placeholder / a public place" checks don't apply
+_KEYED = {"keyed-secret", "keyed-password", "url-password", "address-field"}  # (birth dates keep the "historical date" check)
 _COMPILED = [(i, k, re.compile(rx), g, v) for i, k, rx, g, v in SECRET_RULES + PII_RULES + CONTEXT_RULES + PATH_RULES]
 OWN_PLACEHOLDER = re.compile(r"\bPII_[A-Z]+_\d+\b")
 
@@ -147,5 +164,9 @@ def scan(text: str) -> list[Finding]:
             start, end = m.span(group)
             if start < 0 or (validate and not validate(m.group(group))):
                 continue
-            out.append(Finding(start, end, kind, rule_id, keyed=rule_id in ("keyed-secret", "url-password")))
+            if rule_id == "keyed-password":  # the value sits in whichever group matched (quoted or bare)
+                g = next(i for i in (1, 2, 3) if m.group(i) is not None)
+                start, end = m.span(g)
+            out.append(Finding(start, end, kind, rule_id,
+                               keyed=rule_id in _KEYED))
     return out + _csv_cells(text)

@@ -4,16 +4,26 @@ How to install, run and tune Cloakroom. For what it is and how well it works, se
 
 ## 1. Pick how you'll run it
 
+Easiest: add the plugin (below) and let it install Cloakroom on the next start. It uses uv or pipx if either is
+installed, otherwise a private Python environment in `~/.cloakroom/venv` (needs Python 3.10+). Rules-only
+protection is in place within seconds, then the model is fetched in the background and, on a machine without an
+Apple Silicon or NVIDIA GPU, the fast CPU model is built too (progress in `~/.cloakroom/bootstrap.log`). If the
+install fails, Claude Code says so and it retries after 10 minutes. The table is for installing by hand.
+
 | Your machine | Install | What you get |
 |---|---|---|
 | Apple Silicon Mac, or an NVIDIA GPU | `uv tool install "cloakroom[model,torch]"` | Full mode on the GPU, about 20 ms per check |
 | Any other machine (Intel Mac, most Windows and Linux) | `uv tool install "cloakroom[model,torch]"`, then once: `cloakroom export-onnx` | Full mode on the CPU. Before the export it works but is slow (about 0.5 s per check); after it, about 60 ms on a modern CPU |
 | Just trying it, or a CI box | `uv tool install cloakroom` and `CLOAKROOM_MODE=rules` | Rules only: instant, no model download, but misses names and free-text personal data |
 
-`pipx install ...` works the same way as `uv tool install ...`. The model extras need about 4 GB of disk (mostly
-PyTorch). Python 3.10 or newer.
+`pipx install ...` works the same way as `uv tool install ...`. The model extras need about 1 GB of disk on a Mac and up to
+about 4 GB elsewhere (mostly PyTorch). Python 3.10 or newer.
 
-Then add the plugin inside Claude Code:
+To try it on one project first, install the plugin for that folder only: run
+`claude plugin marketplace add shanjeevrajendran/cloakroom --scope local` and
+`claude plugin install cloakroom@cloakroom --scope local` from inside the folder. Other projects stay untouched.
+
+Or add the plugin for all your projects, inside Claude Code:
 
 ```
 /plugin marketplace add shanjeevrajendran/cloakroom
@@ -69,15 +79,21 @@ Nothing changes in how you work. What you'll notice:
   value is put back on your machine before it runs.
 - **Short notices.** A line like `cloakroom: masked 2 PERSON, 1 EMAIL in Read output` tells you something was
   swapped. The first tool call of a session can wait a few seconds while the model loads.
-- **Blocked prompts.** If you paste a key or personal details straight into a prompt, it is blocked (prompts
-  can't be rewritten) with a message saying what it found. Put the data in a file and point Claude at it instead.
+- **Blocked prompts.** If a prompt holds a key, an email, a phone, a card or an ID number, it is blocked (prompts
+  can't be rewritten) with a message saying what it found. Names alone and plain dates go through. To get past a
+  block: put the data in a file and point Claude at it (best: it gets masked), or start the prompt with `cr!` to
+  send it as it is, or type `cr: pause 10m` to pause prompt checks (`cr: resume` ends it). Files and command
+  output stay masked throughout, and Claude can't use these commands or change Cloakroom's settings.
 - **Edit.** Claude Code checks an edit's "find" text before Cloakroom sees it, so an edit whose find text holds a
   placeholder fails once. Claude is told to anchor on nearby text or rewrite the file, and usually recovers by
   itself.
 - **Encoded dumps.** Output from `base64`, `xxd`, `od` and similar is decoded and checked; if it hides a value,
   the whole output is withheld.
 
-To pause Cloakroom, disable the plugin from `/plugin` in Claude Code. To remove it, see
+- **Dashboard.** `cloakroom dashboard` opens your alerts in the browser (127.0.0.1 only). Label them correct,
+  false alarm or missed; see section 6.
+
+To turn Cloakroom off completely, disable the plugin from `/plugin` in Claude Code. To remove it, see
 [Uninstall](docs-SETUP.md#uninstall).
 
 ## 5. Using it outside Claude Code
@@ -110,6 +126,14 @@ numbers, loopback addresses, UUIDs and hashes). To add your own, list them under
 
 `cloakroom explain FILE` shows "on your allowlist" next to anything an entry let through.
 
+**From the dashboard.** Mark an alert as a false alarm and Cloakroom suggests a "never mask" rule for the values you
+tick; type what it missed and it suggests an "always mask" rule (a value with digits covers its shape). In
+*Suggest* mode nothing changes until you click Approve. After 10 decisions (labels, approvals, dismissals) you can
+switch to *Learn quietly*: each new rule is first replayed against your past labels and a built-in set of sample
+secrets, and applies by itself only if it unmasks nothing you wanted hidden and masks nothing you called safe.
+Rules for keys, passwords, cards and ID numbers always wait for your Approve, and every rule has Undo. These rules
+are stored encrypted in `~/.cloakroom/rules.bin`; the `allow` list above stays yours to edit by hand.
+
 ## 7. Headless machines, CI and testing
 
 - **Vault key.** The vault key lives in the OS secure store (Keychain, Credential Manager, Secret Service). On a
@@ -126,6 +150,8 @@ numbers, loopback addresses, UUIDs and hashes). To add your own, list them under
 |---|---|---|---|
 | mode | `config.json` `mode`, `CLOAKROOM_MODE`, `--mode` | `full` | `full`, `rules` |
 | allow | `config.json` `allow` | none | exact values, `re:<regex>` |
+| mask_all_dates | `config.json` | `false` | `true` masks every date, not only birth dates and dates in someone's record |
+| mask_own_username | `config.json` | `false` | `true` masks your own login name in home-folder paths too |
 | port | `config.json` `port`, `CLOAKROOM_PORT` | `37787` | any free local port |
 | backend | `CLOAKROOM_BACKEND` | `auto` | `auto`, `torch`, `onnx` |
 | ONNX variant | `CLOAKROOM_ONNX` | `fp32` | `fp32`, `int8` |
@@ -147,7 +173,10 @@ numbers, loopback addresses, UUIDs and hashes). To add your own, list them under
 - **`model: FAIL`.** Install the extra it names, or switch to rules mode.
 - **Windows, PyTorch won't load.** Install the Microsoft Visual C++ Redistributable
   (https://aka.ms/vs/17/release/vc_redist.x64.exe).
-- **Too much gets masked.** Run `cloakroom explain` on the file to see which rule fired, then add an `allow` entry.
+- **Too much gets masked.** Mark it a false alarm on the dashboard, or run `cloakroom explain` on the file to see
+  which rule fired and add an `allow` entry.
+- **A prompt keeps getting blocked.** Start it with `cr!`, or type `cr: pause 10m`. See section 4.
+- **Dashboard says "signed out".** The service restarted; run `cloakroom dashboard` again.
 - **Something got through.** Please open an issue with the kind of value (not the value itself) and where it
   appeared.
 

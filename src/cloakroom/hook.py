@@ -15,7 +15,7 @@ import re
 import sys
 import time
 
-from . import client, config, decode, engine, shell
+from . import client, config, decode, engine, events, shell
 from .hookentry import STRUCTURAL, _withhold, closed
 from .vault import PLACEHOLDER, Vault
 
@@ -27,8 +27,12 @@ GUIDE = ("Cloakroom note: values like PII_EMAIL_1 are placeholders for real data
          "placeholder (the file holds the real value, so it won't match): anchor old_string on nearby text without "
          "placeholders, or rewrite the file with Write. Don't try to recover the real values.")
 PRIME_MAX_BYTES = 512 * 1024
+_ACTION = [""]  # set when a prompt passes by your own choice (sent anyway, paused), for the event log
+_FOUND: list[tuple[str, str]] = []  # (placeholder, kind) found during the current hook call, for the event log
 TIP = ("Cloakroom can't rewrite a prompt, only block it. Put the detail in a file and ask Claude to read it: "
-       "it will be masked on the way in and restored for local edits.")
+       "it will be masked on the way in and restored for local edits. Send it anyway: add cr! at the start. "
+       "Pause prompt checks: type cr: pause 10m (tool output stays masked). Resume: cr: resume.")
+_PAUSE_CMD = re.compile(r"(?i)^\s*cr:\s*(pause(?:\s+(\d{1,3})\s*m(?:in(?:utes?)?)?)?|resume)\s*$")
 
 
 def _strings(value, fn):
@@ -70,10 +74,58 @@ def _dry(event: str, note: str) -> bool:
     return True
 
 
-def on_prompt(data: dict) -> dict | None:
-    r = client.mask(data.get("prompt", ""), data.get("session_id", "default"))
-    if not r["masked"]:
+PROMPT_OK = {"PERSON"}  # names you type yourself go through; Cloakroom can only block a prompt, not mask it
+
+
+def _pause_file():
+    return config.private_dir() / "pause.json"
+
+
+def paused_minutes() -> int:
+    """Minutes left on a prompt-check pause you started with `cr: pause`, 0 when not paused."""
+    try:
+        left = json.loads(_pause_file().read_text())["until"] - time.time()
+    except (OSError, ValueError, KeyError):
+        return 0
+    return max(0, -(-int(left) // 60)) if left > 0 else 0
+
+
+def _control(prompt: str) -> dict | None:
+    """Your own controls, typed as a prompt. They are answered here and never reach Claude (a block is the only way
+    a prompt hook can stop a prompt), so only you can pause: Claude never sees or sends these."""
+    m = _PAUSE_CMD.match(prompt)
+    if not m:
         return None
+    if m.group(1).lower() == "resume":
+        _pause_file().unlink(missing_ok=True)
+        return {"decision": "block", "reason": "Cloakroom: prompt checks are back on."}
+    minutes = min(int(m.group(2) or 10), 240)
+    fd = os.open(_pause_file(), os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+    with os.fdopen(fd, "w") as f:
+        json.dump({"until": time.time() + 60 * minutes}, f)
+    return {"decision": "block", "reason": f"Cloakroom: prompt checks paused for {minutes} min. Tool output is still "
+                                           "masked. Turn checks back on early: cr: resume."}
+
+
+def on_prompt(data: dict) -> dict | None:
+    prompt = data.get("prompt", "")
+    control = _control(prompt)
+    if control:
+        _ACTION[0] = "control"
+        return control
+    if prompt.lstrip().lower().startswith("cr!"):  # you chose to send this one prompt as it is
+        _ACTION[0] = "sent anyway"
+        return None
+    left = paused_minutes()
+    if left:
+        _ACTION[0] = "paused"
+        return {"systemMessage": f"cloakroom: prompt checks paused, {left} min left (cr: resume to turn them back on)"}
+    r = client.mask(prompt, data.get("session_id", "default"))
+    # A prompt holding only names passes; with an email, phone, card, key... beside them it is blocked as a whole
+    # (that is what a pasted customer list looks like), names included.
+    if not r["masked"] or all(k in PROMPT_OK for _, k, _ in r["masked"]):
+        return None
+    _FOUND.extend((p, k) for p, k, _ in r["masked"])
     kinds = _summary([k for _, k, _ in r["masked"]])
     if _dry("prompt", f"would block: {kinds}"):
         return None
@@ -88,12 +140,14 @@ def on_post(data: dict) -> dict | None:
             return s
         r = client.mask(s, session)
         kinds.extend(k for _, k, _ in r["masked"])
+        _FOUND.extend((p, k) for p, k, _ in r["masked"])
         return r["text"]
     raw = data.get("tool_response")
     new, changed = _strings(raw, fn)
     # Encoded output (od -c, xxd, base64, rev...) can carry values the detectors can't read: decode and re-check
     # each text field, and replace only the fields that hit (structural fields must stay as they are).
-    known = list(Vault(config.vault_path(session)).by_placeholder.values())
+    # dates are left out: a fragment like "Oct 11 12:16" repeats harmlessly across a file listing or a log
+    known = [v for ph, v in Vault(config.vault_path(session)).by_placeholder.items() if "_DATE_" not in ph]
     cmd = (data.get("tool_input") or {}).get("command", "")
     reverse = bool(re.search(r"\brev\b|\[array\]::Reverse|-join\s*\(.*\[-1", cmd))
     msg = ("[Cloakroom withheld this output: it holds secrets or personal data in an encoded or spaced-out "
@@ -170,8 +224,26 @@ def _deny(reason: str) -> dict:
                                    "permissionDecisionReason": reason}}
 
 
+WRITE_TOOLS = {"Write", "Edit", "MultiEdit", "NotebookEdit"}
+
+
+def _touches_home(tool: str, args: dict) -> bool:
+    """A tool call that would change Cloakroom's own files (~/.cloakroom: pause, rules, vault, token)."""
+    home = str(config.HOME)
+    if tool in WRITE_TOOLS:
+        path = str(args.get("file_path") or args.get("notebook_path") or "")
+        return os.path.realpath(os.path.expanduser(path)).startswith(os.path.realpath(home))
+    if tool in SHELL_TOOLS:
+        cmd = str(args.get("command", ""))
+        return ".cloakroom" in cmd or home in cmd
+    return False
+
+
 def on_pre(data: dict) -> dict | None:
     tool, args, session = data.get("tool_name", ""), data.get("tool_input") or {}, data.get("session_id", "default")
+    if _touches_home(tool, args):
+        return _deny("Cloakroom: its own settings (~/.cloakroom) are changed only by you, from the dashboard or "
+                     "by typing cr: pause / cr: resume. Claude can't change them.")
     blob = json.dumps(args)
     has_ph = bool(PLACEHOLDER.search(blob))
     vault = Vault(config.vault_path(session))
@@ -221,6 +293,7 @@ def on_pre(data: dict) -> dict | None:
     # Everything else may leave the machine (web, MCP, subagent prompts): never restore; deny real values.
     r = client.mask(blob, session)
     if r["masked"]:
+        _FOUND.extend((p, k) for p, k, _ in r["masked"])
         kinds = _summary([k for _, k, _ in r["masked"]])
         return None if _dry("pre", f"{tool}: would deny ({kinds})") else _deny(
             f"Cloakroom: {tool} would send {kinds} off this machine. Use the placeholders instead of real values.")
@@ -229,7 +302,16 @@ def on_pre(data: dict) -> dict | None:
 
 def on_start(data: dict) -> dict | None:
     """Session start: warm the service so the first tool call isn't blocked while the model loads."""
-    if config.load()["mode"] == "full":
+    cfg = config.load()
+    if cfg.get("installing") in ("rules", "model"):
+        return {"systemMessage": "cloakroom: rules-only protection while the model downloads (one time, a few "
+                                 "minutes). Keys, cards and IDs are covered; names and addresses may be missed until "
+                                 "it's done. Progress: ~/.cloakroom/bootstrap.log"}
+    if cfg.get("installing") == "model-failed":
+        return {"systemMessage": "cloakroom: the model download failed, so only rules protect this session (names and "
+                                 "addresses may be missed). Retry: uv tool install --force 'cloakroom[model,torch]', "
+                                 "then delete ~/.cloakroom/bootstrap.state. Details: ~/.cloakroom/bootstrap.log"}
+    if cfg["mode"] == "full":
         try:
             # wait=0: start the service and return at once (the SessionStart hook only has 30 s; the first model
             # download alone can take longer). Tool calls wait for it instead.
@@ -251,23 +333,28 @@ def _prompt_rules_only(data: dict, why: str) -> dict:
     """The service can't check this prompt: run the rules in-process (no model, no service) so a pasted key or card
     is still blocked, and otherwise let the prompt through with a warning instead of locking the user out."""
     try:
-        r = engine.mask(data.get("prompt", ""), mode="rules", allow=config.load()["allow"])
+        cfg = config.load()
+        r = engine.mask(data.get("prompt", ""), mode="rules", allow=cfg["allow"], always=cfg["always"])
     except Exception:
         return fail_closed("prompt", why, data)
     if r.masked:
+        _FOUND.extend((p, k) for p, k, _ in r.masked)
         kinds = _summary([k for _, k, _ in r.masked])
         return {"decision": "block", "reason": f"Cloakroom blocked this prompt: it contains {kinds}. {TIP}"}
     return fail_closed("prompt", f"{why}; checked with rules only", data)
 
 
 def handle(event: str, data: dict) -> dict | None:
+    _FOUND.clear()
+    _ACTION[0] = ""
+    t0 = time.perf_counter()
     try:
         out = HANDLERS[event](data)
     except (client.Unavailable, engine.ModelUnavailable) as e:
         out = _prompt_rules_only(data, str(e)) if event == "prompt" else fail_closed(event, str(e), data)
     except Exception as e:
         out = fail_closed(event, type(e).__name__, data)
-    _log(event, data, out)
+    _log(event, data, out, (time.perf_counter() - t0) * 1000)
     return out
 
 
@@ -285,15 +372,23 @@ def main(event: str) -> int:
     return 0
 
 
-def _log(event: str, data, out):
-    """One line per hook call: event, tool, decision. Never values or text."""
+def _log(event: str, data, out, ms: float = 0.0):
+    """One line per hook call: event, tool, decision (hook.log), plus the dashboard's event (events.py).
+    Never values or text."""
     try:
         h = (out or {}).get("hookSpecificOutput", {})
-        decision = (out or {}).get("decision") or h.get("permissionDecision") or (
+        decision = _ACTION[0] or (out or {}).get("decision") or h.get("permissionDecision") or (
             "withheld" if "withheld" in str(h.get("updatedToolOutput", "")) else
             "masked" if "updatedToolOutput" in h else "restored" if "updatedInput" in h else "pass")
         tool = data.get("tool_name", "-") if isinstance(data, dict) else "-"
         with open(config.private_dir() / "hook.log", "a") as f:
             f.write(f"{time.strftime('%Y-%m-%dT%H:%M:%S')} {event} {tool} {decision}\n")
+        target = events.target(tool, data.get("tool_input")) if isinstance(data, dict) and _FOUND else ""
+        if target:  # a file name can hold a name or an email too: log it masked, like the output
+            try:
+                target = client.mask(target, data.get("session_id", "default"))["text"]
+            except Exception:
+                target = "[path not checked]"
+        events.record(event, data, decision, _FOUND, ms, target)
     except Exception:
         pass

@@ -20,4 +20,14 @@ Backends (`CLOAKROOM_BACKEND=auto|torch|onnx`, `auto` by default):
 
 ## Uninstall
 
-`/plugin uninstall cloakroom@cloakroom` in Claude Code, `uv tool uninstall cloakroom` (or `pipx uninstall cloakroom`), then delete `~/.cloakroom` and the `cloakroom` entry in your OS keychain (Keychain Access on macOS, Credential Manager on Windows).
+1. In Claude Code: `/plugin uninstall cloakroom@cloakroom`.
+2. Stop the service: `cloakroom status` shows if it runs; it stops when you log out, or end the `python` process
+   listening on port 37787.
+3. Remove the program, with whatever installed it: `uv tool uninstall cloakroom` or `pipx uninstall cloakroom`.
+   If the plugin installed it without uv or pipx, it lives in `~/.cloakroom/venv` and step 4 removes it.
+4. Delete `~/.cloakroom` (config, encrypted vault, labels, rules, logs).
+5. Delete the vault key: Keychain Access on macOS (search "cloakroom"), Credential Manager on Windows, or your
+   Secret Service keyring on Linux.
+6. Delete the downloaded model (about 1 GB): run `hf cache delete` (or `huggingface-cli delete-cache`) and pick
+   `perplexity-ai/PII-Tracer`. Deleting only the `models--perplexity-ai--PII-Tracer` folder can leave the weights
+   behind, since they may be stored as links to a shared folder.

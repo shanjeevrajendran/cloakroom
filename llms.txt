@@ -1,0 +1,23 @@
+# Cloakroom
+
+> A privacy layer for Claude Code. A plugin with hooks swaps names, emails, addresses, API keys and IDs in tool output for placeholders (PII_PERSON_1, PII_SECRET_1) before the model sees them, and puts the real values back when Claude writes files or runs commands, on the user's machine. Detection is a local model (PII-Tracer) plus rules; nothing is sent anywhere. Runs on macOS, Windows and Linux. Apache-2.0.
+
+Install: `/plugin marketplace add shanjeevrajendran/cloakroom`, then `/plugin install cloakroom@cloakroom`. The plugin installs the Python package (`cloakroom` on PyPI) itself on first start. Prompts that contain a secret are blocked (Claude Code hooks cannot rewrite a prompt); `cr!` sends one anyway, `cr: pause 10m` / `cr: resume` pause and resume checks.
+
+## Docs
+
+- [README](https://github.com/shanjeevrajendran/cloakroom/blob/main/README.md): what it does, install, results, FAQ
+- [How it works](https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-HOW-IT-WORKS.md): detectors, known-safe filter, vault, restore
+- [Setup](https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-SETUP.md): install options, uninstall
+- [Handbook](https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-HANDBOOK.md): exceptions, backends, CI, dashboard, troubleshooting
+- [Known limits](https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-LIMITS.md): what it does not catch or protect
+- [Security policy](https://github.com/shanjeevrajendran/cloakroom/blob/main/SECURITY.md): reporting a bypass privately
+
+## Results
+
+- [Benchmark](https://github.com/shanjeevrajendran/cloakroom/blob/main/bench/RESULTS.md): leaks and false alarms on fresh holdout sets, next to other tools
+- [Public datasets](https://github.com/shanjeevrajendran/cloakroom/blob/main/bench/public/RESULTS.md): TAB and Gretel
+
+## Optional
+
+- [Changelog](https://github.com/shanjeevrajendran/cloakroom/blob/main/CHANGELOG.md)

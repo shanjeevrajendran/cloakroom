@@ -1,0 +1,442 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cloakroom Dashboard</title>
+<style>
+/* Served by the local service only (no CDN, no web fonts: the page's CSP allows nothing off this machine). */
+:root {
+  --bg: #f6f7f9; --panel: #fff; --panel-2: #eef1f4; --line: #d6dbe1; --fg: #161b22; --dim: #5b6572;
+  --accent: #1f8f3a; --accent-soft: #e3f4e7; --crit: #c93c37; --crit-soft: #fbe7e6; --pers: #a06a00; --pers-soft: #fbf0d9;
+  --low: #6b7480; --low-soft: #eceff2; --claude: #7b4fc9; --claude-soft: #efe8fb;
+  --font-ui: system-ui, -apple-system, "Segoe UI", sans-serif; --font-data: ui-monospace, Menlo, Consolas, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0b0f14; --panel: #12171e; --panel-2: #181f28; --line: #27303b; --fg: #e6edf3; --dim: #8b949e;
+  --accent: #56d364; --accent-soft: #10291a; --crit: #ff7b72; --crit-soft: #2d1616; --pers: #f2cc60; --pers-soft: #2b2410;
+  --low: #9aa4b0; --low-soft: #1b222b; --claude: #d2a8ff; --claude-soft: #231a33; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #0b0f14; --panel: #12171e; --panel-2: #181f28; --line: #27303b; --fg: #e6edf3; --dim: #8b949e;
+  --accent: #56d364; --accent-soft: #10291a; --crit: #ff7b72; --crit-soft: #2d1616; --pers: #f2cc60; --pers-soft: #2b2410;
+  --low: #9aa4b0; --low-soft: #1b222b; --claude: #d2a8ff; --claude-soft: #231a33; color-scheme: dark }
+* { box-sizing: border-box }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 14px/1.45 var(--font-ui); padding: 0 16px 40px }
+.wrap { max-width: 1240px; margin: 0 auto; display: grid; gap: 16px }
+button { font: inherit; color: inherit; cursor: pointer }
+button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px }
+.mono { font-family: var(--font-data); font-variant-numeric: tabular-nums }
+.dim { color: var(--dim) }
+h2 { font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--dim); margin: 0 }
+header.top { position: sticky; top: 0; z-index: 5; background: var(--bg); padding: 14px 0 12px; border-bottom: 1px solid var(--line); display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px }
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 18px }
+.ver { font: 500 12px var(--font-data); color: var(--dim) }
+.tabs { display: flex; gap: 2px; background: var(--panel-2); border: 1px solid var(--line); border-radius: 8px; padding: 3px }
+.tabs button { border: 0; background: none; padding: 5px 12px; border-radius: 6px; color: var(--dim); font-weight: 500 }
+.tabs button[aria-selected="true"] { background: var(--panel); color: var(--fg); box-shadow: 0 1px 2px rgba(0,0,0,.15) }
+.chip { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px; font-size: 12px; white-space: nowrap }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent) }
+.chip.warn .dot { background: var(--pers) } .chip.bad .dot { background: var(--crit) }
+.spacer { flex: 1 }
+.iconbtn { border: 1px solid var(--line); background: var(--panel); border-radius: 8px; padding: 5px 10px; font-size: 12px }
+.banner { border: 1px solid var(--line); border-left: 4px solid var(--accent); background: var(--panel); border-radius: 10px; padding: 12px 14px; display: flex; flex-wrap: wrap; gap: 8px 20px; align-items: center }
+.banner.warn { border-left-color: var(--pers); background: var(--pers-soft) }
+.banner.bad { border-left-color: var(--crit); background: var(--crit-soft) }
+.banner .msg { flex: 1 1 320px; min-width: 0 } .banner .msg b { display: block }
+.kv { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 12px }
+.tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px }
+.tile { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; display: grid; gap: 6px; align-content: start }
+.tile .big { font: 600 32px/1 var(--font-data) } .tile .sub { font-size: 12px; color: var(--dim) }
+.tile.hero .big { color: var(--accent) } .tile.fa .big { color: var(--pers) }
+.sevbar { display: flex; height: 6px; border-radius: 3px; overflow: hidden; background: var(--panel-2); margin-top: 4px }
+.sevbar i { display: block }
+.legend { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 12px; color: var(--dim) }
+.legend i { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 5px }
+.main { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 16px; align-items: start }
+.col { display: grid; gap: 16px; min-width: 0 }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; display: grid; gap: 12px; min-width: 0 }
+.card-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap }
+.count { font: 600 11px var(--font-data); background: var(--pers-soft); color: var(--pers); border-radius: 999px; padding: 2px 8px }
+.filters { display: flex; gap: 6px; flex-wrap: wrap }
+.filters button { border: 1px solid var(--line); background: var(--panel); border-radius: 999px; padding: 3px 10px; font-size: 12px; color: var(--dim) }
+.filters button[aria-pressed="true"] { color: var(--fg); border-color: var(--fg) }
+.feed { display: grid; gap: 6px }
+.alert { border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: var(--panel) }
+.alert > button.row { width: 100%; border: 0; background: none; display: grid; grid-template-columns: 4px 64px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 0 12px 0 0; text-align: left; min-height: 48px }
+.alert .stripe { align-self: stretch; background: var(--low) }
+.alert[data-sev="crit"] .stripe { background: var(--crit) } .alert[data-sev="pers"] .stripe { background: var(--pers) }
+.alert .when { font: 12px var(--font-data); color: var(--dim) }
+.alert .what { min-width: 0; padding-block: 8px }
+.alert .file { font: 12px var(--font-data); color: var(--dim); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: block }
+.line1 { display: flex; gap: 8px; align-items: center; flex-wrap: wrap }
+.tool { font: 600 11px var(--font-data); border: 1px solid var(--line); border-radius: 4px; padding: 1px 6px }
+.act { font: 11px var(--font-data); color: var(--dim) }
+.kind { font: 11px var(--font-data); border-radius: 4px; padding: 1px 6px; background: var(--low-soft); color: var(--low) }
+.kind.crit { background: var(--crit-soft); color: var(--crit) } .kind.pers { background: var(--pers-soft); color: var(--pers) }
+.status { font-size: 12px; white-space: nowrap; border-radius: 999px; padding: 2px 9px; border: 1px solid var(--line); color: var(--dim) }
+.status.review { color: var(--pers); border-color: var(--pers) } .status.correct { color: var(--accent); border-color: var(--accent) }
+.status.false_alarm { color: var(--crit); border-color: var(--crit) } .status.missed { color: var(--claude); border-color: var(--claude) }
+.detail { border-top: 1px solid var(--line); padding: 14px; display: grid; gap: 12px; background: var(--panel-2) }
+.vals { display: grid; gap: 4px; font: 12.5px var(--font-data) }
+.vals div { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 10px; align-items: baseline }
+.ph { background: var(--pers-soft); color: var(--pers); border-radius: 3px; padding: 0 3px; font-weight: 600 }
+.real { color: var(--crit); font-weight: 600; word-break: break-word }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center }
+.btn { border: 1px solid var(--line); background: var(--panel); border-radius: 8px; padding: 6px 12px; font-weight: 500 }
+.btn.ok { border-color: var(--accent); color: var(--accent) } .btn.fa { border-color: var(--crit); color: var(--crit) }
+.btn.miss { border-color: var(--claude); color: var(--claude) } .btn.ghost { border-color: transparent; color: var(--dim) }
+.hint { font-size: 12px; color: var(--dim); margin: 0 }
+.box { display: grid; gap: 8px; border: 1px dashed var(--claude); border-radius: 8px; padding: 10px 12px; background: var(--panel) }
+.box.fa { border-color: var(--crit) }
+.box input[type=text], .box select { font: inherit; background: var(--panel); color: var(--fg); border: 1px solid var(--line); border-radius: 6px; padding: 4px 6px }
+.box label { display: flex; gap: 8px; align-items: baseline; font-size: 13px }
+.bars { display: grid; gap: 7px }
+.bar { display: grid; grid-template-columns: 110px minmax(0, 1fr) 44px; gap: 10px; align-items: center; font-size: 13px }
+.bar .lab { font: 12px var(--font-data); overflow: hidden; text-overflow: ellipsis; white-space: nowrap }
+.bar .track { height: 8px; background: var(--panel-2); border-radius: 4px; overflow: hidden }
+.bar .fill { display: block; height: 100%; border-radius: 4px; background: var(--low) }
+.bar .fill.crit { background: var(--crit) } .bar .fill.pers { background: var(--pers) }
+.bar .n { font: 12px var(--font-data); text-align: right }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 16px }
+.chart { width: 100%; height: auto; display: block }
+.chart text { fill: var(--dim); font: 10px var(--font-data) }
+.chart .grid { stroke: var(--line) }
+.rules { display: grid; gap: 8px }
+.rule { border: 1px solid var(--line); border-radius: 8px; padding: 9px 10px; display: grid; gap: 4px; font-size: 13px }
+.rule .r1 { display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap }
+.tag { font: 600 10px var(--font-data); letter-spacing: .04em; border-radius: 4px; padding: 1px 5px }
+.tag.allow { background: var(--accent-soft); color: var(--accent) } .tag.always_mask { background: var(--claude-soft); color: var(--claude) }
+.tag.suggested { background: var(--pers-soft); color: var(--pers) }
+.rule code { font: 12px var(--font-data); word-break: break-word }
+.rule .btn { padding: 2px 8px }
+.mode { display: grid; gap: 6px }
+.mode label { display: flex; gap: 8px; align-items: flex-start; font-size: 13px; cursor: pointer }
+.mode label small { display: block; color: var(--dim); font-size: 12px }
+.mode label:has(input:disabled) { cursor: default; opacity: .6 }
+.rule .auto { font: 11px var(--font-data); color: var(--accent) }
+.toast { position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%); background: var(--fg); color: var(--bg); padding: 8px 14px; border-radius: 8px; font-size: 13px; opacity: 0; transition: opacity .2s; pointer-events: none; max-width: calc(100% - 32px) }
+.toast.show { opacity: 1 }
+@media (max-width: 1000px) { .main { grid-template-columns: minmax(0, 1fr) } .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)) } }
+@media (max-width: 640px) { .tiles, .two { grid-template-columns: minmax(0, 1fr) } .alert > button.row { grid-template-columns: 4px minmax(0, 1fr) auto } .alert .when { display: none } .vals div { grid-template-columns: minmax(0, 1fr) } }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important } }
+</style></head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <svg width="30" height="24" viewBox="0 0 44 32" fill="none" aria-hidden="true"><path d="M4 2H40V10A6 6 0 0 0 40 22V30H4V22A6 6 0 0 0 4 10Z" stroke="var(--accent)" stroke-width="2.6" stroke-linejoin="round"/><path d="M14 16H30" stroke="var(--accent)" stroke-width="2.6" stroke-dasharray="3 3"/></svg>
+      Cloakroom <span class="ver" id="ver"></span>
+    </div>
+    <div class="tabs" role="tablist" aria-label="Time range">
+      <button role="tab" aria-selected="true" data-range="session">Latest active session</button>
+      <button role="tab" aria-selected="false" data-range="today">Today</button>
+      <button role="tab" aria-selected="false" data-range="all">All</button>
+    </div>
+    <span class="chip">mode <b id="mode">-</b></span>
+    <span class="spacer"></span>
+    <span class="chip" id="statusChip"><span class="dot"></span><span id="statusText">connecting</span></span>
+    <span class="dim mono" style="font-size:12px">updated <span id="updated">-</span></span>
+    <button class="iconbtn" id="themeBtn" type="button" aria-label="Switch light or dark">Theme</button>
+  </header>
+
+  <section class="banner" id="banner" aria-live="polite"></section>
+
+  <section class="tiles" aria-label="Summary">
+    <div class="tile hero"><h2>Kept from the model</h2><div class="big" id="t-kept">0</div><div class="sevbar" id="t-sevbar"></div><div class="legend" id="t-legend"></div></div>
+    <div class="tile"><h2>Tool calls checked</h2><div class="big" id="t-checked">0</div><div class="sub" id="t-checked-sub"></div></div>
+    <div class="tile"><h2>Prompts blocked</h2><div class="big" id="t-blocked">0</div><div class="sub">Put data in a file and point Claude at it: it's masked on the way in.</div></div>
+    <div class="tile fa"><h2>False alarms, your labels</h2><div class="big" id="t-fa">-</div><div class="sub" id="t-fa-sub">no labels yet</div></div>
+  </section>
+
+  <div class="main">
+    <div class="col">
+      <section class="card" aria-labelledby="feedTitle">
+        <div class="card-head">
+          <h2 id="feedTitle">Recent alerts</h2><span class="count" id="reviewCount">0 to review</span><span class="spacer"></span>
+          <div class="filters" role="group" aria-label="Filter alerts">
+            <button type="button" aria-pressed="true" data-f="all">All</button>
+            <button type="button" aria-pressed="false" data-f="review">To review</button>
+            <button type="button" aria-pressed="false" data-f="crit">Secrets</button>
+            <button type="button" aria-pressed="false" data-f="pers">Personal</button>
+          </div>
+        </div>
+        <div class="feed" id="feed"></div>
+        <p class="hint">Open an alert to see what was masked. Real values stay on this machine and show only when you click Reveal.</p>
+      </section>
+      <section class="card" aria-labelledby="timeTitle">
+        <div class="card-head"><h2 id="timeTitle">Values kept from the model, over time</h2><span class="spacer"></span><span class="legend"><span><i style="background:var(--crit)"></i>secrets</span><span><i style="background:var(--pers)"></i>personal</span><span><i style="background:var(--low)"></i>other</span></span></div>
+        <svg class="chart" id="chart" viewBox="0 0 640 170" role="img" aria-label="Values kept from the model per period"></svg>
+      </section>
+      <div class="two">
+        <section class="card" aria-labelledby="kindTitle"><h2 id="kindTitle">What Cloakroom caught</h2><div class="bars" id="kinds"></div></section>
+        <section class="card" aria-labelledby="hotTitle"><h2 id="hotTitle">Hot spots</h2><div class="bars" id="hot"></div></section>
+      </div>
+    </div>
+    <aside class="col">
+      <section class="card" aria-labelledby="learnTitle">
+        <h2 id="learnTitle">Learning from your labels</h2>
+        <div class="mode" role="radiogroup" aria-label="Learning mode">
+          <label><input type="radio" name="lm" value="suggest" checked><span>Suggest <span class="dim">· you drive</span><small>Each false alarm or miss becomes a proposed rule. Nothing changes until you Approve.</small></span></label>
+          <label><input type="radio" name="lm" value="quiet" id="lm-quiet" disabled><span>Learn quietly <span class="dim">· it drives, using your past choices</span><small>Rules apply on their own after a replay test on your labels and a safety set. Secret-type values always wait for you.</small></span></label>
+        </div>
+        <p class="hint" id="unlockText"></p>
+        <div class="sevbar" style="margin:0"><i id="unlockBar" style="width:0;background:var(--accent)"></i></div>
+        <div class="rules" id="rules"></div>
+        <p class="hint">A false alarm suggests a "never mask" rule; a miss suggests an "always mask" rule. Nothing changes until you Approve, and Undo puts it back. Rules and labels are saved on this machine, encrypted; the detection model itself never changes.</p>
+      </section>
+      <section class="card" aria-labelledby="perfTitle">
+        <h2 id="perfTitle">Check time</h2>
+        <div class="kv mono"><span>median <b id="p50">-</b></span><span>slowest 5% <b id="p95">-</b></span></div>
+        <svg class="chart" id="spark" viewBox="0 0 300 54" role="img" aria-label="Recent check times"></svg>
+      </section>
+      <section class="card" aria-labelledby="toolTitle"><h2 id="toolTitle">By tool</h2><div class="bars" id="tools"></div></section>
+    </aside>
+  </div>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(function () {
+  const $ = s => document.querySelector(s);
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const CRIT = ["SECRET", "CARD", "SSN", "IBAN", "ACCOUNT", "PASSWORD"], PERS = ["PERSON", "EMAIL", "PHONE", "ADDRESS", "DATE"];
+  const sev = k => CRIT.includes(k) ? "crit" : PERS.includes(k) ? "pers" : "low";
+  const UNLOCK = 10;
+  const STATUS = { review: "To review", correct: "Correct", false_alarm: "False alarm", missed: "Missed something" };
+  const ACTION = { masked: "masked", withheld: "withheld", deny: "denied", block: "blocked", ask: "asked", restored: "restored", pass: "checked" };
+
+  let data = null, lastRaw = "", range = "session", filter = "all", openId = null, panel = null;
+  const revealed = {};  // event id -> values, only after Reveal; kept in memory, gone on reload
+
+  function toast(msg) { const t = $("#toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(toast.h); toast.h = setTimeout(() => t.classList.remove("show"), 2600); }
+
+  async function api(path, body) {
+    const r = await fetch(path, body ? { method: "POST", headers: { "Content-Type": "application/json", "X-Cloakroom": "1" }, body: JSON.stringify(body) } : {});
+    if (r.status === 403) throw new Error("signed out: run `cloakroom dashboard` again");
+    const j = await r.json();
+    if (!r.ok) throw new Error(j.error || "HTTP " + r.status);
+    return j;
+  }
+
+  function inRange(evs) {
+    if (range === "all") return evs;
+    if (range === "today") { const loc = new Date(); const day = `${loc.getFullYear()}-${String(loc.getMonth() + 1).padStart(2, "0")}-${String(loc.getDate()).padStart(2, "0")}`; return evs.filter(e => e.ts.startsWith(day)); }
+    // newest session with at least one tool call checked (a just-opened session has only start / prompt events)
+    const s = (evs.find(e => e.session && e.session !== "default" && (e.event === "pre" || e.event === "post")) || evs[0] || {}).session;
+    return evs.filter(e => e.session === s);
+  }
+  const total = k => Object.values(k || {}).reduce((a, b) => a + b, 0);
+  const isAlert = e => total(e.kinds) > 0;
+
+  function renderBanner() {
+    const b = $("#banner"), chip = $("#statusChip"), st = $("#statusText");
+    const kv = `<div class="kv"><span>service <b>up</b> · port <b>${data.port}</b></span><span>model <b>${data.model ? "loaded" : data.mode === "rules" ? "off (rules mode)" : "not loaded yet"}</b></span><span>vault <b>${data.vault_sessions} sessions, encrypted</b></span><span>allowlist <b>${data.allow}</b></span></div>`;
+    if (data.installing) {
+      b.className = "banner warn"; chip.className = "chip warn"; st.textContent = "Rules only · installing";
+      b.innerHTML = `<div class="msg"><b>Rules-only protection while the model ${data.installing === "model-failed" ? "download failed" : "downloads"}.</b><span class="dim">Keys, cards and IDs are covered; names and addresses may be missed. Details: ~/.cloakroom/bootstrap.log</span></div>` + kv;
+    } else if (data.mode === "rules") {
+      b.className = "banner warn"; chip.className = "chip warn"; st.textContent = "Rules only · port " + data.port;
+      b.innerHTML = `<div class="msg"><b>Rules mode: names and addresses may be missed.</b><span class="dim">Set "mode": "full" in ~/.cloakroom/config.json for the model.</span></div>` + kv;
+    } else {
+      b.className = "banner"; chip.className = "chip"; st.textContent = "Protected · port " + data.port;
+      b.innerHTML = `<div class="msg"><b>Protecting your Claude Code sessions.</b><span class="dim">Every tool call is checked before Claude sees it.</span></div>` + kv;
+    }
+  }
+
+  function renderTiles(evs) {
+    const sevs = { crit: 0, pers: 0, low: 0 };
+    evs.forEach(e => Object.entries(e.kinds || {}).forEach(([k, n]) => sevs[sev(k)] += n));
+    const kept = sevs.crit + sevs.pers + sevs.low;
+    $("#t-kept").textContent = kept.toLocaleString();
+    const cols = { crit: "var(--crit)", pers: "var(--pers)", low: "var(--low)" }, names = { crit: "secrets", pers: "personal", low: "other" };
+    $("#t-sevbar").innerHTML = kept ? Object.keys(sevs).map(k => `<i style="width:${(sevs[k] / kept * 100).toFixed(1)}%;background:${cols[k]}"></i>`).join("") : "";
+    $("#t-legend").innerHTML = Object.keys(sevs).map(k => `<span><i style="background:${cols[k]}"></i>${sevs[k]} ${names[k]}</span>`).join("");
+    const tools = evs.filter(e => e.event === "pre" || e.event === "post"), n = a => tools.filter(e => e.action === a).length;
+    $("#t-checked").textContent = tools.length.toLocaleString();
+    $("#t-checked-sub").textContent = `${n("masked")} masked · ${n("withheld")} encoded dumps withheld · ${n("deny")} denied`;
+    $("#t-blocked").textContent = evs.filter(e => e.event === "prompt" && e.action === "block").length;
+    const lab = evs.filter(e => e.label), fa = lab.filter(e => e.label === "false_alarm").length;
+    $("#t-fa").textContent = lab.length ? Math.round(fa / lab.length * 100) + "%" : "-";
+    $("#t-fa-sub").textContent = lab.length ? `${fa} of ${lab.length} labelled alerts` : "no labels yet";
+  }
+
+  function detailHTML(e) {
+    const vals = revealed[e.id];
+    const rows = (e.placeholders || []).map(p => { const v = vals && vals.find(x => x.placeholder === p); const k = p.split("_")[1];
+      return `<div><span><span class="ph">${esc(p)}</span> <span class="kind ${sev(k)}">${esc(k)}</span></span><span>${v ? `<span class="real">${esc(v.value || "(not in the vault any more)")}</span>` : '<span class="dim">hidden</span>'}</span></div>`; }).join("");
+    let extra = "";
+    if (panel === "fa") extra = `<div class="box fa"><b>Which value was safe to show?</b>
+      ${(e.placeholders || []).map(p => { const k = p.split("_")[1], v = vals && vals.find(x => x.placeholder === p);
+        return `<label><input type="checkbox" value="${esc(p)}" ${sev(k) === "crit" ? "" : "checked"}> <span class="mono">${esc(v ? v.value : p)}</span> <span class="dim">${esc(k)}</span></label>`; }).join("")}
+      <span class="hint">Keys, card and ID numbers are never unmasked automatically; ticking one only records your label.</span>
+      <div class="actions"><button class="btn fa" type="button" data-act="fa-save">Mark false alarm</button><button class="btn ghost" type="button" data-act="cancel">Cancel</button></div></div>`;
+    if (panel === "miss") extra = `<div class="box"><b>What should it have caught?</b>
+      <span class="hint">Type or paste the exact text, as it appears in the file. It's saved encrypted on this machine.</span>
+      <div class="actions"><input type="text" id="missText" maxlength="200" aria-label="Missed text" style="flex:1 1 220px">
+        <label for="missKind">as</label><select id="missKind"><option>PERSON</option><option>EMAIL</option><option>PHONE</option><option>ADDRESS</option><option>ACCOUNT</option><option>SECRET</option><option>OTHER</option></select>
+        <button class="btn miss" type="button" data-act="miss-save">Add as missed</button><button class="btn ghost" type="button" data-act="cancel">Cancel</button></div></div>`;
+    return `<div class="detail" id="detail-${e.id}">
+      <div class="kv mono"><span>${esc(e.ts.replace("T", " "))}</span><span>${esc(e.event)} hook</span><span>check ${e.ms} ms</span><span>session ${esc(e.session.slice(0, 8))}</span><span>${total(e.kinds)} found · ${(e.placeholders || []).length} distinct value${(e.placeholders || []).length === 1 ? "" : "s"}${total(e.kinds) > (e.placeholders || []).length ? " (a repeated value keeps one placeholder)" : ""}</span></div>
+      <div class="vals">${rows || '<span class="dim">No placeholders recorded for this event.</span>'}</div>
+      <div class="actions">
+        <button class="btn ghost" type="button" data-act="reveal">${vals ? "Hide values" : "Reveal values"}</button><span class="spacer"></span>
+        <button class="btn ok" type="button" data-act="correct">Correct</button>
+        <button class="btn fa" type="button" data-act="fa">False alarm…</button>
+        <button class="btn miss" type="button" data-act="miss">Missed something…</button>
+        ${e.label ? '<button class="btn ghost" type="button" data-act="clear">Clear label</button>' : ""}
+      </div>${extra}</div>`;
+  }
+
+  function renderFeed(evs) {
+    const alerts = evs.filter(isAlert).map(e => { const ks = Object.keys(e.kinds); return Object.assign(e, { sev: ks.some(k => sev(k) === "crit") ? "crit" : ks.some(k => sev(k) === "pers") ? "pers" : "low" }); });
+    $("#reviewCount").textContent = `${alerts.filter(e => !e.label).length} to review`;
+    const list = alerts.filter(e => filter === "all" || (filter === "review" ? !e.label : e.sev === filter)).slice(0, 200);
+    $("#feed").innerHTML = list.map(e => {
+      const st = e.label || "review", open = e.id === openId;
+      const kinds = Object.entries(e.kinds).map(([k, n]) => `<span class="kind ${sev(k)}">${esc(k)}${n > 1 ? " ×" + n : ""}</span>`).join("");
+      return `<div class="alert" data-sev="${e.sev}">
+        <button class="row" type="button" data-act="open" data-id="${esc(e.id)}" aria-expanded="${open}">
+          <span class="stripe"></span><span class="when">${esc(e.ts.slice(11, 16))}</span>
+          <span class="what"><span class="line1"><span class="tool">${esc(e.tool || (e.event === "prompt" ? "Prompt" : e.event))}</span><span class="act">${esc(ACTION[e.action] || e.action)}</span>${kinds}</span><span class="file">${esc(e.target || (e.event === "prompt" ? "your prompt" : ""))}</span></span>
+          <span class="status ${st}">${STATUS[st]}</span></button>${open ? detailHTML(e) : ""}</div>`;
+    }).join("") || '<p class="hint">No alerts in this view yet. They show up here when Cloakroom masks, withholds or blocks something.</p>';
+  }
+
+  function renderBars(el, rows) {
+    const max = Math.max(1, ...rows.map(r => r[1]));
+    el.innerHTML = rows.map(([lab, n, s]) => `<div class="bar"><span class="lab" title="${esc(lab)}">${esc(lab)}</span><span class="track"><span class="fill ${s}" style="width:${(n / max * 100).toFixed(1)}%"></span></span><span class="n">${n}</span></div>`).join("") || '<p class="hint">Nothing yet.</p>';
+  }
+
+  function renderStats(evs) {
+    const kinds = {}, hot = {}, tools = {};
+    evs.forEach(e => {
+      Object.entries(e.kinds || {}).forEach(([k, n]) => kinds[k] = (kinds[k] || 0) + n);
+      if (isAlert(e)) {
+        const t = e.target ? (e.target.includes("/") ? e.target.replace(/[^/]*$/, "") || "/" : e.target) : (e.event === "prompt" ? "(prompts)" : "(other)");
+        hot[t] = hot[t] || [0, "low"]; hot[t][0] += total(e.kinds); if (e.sev === "crit" || (e.sev === "pers" && hot[t][1] === "low")) hot[t][1] = e.sev;
+        const tl = e.tool || e.event; tools[tl] = (tools[tl] || 0) + total(e.kinds);
+      }
+    });
+    renderBars($("#kinds"), Object.entries(kinds).sort((a, b) => b[1] - a[1]).slice(0, 8).map(([k, n]) => [k, n, sev(k)]));
+    renderBars($("#hot"), Object.entries(hot).sort((a, b) => b[1][0] - a[1][0]).slice(0, 6).map(([k, v]) => [k, v[0], v[1]]));
+    renderBars($("#tools"), Object.entries(tools).sort((a, b) => b[1] - a[1]).slice(0, 6).map(([k, n]) => [k, n, "low"]));
+    const ms = evs.filter(e => e.event !== "start").map(e => e.ms).sort((a, b) => a - b), q = p => ms.length ? ms[Math.min(ms.length - 1, Math.floor(p * ms.length))] : null;
+    $("#p50").textContent = ms.length ? Math.round(q(.5)) + " ms" : "-"; $("#p95").textContent = ms.length ? Math.round(q(.95)) + " ms" : "-";
+    const pts = evs.filter(e => e.event !== "start").slice(0, 40).reverse().map(e => e.ms), W = 300, H = 54, max = Math.max(10, ...pts);
+    if (pts.length > 1) {
+      const xy = pts.map((v, i) => [4 + i * (W - 8) / (pts.length - 1), H - 6 - v / max * (H - 12)]);
+      const line = xy.map((p, i) => (i ? "L" : "M") + p[0].toFixed(1) + " " + p[1].toFixed(1)).join(" "), last = xy[xy.length - 1];
+      $("#spark").innerHTML = `<line class="grid" x1="4" x2="${W - 4}" y1="${H - 6}" y2="${H - 6}"/><path d="${line}" fill="none" stroke="var(--accent)" stroke-width="2"/><circle cx="${last[0]}" cy="${last[1]}" r="3.5" fill="var(--accent)"/><text x="${W - 6}" y="10" text-anchor="end">max ${Math.round(max)} ms</text>`;
+    } else $("#spark").innerHTML = "";
+    const done = data.decisions;
+    $("#unlockBar").style.width = Math.min(100, done / UNLOCK * 100) + "%";
+    const unlocked = done >= (data.unlock || UNLOCK), quiet = $("#lm-quiet");
+    quiet.disabled = !unlocked;
+    document.querySelectorAll('input[name="lm"]').forEach(x => x.checked = x.value === data.learning);
+    $("#unlockText").textContent = unlocked ? `${done} decisions to learn from. Learn quietly is available.` : `${done} of your decisions so far. Learn quietly unlocks after ${data.unlock || UNLOCK}.`;
+  }
+
+  function renderChart(evs) {
+    const byDay = range === "all", key = e => byDay ? e.ts.slice(5, 10) : e.ts.slice(11, 13) + ":00", buckets = new Map();
+    evs.slice().reverse().forEach(e => { if (!isAlert(e)) return; const k = key(e); const b = buckets.get(k) || [0, 0, 0]; Object.entries(e.kinds).forEach(([kd, n]) => b[{ crit: 0, pers: 1, low: 2 }[sev(kd)]] += n); buckets.set(k, b); });
+    const labs = [...buckets.keys()].slice(-12), bars = labs.map(l => buckets.get(l)), svg = $("#chart");
+    if (!bars.length) { svg.innerHTML = '<text x="320" y="85" text-anchor="middle">nothing kept from the model in this view yet</text>'; return; }
+    const W = 640, H = 170, L = 34, B = 22, T = 8, max = Math.max(...bars.map(b => b[0] + b[1] + b[2]));
+    const top = Math.max(4, Math.ceil(max / 4) * 4), y = v => H - B - (v / top) * (H - B - T), bw = (W - L - 8) / Math.max(bars.length, 6);
+    let s = "";
+    for (let i = 0; i <= 4; i++) { const v = top * i / 4, yy = y(v); s += `<line class="grid" x1="${L}" x2="${W - 4}" y1="${yy}" y2="${yy}"/><text x="${L - 6}" y="${yy + 3}" text-anchor="end">${Math.round(v)}</text>`; }
+    const cols = ["var(--crit)", "var(--pers)", "var(--low)"];
+    bars.forEach((b, i) => {
+      let base = 0; const x = L + i * bw + bw * .18, w = bw * .64;
+      [2, 1, 0].forEach(k => { const h = (b[k] / top) * (H - B - T); if (h > 0) s += `<rect x="${x.toFixed(1)}" y="${(y(base) - h).toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" fill="${cols[k]}" rx="2"/>`; base += b[k]; });
+      s += `<text x="${(x + w / 2).toFixed(1)}" y="${H - 6}" text-anchor="middle">${esc(labs[i])}</text>`;
+    });
+    svg.innerHTML = s;
+  }
+
+  function renderRules() {
+    const rs = (data.rules || []).slice().sort((a, b) => (a.state === "suggested" ? 0 : 1) - (b.state === "suggested" ? 0 : 1));
+    $("#rules").innerHTML = rs.map(r => {
+      const sug = r.state === "suggested", name = r.type === "allow" ? "NEVER MASK" : "ALWAYS MASK";
+      return `<div class="rule"><div class="r1"><span class="tag ${sug ? "suggested" : r.type}">${sug ? "SUGGESTED · " + name : name}</span><code>${esc(r.text)}</code>${r.kind ? `<span class="kind ${sev(r.kind)}">${esc(r.kind)}</span>` : ""}<span class="spacer"></span>
+        ${sug ? `<button class="btn ok" type="button" data-rule="${esc(r.id)}" data-do="approve">Approve</button><button class="btn ghost" type="button" data-rule="${esc(r.id)}" data-do="dismiss">Dismiss</button>`
+              : `<button class="btn ghost" type="button" data-rule="${esc(r.id)}" data-do="undo">Undo</button>`}</div>
+        <span class="dim" style="font-size:12px">${esc(r.why)}${r.needs_yes ? " · a secret-type value: it will always wait for your Approve" : ""}</span>
+        ${r.replay ? `<span class="dim mono" style="font-size:11px">${esc(r.replay)}</span>` : ""}
+        ${r.auto ? '<span class="auto">applied on its own · passed the replay test</span>' : ""}</div>`;
+    }).join("") || '<p class="hint">No rules yet. Label an alert as a false alarm or a miss and a suggestion shows up here.</p>';
+  }
+
+  function render() {
+    if (!data) return;
+    $("#ver").textContent = "v" + data.version; $("#mode").textContent = data.mode;
+    const evs = inRange(data.events);
+    renderBanner(); renderTiles(evs); renderFeed(evs); renderStats(evs); renderChart(evs); renderRules();
+  }
+
+  async function refresh() {
+    if (panel) return;  // don't wipe a half-filled label form
+    try {
+      const next = await api("/api/summary"), raw = JSON.stringify(next);
+      if (raw !== lastRaw) { lastRaw = raw; data = next; render(); }  // re-render only on change: keeps focus and scroll
+      $("#updated").textContent = new Date().toTimeString().slice(0, 8);
+    } catch (err) {
+      lastRaw = "";
+      $("#statusChip").className = "chip bad"; $("#statusText").textContent = err.message.startsWith("signed out") ? "Signed out" : "Service not answering";
+      $("#banner").className = "banner bad"; $("#banner").innerHTML = `<div class="msg"><b>${esc(err.message.startsWith("signed out") ? "Signed out." : "The Cloakroom service isn't answering.")}</b><span class="dim">Run <span class="mono">cloakroom dashboard</span> again${err.message.startsWith("signed out") ? "" : " (it starts the service)"}.</span></div>`;
+    }
+  }
+
+  async function setLabel(body, msg) {
+    try {
+      const r = await api("/api/label", body); panel = null;
+      toast(msg + (r.applied ? ` ${r.applied} rule${r.applied > 1 ? "s" : ""} applied on its own (Undo in Learning).` : "") + (r.suggested ? ` ${r.suggested} rule${r.suggested > 1 ? "s" : ""} suggested in Learning.` : "") + (r.paused ? ` ${r.paused} learned rule${r.paused > 1 ? "s" : ""} paused: it conflicts with this label.` : ""));
+      await refresh();
+    }
+    catch (err) { toast("Couldn't save: " + err.message); }
+  }
+
+  document.addEventListener("click", async ev => {
+    const b = ev.target.closest("button"); if (!b) return;
+    if (b.dataset.range) { range = b.dataset.range; document.querySelectorAll(".tabs button").forEach(x => x.setAttribute("aria-selected", x === b)); return render(); }
+    if (b.dataset.f) { filter = b.dataset.f; document.querySelectorAll("[data-f]").forEach(x => x.setAttribute("aria-pressed", x === b)); return render(); }
+    if (b.id === "themeBtn") { const r = document.documentElement, cur = r.getAttribute("data-theme") || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"); return r.setAttribute("data-theme", cur === "dark" ? "light" : "dark"); }
+    if (b.dataset.rule) {
+      const done = { approve: "Rule approved. It applies from the next check.", dismiss: "Suggestion dismissed.", undo: "Rule undone. Cloakroom is back to how it was." };
+      try { await api("/api/rule", { id: b.dataset.rule, action: b.dataset.do }); toast(done[b.dataset.do]); await refresh(); }
+      catch (err) { toast("Couldn't save: " + err.message); }
+      return;
+    }
+    const act = b.dataset.act; if (!act) return;
+    if (act === "open") { openId = openId === b.dataset.id ? null : b.dataset.id; panel = null; return render(); }
+    const id = openId;
+    if (act === "reveal") {
+      if (revealed[id]) delete revealed[id];
+      else try { revealed[id] = (await api("/api/values?id=" + encodeURIComponent(id))).values; } catch (err) { return toast(err.message); }
+      return render();
+    }
+    if (act === "fa" || act === "miss") { panel = act; return render(); }
+    if (act === "cancel") { panel = null; return render(); }
+    if (act === "correct") return setLabel({ id, label: "correct" }, "Marked correct. One more decision Cloakroom can learn from.");
+    if (act === "clear") return setLabel({ id, label: "none" }, "Label cleared.");
+    if (act === "fa-save") {
+      const chosen = [...document.querySelectorAll(`#detail-${CSS.escape(id)} input[type=checkbox]:checked`)].map(x => x.value);
+      if (!chosen.length) return toast("Tick at least one value.");
+      return setLabel({ id, label: "false_alarm", placeholders: chosen }, "Marked as a false alarm.");
+    }
+    if (act === "miss-save") {
+      const value = $("#missText").value.trim(); if (!value) return toast("Type what it missed.");
+      return setLabel({ id, label: "missed", missed: [{ kind: $("#missKind").value, value }] }, "Saved as missed.");
+    }
+  });
+
+  document.addEventListener("change", async ev => {
+    if (ev.target.name !== "lm") return;
+    try { await api("/api/learning", { mode: ev.target.value }); toast(ev.target.value === "quiet" ? "Learning quietly. Each rule passes a replay test on your past decisions before it applies." : "Back to Suggest. You approve every rule."); }
+    catch (err) { toast("Couldn't switch: " + err.message); }
+    lastRaw = ""; await refresh();
+  });
+
+  refresh(); setInterval(refresh, 5000);
+})();
+</script>
+</body></html>

@@ -1,8 +1,20 @@
 {
   "name": "cloakroom",
   "displayName": "Cloakroom",
-  "version": "0.1.5",
+  "version": "0.2.0",
   "description": "Agents check their secrets at the door: secrets and PII are masked before the model sees them and restored only for local tools.",
   "license": "Apache-2.0",
-  "keywords": ["privacy", "pii", "secrets", "redaction", "security"]
+  "keywords": [
+    "privacy",
+    "pii",
+    "secrets",
+    "redaction",
+    "security"
+  ],
+  "author": {
+    "name": "Shanjeev Rajendran",
+    "url": "https://github.com/shanjeevrajendran"
+  },
+  "homepage": "https://github.com/shanjeevrajendran/cloakroom",
+  "repository": "https://github.com/shanjeevrajendran/cloakroom"
 }

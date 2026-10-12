@@ -4,13 +4,13 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "cloakroom"
-version = "0.1.5"
+version = "0.2.0"
 description = "A privacy layer for Claude Code: names, emails, addresses and API keys are swapped for placeholders before the model sees them, and restored locally."
 readme = "README.md"
 license = "Apache-2.0"
 license-files = ["LICENSE", "NOTICE"]
 requires-python = ">=3.10"
-authors = [{name = "The Cloakroom authors"}]
+authors = [{name = "Shanjeev Rajendran"}]
 keywords = ["privacy", "pii", "secrets", "redaction", "claude-code", "ai-agents", "dlp"]
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -40,6 +40,9 @@ cloakroom = "cloakroom.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.package-data]
+cloakroom = ["dashboard.html"]
 
 [dependency-groups]
 dev = ["pytest"]

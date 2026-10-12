@@ -10,7 +10,7 @@
     {
       "name": "cloakroom",
       "source": "./plugin",
-      "description": "Masks secrets and personal data in prompts, file reads and command output before Claude sees them; restores the real values only for local tools (Write, Edit, Bash). Needs the cloakroom command: uv tool install 'cloakroom[model]'.",
+      "description": "Masks secrets and personal data in prompts, file reads and command output before Claude sees them; restores the real values only for local tools (Write, Edit, Bash). Installs the cloakroom command itself on first start (with uv, pipx or Python 3.10+): rules-only protection at once, the model a few minutes later.",
       "category": "security",
       "tags": ["privacy", "pii", "secrets", "redaction", "security"]
     }

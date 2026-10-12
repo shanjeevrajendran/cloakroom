@@ -303,3 +303,22 @@ alarms**, identical to macOS. Speed: `cloakroom doctor` one check 412 ms; v6 ave
 2-vCPU server CPU (62 ms on an Apple M-series CPU). Vault key in Windows Credential Manager. The test found two
 Windows bugs, both fixed: a PyTorch that is installed but can't load (no VC++ runtime) crashed auto mode instead of
 falling back to ONNX (d893fe4); `cloakroom mask` crashed printing to a legacy cp1252 console (7b7a233).
+
+## v0.2 engine on every set (2026-10-11, branch v0.2 at db53829)
+The sections above keep each set's first run. This is the current engine on all of them. Holdouts v2-v5 were used
+for tuning after their first run, so their numbers here are flattering; **holdout v6 was never tuned on and stays the
+fair score** (unchanged from its first run). Independent numbers on public datasets: `bench/public/RESULTS.md`.
+
+| Set | Cloakroom full: values leaked / false alarms | Cloakroom rules only |
+|---|---|---|
+| corpus v1 (tuned) | 0/530, 0/20 | 0/530, 0/20 |
+| holdout v1 (tuned) | 0/110, 2/15 | 20/110, 0/15 |
+| holdout v2 (tuned) | 0/219, 2/40 | 102/219, 1/40 |
+| holdout v3 (tuned) | 15/320, 2/40 | 133/320, 1/40 |
+| holdout v4 (tuned) | 0/328, 5/40 | 155/328, 1/40 |
+| holdout v5 (tuned) | 0/394, 3/40 | 176/394, 1/40 |
+| **holdout v6 (never tuned)** | **3/314, 12/40** | 169/314, 2/40 |
+
+Since v0.1: model spans no longer run across CSV rows or cut words; values under address keys, ISO / written birth
+dates, short passwords and PINs under their keys are caught; SWIFT / FIX field tags are no longer read as accounts.
+Competitor rows above are unchanged (same tools, same revisions).

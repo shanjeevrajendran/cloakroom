@@ -1,6 +1,7 @@
 """CI check: every hook command works in each shell Claude Code may use, with and without cloakroom on PATH.
 
-With cloakroom: a post hook masks a planted key. Without: pre denies, prompt passes with a warning.
+With cloakroom: a post hook masks a planted key. Without: pre denies, prompt passes with a warning. Without
+cloakroom but with uv (a stub here): the first-start installer is launched.
     python scripts/check_polyglot.py
 """
 import json
@@ -17,15 +18,23 @@ git_bash = r"C:\Program Files\Git\bin\bash.exe"
 bash = git_bash if os.name == "nt" and os.path.exists(git_bash) else "bash"
 shells = [s for s in ([bash, "-c"], ["powershell", "-NoProfile", "-Command"], ["pwsh", "-NoProfile", "-Command"])
           if shutil.which(s[0]) or os.path.exists(s[0])]
-names = ("cloakroom", "cloakroom.exe", "cloakroom.cmd")
+# also hide uv, so the "without cloakroom" runs can never start a real install
+names = ("cloakroom", "cloakroom.exe", "cloakroom.cmd", "uv", "uv.exe")
 no_cloakroom_path = os.pathsep.join(p for p in os.environ["PATH"].split(os.pathsep)
                                     if not any(os.path.exists(os.path.join(p, n)) for n in names))
 key = "ghp_" + "R8kL2mQ9vX4nT7bW1cY5zH3jF6dS0aP2eG8u"
 failures = []
 
 
+import tempfile
+# "without cloakroom" runs also get an empty home: the hook looks in ~/.local/bin and ~/.cloakroom/venv too
+empty_home = tempfile.mkdtemp()
+
+
 def run(shell, event, payload, path):
     env = dict(os.environ, PATH=path, CLOAKROOM_MODE="rules", PYTHONUTF8="1")
+    if path != os.environ["PATH"]:
+        env.update(HOME=empty_home, USERPROFILE=empty_home, CLOAKROOM_HOME=os.path.join(empty_home, ".cloakroom"))
     p = subprocess.run(shell + [cmd[event]], input=json.dumps(payload), capture_output=True, text=True,
                        encoding="utf-8", env=env, timeout=120)
     try:
@@ -45,9 +54,29 @@ for sh in shells:
     print(f"{name:<11} without cloakroom pre denies:    {ok}")
     failures += [] if ok else [(name, "pre-missing", out)]
     out = run(sh, "prompt", {"prompt": "hi"}, no_cloakroom_path)
-    ok = "decision" not in out and "NOT protecting" in out.get("systemMessage", "")
+    ok = "decision" not in out and "cloakroom" in out.get("systemMessage", "")
     print(f"{name:<11} without cloakroom prompt warns:  {ok}")
     failures += [] if ok else [(name, "prompt-missing", out)]
+
+# Without cloakroom but with uv: the hook starts the installer (bash; a stub uv records the call).
+stub = tempfile.mkdtemp()
+mark = os.path.join(stub, "installed")
+with open(os.path.join(stub, "uv"), "w") as f:
+    f.write(f'#!/bin/sh\ncase "$1 $2" in "tool dir") echo {stub}/nobin ;; "tool install") echo "$@" >> {mark} ;; esac\n')
+os.chmod(os.path.join(stub, "uv"), 0o755)
+if os.name != "nt":
+    env_path = stub + os.pathsep + no_cloakroom_path
+    root = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "plugin")
+    os.environ.update(CLAUDE_PLUGIN_ROOT=root, CLOAKROOM_HOME=os.path.join(stub, "home"))
+    out = run([bash, "-c"], "start", {"session_id": "ci"}, env_path)
+    import time
+    for _ in range(40):
+        if os.path.exists(mark):
+            break
+        time.sleep(0.25)
+    ok = "installing itself" in out.get("systemMessage", "") and os.path.exists(mark)
+    print(f"{'bash':<11} uv, no cloakroom  installer starts: {ok}")
+    failures += [] if ok else [("bash", "bootstrap", out)]
 
 print("shells tested:", [s[0] for s in shells])
 if failures:

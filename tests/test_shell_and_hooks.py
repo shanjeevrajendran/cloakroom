@@ -263,3 +263,39 @@ def test_start_hook_returns_at_once_when_service_down(monkeypatch, capsys):
     t = time.monotonic()
     out = run_hook("start", {"session_id": "t"}, monkeypatch, capsys)
     assert time.monotonic() - t < 3 and "background" in out["systemMessage"]
+
+
+def test_prompt_with_only_names_passes(monkeypatch, capsys):
+    from cloakroom import client
+    fake = {"Ask Sarah Klein about the invoice": [["PII_PERSON_1", "PERSON", "model"]],
+            "Sarah Klein, sarah.klein@quillfeather.net": [["PII_PERSON_1", "PERSON", "model"], ["PII_EMAIL_1", "EMAIL", "email"]]}
+    monkeypatch.setattr(client, "mask", lambda text, session: {"text": text, "masked": fake.get(text, []), "skipped": []})
+    assert run_hook("prompt", {"session_id": "t", "prompt": "Ask Sarah Klein about the invoice"}, monkeypatch, capsys) is None
+    out = run_hook("prompt", {"session_id": "t", "prompt": "Sarah Klein, sarah.klein@quillfeather.net"}, monkeypatch, capsys)
+    assert out["decision"] == "block" and "EMAIL" in out["reason"]
+
+
+def test_pause_and_send_anyway(monkeypatch, capsys):
+    from cloakroom import client, config, hook
+    monkeypatch.setattr(client, "mask", lambda text, session: {
+        "text": text, "masked": [["PII_EMAIL_1", "EMAIL", "email"]] if "@" in text else [], "skipped": []})
+    blocked = run_hook("prompt", {"session_id": "t", "prompt": "mail sarah.klein@quillfeather.net"}, monkeypatch, capsys)
+    assert blocked["decision"] == "block" and "cr!" in blocked["reason"] and "cr: pause 10m" in blocked["reason"]
+    assert run_hook("prompt", {"session_id": "t", "prompt": "cr! mail sarah.klein@quillfeather.net"}, monkeypatch, capsys) is None
+    out = run_hook("prompt", {"session_id": "t", "prompt": "cr: pause 10m"}, monkeypatch, capsys)
+    assert out["decision"] == "block" and "paused for 10 min" in out["reason"] and hook.paused_minutes() == 10
+    out = run_hook("prompt", {"session_id": "t", "prompt": "mail sarah.klein@quillfeather.net"}, monkeypatch, capsys)
+    assert "decision" not in out and "10 min left" in out["systemMessage"]
+    run_hook("prompt", {"session_id": "t", "prompt": "cr: resume"}, monkeypatch, capsys)
+    assert hook.paused_minutes() == 0
+    assert run_hook("prompt", {"session_id": "t", "prompt": "mail sarah.klein@quillfeather.net"}, monkeypatch, capsys)["decision"] == "block"
+    from cloakroom import events
+    assert [e["action"] for e in events.read()[1:4]] == ["control", "paused", "control"]
+
+
+def test_claude_cannot_change_cloakroom_files(monkeypatch, capsys):
+    from cloakroom import config
+    for tool, args in (("Write", {"file_path": str(config.HOME / "pause.json"), "content": "{}"}),
+                       ("Bash", {"command": "echo '{}' > ~/.cloakroom/pause.json"})):
+        out = run_hook("pre", {"session_id": "t", "tool_name": tool, "tool_input": args}, monkeypatch, capsys)
+        assert out["hookSpecificOutput"]["permissionDecision"] == "deny", tool
