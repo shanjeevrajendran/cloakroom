@@ -322,3 +322,42 @@ fair score** (unchanged from its first run). Independent numbers on public datas
 Since v0.1: model spans no longer run across CSV rows or cut words; values under address keys, ISO / written birth
 dates, short passwords and PINs under their keys are caught; SWIFT / FIX field tags are no longer read as accounts.
 Competitor rows above are unchanged (same tools, same revisions).
+
+## After the maisecrets maintainers' review (2026-10-12, Cloakroom 0.2.0, maisecrets 0.6.14)
+
+maisecrets' maintainers reproduced our numbers and pointed out two things that made the comparison unfair to them:
+17 of their "critical misses" were keys in formats vendors never issue (our older sets' generators), and their
+`regions` setting loads only the system locale's country by default (Mcpgate-de/maisecrets#17). Three new runs:
+
+**Holdout v7: credentials in real vendor formats** (written after 0.2.0, committed before any run, run once;
+`bench/gen_holdout_v7.py`): 15 key types in seven contexts, AWS pairs, shapeless passwords, `%40` emails, PEM, JWT,
+15 look-alike negatives. Twilio Account SIDs are in their own category (they name an account rather than unlock it).
+
+| Tool | Values leaked (77) | False alarms (15) | What leaked |
+|---|---|---|---|
+| Cloakroom full | 0 | 3 | - |
+| maisecrets 0.6.14 | 13 | 1 | 10 shapeless passwords (netrc, CLI flags, `mysql -p`, Redis `AUTH`, prose), 3 Twilio SIDs; every real-format key caught |
+| Cloakroom rules only | 18 | 0 | `%40` emails, shapeless passwords, GitLab and npm tokens |
+
+**Holdouts v2-v6 rerun** (these sets were seen before, so this is not an honest score; `bench/rerun-2026-10-12/`):
+
+| Tool | Critical (334) | High (1005) | Low (221) | False alarms (200) |
+|---|---|---|---|---|
+| Cloakroom 0.2.0 full | 2 | 1 | 1 | 23 |
+| maisecrets 0.6.14, regions us/uk/in | 67 | 550 | 161 | 6 |
+| maisecrets 0.6.14, default regions | 78 | 550 | 161 | 5 |
+
+**Samsung CredData** (real credentials from public repositories, obfuscated; 29,893 single-line labels: 14,471
+credentials, 15,422 look-alike candidates). Each line is checked alone, without its file path, the way a prompt or
+a tool output arrives; a row counts as caught when the labelled value no longer appears in the output
+(`bench/credata.py`).
+
+| Tool | Precision | Recall | F1 |
+|---|---|---|---|
+| maisecrets 0.6.14 | 0.90 | 0.61 | 0.73 |
+| Cloakroom full | 0.66 | 0.65 | 0.66 |
+| Cloakroom rules only | 0.70 | 0.43 | 0.54 |
+
+By category, Cloakroom catches more passwords (0.97 vs 0.62), tokens (0.96 vs 0.66), URL credentials (1.00 vs 0.70)
+and AWS client IDs (0.99 vs 0.36); maisecrets is far better on generic keys (0.88 vs 0.36) and raises far fewer
+false alarms (981 vs 4,750 candidates masked). Generic keys are Cloakroom's main gap on real-world code.

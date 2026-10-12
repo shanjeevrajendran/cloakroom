@@ -108,6 +108,15 @@ def _control(prompt: str) -> dict | None:
 
 
 def on_prompt(data: dict) -> dict | None:
+    out = _on_prompt(data)
+    note = _install_note_once(data.get("session_id", "default"))
+    if note:
+        out = dict(out or {})
+        out["systemMessage"] = note + (" · " + out["systemMessage"] if out.get("systemMessage") else "")
+    return out
+
+
+def _on_prompt(data: dict) -> dict | None:
     prompt = data.get("prompt", "")
     control = _control(prompt)
     if control:
@@ -300,17 +309,38 @@ def on_pre(data: dict) -> dict | None:
     return None
 
 
+def _install_note(cfg: dict) -> str | None:
+    if cfg.get("installing") in ("rules", "model"):
+        return ("cloakroom: rules-only protection while the model downloads (one time, a few minutes). Keys, cards "
+                "and IDs are covered; names and addresses may be missed until it's done. Progress: "
+                "~/.cloakroom/bootstrap.log")
+    if cfg.get("installing") == "model-failed":
+        return ("cloakroom: the model download failed, so only rules protect this session (names and addresses may "
+                "be missed). Retry: uv tool install --force 'cloakroom[model,torch]', then delete "
+                "~/.cloakroom/bootstrap.state. Details: ~/.cloakroom/bootstrap.log")
+    return None
+
+
+def _install_note_once(session: str) -> str | None:
+    """The install note again on the session's first prompt: Claude Code may show only one plugin's SessionStart
+    message, so ours can be hidden behind another's."""
+    note = _install_note(config.load())
+    if not note:
+        return None
+    flag = config.private_dir("install-noted") / ("".join(c for c in session if c.isalnum() or c in "-_")[:80]
+                                                  or "default")
+    if flag.exists():
+        return None
+    flag.touch(mode=0o600)
+    return note
+
+
 def on_start(data: dict) -> dict | None:
     """Session start: warm the service so the first tool call isn't blocked while the model loads."""
     cfg = config.load()
-    if cfg.get("installing") in ("rules", "model"):
-        return {"systemMessage": "cloakroom: rules-only protection while the model downloads (one time, a few "
-                                 "minutes). Keys, cards and IDs are covered; names and addresses may be missed until "
-                                 "it's done. Progress: ~/.cloakroom/bootstrap.log"}
-    if cfg.get("installing") == "model-failed":
-        return {"systemMessage": "cloakroom: the model download failed, so only rules protect this session (names and "
-                                 "addresses may be missed). Retry: uv tool install --force 'cloakroom[model,torch]', "
-                                 "then delete ~/.cloakroom/bootstrap.state. Details: ~/.cloakroom/bootstrap.log"}
+    note = _install_note(cfg)
+    if note:
+        return {"systemMessage": note}
     if cfg["mode"] == "full":
         try:
             # wait=0: start the service and return at once (the SessionStart hook only has 30 s; the first model

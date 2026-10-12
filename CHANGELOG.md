@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.1 (2026-10-12)
+- Windows with Git Bash: the hooks now find Cloakroom where the installer puts it (`venv\Scripts\cloakroom.exe`)
+  and start the PowerShell installer. In 0.2.0 they reported "not installed" even after the install, so every tool
+  call stayed blocked for Windows users who have Git (Claude Code runs hooks in Git Bash when it is there).
+- The first-start install note also appears on your first prompt of the session: Claude Code can show only one
+  plugin's start-up message, so ours could be hidden behind another plugin's.
+
 ## 0.2.0 (2026-10-12)
 
 **Install**

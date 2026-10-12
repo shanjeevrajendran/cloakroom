@@ -14,6 +14,7 @@ in a debatable tier; ambiguous shapes lean "critical", which only counts against
 - fictional: phone numbers in the range reserved for fiction (555-0100..0199), reported apart
 """
 import json
+import os
 import pathlib
 import re
 import sys
@@ -67,9 +68,12 @@ def main(names):
         for line in (HERE / f"{name}.jsonl").read_text().splitlines():
             for v in json.loads(line)["planted"]:
                 planted[tier(v)] += 1
-        for r in json.loads((HERE / f"{name}_results.json").read_text()):
+        results_dir = pathlib.Path(os.environ.get("RESULTS_DIR", HERE))
+        planted_by_id = {x["id"]: x["planted"] for x in map(json.loads, (HERE / f"{name}.jsonl").read_text().splitlines())}
+        for r in json.loads((results_dir / f"{name}_results.json").read_text()):
             for leak in r["leaks"]:
-                for v in leak["values"]:
+                values = leak.get("values") or [planted_by_id[leak["id"]][i] for i in leak["planted_idx"]]
+                for v in values:
                     leaked[r["adapter"]][tier(v)] += 1
     print(f"Sets: {', '.join(names)}. Planted values: " + ", ".join(f"{t} {planted[t]}" for t in TIERS) + "\n")
     print("| Tool | Critical | High | Low | Fictional (reserved 555-01xx) |")

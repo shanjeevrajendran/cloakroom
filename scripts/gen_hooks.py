@@ -52,14 +52,22 @@ def command(event: str) -> str:
     return "\n".join([
         "set -- `# <#`",
         # find cloakroom on PATH, in uv's tool folder, ~/.local/bin (pipx) or ~/.cloakroom/venv
-        'H="${CLOAKROOM_HOME:-$HOME/.cloakroom}"; CR="$(command -v cloakroom 2>/dev/null)"; '
+        # Git Bash on Windows (W=1): .exe programs in venv/Scripts, python or py instead of python3, and the
+        # PowerShell installer (bootstrap.ps1), which builds the same Windows layout PowerShell hooks look in
+        'H="${CLOAKROOM_HOME:-$HOME/.cloakroom}"; W=; case "$(uname -s 2>/dev/null)" in MINGW*|MSYS*|CYGWIN*) W=1;; esac; '
+        'CR="$(command -v cloakroom 2>/dev/null)"; '
         'if [ -z "$CR" ] && command -v uv >/dev/null 2>&1; then B="$(uv tool dir --bin 2>/dev/null)"; '
-        '[ -x "$B/cloakroom" ] && CR="$B/cloakroom"; fi; '
-        'for C in "$HOME/.local/bin/cloakroom" "$H/venv/bin/cloakroom"; do [ -z "$CR" ] && [ -x "$C" ] && CR="$C"; done; '
+        'for C in "$B/cloakroom" "$B/cloakroom.exe"; do [ -z "$CR" ] && [ -x "$C" ] && CR="$C"; done; fi; '
+        'for C in "$HOME/.local/bin/cloakroom" "$HOME/.local/bin/cloakroom.exe" "$H/venv/bin/cloakroom" '
+        '"$H/venv/Scripts/cloakroom.exe"; do [ -z "$CR" ] && [ -x "$C" ] && CR="$C"; done; '
         f'if [ -n "$CR" ]; then "$CR" hook {event}; '
         # a failed install retries after 10 minutes, not on every call
         'elif [ "$(cat "$H/bootstrap.state" 2>/dev/null)" = failed ] && [ -z "$(find "$H/bootstrap.state" -mmin +10 2>/dev/null)" ]; then '
         f"printf '%s\\n' '{failed}'; "
+        'elif [ -n "$W" ] && command -v powershell >/dev/null 2>&1; then '
+        '(nohup powershell -NoProfile -ExecutionPolicy Bypass -File "${CLAUDE_PLUGIN_ROOT}/scripts/bootstrap.ps1" '
+        '</dev/null >/dev/null 2>&1 &); '
+        f"printf '%s\\n' '{inst}'; "
         'elif command -v uv >/dev/null 2>&1 || command -v pipx >/dev/null 2>&1 || command -v python3 >/dev/null 2>&1; then '
         '(nohup bash "${CLAUDE_PLUGIN_ROOT}/scripts/bootstrap.sh" </dev/null >/dev/null 2>&1 &); '
         f"printf '%s\\n' '{inst}'; "

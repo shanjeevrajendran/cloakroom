@@ -299,3 +299,14 @@ def test_claude_cannot_change_cloakroom_files(monkeypatch, capsys):
                        ("Bash", {"command": "echo '{}' > ~/.cloakroom/pause.json"})):
         out = run_hook("pre", {"session_id": "t", "tool_name": tool, "tool_input": args}, monkeypatch, capsys)
         assert out["hookSpecificOutput"]["permissionDecision"] == "deny", tool
+
+
+def test_install_note_shows_on_the_first_prompt_once(monkeypatch, capsys):
+    from cloakroom import config
+    real = config.load
+    monkeypatch.setattr(config, "load", lambda: dict(real(), installing="model"))
+    first = run_hook("prompt", {"session_id": "inst", "prompt": "hello"}, monkeypatch, capsys)
+    assert "rules-only protection while the model downloads" in first["systemMessage"]
+    assert run_hook("prompt", {"session_id": "inst", "prompt": "hello again"}, monkeypatch, capsys) is None
+    blocked = run_hook("prompt", {"session_id": "inst2", "prompt": "use key ghp_" + "a1B2" * 9}, monkeypatch, capsys)
+    assert blocked["decision"] == "block" and "model downloads" in blocked["systemMessage"]

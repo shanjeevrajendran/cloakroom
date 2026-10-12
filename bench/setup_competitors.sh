@@ -20,7 +20,7 @@ while IFS='|' read -r name repo rev; do
   echo "$name @ $rev"
 done <<'EOF'
 claude-code-redact|https://github.com/karanb192/claude-code-redact.git|66e80ae
-maisecrets|https://github.com/Mcpgate-de/maisecrets.git|c67523d
+maisecrets|https://github.com/Mcpgate-de/maisecrets.git|a9dcdc6
 redact-hook|https://github.com/SilentAutomaton/redact-hook.git|64d73d2
 sensitive-canary|https://github.com/coo-quack/sensitive-canary.git|8eb46e0
 EOF

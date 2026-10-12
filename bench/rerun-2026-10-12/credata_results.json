@@ -1,0 +1,3221 @@
+[
+  {
+    "adapter": "maisecrets",
+    "tp": 8870,
+    "fn": 5601,
+    "tn": 14441,
+    "fp": 981,
+    "precision": 0.9,
+    "recall": 0.613,
+    "f1": 0.729,
+    "unique_lines": 23155,
+    "seconds": 11,
+    "by_category": {
+      "URL Credentials": {
+        "tp": 149,
+        "fn": 64,
+        "fp": 21,
+        "tn": 57
+      },
+      "Nonce": {
+        "fn": 148,
+        "tn": 60
+      },
+      "UUID": {
+        "fn": 2304,
+        "tn": 3106,
+        "tp": 4,
+        "fp": 546
+      },
+      "Password": {
+        "tn": 1990,
+        "tp": 1604,
+        "fn": 969,
+        "fp": 148
+      },
+      "Key": {
+        "tn": 4981,
+        "tp": 3381,
+        "fn": 441,
+        "fp": 65
+      },
+      "Key:Password": {
+        "tn": 5,
+        "fn": 2,
+        "tp": 16
+      },
+      "Auth": {
+        "tn": 1117,
+        "fp": 28,
+        "fn": 128,
+        "tp": 46
+      },
+      "API": {
+        "tn": 799,
+        "fp": 20,
+        "fn": 15,
+        "tp": 6
+      },
+      "Key:Token": {
+        "tn": 179,
+        "fp": 2,
+        "tp": 1
+      },
+      "Auth:Secret": {
+        "tp": 11
+      },
+      "Key:Secret": {
+        "tp": 101,
+        "fn": 23,
+        "tn": 6,
+        "fp": 1
+      },
+      "Secret": {
+        "tp": 1202,
+        "fp": 12,
+        "tn": 196,
+        "fn": 61
+      },
+      "Token": {
+        "tn": 649,
+        "fp": 76,
+        "fn": 201,
+        "tp": 382
+      },
+      "Secret:Auth": {
+        "tp": 5
+      },
+      "Credential": {
+        "fn": 64,
+        "tn": 134,
+        "fp": 5,
+        "tp": 12
+      },
+      "Auth:UUID": {
+        "tn": 3
+      },
+      "Password:URL Credentials": {
+        "tp": 6,
+        "fp": 3,
+        "fn": 4,
+        "tn": 3
+      },
+      "Auth:Password": {
+        "tp": 16,
+        "fn": 15,
+        "tn": 9
+      },
+      "Salt": {
+        "fn": 85,
+        "tn": 53
+      },
+      "PASERK Keys": {
+        "fn": 72,
+        "tn": 8
+      },
+      "PASETO Token:Token": {
+        "tp": 39,
+        "fn": 22
+      },
+      "PASETO Token": {
+        "fn": 2
+      },
+      "BASE64 Private Key": {
+        "tp": 27,
+        "fn": 3
+      },
+      "PEM Private Key": {
+        "tp": 7
+      },
+      "PEM Private Key:Key": {
+        "tp": 9
+      },
+      "PEM Private Key:Key:Secret": {
+        "tp": 23
+      },
+      "Grafana Service Account Token": {
+        "tp": 2
+      },
+      "Grafana Provisioned API Key": {
+        "tp": 2,
+        "tn": 16
+      },
+      "Grafana Service Account Token:Key": {
+        "tp": 1
+      },
+      "Grafana Access Policy Token": {
+        "fp": 2
+      },
+      "OTP / 2FA Secret": {
+        "tn": 2,
+        "fn": 16
+      },
+      "Auth:Key": {
+        "tn": 10,
+        "fn": 26,
+        "tp": 22,
+        "fp": 2
+      },
+      "AWS Client ID": {
+        "fn": 104,
+        "tp": 58,
+        "tn": 12
+      },
+      "AWS S3 Bucket": {
+        "fn": 92
+      },
+      "Auth:Token": {
+        "tp": 61,
+        "tn": 64,
+        "fn": 24,
+        "fp": 14
+      },
+      "AWS Multi": {
+        "fp": 7,
+        "tn": 48
+      },
+      "Auth:Basic Authorization": {
+        "tn": 1,
+        "tp": 595,
+        "fn": 6
+      },
+      "Basic Authorization": {
+        "tn": 536,
+        "tp": 81,
+        "fn": 8
+      },
+      "Key:BASE64 encoded PEM Private Key": {
+        "fn": 6
+      },
+      "Token:Github Classic Token": {
+        "tp": 1
+      },
+      "JSON Web Token": {
+        "tp": 73,
+        "tn": 53,
+        "fp": 6,
+        "fn": 11
+      },
+      "BASE64 Private Key:Key": {
+        "tp": 1
+      },
+      "Password:Auth": {
+        "tp": 8,
+        "fn": 1,
+        "tn": 1
+      },
+      "PostHog Credentials": {
+        "tp": 2
+      },
+      "WunderGraph API Key": {
+        "fn": 2
+      },
+      "JSON Web Token:Bearer Authorization": {
+        "tp": 17
+      },
+      "Secret:Key": {
+        "tp": 35,
+        "fn": 4,
+        "tn": 7,
+        "fp": 1
+      },
+      "WunderGraph API Key:API:Key": {
+        "tp": 9
+      },
+      "Basic Authorization:Auth": {
+        "fn": 2
+      },
+      "Password:Key": {
+        "tp": 9,
+        "tn": 1,
+        "fn": 1,
+        "fp": 2
+      },
+      "PostHog Credentials:API:Key": {
+        "tp": 1
+      },
+      "JSON Web Token:Token": {
+        "tp": 47,
+        "fn": 1
+      },
+      "API:Key": {
+        "fp": 8,
+        "tp": 61,
+        "tn": 25,
+        "fn": 5
+      },
+      "Auth:Nonce": {
+        "fn": 16,
+        "tp": 11
+      },
+      "CMD Password": {
+        "tn": 109,
+        "fn": 24,
+        "tp": 1
+      },
+      "Password:Credential": {
+        "tn": 1,
+        "fn": 1
+      },
+      "CURL User Password": {
+        "tp": 6,
+        "fp": 2,
+        "fn": 1
+      },
+      "Azure Access Token:JSON Web Token": {
+        "tp": 11
+      },
+      "JWK:Key": {
+        "fn": 1
+      },
+      "JWK": {
+        "fn": 1
+      },
+      "Dropbox App secret:Password": {
+        "tp": 44
+      },
+      "Token:Secret": {
+        "tp": 7
+      },
+      "Secret:Token": {
+        "tp": 12,
+        "tn": 2,
+        "fn": 1
+      },
+      "Auth:Dropbox App secret:Key": {
+        "tp": 2
+      },
+      "SQL Password": {
+        "fn": 31,
+        "tp": 8,
+        "tn": 4
+      },
+      "API:Anthropic API Key:Key": {
+        "tp": 1
+      },
+      "Key:API": {
+        "tn": 24,
+        "fp": 1,
+        "tp": 5
+      },
+      "API:Key:Dropbox App secret": {
+        "fp": 2
+      },
+      "Token:UUID": {
+        "tn": 1,
+        "tp": 155,
+        "fn": 14
+      },
+      "API:Token": {
+        "tp": 12,
+        "fn": 100,
+        "tn": 8,
+        "fp": 2
+      },
+      "Password:API": {
+        "tp": 4
+      },
+      "API:Password": {
+        "tp": 4,
+        "fn": 14
+      },
+      "API:Token:UUID": {
+        "tn": 1
+      },
+      "Token:Akamai Credentials": {
+        "tp": 2
+      },
+      "Credential:Secret": {
+        "tp": 2
+      },
+      "Akamai Credentials:Token": {
+        "fn": 4
+      },
+      "Akamai Credentials": {
+        "tn": 2
+      },
+      "API:Auth": {
+        "tn": 7
+      },
+      "Password:Secret": {
+        "tn": 3,
+        "tp": 14,
+        "fn": 4
+      },
+      "Dropbox App secret": {
+        "fn": 15,
+        "tn": 6,
+        "tp": 1
+      },
+      "AWS Client ID:Key": {
+        "tp": 34,
+        "tn": 1,
+        "fn": 2
+      },
+      "Auth:Token:Secret": {
+        "tp": 2
+      },
+      "Secret:Auth:Token": {
+        "tp": 1
+      },
+      "Dropbox App secret:Token": {
+        "fn": 1
+      },
+      "Auth:Secret:Token": {
+        "tp": 15,
+        "fp": 2
+      },
+      "Token:Auth": {
+        "tp": 11,
+        "fn": 6
+      },
+      "Token:Auth:Secret": {
+        "tp": 6
+      },
+      "Key:Stripe Credentials": {
+        "tp": 2
+      },
+      "Twilio Credentials": {
+        "fn": 30,
+        "tn": 14
+      },
+      "Password:Token": {
+        "tn": 7,
+        "fn": 2,
+        "tp": 2
+      },
+      "Token:Bearer Authorization": {
+        "tp": 1
+      },
+      "MailGun API Key": {
+        "fn": 8
+      },
+      "Google OAuth Refresh Token": {
+        "tn": 2
+      },
+      "CMD ConvertTo-SecureString": {
+        "fn": 13,
+        "tn": 3
+      },
+      "API:Key:Secret": {
+        "tp": 1
+      },
+      "Auth:Credential": {
+        "fn": 1
+      },
+      "Auth:Bearer Authorization": {
+        "tp": 79
+      },
+      "Credential:UUID": {
+        "tn": 2,
+        "fn": 3
+      },
+      "Bearer Authorization": {
+        "tp": 75
+      },
+      "Credential:AWS Multi": {
+        "tp": 3
+      },
+      "AWS Client ID:AWS Multi": {
+        "tn": 1
+      },
+      "Secret:OTP / 2FA Secret": {
+        "tp": 26
+      },
+      "Credential:Twilio Credentials": {
+        "tn": 2
+      },
+      "CMD Secret": {
+        "tn": 2,
+        "fn": 1
+      },
+      "OTP / 2FA Secret:Secret": {
+        "tp": 16
+      },
+      "Salt:Password": {
+        "tn": 3
+      },
+      "BASE64 encoded PEM Private Key:Key": {
+        "fn": 2
+      },
+      "Auth:Azure Access Token:JSON Web Token:Bearer Authorization": {
+        "tp": 1
+      },
+      "Azure Access Token:Token:JSON Web Token": {
+        "tp": 5
+      },
+      "Azure Access Token:Key:JSON Web Token": {
+        "tp": 2
+      },
+      "Password:CMD Password": {
+        "tp": 7
+      },
+      "Key:Credential": {
+        "tn": 4
+      },
+      "Key:Credential:Password": {
+        "tn": 1
+      },
+      "Credential:Password": {
+        "fn": 4,
+        "tn": 3
+      },
+      "UUID:Token:Auth": {
+        "fn": 6
+      },
+      "Google API Key:Key": {
+        "tp": 7,
+        "fn": 1
+      },
+      "Firebase Domain": {
+        "fn": 38
+      },
+      "Dropbox App secret:URL Credentials": {
+        "tp": 1
+      },
+      "Token:JSON Web Token": {
+        "tp": 2
+      },
+      "Dropbox App secret:Secret": {
+        "tp": 4
+      },
+      "Alibaba Access Key ID": {
+        "fn": 1
+      },
+      "API:Secret": {
+        "tn": 1
+      },
+      "Password:Salt": {
+        "tp": 1
+      },
+      "Google OAuth Access Token:Token": {
+        "tp": 2
+      },
+      "Token:Google OAuth Refresh Token": {
+        "tp": 1
+      },
+      "Auth:JSON Web Token:Bearer Authorization": {
+        "tp": 3
+      },
+      "Token:Key": {
+        "tn": 1,
+        "tp": 2
+      },
+      "Credential:Key": {
+        "tn": 7,
+        "tp": 1,
+        "fn": 5
+      },
+      "BASE64 encoded PEM Private Key:Auth:Key": {
+        "fn": 1
+      },
+      "BASE64 encoded PEM Private Key": {
+        "fn": 1
+      },
+      "Key:UUID": {
+        "fn": 4,
+        "tn": 20,
+        "tp": 1
+      },
+      "UUID:Key": {
+        "fn": 4,
+        "tn": 37
+      },
+      "Key:Password:CMD Password": {
+        "tp": 1
+      },
+      "UUID:Token": {
+        "tp": 17,
+        "fn": 9
+      },
+      "Token:API:Key:Google API Key": {
+        "tp": 1
+      },
+      "Facebook Access Token": {
+        "tn": 1
+      },
+      "Token:API:Key": {
+        "tp": 2
+      },
+      "API:Auth:Key": {
+        "tn": 3
+      },
+      "Key:Product Activation Key": {
+        "tp": 3
+      },
+      "JSON Web Token:Azure Access Token": {
+        "tp": 1
+      },
+      "AWS Client ID:Credential": {
+        "tn": 1
+      },
+      "NKEY Seed": {
+        "fn": 58
+      },
+      "Key:NKEY Seed": {
+        "tp": 1
+      },
+      "Key:AWS Client ID": {
+        "tp": 10,
+        "fn": 5
+      },
+      "Password:Key:Secret": {
+        "tp": 5,
+        "fp": 1
+      },
+      "Key:Secret:Token": {
+        "fn": 4,
+        "tn": 1
+      },
+      "Key:BASE64 Private Key": {
+        "fn": 4,
+        "tp": 3
+      },
+      "Secret:Key:Token": {
+        "tn": 1
+      },
+      "Secret:Dropbox App secret": {
+        "tp": 1
+      },
+      "CMD Token": {
+        "fn": 4,
+        "tn": 1
+      },
+      "Auth:URL Credentials": {
+        "fn": 1,
+        "tp": 2
+      },
+      "Password:Auth:Secret": {
+        "fn": 3
+      },
+      "Password:API:Key": {
+        "tp": 1
+      },
+      "Slack Token:Token": {
+        "tp": 7,
+        "fn": 1
+      },
+      "Password:Dropbox App secret": {
+        "tp": 1
+      },
+      "Password:Auth:Dropbox App secret": {
+        "tp": 2
+      },
+      "Auth:Token:UUID": {
+        "tp": 1,
+        "fn": 1
+      },
+      "Token:OTP / 2FA Secret": {
+        "fn": 3
+      },
+      "Auth:JSON Web Token": {
+        "tp": 3
+      },
+      "Postman Credentials": {
+        "tp": 1
+      },
+      "Postman Credentials:API:Key": {
+        "tp": 1
+      },
+      "Key:Grafana Provisioned API Key": {
+        "tp": 1
+      },
+      "Slack Token": {
+        "tn": 1,
+        "tp": 4
+      },
+      "API:Key:Grafana Provisioned API Key": {
+        "tp": 1
+      },
+      "Grafana Provisioned API Key:Key": {
+        "tp": 1
+      },
+      "URL Credentials:API:Key": {
+        "tp": 1
+      },
+      "Dropbox App secret:Key": {
+        "tn": 1
+      },
+      "Auth:Grafana Provisioned API Key:Bearer Authorization": {
+        "tp": 1
+      },
+      "Grafana Provisioned API Key:Auth": {
+        "tp": 1
+      },
+      "Token:JSON Web Token:Azure Access Token": {
+        "tp": 2
+      },
+      "API:Key:Perplexity API Key": {
+        "tp": 2
+      },
+      "API:UUID": {
+        "fn": 1
+      },
+      "NKEY Seed:Key": {
+        "fn": 1
+      },
+      "Google API Key:API:Key": {
+        "tp": 1
+      },
+      "Auth:Dropbox App secret:Password": {
+        "tp": 1
+      },
+      "Auth:API:Key:Google API Key": {
+        "tp": 1
+      },
+      "Auth:Token:Google OAuth Access Token": {
+        "fn": 1
+      },
+      "API:Key:Auth": {
+        "tp": 1
+      },
+      "Key:Google API Key": {
+        "fn": 1
+      },
+      "Salesforce Credentials": {
+        "fn": 5
+      },
+      "Tencent WeChat API App ID": {
+        "fn": 47
+      },
+      "Password:SQL Password": {
+        "fn": 1,
+        "tp": 3
+      },
+      "CMD Token:Docker Swarm Token": {
+        "tp": 2
+      },
+      "UUID:Password": {
+        "tp": 1
+      },
+      "Token:Auth:Key": {
+        "fn": 2
+      },
+      "Secret:UUID": {
+        "tp": 1
+      },
+      "SQL Password:Dropbox App secret": {
+        "tp": 1
+      },
+      "API:Google API Key:Key": {
+        "tp": 1
+      },
+      "Auth:Firebase Domain": {
+        "fn": 1
+      },
+      "API:Password:Salt": {
+        "tp": 1
+      },
+      "Auth:Salt": {
+        "tp": 2
+      },
+      "Key:Nonce": {
+        "tp": 1
+      },
+      "Nonce:Salt": {
+        "fn": 1
+      },
+      "Key:JWK": {
+        "fn": 1
+      },
+      "Password:AWS Client ID:AWS Multi": {
+        "tn": 1
+      },
+      "Nonce:Auth": {
+        "tn": 8
+      },
+      "NTLM Token:Bearer Authorization:Auth": {
+        "fn": 105
+      },
+      "NTLM Token:Bearer Authorization": {
+        "fn": 3
+      },
+      "CURL Options": {
+        "fn": 17,
+        "tn": 8
+      },
+      "NTLM Token": {
+        "fn": 18
+      },
+      "Bearer Authorization:Auth": {
+        "tp": 2
+      },
+      "Google Multi": {
+        "tp": 2
+      },
+      "Other": {
+        "fp": 2,
+        "tn": 1
+      },
+      "OTP / 2FA Secret:Password": {
+        "tp": 1
+      },
+      "Password:OTP / 2FA Secret": {
+        "tp": 2
+      },
+      "BASE64 Private Key:Secret": {
+        "fn": 1
+      },
+      "Token:Salesforce Credentials": {
+        "tp": 1
+      },
+      "Auth:Nonce:UUID": {
+        "fn": 1
+      },
+      "Auth:Token:JSON Web Token": {
+        "fn": 1
+      },
+      "Auth:Key:Password": {
+        "tn": 1,
+        "tp": 2
+      },
+      "Salt:Auth:Password": {
+        "tn": 1
+      },
+      "JSON Web Token:Azure Access Token:Token": {
+        "tp": 2
+      },
+      "Key:Auth": {
+        "tp": 10,
+        "fn": 1
+      },
+      "Key:Secret:UUID": {
+        "tp": 1
+      },
+      "Salt:Key": {
+        "tn": 1
+      },
+      "UUID:Secret": {
+        "fn": 2
+      },
+      "Auth:BASE64 encoded PEM Private Key": {
+        "fn": 2
+      },
+      "UUID:Auth": {
+        "fn": 1
+      },
+      "Secret:Token:Auth": {
+        "fn": 1
+      },
+      "Auth:Slack Token:Token": {
+        "tp": 1
+      },
+      "Bearer Authorization:Slack Token:Auth": {
+        "tp": 2
+      }
+    }
+  },
+  {
+    "adapter": "maisecrets-regions",
+    "tp": 8870,
+    "fn": 5601,
+    "tn": 14441,
+    "fp": 981,
+    "precision": 0.9,
+    "recall": 0.613,
+    "f1": 0.729,
+    "unique_lines": 23155,
+    "seconds": 13,
+    "by_category": {
+      "URL Credentials": {
+        "tp": 149,
+        "fn": 64,
+        "fp": 21,
+        "tn": 57
+      },
+      "Nonce": {
+        "fn": 148,
+        "tn": 60
+      },
+      "UUID": {
+        "fn": 2304,
+        "tn": 3106,
+        "tp": 4,
+        "fp": 546
+      },
+      "Password": {
+        "tn": 1990,
+        "tp": 1604,
+        "fn": 969,
+        "fp": 148
+      },
+      "Key": {
+        "tn": 4981,
+        "tp": 3381,
+        "fn": 441,
+        "fp": 65
+      },
+      "Key:Password": {
+        "tn": 5,
+        "fn": 2,
+        "tp": 16
+      },
+      "Auth": {
+        "tn": 1117,
+        "fp": 28,
+        "fn": 128,
+        "tp": 46
+      },
+      "API": {
+        "tn": 799,
+        "fp": 20,
+        "fn": 15,
+        "tp": 6
+      },
+      "Key:Token": {
+        "tn": 179,
+        "fp": 2,
+        "tp": 1
+      },
+      "Auth:Secret": {
+        "tp": 11
+      },
+      "Key:Secret": {
+        "tp": 101,
+        "fn": 23,
+        "tn": 6,
+        "fp": 1
+      },
+      "Secret": {
+        "tp": 1202,
+        "fp": 12,
+        "tn": 196,
+        "fn": 61
+      },
+      "Token": {
+        "tn": 649,
+        "fp": 76,
+        "fn": 201,
+        "tp": 382
+      },
+      "Secret:Auth": {
+        "tp": 5
+      },
+      "Credential": {
+        "fn": 64,
+        "tn": 134,
+        "fp": 5,
+        "tp": 12
+      },
+      "Auth:UUID": {
+        "tn": 3
+      },
+      "Password:URL Credentials": {
+        "tp": 6,
+        "fp": 3,
+        "fn": 4,
+        "tn": 3
+      },
+      "Auth:Password": {
+        "tp": 16,
+        "fn": 15,
+        "tn": 9
+      },
+      "Salt": {
+        "fn": 85,
+        "tn": 53
+      },
+      "PASERK Keys": {
+        "fn": 72,
+        "tn": 8
+      },
+      "PASETO Token:Token": {
+        "tp": 39,
+        "fn": 22
+      },
+      "PASETO Token": {
+        "fn": 2
+      },
+      "BASE64 Private Key": {
+        "tp": 27,
+        "fn": 3
+      },
+      "PEM Private Key": {
+        "tp": 7
+      },
+      "PEM Private Key:Key": {
+        "tp": 9
+      },
+      "PEM Private Key:Key:Secret": {
+        "tp": 23
+      },
+      "Grafana Service Account Token": {
+        "tp": 2
+      },
+      "Grafana Provisioned API Key": {
+        "tp": 2,
+        "tn": 16
+      },
+      "Grafana Service Account Token:Key": {
+        "tp": 1
+      },
+      "Grafana Access Policy Token": {
+        "fp": 2
+      },
+      "OTP / 2FA Secret": {
+        "tn": 2,
+        "fn": 16
+      },
+      "Auth:Key": {
+        "tn": 10,
+        "fn": 26,
+        "tp": 22,
+        "fp": 2
+      },
+      "AWS Client ID": {
+        "fn": 104,
+        "tp": 58,
+        "tn": 12
+      },
+      "AWS S3 Bucket": {
+        "fn": 92
+      },
+      "Auth:Token": {
+        "tp": 61,
+        "tn": 64,
+        "fn": 24,
+        "fp": 14
+      },
+      "AWS Multi": {
+        "fp": 7,
+        "tn": 48
+      },
+      "Auth:Basic Authorization": {
+        "tn": 1,
+        "tp": 595,
+        "fn": 6
+      },
+      "Basic Authorization": {
+        "tn": 536,
+        "tp": 81,
+        "fn": 8
+      },
+      "Key:BASE64 encoded PEM Private Key": {
+        "fn": 6
+      },
+      "Token:Github Classic Token": {
+        "tp": 1
+      },
+      "JSON Web Token": {
+        "tp": 73,
+        "tn": 53,
+        "fp": 6,
+        "fn": 11
+      },
+      "BASE64 Private Key:Key": {
+        "tp": 1
+      },
+      "Password:Auth": {
+        "tp": 8,
+        "fn": 1,
+        "tn": 1
+      },
+      "PostHog Credentials": {
+        "tp": 2
+      },
+      "WunderGraph API Key": {
+        "fn": 2
+      },
+      "JSON Web Token:Bearer Authorization": {
+        "tp": 17
+      },
+      "Secret:Key": {
+        "tp": 35,
+        "fn": 4,
+        "tn": 7,
+        "fp": 1
+      },
+      "WunderGraph API Key:API:Key": {
+        "tp": 9
+      },
+      "Basic Authorization:Auth": {
+        "fn": 2
+      },
+      "Password:Key": {
+        "tp": 9,
+        "tn": 1,
+        "fn": 1,
+        "fp": 2
+      },
+      "PostHog Credentials:API:Key": {
+        "tp": 1
+      },
+      "JSON Web Token:Token": {
+        "tp": 47,
+        "fn": 1
+      },
+      "API:Key": {
+        "fp": 8,
+        "tp": 61,
+        "tn": 25,
+        "fn": 5
+      },
+      "Auth:Nonce": {
+        "fn": 16,
+        "tp": 11
+      },
+      "CMD Password": {
+        "tn": 109,
+        "fn": 24,
+        "tp": 1
+      },
+      "Password:Credential": {
+        "tn": 1,
+        "fn": 1
+      },
+      "CURL User Password": {
+        "tp": 6,
+        "fp": 2,
+        "fn": 1
+      },
+      "Azure Access Token:JSON Web Token": {
+        "tp": 11
+      },
+      "JWK:Key": {
+        "fn": 1
+      },
+      "JWK": {
+        "fn": 1
+      },
+      "Dropbox App secret:Password": {
+        "tp": 44
+      },
+      "Token:Secret": {
+        "tp": 7
+      },
+      "Secret:Token": {
+        "tp": 12,
+        "tn": 2,
+        "fn": 1
+      },
+      "Auth:Dropbox App secret:Key": {
+        "tp": 2
+      },
+      "SQL Password": {
+        "fn": 31,
+        "tp": 8,
+        "tn": 4
+      },
+      "API:Anthropic API Key:Key": {
+        "tp": 1
+      },
+      "Key:API": {
+        "tn": 24,
+        "fp": 1,
+        "tp": 5
+      },
+      "API:Key:Dropbox App secret": {
+        "fp": 2
+      },
+      "Token:UUID": {
+        "tn": 1,
+        "tp": 155,
+        "fn": 14
+      },
+      "API:Token": {
+        "tp": 12,
+        "fn": 100,
+        "tn": 8,
+        "fp": 2
+      },
+      "Password:API": {
+        "tp": 4
+      },
+      "API:Password": {
+        "tp": 4,
+        "fn": 14
+      },
+      "API:Token:UUID": {
+        "tn": 1
+      },
+      "Token:Akamai Credentials": {
+        "tp": 2
+      },
+      "Credential:Secret": {
+        "tp": 2
+      },
+      "Akamai Credentials:Token": {
+        "fn": 4
+      },
+      "Akamai Credentials": {
+        "tn": 2
+      },
+      "API:Auth": {
+        "tn": 7
+      },
+      "Password:Secret": {
+        "tn": 3,
+        "tp": 14,
+        "fn": 4
+      },
+      "Dropbox App secret": {
+        "fn": 15,
+        "tn": 6,
+        "tp": 1
+      },
+      "AWS Client ID:Key": {
+        "tp": 34,
+        "tn": 1,
+        "fn": 2
+      },
+      "Auth:Token:Secret": {
+        "tp": 2
+      },
+      "Secret:Auth:Token": {
+        "tp": 1
+      },
+      "Dropbox App secret:Token": {
+        "fn": 1
+      },
+      "Auth:Secret:Token": {
+        "tp": 15,
+        "fp": 2
+      },
+      "Token:Auth": {
+        "tp": 11,
+        "fn": 6
+      },
+      "Token:Auth:Secret": {
+        "tp": 6
+      },
+      "Key:Stripe Credentials": {
+        "tp": 2
+      },
+      "Twilio Credentials": {
+        "fn": 30,
+        "tn": 14
+      },
+      "Password:Token": {
+        "tn": 7,
+        "fn": 2,
+        "tp": 2
+      },
+      "Token:Bearer Authorization": {
+        "tp": 1
+      },
+      "MailGun API Key": {
+        "fn": 8
+      },
+      "Google OAuth Refresh Token": {
+        "tn": 2
+      },
+      "CMD ConvertTo-SecureString": {
+        "fn": 13,
+        "tn": 3
+      },
+      "API:Key:Secret": {
+        "tp": 1
+      },
+      "Auth:Credential": {
+        "fn": 1
+      },
+      "Auth:Bearer Authorization": {
+        "tp": 79
+      },
+      "Credential:UUID": {
+        "tn": 2,
+        "fn": 3
+      },
+      "Bearer Authorization": {
+        "tp": 75
+      },
+      "Credential:AWS Multi": {
+        "tp": 3
+      },
+      "AWS Client ID:AWS Multi": {
+        "tn": 1
+      },
+      "Secret:OTP / 2FA Secret": {
+        "tp": 26
+      },
+      "Credential:Twilio Credentials": {
+        "tn": 2
+      },
+      "CMD Secret": {
+        "tn": 2,
+        "fn": 1
+      },
+      "OTP / 2FA Secret:Secret": {
+        "tp": 16
+      },
+      "Salt:Password": {
+        "tn": 3
+      },
+      "BASE64 encoded PEM Private Key:Key": {
+        "fn": 2
+      },
+      "Auth:Azure Access Token:JSON Web Token:Bearer Authorization": {
+        "tp": 1
+      },
+      "Azure Access Token:Token:JSON Web Token": {
+        "tp": 5
+      },
+      "Azure Access Token:Key:JSON Web Token": {
+        "tp": 2
+      },
+      "Password:CMD Password": {
+        "tp": 7
+      },
+      "Key:Credential": {
+        "tn": 4
+      },
+      "Key:Credential:Password": {
+        "tn": 1
+      },
+      "Credential:Password": {
+        "fn": 4,
+        "tn": 3
+      },
+      "UUID:Token:Auth": {
+        "fn": 6
+      },
+      "Google API Key:Key": {
+        "tp": 7,
+        "fn": 1
+      },
+      "Firebase Domain": {
+        "fn": 38
+      },
+      "Dropbox App secret:URL Credentials": {
+        "tp": 1
+      },
+      "Token:JSON Web Token": {
+        "tp": 2
+      },
+      "Dropbox App secret:Secret": {
+        "tp": 4
+      },
+      "Alibaba Access Key ID": {
+        "fn": 1
+      },
+      "API:Secret": {
+        "tn": 1
+      },
+      "Password:Salt": {
+        "tp": 1
+      },
+      "Google OAuth Access Token:Token": {
+        "tp": 2
+      },
+      "Token:Google OAuth Refresh Token": {
+        "tp": 1
+      },
+      "Auth:JSON Web Token:Bearer Authorization": {
+        "tp": 3
+      },
+      "Token:Key": {
+        "tn": 1,
+        "tp": 2
+      },
+      "Credential:Key": {
+        "tn": 7,
+        "tp": 1,
+        "fn": 5
+      },
+      "BASE64 encoded PEM Private Key:Auth:Key": {
+        "fn": 1
+      },
+      "BASE64 encoded PEM Private Key": {
+        "fn": 1
+      },
+      "Key:UUID": {
+        "fn": 4,
+        "tn": 20,
+        "tp": 1
+      },
+      "UUID:Key": {
+        "fn": 4,
+        "tn": 37
+      },
+      "Key:Password:CMD Password": {
+        "tp": 1
+      },
+      "UUID:Token": {
+        "tp": 17,
+        "fn": 9
+      },
+      "Token:API:Key:Google API Key": {
+        "tp": 1
+      },
+      "Facebook Access Token": {
+        "tn": 1
+      },
+      "Token:API:Key": {
+        "tp": 2
+      },
+      "API:Auth:Key": {
+        "tn": 3
+      },
+      "Key:Product Activation Key": {
+        "tp": 3
+      },
+      "JSON Web Token:Azure Access Token": {
+        "tp": 1
+      },
+      "AWS Client ID:Credential": {
+        "tn": 1
+      },
+      "NKEY Seed": {
+        "fn": 58
+      },
+      "Key:NKEY Seed": {
+        "tp": 1
+      },
+      "Key:AWS Client ID": {
+        "tp": 10,
+        "fn": 5
+      },
+      "Password:Key:Secret": {
+        "tp": 5,
+        "fp": 1
+      },
+      "Key:Secret:Token": {
+        "fn": 4,
+        "tn": 1
+      },
+      "Key:BASE64 Private Key": {
+        "fn": 4,
+        "tp": 3
+      },
+      "Secret:Key:Token": {
+        "tn": 1
+      },
+      "Secret:Dropbox App secret": {
+        "tp": 1
+      },
+      "CMD Token": {
+        "fn": 4,
+        "tn": 1
+      },
+      "Auth:URL Credentials": {
+        "fn": 1,
+        "tp": 2
+      },
+      "Password:Auth:Secret": {
+        "fn": 3
+      },
+      "Password:API:Key": {
+        "tp": 1
+      },
+      "Slack Token:Token": {
+        "tp": 7,
+        "fn": 1
+      },
+      "Password:Dropbox App secret": {
+        "tp": 1
+      },
+      "Password:Auth:Dropbox App secret": {
+        "tp": 2
+      },
+      "Auth:Token:UUID": {
+        "tp": 1,
+        "fn": 1
+      },
+      "Token:OTP / 2FA Secret": {
+        "fn": 3
+      },
+      "Auth:JSON Web Token": {
+        "tp": 3
+      },
+      "Postman Credentials": {
+        "tp": 1
+      },
+      "Postman Credentials:API:Key": {
+        "tp": 1
+      },
+      "Key:Grafana Provisioned API Key": {
+        "tp": 1
+      },
+      "Slack Token": {
+        "tn": 1,
+        "tp": 4
+      },
+      "API:Key:Grafana Provisioned API Key": {
+        "tp": 1
+      },
+      "Grafana Provisioned API Key:Key": {
+        "tp": 1
+      },
+      "URL Credentials:API:Key": {
+        "tp": 1
+      },
+      "Dropbox App secret:Key": {
+        "tn": 1
+      },
+      "Auth:Grafana Provisioned API Key:Bearer Authorization": {
+        "tp": 1
+      },
+      "Grafana Provisioned API Key:Auth": {
+        "tp": 1
+      },
+      "Token:JSON Web Token:Azure Access Token": {
+        "tp": 2
+      },
+      "API:Key:Perplexity API Key": {
+        "tp": 2
+      },
+      "API:UUID": {
+        "fn": 1
+      },
+      "NKEY Seed:Key": {
+        "fn": 1
+      },
+      "Google API Key:API:Key": {
+        "tp": 1
+      },
+      "Auth:Dropbox App secret:Password": {
+        "tp": 1
+      },
+      "Auth:API:Key:Google API Key": {
+        "tp": 1
+      },
+      "Auth:Token:Google OAuth Access Token": {
+        "fn": 1
+      },
+      "API:Key:Auth": {
+        "tp": 1
+      },
+      "Key:Google API Key": {
+        "fn": 1
+      },
+      "Salesforce Credentials": {
+        "fn": 5
+      },
+      "Tencent WeChat API App ID": {
+        "fn": 47
+      },
+      "Password:SQL Password": {
+        "fn": 1,
+        "tp": 3
+      },
+      "CMD Token:Docker Swarm Token": {
+        "tp": 2
+      },
+      "UUID:Password": {
+        "tp": 1
+      },
+      "Token:Auth:Key": {
+        "fn": 2
+      },
+      "Secret:UUID": {
+        "tp": 1
+      },
+      "SQL Password:Dropbox App secret": {
+        "tp": 1
+      },
+      "API:Google API Key:Key": {
+        "tp": 1
+      },
+      "Auth:Firebase Domain": {
+        "fn": 1
+      },
+      "API:Password:Salt": {
+        "tp": 1
+      },
+      "Auth:Salt": {
+        "tp": 2
+      },
+      "Key:Nonce": {
+        "tp": 1
+      },
+      "Nonce:Salt": {
+        "fn": 1
+      },
+      "Key:JWK": {
+        "fn": 1
+      },
+      "Password:AWS Client ID:AWS Multi": {
+        "tn": 1
+      },
+      "Nonce:Auth": {
+        "tn": 8
+      },
+      "NTLM Token:Bearer Authorization:Auth": {
+        "fn": 105
+      },
+      "NTLM Token:Bearer Authorization": {
+        "fn": 3
+      },
+      "CURL Options": {
+        "fn": 17,
+        "tn": 8
+      },
+      "NTLM Token": {
+        "fn": 18
+      },
+      "Bearer Authorization:Auth": {
+        "tp": 2
+      },
+      "Google Multi": {
+        "tp": 2
+      },
+      "Other": {
+        "fp": 2,
+        "tn": 1
+      },
+      "OTP / 2FA Secret:Password": {
+        "tp": 1
+      },
+      "Password:OTP / 2FA Secret": {
+        "tp": 2
+      },
+      "BASE64 Private Key:Secret": {
+        "fn": 1
+      },
+      "Token:Salesforce Credentials": {
+        "tp": 1
+      },
+      "Auth:Nonce:UUID": {
+        "fn": 1
+      },
+      "Auth:Token:JSON Web Token": {
+        "fn": 1
+      },
+      "Auth:Key:Password": {
+        "tn": 1,
+        "tp": 2
+      },
+      "Salt:Auth:Password": {
+        "tn": 1
+      },
+      "JSON Web Token:Azure Access Token:Token": {
+        "tp": 2
+      },
+      "Key:Auth": {
+        "tp": 10,
+        "fn": 1
+      },
+      "Key:Secret:UUID": {
+        "tp": 1
+      },
+      "Salt:Key": {
+        "tn": 1
+      },
+      "UUID:Secret": {
+        "fn": 2
+      },
+      "Auth:BASE64 encoded PEM Private Key": {
+        "fn": 2
+      },
+      "UUID:Auth": {
+        "fn": 1
+      },
+      "Secret:Token:Auth": {
+        "fn": 1
+      },
+      "Auth:Slack Token:Token": {
+        "tp": 1
+      },
+      "Bearer Authorization:Slack Token:Auth": {
+        "tp": 2
+      }
+    }
+  },
+  {
+    "adapter": "cloakroom rules",
+    "tp": 6264,
+    "fn": 8207,
+    "tn": 12766,
+    "fp": 2656,
+    "precision": 0.702,
+    "recall": 0.433,
+    "f1": 0.536,
+    "unique_lines": 23155,
+    "seconds": 2,
+    "by_category": {
+      "URL Credentials": {
+        "tp": 205,
+        "fn": 8,
+        "fp": 55,
+        "tn": 23
+      },
+      "Nonce": {
+        "fn": 148,
+        "tn": 60
+      },
+      "UUID": {
+        "fn": 2289,
+        "tn": 3652,
+        "tp": 19
+      },
+      "Password": {
+        "tn": 992,
+        "tp": 2262,
+        "fp": 1146,
+        "fn": 311
+      },
+      "Key": {
+        "tn": 4994,
+        "fn": 3778,
+        "fp": 52,
+        "tp": 44
+      },
+      "Key:Password": {
+        "tn": 4,
+        "tp": 17,
+        "fp": 1,
+        "fn": 1
+      },
+      "Auth": {
+        "tn": 1058,
+        "fn": 153,
+        "fp": 87,
+        "tp": 21
+      },
+      "API": {
+        "tn": 774,
+        "fp": 45,
+        "fn": 21
+      },
+      "Key:Token": {
+        "fp": 151,
+        "tn": 30,
+        "tp": 1
+      },
+      "Auth:Secret": {
+        "tp": 11
+      },
+      "Key:Secret": {
+        "tp": 116,
+        "fn": 8,
+        "fp": 5,
+        "tn": 2
+      },
+      "Secret": {
+        "tp": 1229,
+        "tn": 102,
+        "fp": 106,
+        "fn": 34
+      },
+      "Token": {
+        "fp": 287,
+        "tn": 438,
+        "tp": 418,
+        "fn": 165
+      },
+      "Secret:Auth": {
+        "tp": 5
+      },
+      "Credential": {
+        "tp": 74,
+        "fp": 41,
+        "tn": 98,
+        "fn": 2
+      },
+      "Auth:UUID": {
+        "tn": 3
+      },
+      "Password:URL Credentials": {
+        "tp": 9,
+        "fp": 6,
+        "fn": 1
+      },
+      "Auth:Password": {
+        "tp": 23,
+        "tn": 2,
+        "fp": 7,
+        "fn": 8
+      },
+      "Salt": {
+        "fn": 85,
+        "tn": 53
+      },
+      "PASERK Keys": {
+        "fn": 72,
+        "tn": 8
+      },
+      "PASETO Token:Token": {
+        "tp": 61
+      },
+      "PASETO Token": {
+        "tp": 2
+      },
+      "BASE64 Private Key": {
+        "tp": 13,
+        "fn": 17
+      },
+      "PEM Private Key": {
+        "tp": 7
+      },
+      "PEM Private Key:Key": {
+        "tp": 9
+      },
+      "PEM Private Key:Key:Secret": {
+        "tp": 23
+      },
+      "Grafana Service Account Token": {
+        "fn": 2
+      },
+      "Grafana Provisioned API Key": {
+        "fn": 2,
+        "tn": 16
+      },
+      "Grafana Service Account Token:Key": {
+        "fn": 1
+      },
+      "Grafana Access Policy Token": {
+        "tn": 2
+      },
+      "OTP / 2FA Secret": {
+        "tn": 2,
+        "fn": 16
+      },
+      "Auth:Key": {
+        "tn": 11,
+        "fn": 48,
+        "fp": 1
+      },
+      "AWS Client ID": {
+        "tp": 108,
+        "tn": 12,
+        "fn": 54
+      },
+      "AWS S3 Bucket": {
+        "fn": 92
+      },
+      "Auth:Token": {
+        "tp": 72,
+        "tn": 59,
+        "fp": 19,
+        "fn": 13
+      },
+      "AWS Multi": {
+        "fp": 55
+      },
+      "Auth:Basic Authorization": {
+        "fp": 1,
+        "tp": 584,
+        "fn": 17
+      },
+      "Basic Authorization": {
+        "fp": 535,
+        "tn": 1,
+        "fn": 89
+      },
+      "Key:BASE64 encoded PEM Private Key": {
+        "fn": 6
+      },
+      "Token:Github Classic Token": {
+        "tp": 1
+      },
+      "JSON Web Token": {
+        "tp": 83,
+        "tn": 57,
+        "fn": 1,
+        "fp": 2
+      },
+      "BASE64 Private Key:Key": {
+        "tp": 1
+      },
+      "Password:Auth": {
+        "fn": 2,
+        "tp": 7,
+        "tn": 1
+      },
+      "PostHog Credentials": {
+        "fn": 2
+      },
+      "WunderGraph API Key": {
+        "fn": 2
+      },
+      "JSON Web Token:Bearer Authorization": {
+        "tp": 17
+      },
+      "Secret:Key": {
+        "tp": 36,
+        "fn": 3,
+        "fp": 3,
+        "tn": 5
+      },
+      "WunderGraph API Key:API:Key": {
+        "tp": 9
+      },
+      "Basic Authorization:Auth": {
+        "fn": 2
+      },
+      "Password:Key": {
+        "tp": 9,
+        "fp": 3,
+        "fn": 1
+      },
+      "PostHog Credentials:API:Key": {
+        "tp": 1
+      },
+      "JSON Web Token:Token": {
+        "tp": 48
+      },
+      "API:Key": {
+        "fp": 16,
+        "tp": 65,
+        "tn": 17,
+        "fn": 1
+      },
+      "Auth:Nonce": {
+        "fn": 27
+      },
+      "CMD Password": {
+        "fp": 1,
+        "tn": 108,
+        "fn": 25
+      },
+      "Password:Credential": {
+        "tn": 1,
+        "fn": 1
+      },
+      "CURL User Password": {
+        "fn": 7,
+        "tn": 2
+      },
+      "Azure Access Token:JSON Web Token": {
+        "tp": 11
+      },
+      "JWK:Key": {
+        "fn": 1
+      },
+      "JWK": {
+        "fn": 1
+      },
+      "Dropbox App secret:Password": {
+        "tp": 43,
+        "fn": 1
+      },
+      "Token:Secret": {
+        "tp": 7
+      },
+      "Secret:Token": {
+        "tp": 12,
+        "fn": 1,
+        "tn": 2
+      },
+      "Auth:Dropbox App secret:Key": {
+        "fn": 2
+      },
+      "SQL Password": {
+        "fn": 39,
+        "tn": 4
+      },
+      "API:Anthropic API Key:Key": {
+        "tp": 1
+      },
+      "Key:API": {
+        "tn": 23,
+        "fp": 2,
+        "tp": 5
+      },
+      "API:Key:Dropbox App secret": {
+        "tn": 1,
+        "fp": 1
+      },
+      "Token:UUID": {
+        "fp": 1,
+        "tp": 166,
+        "fn": 3
+      },
+      "API:Token": {
+        "tp": 9,
+        "tn": 7,
+        "fp": 3,
+        "fn": 103
+      },
+      "Password:API": {
+        "tp": 4
+      },
+      "API:Password": {
+        "tp": 18
+      },
+      "API:Token:UUID": {
+        "fp": 1
+      },
+      "Token:Akamai Credentials": {
+        "tp": 2
+      },
+      "Credential:Secret": {
+        "tp": 2
+      },
+      "Akamai Credentials:Token": {
+        "tp": 4
+      },
+      "Akamai Credentials": {
+        "tn": 2
+      },
+      "API:Auth": {
+        "tn": 7
+      },
+      "Password:Secret": {
+        "fp": 1,
+        "tp": 16,
+        "fn": 2,
+        "tn": 2
+      },
+      "Dropbox App secret": {
+        "fn": 15,
+        "tn": 4,
+        "fp": 2,
+        "tp": 1
+      },
+      "AWS Client ID:Key": {
+        "tp": 36,
+        "tn": 1
+      },
+      "Auth:Token:Secret": {
+        "tp": 2
+      },
+      "Secret:Auth:Token": {
+        "tp": 1
+      },
+      "Dropbox App secret:Token": {
+        "tp": 1
+      },
+      "Auth:Secret:Token": {
+        "tp": 15,
+        "fp": 2
+      },
+      "Token:Auth": {
+        "tp": 11,
+        "fn": 6
+      },
+      "Token:Auth:Secret": {
+        "tp": 6
+      },
+      "Key:Stripe Credentials": {
+        "fn": 2
+      },
+      "Twilio Credentials": {
+        "tp": 8,
+        "fp": 4,
+        "fn": 22,
+        "tn": 10
+      },
+      "Password:Token": {
+        "fp": 5,
+        "tp": 4,
+        "tn": 2
+      },
+      "Token:Bearer Authorization": {
+        "tp": 1
+      },
+      "MailGun API Key": {
+        "fn": 8
+      },
+      "Google OAuth Refresh Token": {
+        "tn": 2
+      },
+      "CMD ConvertTo-SecureString": {
+        "fn": 13,
+        "tn": 3
+      },
+      "API:Key:Secret": {
+        "tp": 1
+      },
+      "Auth:Credential": {
+        "tp": 1
+      },
+      "Auth:Bearer Authorization": {
+        "tp": 78,
+        "fn": 1
+      },
+      "Credential:UUID": {
+        "fp": 2,
+        "tp": 3
+      },
+      "Bearer Authorization": {
+        "fn": 75
+      },
+      "Credential:AWS Multi": {
+        "tp": 3
+      },
+      "AWS Client ID:AWS Multi": {
+        "tn": 1
+      },
+      "Secret:OTP / 2FA Secret": {
+        "tp": 26
+      },
+      "Credential:Twilio Credentials": {
+        "fp": 2
+      },
+      "CMD Secret": {
+        "tn": 2,
+        "fn": 1
+      },
+      "OTP / 2FA Secret:Secret": {
+        "fn": 2,
+        "tp": 14
+      },
+      "Salt:Password": {
+        "tn": 3
+      },
+      "BASE64 encoded PEM Private Key:Key": {
+        "tp": 1,
+        "fn": 1
+      },
+      "Auth:Azure Access Token:JSON Web Token:Bearer Authorization": {
+        "tp": 1
+      },
+      "Azure Access Token:Token:JSON Web Token": {
+        "tp": 5
+      },
+      "Azure Access Token:Key:JSON Web Token": {
+        "tp": 2
+      },
+      "Password:CMD Password": {
+        "tp": 7
+      },
+      "Key:Credential": {
+        "tn": 4
+      },
+      "Key:Credential:Password": {
+        "tn": 1
+      },
+      "Credential:Password": {
+        "fn": 4,
+        "tn": 3
+      },
+      "UUID:Token:Auth": {
+        "fn": 6
+      },
+      "Google API Key:Key": {
+        "tp": 8
+      },
+      "Firebase Domain": {
+        "fn": 38
+      },
+      "Dropbox App secret:URL Credentials": {
+        "tp": 1
+      },
+      "Token:JSON Web Token": {
+        "tp": 2
+      },
+      "Dropbox App secret:Secret": {
+        "tp": 4
+      },
+      "Alibaba Access Key ID": {
+        "fn": 1
+      },
+      "API:Secret": {
+        "tn": 1
+      },
+      "Password:Salt": {
+        "tp": 1
+      },
+      "Google OAuth Access Token:Token": {
+        "tp": 2
+      },
+      "Token:Google OAuth Refresh Token": {
+        "tp": 1
+      },
+      "Auth:JSON Web Token:Bearer Authorization": {
+        "tp": 3
+      },
+      "Token:Key": {
+        "fp": 1,
+        "fn": 2
+      },
+      "Credential:Key": {
+        "tn": 7,
+        "fn": 6
+      },
+      "BASE64 encoded PEM Private Key:Auth:Key": {
+        "fn": 1
+      },
+      "BASE64 encoded PEM Private Key": {
+        "fn": 1
+      },
+      "Key:UUID": {
+        "fn": 4,
+        "tn": 20,
+        "tp": 1
+      },
+      "UUID:Key": {
+        "fn": 4,
+        "tn": 37
+      },
+      "Key:Password:CMD Password": {
+        "tp": 1
+      },
+      "UUID:Token": {
+        "tp": 16,
+        "fn": 10
+      },
+      "Token:API:Key:Google API Key": {
+        "tp": 1
+      },
+      "Facebook Access Token": {
+        "tn": 1
+      },
+      "Token:API:Key": {
+        "tp": 2
+      },
+      "API:Auth:Key": {
+        "tn": 3
+      },
+      "Key:Product Activation Key": {
+        "fn": 3
+      },
+      "JSON Web Token:Azure Access Token": {
+        "tp": 1
+      },
+      "AWS Client ID:Credential": {
+        "tn": 1
+      },
+      "NKEY Seed": {
+        "fn": 58
+      },
+      "Key:NKEY Seed": {
+        "fn": 1
+      },
+      "Key:AWS Client ID": {
+        "tp": 10,
+        "fn": 5
+      },
+      "Password:Key:Secret": {
+        "tp": 4,
+        "fn": 1,
+        "fp": 1
+      },
+      "Key:Secret:Token": {
+        "tp": 4,
+        "tn": 1
+      },
+      "Key:BASE64 Private Key": {
+        "tp": 5,
+        "fn": 2
+      },
+      "Secret:Key:Token": {
+        "tn": 1
+      },
+      "Secret:Dropbox App secret": {
+        "tp": 1
+      },
+      "CMD Token": {
+        "fn": 4,
+        "tn": 1
+      },
+      "Auth:URL Credentials": {
+        "tp": 3
+      },
+      "Password:Auth:Secret": {
+        "tp": 3
+      },
+      "Password:API:Key": {
+        "fn": 1
+      },
+      "Slack Token:Token": {
+        "tp": 8
+      },
+      "Password:Dropbox App secret": {
+        "tp": 1
+      },
+      "Password:Auth:Dropbox App secret": {
+        "tp": 2
+      },
+      "Auth:Token:UUID": {
+        "tp": 1,
+        "fn": 1
+      },
+      "Token:OTP / 2FA Secret": {
+        "fn": 3
+      },
+      "Auth:JSON Web Token": {
+        "tp": 3
+      },
+      "Postman Credentials": {
+        "fn": 1
+      },
+      "Postman Credentials:API:Key": {
+        "tp": 1
+      },
+      "Key:Grafana Provisioned API Key": {
+        "fn": 1
+      },
+      "Slack Token": {
+        "tn": 1,
+        "fn": 2,
+        "tp": 2
+      },
+      "API:Key:Grafana Provisioned API Key": {
+        "tp": 1
+      },
+      "Grafana Provisioned API Key:Key": {
+        "fn": 1
+      },
+      "URL Credentials:API:Key": {
+        "tp": 1
+      },
+      "Dropbox App secret:Key": {
+        "fp": 1
+      },
+      "Auth:Grafana Provisioned API Key:Bearer Authorization": {
+        "tp": 1
+      },
+      "Grafana Provisioned API Key:Auth": {
+        "fn": 1
+      },
+      "Token:JSON Web Token:Azure Access Token": {
+        "tp": 2
+      },
+      "API:Key:Perplexity API Key": {
+        "tp": 2
+      },
+      "API:UUID": {
+        "fn": 1
+      },
+      "NKEY Seed:Key": {
+        "fn": 1
+      },
+      "Google API Key:API:Key": {
+        "tp": 1
+      },
+      "Auth:Dropbox App secret:Password": {
+        "tp": 1
+      },
+      "Auth:API:Key:Google API Key": {
+        "tp": 1
+      },
+      "Auth:Token:Google OAuth Access Token": {
+        "fn": 1
+      },
+      "API:Key:Auth": {
+        "tp": 1
+      },
+      "Key:Google API Key": {
+        "tp": 1
+      },
+      "Salesforce Credentials": {
+        "fn": 5
+      },
+      "Tencent WeChat API App ID": {
+        "fn": 47
+      },
+      "Password:SQL Password": {
+        "tp": 4
+      },
+      "CMD Token:Docker Swarm Token": {
+        "fn": 2
+      },
+      "UUID:Password": {
+        "tp": 1
+      },
+      "Token:Auth:Key": {
+        "fn": 2
+      },
+      "Secret:UUID": {
+        "fn": 1
+      },
+      "SQL Password:Dropbox App secret": {
+        "fn": 1
+      },
+      "API:Google API Key:Key": {
+        "tp": 1
+      },
+      "Auth:Firebase Domain": {
+        "fn": 1
+      },
+      "API:Password:Salt": {
+        "tp": 1
+      },
+      "Auth:Salt": {
+        "fn": 2
+      },
+      "Key:Nonce": {
+        "fn": 1
+      },
+      "Nonce:Salt": {
+        "fn": 1
+      },
+      "Key:JWK": {
+        "fn": 1
+      },
+      "Password:AWS Client ID:AWS Multi": {
+        "tn": 1
+      },
+      "Nonce:Auth": {
+        "tn": 8
+      },
+      "NTLM Token:Bearer Authorization:Auth": {
+        "fn": 105
+      },
+      "NTLM Token:Bearer Authorization": {
+        "fn": 3
+      },
+      "CURL Options": {
+        "fn": 17,
+        "tn": 8
+      },
+      "NTLM Token": {
+        "fn": 18
+      },
+      "Bearer Authorization:Auth": {
+        "tp": 2
+      },
+      "Google Multi": {
+        "fn": 2
+      },
+      "Other": {
+        "tn": 3
+      },
+      "OTP / 2FA Secret:Password": {
+        "fn": 1
+      },
+      "Password:OTP / 2FA Secret": {
+        "fn": 2
+      },
+      "BASE64 Private Key:Secret": {
+        "tp": 1
+      },
+      "Token:Salesforce Credentials": {
+        "tp": 1
+      },
+      "Auth:Nonce:UUID": {
+        "fn": 1
+      },
+      "Auth:Token:JSON Web Token": {
+        "fn": 1
+      },
+      "Auth:Key:Password": {
+        "fp": 1,
+        "tp": 2
+      },
+      "Salt:Auth:Password": {
+        "fp": 1
+      },
+      "JSON Web Token:Azure Access Token:Token": {
+        "tp": 2
+      },
+      "Key:Auth": {
+        "fn": 11
+      },
+      "Key:Secret:UUID": {
+        "tp": 1
+      },
+      "Salt:Key": {
+        "tn": 1
+      },
+      "UUID:Secret": {
+        "tp": 2
+      },
+      "Auth:BASE64 encoded PEM Private Key": {
+        "fn": 2
+      },
+      "UUID:Auth": {
+        "fn": 1
+      },
+      "Secret:Token:Auth": {
+        "tp": 1
+      },
+      "Auth:Slack Token:Token": {
+        "tp": 1
+      },
+      "Bearer Authorization:Slack Token:Auth": {
+        "tp": 2
+      }
+    }
+  },
+  {
+    "adapter": "cloakroom full",
+    "tp": 9371,
+    "tn": 10672,
+    "fp": 4750,
+    "fn": 5100,
+    "precision": 0.664,
+    "recall": 0.648,
+    "f1": 0.655,
+    "unique_lines": 23155,
+    "seconds": 499,
+    "by_category": {
+      "URL Credentials": {
+        "tp": 213,
+        "fp": 55,
+        "tn": 23
+      },
+      "Nonce": {
+        "tp": 92,
+        "fn": 56,
+        "tn": 59,
+        "fp": 1
+      },
+      "UUID": {
+        "tp": 231,
+        "fp": 243,
+        "fn": 2077,
+        "tn": 3409
+      },
+      "Password": {
+        "tn": 882,
+        "tp": 2508,
+        "fp": 1256,
+        "fn": 65
+      },
+      "Key": {
+        "tn": 3614,
+        "tp": 1359,
+        "fp": 1432,
+        "fn": 2463
+      },
+      "Key:Password": {
+        "tn": 4,
+        "tp": 18,
+        "fp": 1
+      },
+      "Auth": {
+        "tn": 983,
+        "fp": 162,
+        "tp": 128,
+        "fn": 46
+      },
+      "API": {
+        "tn": 732,
+        "fp": 87,
+        "tp": 20,
+        "fn": 1
+      },
+      "Key:Token": {
+        "fp": 153,
+        "tn": 28,
+        "tp": 1
+      },
+      "Auth:Secret": {
+        "tp": 11
+      },
+      "Key:Secret": {
+        "tp": 122,
+        "fn": 2,
+        "fp": 5,
+        "tn": 2
+      },
+      "Secret": {
+        "tp": 1254,
+        "tn": 70,
+        "fp": 138,
+        "fn": 9
+      },
+      "Token": {
+        "fp": 359,
+        "tn": 366,
+        "tp": 558,
+        "fn": 25
+      },
+      "Secret:Auth": {
+        "tp": 5
+      },
+      "Credential": {
+        "tp": 76,
+        "fp": 53,
+        "tn": 86
+      },
+      "Auth:UUID": {
+        "tn": 3
+      },
+      "Password:URL Credentials": {
+        "tp": 10,
+        "fp": 6
+      },
+      "Auth:Password": {
+        "tp": 31,
+        "tn": 1,
+        "fp": 8
+      },
+      "Salt": {
+        "tp": 25,
+        "fn": 60,
+        "tn": 47,
+        "fp": 6
+      },
+      "PASERK Keys": {
+        "tp": 64,
+        "fn": 8,
+        "fp": 8
+      },
+      "PASETO Token:Token": {
+        "tp": 61
+      },
+      "PASETO Token": {
+        "tp": 2
+      },
+      "BASE64 Private Key": {
+        "tp": 15,
+        "fn": 15
+      },
+      "PEM Private Key": {
+        "tp": 7
+      },
+      "PEM Private Key:Key": {
+        "tp": 9
+      },
+      "PEM Private Key:Key:Secret": {
+        "tp": 23
+      },
+      "Grafana Service Account Token": {
+        "tp": 1,
+        "fn": 1
+      },
+      "Grafana Provisioned API Key": {
+        "tp": 2,
+        "fp": 16
+      },
+      "Grafana Service Account Token:Key": {
+        "tp": 1
+      },
+      "Grafana Access Policy Token": {
+        "fp": 2
+      },
+      "OTP / 2FA Secret": {
+        "fp": 2,
+        "tp": 14,
+        "fn": 2
+      },
+      "Auth:Key": {
+        "fp": 4,
+        "tp": 46,
+        "fn": 2,
+        "tn": 8
+      },
+      "AWS Client ID": {
+        "tp": 160,
+        "tn": 12,
+        "fn": 2
+      },
+      "AWS S3 Bucket": {
+        "fn": 66,
+        "tp": 26
+      },
+      "Auth:Token": {
+        "tp": 79,
+        "tn": 57,
+        "fp": 21,
+        "fn": 6
+      },
+      "AWS Multi": {
+        "fp": 55
+      },
+      "Auth:Basic Authorization": {
+        "fp": 1,
+        "tp": 598,
+        "fn": 3
+      },
+      "Basic Authorization": {
+        "fp": 535,
+        "tn": 1,
+        "tp": 77,
+        "fn": 12
+      },
+      "Key:BASE64 encoded PEM Private Key": {
+        "tp": 6
+      },
+      "Token:Github Classic Token": {
+        "tp": 1
+      },
+      "JSON Web Token": {
+        "tp": 84,
+        "fp": 48,
+        "tn": 11
+      },
+      "BASE64 Private Key:Key": {
+        "tp": 1
+      },
+      "Password:Auth": {
+        "tp": 9,
+        "fp": 1
+      },
+      "PostHog Credentials": {
+        "tp": 2
+      },
+      "WunderGraph API Key": {
+        "tp": 2
+      },
+      "JSON Web Token:Bearer Authorization": {
+        "tp": 17
+      },
+      "Secret:Key": {
+        "tp": 38,
+        "fn": 1,
+        "fp": 3,
+        "tn": 5
+      },
+      "WunderGraph API Key:API:Key": {
+        "tp": 9
+      },
+      "Basic Authorization:Auth": {
+        "fn": 1,
+        "tp": 1
+      },
+      "Password:Key": {
+        "tp": 9,
+        "fp": 3,
+        "fn": 1
+      },
+      "PostHog Credentials:API:Key": {
+        "tp": 1
+      },
+      "JSON Web Token:Token": {
+        "tp": 48
+      },
+      "API:Key": {
+        "fp": 19,
+        "tp": 66,
+        "tn": 14
+      },
+      "Auth:Nonce": {
+        "fn": 6,
+        "tp": 21
+      },
+      "CMD Password": {
+        "fp": 8,
+        "tn": 101,
+        "tp": 25
+      },
+      "Password:Credential": {
+        "tn": 1,
+        "tp": 1
+      },
+      "CURL User Password": {
+        "tp": 7,
+        "tn": 2
+      },
+      "Azure Access Token:JSON Web Token": {
+        "tp": 11
+      },
+      "JWK:Key": {
+        "tp": 1
+      },
+      "JWK": {
+        "tp": 1
+      },
+      "Dropbox App secret:Password": {
+        "tp": 44
+      },
+      "Token:Secret": {
+        "tp": 7
+      },
+      "Secret:Token": {
+        "tp": 13,
+        "tn": 2
+      },
+      "Auth:Dropbox App secret:Key": {
+        "fn": 2
+      },
+      "SQL Password": {
+        "tp": 35,
+        "fn": 4,
+        "tn": 3,
+        "fp": 1
+      },
+      "API:Anthropic API Key:Key": {
+        "tp": 1
+      },
+      "Key:API": {
+        "tn": 23,
+        "fp": 2,
+        "tp": 5
+      },
+      "API:Key:Dropbox App secret": {
+        "tn": 1,
+        "fp": 1
+      },
+      "Token:UUID": {
+        "fp": 1,
+        "tp": 166,
+        "fn": 3
+      },
+      "API:Token": {
+        "tp": 112,
+        "tn": 6,
+        "fp": 4
+      },
+      "Password:API": {
+        "tp": 4
+      },
+      "API:Password": {
+        "tp": 18
+      },
+      "API:Token:UUID": {
+        "fp": 1
+      },
+      "Token:Akamai Credentials": {
+        "tp": 2
+      },
+      "Credential:Secret": {
+        "tp": 2
+      },
+      "Akamai Credentials:Token": {
+        "tp": 4
+      },
+      "Akamai Credentials": {
+        "tn": 2
+      },
+      "API:Auth": {
+        "tn": 7
+      },
+      "Password:Secret": {
+        "fp": 1,
+        "tp": 16,
+        "fn": 2,
+        "tn": 2
+      },
+      "Dropbox App secret": {
+        "tp": 11,
+        "fp": 4,
+        "fn": 5,
+        "tn": 2
+      },
+      "AWS Client ID:Key": {
+        "tp": 36,
+        "tn": 1
+      },
+      "Auth:Token:Secret": {
+        "tp": 2
+      },
+      "Secret:Auth:Token": {
+        "tp": 1
+      },
+      "Dropbox App secret:Token": {
+        "tp": 1
+      },
+      "Auth:Secret:Token": {
+        "tp": 15,
+        "fp": 2
+      },
+      "Token:Auth": {
+        "tp": 17
+      },
+      "Token:Auth:Secret": {
+        "tp": 6
+      },
+      "Key:Stripe Credentials": {
+        "fn": 2
+      },
+      "Twilio Credentials": {
+        "tp": 15,
+        "fp": 14,
+        "fn": 15
+      },
+      "Password:Token": {
+        "fp": 5,
+        "tp": 4,
+        "tn": 2
+      },
+      "Token:Bearer Authorization": {
+        "tp": 1
+      },
+      "MailGun API Key": {
+        "tp": 6,
+        "fn": 2
+      },
+      "Google OAuth Refresh Token": {
+        "fp": 2
+      },
+      "CMD ConvertTo-SecureString": {
+        "tp": 13,
+        "tn": 3
+      },
+      "API:Key:Secret": {
+        "tp": 1
+      },
+      "Auth:Credential": {
+        "tp": 1
+      },
+      "Auth:Bearer Authorization": {
+        "tp": 79
+      },
+      "Credential:UUID": {
+        "fp": 2,
+        "tp": 3
+      },
+      "Bearer Authorization": {
+        "tp": 9,
+        "fn": 66
+      },
+      "Credential:AWS Multi": {
+        "tp": 3
+      },
+      "AWS Client ID:AWS Multi": {
+        "tn": 1
+      },
+      "Secret:OTP / 2FA Secret": {
+        "tp": 26
+      },
+      "Credential:Twilio Credentials": {
+        "fp": 2
+      },
+      "CMD Secret": {
+        "tn": 2,
+        "tp": 1
+      },
+      "OTP / 2FA Secret:Secret": {
+        "tp": 16
+      },
+      "Salt:Password": {
+        "tn": 3
+      },
+      "BASE64 encoded PEM Private Key:Key": {
+        "tp": 2
+      },
+      "Auth:Azure Access Token:JSON Web Token:Bearer Authorization": {
+        "tp": 1
+      },
+      "Azure Access Token:Token:JSON Web Token": {
+        "tp": 5
+      },
+      "Azure Access Token:Key:JSON Web Token": {
+        "tp": 2
+      },
+      "Password:CMD Password": {
+        "tp": 7
+      },
+      "Key:Credential": {
+        "tn": 4
+      },
+      "Key:Credential:Password": {
+        "tn": 1
+      },
+      "Credential:Password": {
+        "tp": 2,
+        "fn": 2,
+        "tn": 2,
+        "fp": 1
+      },
+      "UUID:Token:Auth": {
+        "fn": 6
+      },
+      "Google API Key:Key": {
+        "tp": 8
+      },
+      "Firebase Domain": {
+        "tp": 22,
+        "fn": 16
+      },
+      "Dropbox App secret:URL Credentials": {
+        "tp": 1
+      },
+      "Token:JSON Web Token": {
+        "tp": 2
+      },
+      "Dropbox App secret:Secret": {
+        "tp": 4
+      },
+      "Alibaba Access Key ID": {
+        "tp": 1
+      },
+      "API:Secret": {
+        "tn": 1
+      },
+      "Password:Salt": {
+        "tp": 1
+      },
+      "Google OAuth Access Token:Token": {
+        "tp": 2
+      },
+      "Token:Google OAuth Refresh Token": {
+        "tp": 1
+      },
+      "Auth:JSON Web Token:Bearer Authorization": {
+        "tp": 3
+      },
+      "Token:Key": {
+        "fp": 1,
+        "tp": 2
+      },
+      "Credential:Key": {
+        "tn": 7,
+        "tp": 6
+      },
+      "BASE64 encoded PEM Private Key:Auth:Key": {
+        "tp": 1
+      },
+      "BASE64 encoded PEM Private Key": {
+        "fn": 1
+      },
+      "Key:UUID": {
+        "fn": 4,
+        "tn": 20,
+        "tp": 1
+      },
+      "UUID:Key": {
+        "fn": 4,
+        "tn": 36,
+        "fp": 1
+      },
+      "Key:Password:CMD Password": {
+        "tp": 1
+      },
+      "UUID:Token": {
+        "tp": 16,
+        "fn": 10
+      },
+      "Token:API:Key:Google API Key": {
+        "tp": 1
+      },
+      "Facebook Access Token": {
+        "tn": 1
+      },
+      "Token:API:Key": {
+        "tp": 2
+      },
+      "API:Auth:Key": {
+        "tn": 3
+      },
+      "Key:Product Activation Key": {
+        "tp": 3
+      },
+      "JSON Web Token:Azure Access Token": {
+        "tp": 1
+      },
+      "AWS Client ID:Credential": {
+        "tn": 1
+      },
+      "NKEY Seed": {
+        "tp": 49,
+        "fn": 9
+      },
+      "Key:NKEY Seed": {
+        "tp": 1
+      },
+      "Key:AWS Client ID": {
+        "tp": 15
+      },
+      "Password:Key:Secret": {
+        "tp": 5,
+        "fp": 1
+      },
+      "Key:Secret:Token": {
+        "tp": 4,
+        "tn": 1
+      },
+      "Key:BASE64 Private Key": {
+        "tp": 5,
+        "fn": 2
+      },
+      "Secret:Key:Token": {
+        "tn": 1
+      },
+      "Secret:Dropbox App secret": {
+        "tp": 1
+      },
+      "CMD Token": {
+        "fn": 1,
+        "tp": 3,
+        "fp": 1
+      },
+      "Auth:URL Credentials": {
+        "tp": 3
+      },
+      "Password:Auth:Secret": {
+        "tp": 3
+      },
+      "Password:API:Key": {
+        "tp": 1
+      },
+      "Slack Token:Token": {
+        "tp": 8
+      },
+      "Password:Dropbox App secret": {
+        "tp": 1
+      },
+      "Password:Auth:Dropbox App secret": {
+        "tp": 2
+      },
+      "Auth:Token:UUID": {
+        "tp": 2
+      },
+      "Token:OTP / 2FA Secret": {
+        "fn": 2,
+        "tp": 1
+      },
+      "Auth:JSON Web Token": {
+        "tp": 3
+      },
+      "Postman Credentials": {
+        "tp": 1
+      },
+      "Postman Credentials:API:Key": {
+        "tp": 1
+      },
+      "Key:Grafana Provisioned API Key": {
+        "tp": 1
+      },
+      "Slack Token": {
+        "tn": 1,
+        "tp": 4
+      },
+      "API:Key:Grafana Provisioned API Key": {
+        "tp": 1
+      },
+      "Grafana Provisioned API Key:Key": {
+        "tp": 1
+      },
+      "URL Credentials:API:Key": {
+        "tp": 1
+      },
+      "Dropbox App secret:Key": {
+        "fp": 1
+      },
+      "Auth:Grafana Provisioned API Key:Bearer Authorization": {
+        "tp": 1
+      },
+      "Grafana Provisioned API Key:Auth": {
+        "tp": 1
+      },
+      "Token:JSON Web Token:Azure Access Token": {
+        "tp": 2
+      },
+      "API:Key:Perplexity API Key": {
+        "tp": 2
+      },
+      "API:UUID": {
+        "fn": 1
+      },
+      "NKEY Seed:Key": {
+        "tp": 1
+      },
+      "Google API Key:API:Key": {
+        "tp": 1
+      },
+      "Auth:Dropbox App secret:Password": {
+        "tp": 1
+      },
+      "Auth:API:Key:Google API Key": {
+        "tp": 1
+      },
+      "Auth:Token:Google OAuth Access Token": {
+        "tp": 1
+      },
+      "API:Key:Auth": {
+        "tp": 1
+      },
+      "Key:Google API Key": {
+        "tp": 1
+      },
+      "Salesforce Credentials": {
+        "tp": 4,
+        "fn": 1
+      },
+      "Tencent WeChat API App ID": {
+        "tp": 44,
+        "fn": 3
+      },
+      "Password:SQL Password": {
+        "tp": 4
+      },
+      "CMD Token:Docker Swarm Token": {
+        "tp": 2
+      },
+      "UUID:Password": {
+        "tp": 1
+      },
+      "Token:Auth:Key": {
+        "tp": 2
+      },
+      "Secret:UUID": {
+        "fn": 1
+      },
+      "SQL Password:Dropbox App secret": {
+        "tp": 1
+      },
+      "API:Google API Key:Key": {
+        "tp": 1
+      },
+      "Auth:Firebase Domain": {
+        "fn": 1
+      },
+      "API:Password:Salt": {
+        "tp": 1
+      },
+      "Auth:Salt": {
+        "tp": 2
+      },
+      "Key:Nonce": {
+        "tp": 1
+      },
+      "Nonce:Salt": {
+        "tp": 1
+      },
+      "Key:JWK": {
+        "tp": 1
+      },
+      "Password:AWS Client ID:AWS Multi": {
+        "tn": 1
+      },
+      "Nonce:Auth": {
+        "fp": 6,
+        "tn": 2
+      },
+      "NTLM Token:Bearer Authorization:Auth": {
+        "tp": 105
+      },
+      "NTLM Token:Bearer Authorization": {
+        "tp": 3
+      },
+      "CURL Options": {
+        "tp": 17,
+        "tn": 8
+      },
+      "NTLM Token": {
+        "tp": 14,
+        "fn": 4
+      },
+      "Bearer Authorization:Auth": {
+        "tp": 2
+      },
+      "Google Multi": {
+        "tp": 2
+      },
+      "Other": {
+        "fp": 3
+      },
+      "OTP / 2FA Secret:Password": {
+        "tp": 1
+      },
+      "Password:OTP / 2FA Secret": {
+        "tp": 2
+      },
+      "BASE64 Private Key:Secret": {
+        "tp": 1
+      },
+      "Token:Salesforce Credentials": {
+        "tp": 1
+      },
+      "Auth:Nonce:UUID": {
+        "tp": 1
+      },
+      "Auth:Token:JSON Web Token": {
+        "tp": 1
+      },
+      "Auth:Key:Password": {
+        "fp": 1,
+        "tp": 2
+      },
+      "Salt:Auth:Password": {
+        "fp": 1
+      },
+      "JSON Web Token:Azure Access Token:Token": {
+        "tp": 2
+      },
+      "Key:Auth": {
+        "tp": 11
+      },
+      "Key:Secret:UUID": {
+        "tp": 1
+      },
+      "Salt:Key": {
+        "tn": 1
+      },
+      "UUID:Secret": {
+        "tp": 2
+      },
+      "Auth:BASE64 encoded PEM Private Key": {
+        "tp": 2
+      },
+      "UUID:Auth": {
+        "fn": 1
+      },
+      "Secret:Token:Auth": {
+        "tp": 1
+      },
+      "Auth:Slack Token:Token": {
+        "tp": 1
+      },
+      "Bearer Authorization:Slack Token:Auth": {
+        "tp": 2
+      }
+    }
+  }
+]
