@@ -10,6 +10,7 @@ T + hit = true positive, T + miss = false negative, F + hit = false positive. On
 import collections
 import csv
 import glob
+import hashlib
 import importlib
 import json
 import os
@@ -23,6 +24,13 @@ rows = []
 for f in sorted(glob.glob(os.path.join(root, "meta", "*.csv"))):
     for r in csv.DictReader(open(f, encoding="utf-8")):
         if r["GroundTruth"] not in ("T", "F") or r["LineStart"] != r["LineEnd"] or r["ValueStart"] in ("", "-1"):
+            continue
+        # SPLIT=tune|holdout: half the repositories each (by a stable hash of the repo id), so a rule can be tuned
+        # on one half and scored once on the other
+        split = os.environ.get("SPLIT")
+        if split and (int(hashlib.sha256(r["RepoName"].encode()).hexdigest(), 16) % 2 == 0) != (split == "tune"):
+            continue
+        if r["RepoName"] in os.environ.get("EXCLUDE_REPOS", "").split(","):  # e.g. a repo of crypto test vectors
             continue
         rows.append(r)
 

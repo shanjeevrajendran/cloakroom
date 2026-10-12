@@ -310,3 +310,13 @@ def test_install_note_shows_on_the_first_prompt_once(monkeypatch, capsys):
     assert run_hook("prompt", {"session_id": "inst", "prompt": "hello again"}, monkeypatch, capsys) is None
     blocked = run_hook("prompt", {"session_id": "inst2", "prompt": "use key ghp_" + "a1B2" * 9}, monkeypatch, capsys)
     assert blocked["decision"] == "block" and "model downloads" in blocked["systemMessage"]
+
+
+def test_plugin_installers_pin_this_release():
+    import pathlib, re
+    root = pathlib.Path(__file__).resolve().parents[1]
+    version = re.search(r'^version = "([^"]+)"', (root / "pyproject.toml").read_text(), re.M).group(1)
+    for script in ("bootstrap.sh", "bootstrap.ps1"):
+        text = (root / "plugin" / "scripts" / script).read_text()
+        assert f"cloakroom=={version}" in text and f"cloakroom[model,torch]=={version}" in text, script
+    assert f'"version": "{version}"' in (root / "plugin" / ".claude-plugin" / "plugin.json").read_text()

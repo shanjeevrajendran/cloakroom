@@ -370,3 +370,11 @@ CredData (29,893 lines): maisecrets P 0.90 / R 0.61 / F1 0.73; Cloakroom 0.66 / 
 maisecrets 13 / 1, sensitive-canary 14 / 3, redact-hook 15 / 5, claude-code-redact 17 / 2 (PII on) and 17 / 1
 (secrets only). Holdouts v2-v6 rerun: every tool except Cloakroom and maisecrets scores exactly as on its first
 run, the updated sensitive-canary included. Results in `bench/rerun-2026-10-12/`.
+
+### CredData without the crypto test-vector repository (2026-10-12)
+Repository 2ba83c6a holds 3,427 of CredData's 3,822 "Key" credentials, nearly all cipher test vectors
+(`Key = <hex>`). Excluding it (`EXCLUDE_REPOS=2ba83c6a`, 23,667 lines): Cloakroom 0.2.2 P 0.66 / R 0.73 / F1 0.69;
+maisecrets 0.83 / 0.48 / 0.61; claude-code-redact 0.77 / 0.36 / 0.49; redact-hook aggressive 0.70 / 0.36 / 0.48,
+default 0.81 / 0.27 / 0.41; sensitive-canary 0.52 / 0.30 / 0.38. A generic-key rule (key-like name + random value)
+was tried: on all of CredData it caught 53 more keys but added 698 false alarms (F1 0.66 -> 0.64), so it was dropped.
+Results: `bench/rerun-2026-10-12/credata_results_no_testvectors.json`.

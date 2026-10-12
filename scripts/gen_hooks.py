@@ -17,16 +17,17 @@ comment, skips the bash block, and runs its own.
 """
 import json
 
-STOP = "To stop it: /plugin disable cloakroom@cloakroom."
+STOP = "To stop it: turn off the cloakroom plugin in /plugin."
 INSTALLING = ("cloakroom: installing itself (one time). Rules-only protection starts in about a minute, the full "
               "model follows in a few minutes. Tool calls are held back until then; progress in "
               "~/.cloakroom/bootstrap.log. " + STOP)
 NO_UV = ("cloakroom: not installed, and nothing to install it with (uv, pipx or Python 3.10+). Install uv: "
-         "curl -LsSf https://astral.sh/uv/install.sh | sh (Windows: powershell -c irm https://astral.sh/uv/install.ps1 | iex), "
+         "https://docs.astral.sh/uv/getting-started/installation/, "
          "then restart Claude Code and Cloakroom installs itself. Tool calls are held back until then. " + STOP)
 FAILED = ("cloakroom: the automatic install failed (details: ~/.cloakroom/bootstrap.log); it tries again in 10 minutes. "
-          "On Ubuntu/Debian it usually needs: sudo apt install python3-venv. Or install it yourself: uv tool install "
-          "'cloakroom[model,torch]'. Tool calls are held back until then. " + STOP)
+          "On Ubuntu/Debian it usually needs: sudo apt install python3-venv. Or install it yourself, see "
+          "https://github.com/shanjeevrajendran/cloakroom#get-started for the command. Tool calls are held back until "
+          "then. " + STOP)
 
 
 def fallback(event: str, msg: str) -> dict:

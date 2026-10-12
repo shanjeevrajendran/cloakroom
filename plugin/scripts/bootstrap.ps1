@@ -57,8 +57,8 @@ function Find-Cloakroom {
 }
 
 try {
-  $Rules = if ($env:CLOAKROOM_SPEC_RULES) { $env:CLOAKROOM_SPEC_RULES } else { "cloakroom" }
-  $Full = if ($env:CLOAKROOM_SPEC_FULL) { $env:CLOAKROOM_SPEC_FULL } else { "cloakroom[model,torch]" }
+  $Rules = if ($env:CLOAKROOM_SPEC_RULES) { $env:CLOAKROOM_SPEC_RULES } else { "cloakroom==0.2.2" }
+  $Full = if ($env:CLOAKROOM_SPEC_FULL) { $env:CLOAKROOM_SPEC_FULL } else { "cloakroom[model,torch]==0.2.2" }
   "$(Get-Date -Format s) installer: $Who" | Add-Content $Log
   if ($Who -eq "none") {
     Set-Content $State "failed"
