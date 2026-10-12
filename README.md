@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="https://raw.githubusercontent.com/shanjeevrajendran/cloakroom/main/assets/hero.svg" alt="Cloakroom, a privacy layer for Claude Code. v0.1 benchmark on five fresh test sets: 0 of 1,005 personal data values leaked, 4 of 334 secrets and IDs leaked, 60 of 200 safe samples masked by mistake." width="880">
+<img src="https://raw.githubusercontent.com/shanjeevrajendran/cloakroom/main/assets/hero.svg" alt="Cloakroom, a privacy layer for Claude Code: names, emails, addresses and API keys are swapped for placeholders before the model sees them." width="880">
 
 <p>
   <a href="#get-started">Get started</a> ·
@@ -155,24 +155,48 @@ Exceptions, backends, CI and troubleshooting: [the handbook](https://github.com/
 
 ## Results
 
-Cloakroom and four other Claude Code redaction tools, default settings, the same synthetic agent traffic,
-offline. Five fresh test sets, written by a different model and each run once before any tuning on it: 1,575
-planted values to catch and 200 safe samples that should be left alone.
+Every number below comes from a set that was run once before any tuning on it, unless it says otherwise.
+Method and every run: [bench/RESULTS.md](https://github.com/shanjeevrajendran/cloakroom/blob/main/bench/RESULTS.md).
+
+**Real credentials from public repositories** ([Samsung CredData](https://github.com/Samsung/CredData),
+29,893 labelled lines, each checked alone without its file path, the way a prompt or a tool output arrives):
+
+| Tool | Precision | Recall | F1 |
+|---|---|---|---|
+| maisecrets 0.6.14 | **0.90** | 0.61 | **0.73** |
+| **Cloakroom 0.2** | 0.66 | **0.65** | 0.66 |
+
+Cloakroom catches more passwords, tokens, URL credentials and AWS key IDs; maisecrets catches far more generic keys
+(0.88 vs 0.36) and masks far fewer harmless look-alikes. On real-world code it is the better secret scanner.
+
+**Keys in the formats vendors really issue** (a new set written after 0.2.0: 15 key types, shapeless passwords,
+encoded emails; 77 values, 15 look-alikes):
+
+| Tool | Leaked | False alarms |
+|---|---|---|
+| **Cloakroom 0.2** | **0 of 77** | 3 of 15 |
+| maisecrets 0.6.14 | 13 of 77 (passwords without a known shape, Twilio account IDs) | 1 of 15 |
+
+**Synthetic agent traffic** (five sets written by a different model: chat, logs, configs, CSVs, tickets; 1,575
+planted values, 200 safe samples). The first runs, with Cloakroom 0.1 and each tool as it was then:
 
 | Tool | Personal data (1,005) | Keys, passwords, cards, IDs (334) | False alarms (200 safe samples) |
 |---|---|---|---|
-| **Cloakroom** | **0** | **4** | 60 |
+| **Cloakroom 0.1** | **0** | **4** | 60 |
 | sensitive-canary (blocks the call instead of masking) | 119 | 40 | 16 |
-| maisecrets | 557 | 97 | 21 |
+| maisecrets (just after 0.6.9) | 557 | 97 | 21 |
 | claude-code-redact, PII on | 607 | 101 | 31 |
 | redact-hook | 817-822 | 143-157 | 35-40 |
 | claude-code-redact, secrets only | 992 | 179 | 2 |
 
-Some of these tools only aim at secrets, so their personal-data column shows scope as much as quality.
-False alarms are Cloakroom's weak spot: it masked 60 of 200 safe samples, such as historical names, landmark
-addresses and documented test keys. A false alarm costs you a placeholder where Claude needed the real text; a
-miss sends the value to the model. Method and every run:
-[bench/RESULTS.md](https://github.com/shanjeevrajendran/cloakroom/blob/main/bench/RESULTS.md). The maintainers of the compared tools were contacted before publishing.
+Rerun on 2026-10-12 (these sets had been seen by then, so not an honest score): Cloakroom 0.2 leaks 1 / 2 and masks
+23 of 200 safe samples; maisecrets 0.6.14 leaks 550 / 78, or 550 / 67 with `"regions": ["us", "uk", "in"]` (it
+loads only your own country's ID rules by default), and masks 5. Some of these tools only aim at secrets, so their
+personal-data column shows scope as much as quality. maisecrets' maintainers reproduced our numbers and pointed out
+where the old sets were unfair to them (keys in formats vendors don't issue); the key-format set above is the fix.
+
+False alarms are Cloakroom's weak spot: a false alarm costs you a placeholder where Claude needed the real text; a
+miss sends the value to the model. The maintainers of the compared tools were contacted before publishing.
 
 **On public datasets we didn't write** (v0.2, test split run once, details in
 [bench/public/RESULTS.md](https://github.com/shanjeevrajendran/cloakroom/blob/main/bench/public/RESULTS.md)):
