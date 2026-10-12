@@ -30,7 +30,8 @@ WHO="${CLOAKROOM_INSTALLER:-}"
 if [ -z "$WHO" ]; then
   if command -v uv >/dev/null 2>&1; then WHO=uv
   elif command -v pipx >/dev/null 2>&1; then WHO=pipx
-  elif [ -n "$(py310)" ]; then WHO=venv
+  elif [ -n "$(py310)" ] && "$(py310)" -c 'import venv, ensurepip' 2>/dev/null; then WHO=venv
+  elif [ -n "$(py310)" ]; then WHO=novenv  # Debian/Ubuntu ship python3 without venv (package python3-venv)
   else WHO=none; fi
 fi
 
@@ -52,6 +53,11 @@ cloakroom_bin() {  # where the installer put the program (often not on the PATH 
 
 {
   echo "$(date '+%F %T') installer: $WHO"
+  if [ "$WHO" = novenv ]; then
+    echo failed > "$STATE"
+    echo "Python is here but its venv module isn't (Ubuntu/Debian: sudo apt install python3-venv), and there is no uv or pipx: install one of them (uv: https://docs.astral.sh/uv/), then restart Claude Code"
+    exit 1
+  fi
   if [ "$WHO" = none ]; then
     echo failed > "$STATE"
     echo "no installer found: install uv (https://docs.astral.sh/uv/) or Python 3.10+, then restart Claude Code"

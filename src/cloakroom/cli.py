@@ -67,10 +67,11 @@ def main(argv=None):
                     return 0
             except Exception:
                 pass
-            if onnx_backend.model_file().exists():
+            if onnx_backend.model_file().exists() and (onnx_backend.model_dir() / "tokenizer.json").exists():
                 print(f"CPU model already built: {onnx_backend.model_file()}")
                 return 0
-        onnx_export.export(pathlib.Path(a.out) if a.out else onnx_backend.model_dir())
+        # the first-start build skips the opt-in int8 copy: fp32 is the default, and quantizing needs the most memory
+        onnx_export.export(pathlib.Path(a.out) if a.out else onnx_backend.model_dir(), int8=not a.if_no_gpu)
         return 0
     if a.cmd == "serve":
         from . import daemon

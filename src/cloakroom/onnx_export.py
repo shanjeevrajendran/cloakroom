@@ -13,13 +13,19 @@ from __future__ import annotations
 import pathlib
 
 
-def export(out: pathlib.Path) -> None:
+def export(final: pathlib.Path, int8: bool = True) -> None:
+    """Build into a temporary folder and move it into place only when the fp32 model, tokenizer and metadata are all
+    there: a build killed half-way (out of memory on an 8 GB machine) must never leave a model that can't load.
+    The optional int8 copy comes after, in place, written under a temporary name."""
+    import shutil
     import torch
     from transformers import AutoModel
 
     from . import onnx_backend
     from .engine import MODEL_ID, MODEL_REVISION
 
+    out = final.parent / (final.name + ".building")
+    shutil.rmtree(out, ignore_errors=True)
     out.mkdir(parents=True, exist_ok=True)
     model = AutoModel.from_pretrained(MODEL_ID, revision=MODEL_REVISION, trust_remote_code=True,
                                       dtype=torch.float32, attn_implementation="eager").eval()
@@ -52,16 +58,21 @@ def export(out: pathlib.Path) -> None:
     del model, m  # quantizing holds several copies of the graph: free the torch weights first (CI runners have 7-16 GB)
     import gc
     gc.collect()
-    quantize(fp32, out / onnx_backend.INT8)
     # what the NumPy decoder needs besides the network: the tokenizer and the two Viterbi bias scalars
     import json
-    import shutil
     from huggingface_hub import hf_hub_download
-    (out / "tokenizer.json").unlink(missing_ok=True)
     shutil.copyfile(hf_hub_download(MODEL_ID, "tokenizer.json", revision=MODEL_REVISION), out / "tokenizer.json")
     (out / onnx_backend.META).write_text(json.dumps({
         "model": MODEL_ID, "revision": MODEL_REVISION, "labels": labels, "b_bias": b_bias, "e_bias": e_bias}))
-    print(f"wrote {fp32} and {out / onnx_backend.INT8}")
+    shutil.rmtree(final, ignore_errors=True)
+    out.rename(final)
+    fp32 = final / onnx_backend.FP32
+    print(f"wrote {fp32}", flush=True)
+    if int8:
+        tmp = final / (onnx_backend.INT8 + ".tmp")
+        quantize(fp32, tmp)
+        tmp.rename(final / onnx_backend.INT8)
+        print(f"wrote {final / onnx_backend.INT8}")
 
 
 def quantize(fp32: pathlib.Path, int8: pathlib.Path) -> None:

@@ -138,3 +138,12 @@ def test_onnx_backend_masks_planted_values(variant, monkeypatch):
         if text not in PLANTED:
             assert out == text
     monkeypatch.setattr(engine, "_MODEL", None)
+
+
+def test_half_built_cpu_model_is_not_used(tmp_path, monkeypatch):
+    from cloakroom import engine, onnx_backend
+    pytest.importorskip("onnxruntime")
+    monkeypatch.setenv("CLOAKROOM_ONNX_DIR", str(tmp_path))
+    monkeypatch.setenv("CLOAKROOM_BACKEND", "auto")
+    (tmp_path / onnx_backend.FP32).write_bytes(b"x")  # network written, then the build was killed
+    assert engine.choose_backend() == "torch"  # CI's CPU runners would otherwise pick the broken onnx model

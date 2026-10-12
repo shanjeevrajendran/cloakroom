@@ -54,8 +54,8 @@ def choose_backend() -> str:
     try:
         import onnxruntime  # noqa: F401
         from . import onnx_backend
-        if onnx_backend.model_file().exists():
-            return "onnx"
+        if onnx_backend.model_file().exists() and (onnx_backend.model_dir() / "tokenizer.json").exists():
+            return "onnx"  # a build killed half-way (before 0.2.2) left the network without its tokenizer
     except Exception:
         pass
     return "torch"

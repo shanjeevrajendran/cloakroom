@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.2 (2026-10-12)
+- Linux and other CPU-only machines with 8 GB: the first-start CPU model build no longer runs out of memory (it skips
+  the opt-in int8 copy), and a build that is cut short can no longer leave a half model behind. In 0.2.1 such a
+  machine kept withholding tool output because the half-built model failed to load. Cloakroom now uses the CPU model
+  only when its tokenizer is there too.
+- Ubuntu/Debian without `python3-venv` (the default install): the first-start installer says so and how to fix it
+  (`sudo apt install python3-venv`, or install uv) instead of a bare "install failed".
+
 ## 0.2.1 (2026-10-12)
 - Windows with Git Bash: the hooks now find Cloakroom where the installer puts it (`venv\Scripts\cloakroom.exe`)
   and start the PowerShell installer. In 0.2.0 they reported "not installed" even after the install, so every tool
