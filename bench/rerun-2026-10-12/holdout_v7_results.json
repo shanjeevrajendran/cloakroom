@@ -119,238 +119,7 @@
       }
     },
     "leaks": [],
-    "ms_per_item": 69.8
-  },
-  {
-    "adapter": "cloakroom rules",
-    "items": 70,
-    "items_leaked": 18,
-    "values_total": 77,
-    "values_leaked": 18,
-    "blocked": 0,
-    "negatives": 15,
-    "false_alarms": 0,
-    "by_category": {
-      "email_encoded": {
-        "items": 4,
-        "leaked": 4
-      },
-      "negative": {
-        "items": 15,
-        "leaked": 0
-      },
-      "key_gitlab": {
-        "items": 3,
-        "leaked": 2
-      },
-      "key_sendgrid": {
-        "items": 3,
-        "leaked": 0
-      },
-      "key_github_classic": {
-        "items": 3,
-        "leaked": 0
-      },
-      "key_slack_bot": {
-        "items": 3,
-        "leaked": 0
-      },
-      "key_google_api": {
-        "items": 3,
-        "leaked": 0
-      },
-      "pw_cli_flag": {
-        "items": 2,
-        "leaked": 2
-      },
-      "key_anthropic": {
-        "items": 3,
-        "leaked": 0
-      },
-      "key_aws_key_id": {
-        "items": 3,
-        "leaked": 0
-      },
-      "key_openai_project": {
-        "items": 3,
-        "leaked": 0
-      },
-      "key_twilio_api_key": {
-        "items": 3,
-        "leaked": 0
-      },
-      "pw_url": {
-        "items": 2,
-        "leaked": 0
-      },
-      "pw_mysql": {
-        "items": 2,
-        "leaked": 2
-      },
-      "key_aws_pair": {
-        "items": 4,
-        "leaked": 0
-      },
-      "pw_netrc": {
-        "items": 2,
-        "leaked": 2
-      },
-      "key_github_fine": {
-        "items": 3,
-        "leaked": 0
-      },
-      "key_openai_legacy": {
-        "items": 3,
-        "leaked": 0
-      },
-      "pw_redis": {
-        "items": 2,
-        "leaked": 2
-      },
-      "twilio_sid": {
-        "items": 3,
-        "leaked": 0
-      },
-      "key_jwt": {
-        "items": 1,
-        "leaked": 0
-      },
-      "key_slack_user": {
-        "items": 3,
-        "leaked": 0
-      },
-      "key_npm": {
-        "items": 3,
-        "leaked": 2
-      },
-      "key_stripe_secret": {
-        "items": 3,
-        "leaked": 0
-      },
-      "key_huggingface": {
-        "items": 3,
-        "leaked": 0
-      },
-      "key_pem": {
-        "items": 1,
-        "leaked": 0
-      },
-      "pw_prose": {
-        "items": 2,
-        "leaked": 2
-      }
-    },
-    "leaks": [
-      {
-        "id": "h7-001",
-        "planted_idx": [
-          0
-        ]
-      },
-      {
-        "id": "h7-003",
-        "planted_idx": [
-          0
-        ]
-      },
-      {
-        "id": "h7-009",
-        "planted_idx": [
-          0
-        ]
-      },
-      {
-        "id": "h7-010",
-        "planted_idx": [
-          0
-        ]
-      },
-      {
-        "id": "h7-012",
-        "planted_idx": [
-          0
-        ]
-      },
-      {
-        "id": "h7-020",
-        "planted_idx": [
-          0
-        ]
-      },
-      {
-        "id": "h7-022",
-        "planted_idx": [
-          0
-        ]
-      },
-      {
-        "id": "h7-032",
-        "planted_idx": [
-          0
-        ]
-      },
-      {
-        "id": "h7-044",
-        "planted_idx": [
-          0
-        ]
-      },
-      {
-        "id": "h7-047",
-        "planted_idx": [
-          0
-        ]
-      },
-      {
-        "id": "h7-050",
-        "planted_idx": [
-          0
-        ]
-      },
-      {
-        "id": "h7-055",
-        "planted_idx": [
-          0
-        ]
-      },
-      {
-        "id": "h7-066",
-        "planted_idx": [
-          0
-        ]
-      },
-      {
-        "id": "h7-075",
-        "planted_idx": [
-          0
-        ]
-      },
-      {
-        "id": "h7-077",
-        "planted_idx": [
-          0
-        ]
-      },
-      {
-        "id": "h7-079",
-        "planted_idx": [
-          0
-        ]
-      },
-      {
-        "id": "h7-080",
-        "planted_idx": [
-          0
-        ]
-      },
-      {
-        "id": "h7-081",
-        "planted_idx": [
-          0
-        ]
-      }
-    ],
-    "ms_per_item": 0.0
+    "ms_per_item": 67.4
   },
   {
     "adapter": "maisecrets",
@@ -554,18 +323,450 @@
     "ms_per_item": 0.4
   },
   {
-    "adapter": "maisecrets-regions",
+    "adapter": "sensitive-canary (blocks)",
     "items": 70,
-    "items_leaked": 13,
+    "items_leaked": 14,
     "values_total": 77,
-    "values_leaked": 13,
+    "values_leaked": 14,
+    "blocked": 56,
+    "negatives": 15,
+    "false_alarms": 3,
+    "by_category": {
+      "email_encoded": {
+        "items": 4,
+        "leaked": 4
+      },
+      "negative": {
+        "items": 15,
+        "leaked": 3
+      },
+      "key_gitlab": {
+        "items": 3,
+        "leaked": 0
+      },
+      "key_sendgrid": {
+        "items": 3,
+        "leaked": 0
+      },
+      "key_github_classic": {
+        "items": 3,
+        "leaked": 0
+      },
+      "key_slack_bot": {
+        "items": 3,
+        "leaked": 0
+      },
+      "key_google_api": {
+        "items": 3,
+        "leaked": 0
+      },
+      "pw_cli_flag": {
+        "items": 2,
+        "leaked": 2
+      },
+      "key_anthropic": {
+        "items": 3,
+        "leaked": 0
+      },
+      "key_aws_key_id": {
+        "items": 3,
+        "leaked": 0
+      },
+      "key_openai_project": {
+        "items": 3,
+        "leaked": 0
+      },
+      "key_twilio_api_key": {
+        "items": 3,
+        "leaked": 0
+      },
+      "pw_url": {
+        "items": 2,
+        "leaked": 0
+      },
+      "pw_mysql": {
+        "items": 2,
+        "leaked": 2
+      },
+      "key_aws_pair": {
+        "items": 4,
+        "leaked": 0
+      },
+      "pw_netrc": {
+        "items": 2,
+        "leaked": 2
+      },
+      "key_github_fine": {
+        "items": 3,
+        "leaked": 0
+      },
+      "key_openai_legacy": {
+        "items": 3,
+        "leaked": 0
+      },
+      "pw_redis": {
+        "items": 2,
+        "leaked": 2
+      },
+      "twilio_sid": {
+        "items": 3,
+        "leaked": 0
+      },
+      "key_jwt": {
+        "items": 1,
+        "leaked": 0
+      },
+      "key_slack_user": {
+        "items": 3,
+        "leaked": 0
+      },
+      "key_npm": {
+        "items": 3,
+        "leaked": 0
+      },
+      "key_stripe_secret": {
+        "items": 3,
+        "leaked": 0
+      },
+      "key_huggingface": {
+        "items": 3,
+        "leaked": 0
+      },
+      "key_pem": {
+        "items": 1,
+        "leaked": 0
+      },
+      "pw_prose": {
+        "items": 2,
+        "leaked": 2
+      }
+    },
+    "leaks": [
+      {
+        "id": "h7-001",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h7-009",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h7-010",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h7-012",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h7-020",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h7-022",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h7-032",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h7-047",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h7-050",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h7-055",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h7-066",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h7-077",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h7-079",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h7-080",
+        "planted_idx": [
+          0
+        ]
+      }
+    ],
+    "ms_per_item": 0.6
+  },
+  {
+    "adapter": "claude-code-redact (+pii)",
+    "items": 70,
+    "items_leaked": 17,
+    "values_total": 77,
+    "values_leaked": 17,
+    "blocked": 0,
+    "negatives": 15,
+    "false_alarms": 2,
+    "by_category": {
+      "email_encoded": {
+        "items": 4,
+        "leaked": 4
+      },
+      "negative": {
+        "items": 15,
+        "leaked": 2
+      },
+      "key_gitlab": {
+        "items": 3,
+        "leaked": 0
+      },
+      "key_sendgrid": {
+        "items": 3,
+        "leaked": 0
+      },
+      "key_github_classic": {
+        "items": 3,
+        "leaked": 0
+      },
+      "key_slack_bot": {
+        "items": 3,
+        "leaked": 0
+      },
+      "key_google_api": {
+        "items": 3,
+        "leaked": 0
+      },
+      "pw_cli_flag": {
+        "items": 2,
+        "leaked": 2
+      },
+      "key_anthropic": {
+        "items": 3,
+        "leaked": 0
+      },
+      "key_aws_key_id": {
+        "items": 3,
+        "leaked": 0
+      },
+      "key_openai_project": {
+        "items": 3,
+        "leaked": 0
+      },
+      "key_twilio_api_key": {
+        "items": 3,
+        "leaked": 0
+      },
+      "pw_url": {
+        "items": 2,
+        "leaked": 0
+      },
+      "pw_mysql": {
+        "items": 2,
+        "leaked": 2
+      },
+      "key_aws_pair": {
+        "items": 4,
+        "leaked": 0
+      },
+      "pw_netrc": {
+        "items": 2,
+        "leaked": 2
+      },
+      "key_github_fine": {
+        "items": 3,
+        "leaked": 0
+      },
+      "key_openai_legacy": {
+        "items": 3,
+        "leaked": 0
+      },
+      "pw_redis": {
+        "items": 2,
+        "leaked": 2
+      },
+      "twilio_sid": {
+        "items": 3,
+        "leaked": 3
+      },
+      "key_jwt": {
+        "items": 1,
+        "leaked": 0
+      },
+      "key_slack_user": {
+        "items": 3,
+        "leaked": 0
+      },
+      "key_npm": {
+        "items": 3,
+        "leaked": 0
+      },
+      "key_stripe_secret": {
+        "items": 3,
+        "leaked": 0
+      },
+      "key_huggingface": {
+        "items": 3,
+        "leaked": 0
+      },
+      "key_pem": {
+        "items": 1,
+        "leaked": 0
+      },
+      "pw_prose": {
+        "items": 2,
+        "leaked": 2
+      }
+    },
+    "leaks": [
+      {
+        "id": "h7-001",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h7-009",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h7-010",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h7-012",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h7-020",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h7-022",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h7-032",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h7-033",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h7-047",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h7-050",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h7-055",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h7-066",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h7-072",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h7-076",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h7-077",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h7-079",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h7-080",
+        "planted_idx": [
+          0
+        ]
+      }
+    ],
+    "ms_per_item": 0.1
+  },
+  {
+    "adapter": "claude-code-redact (secrets)",
+    "items": 70,
+    "items_leaked": 17,
+    "values_total": 77,
+    "values_leaked": 17,
     "blocked": 0,
     "negatives": 15,
     "false_alarms": 1,
     "by_category": {
       "email_encoded": {
         "items": 4,
-        "leaked": 0
+        "leaked": 4
       },
       "negative": {
         "items": 15,
@@ -674,7 +875,25 @@
     },
     "leaks": [
       {
+        "id": "h7-001",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h7-009",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
         "id": "h7-010",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h7-012",
         "planted_idx": [
           0
         ]
@@ -705,6 +924,12 @@
       },
       {
         "id": "h7-047",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h7-050",
         "planted_idx": [
           0
         ]
@@ -752,6 +977,432 @@
         ]
       }
     ],
-    "ms_per_item": 0.3
+    "ms_per_item": 0.1
+  },
+  {
+    "adapter": "redact-hook (default)",
+    "items": 70,
+    "items_leaked": 15,
+    "values_total": 77,
+    "values_leaked": 15,
+    "blocked": 0,
+    "negatives": 15,
+    "false_alarms": 5,
+    "by_category": {
+      "email_encoded": {
+        "items": 4,
+        "leaked": 4
+      },
+      "negative": {
+        "items": 15,
+        "leaked": 5
+      },
+      "key_gitlab": {
+        "items": 3,
+        "leaked": 0
+      },
+      "key_sendgrid": {
+        "items": 3,
+        "leaked": 0
+      },
+      "key_github_classic": {
+        "items": 3,
+        "leaked": 0
+      },
+      "key_slack_bot": {
+        "items": 3,
+        "leaked": 0
+      },
+      "key_google_api": {
+        "items": 3,
+        "leaked": 0
+      },
+      "pw_cli_flag": {
+        "items": 2,
+        "leaked": 0
+      },
+      "key_anthropic": {
+        "items": 3,
+        "leaked": 0
+      },
+      "key_aws_key_id": {
+        "items": 3,
+        "leaked": 1
+      },
+      "key_openai_project": {
+        "items": 3,
+        "leaked": 0
+      },
+      "key_twilio_api_key": {
+        "items": 3,
+        "leaked": 1
+      },
+      "pw_url": {
+        "items": 2,
+        "leaked": 0
+      },
+      "pw_mysql": {
+        "items": 2,
+        "leaked": 2
+      },
+      "key_aws_pair": {
+        "items": 4,
+        "leaked": 0
+      },
+      "pw_netrc": {
+        "items": 2,
+        "leaked": 0
+      },
+      "key_github_fine": {
+        "items": 3,
+        "leaked": 0
+      },
+      "key_openai_legacy": {
+        "items": 3,
+        "leaked": 0
+      },
+      "pw_redis": {
+        "items": 2,
+        "leaked": 2
+      },
+      "twilio_sid": {
+        "items": 3,
+        "leaked": 3
+      },
+      "key_jwt": {
+        "items": 1,
+        "leaked": 0
+      },
+      "key_slack_user": {
+        "items": 3,
+        "leaked": 0
+      },
+      "key_npm": {
+        "items": 3,
+        "leaked": 0
+      },
+      "key_stripe_secret": {
+        "items": 3,
+        "leaked": 0
+      },
+      "key_huggingface": {
+        "items": 3,
+        "leaked": 0
+      },
+      "key_pem": {
+        "items": 1,
+        "leaked": 0
+      },
+      "pw_prose": {
+        "items": 2,
+        "leaked": 2
+      }
+    },
+    "leaks": [
+      {
+        "id": "h7-001",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h7-009",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h7-012",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h7-018",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h7-020",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h7-032",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h7-033",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h7-050",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h7-055",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h7-072",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h7-073",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h7-076",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h7-077",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h7-079",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h7-080",
+        "planted_idx": [
+          0
+        ]
+      }
+    ],
+    "ms_per_item": 0.0
+  },
+  {
+    "adapter": "redact-hook (aggressive)",
+    "items": 70,
+    "items_leaked": 15,
+    "values_total": 77,
+    "values_leaked": 15,
+    "blocked": 0,
+    "negatives": 15,
+    "false_alarms": 5,
+    "by_category": {
+      "email_encoded": {
+        "items": 4,
+        "leaked": 4
+      },
+      "negative": {
+        "items": 15,
+        "leaked": 5
+      },
+      "key_gitlab": {
+        "items": 3,
+        "leaked": 0
+      },
+      "key_sendgrid": {
+        "items": 3,
+        "leaked": 0
+      },
+      "key_github_classic": {
+        "items": 3,
+        "leaked": 0
+      },
+      "key_slack_bot": {
+        "items": 3,
+        "leaked": 0
+      },
+      "key_google_api": {
+        "items": 3,
+        "leaked": 0
+      },
+      "pw_cli_flag": {
+        "items": 2,
+        "leaked": 0
+      },
+      "key_anthropic": {
+        "items": 3,
+        "leaked": 0
+      },
+      "key_aws_key_id": {
+        "items": 3,
+        "leaked": 1
+      },
+      "key_openai_project": {
+        "items": 3,
+        "leaked": 0
+      },
+      "key_twilio_api_key": {
+        "items": 3,
+        "leaked": 1
+      },
+      "pw_url": {
+        "items": 2,
+        "leaked": 0
+      },
+      "pw_mysql": {
+        "items": 2,
+        "leaked": 2
+      },
+      "key_aws_pair": {
+        "items": 4,
+        "leaked": 0
+      },
+      "pw_netrc": {
+        "items": 2,
+        "leaked": 0
+      },
+      "key_github_fine": {
+        "items": 3,
+        "leaked": 0
+      },
+      "key_openai_legacy": {
+        "items": 3,
+        "leaked": 0
+      },
+      "pw_redis": {
+        "items": 2,
+        "leaked": 2
+      },
+      "twilio_sid": {
+        "items": 3,
+        "leaked": 3
+      },
+      "key_jwt": {
+        "items": 1,
+        "leaked": 0
+      },
+      "key_slack_user": {
+        "items": 3,
+        "leaked": 0
+      },
+      "key_npm": {
+        "items": 3,
+        "leaked": 0
+      },
+      "key_stripe_secret": {
+        "items": 3,
+        "leaked": 0
+      },
+      "key_huggingface": {
+        "items": 3,
+        "leaked": 0
+      },
+      "key_pem": {
+        "items": 1,
+        "leaked": 0
+      },
+      "pw_prose": {
+        "items": 2,
+        "leaked": 2
+      }
+    },
+    "leaks": [
+      {
+        "id": "h7-001",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h7-009",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h7-012",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h7-018",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h7-020",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h7-032",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h7-033",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h7-050",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h7-055",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h7-072",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h7-073",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h7-076",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h7-077",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h7-079",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h7-080",
+        "planted_idx": [
+          0
+        ]
+      }
+    ],
+    "ms_per_item": 0.0
   }
 ]

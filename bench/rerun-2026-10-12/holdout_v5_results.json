@@ -1,5 +1,150 @@
 [
   {
+    "adapter": "cloakroom full",
+    "items": 80,
+    "items_leaked": 1,
+    "values_total": 394,
+    "values_leaked": 1,
+    "blocked": 0,
+    "negatives": 40,
+    "false_alarms": 3,
+    "by_category": {
+      "slack-export": {
+        "items": 3,
+        "leaked": 0
+      },
+      "teams-export": {
+        "items": 3,
+        "leaked": 0
+      },
+      "outlook-eml": {
+        "items": 3,
+        "leaked": 0
+      },
+      "salesforce-export": {
+        "items": 3,
+        "leaked": 0
+      },
+      "hubspot-export": {
+        "items": 3,
+        "leaked": 0
+      },
+      "stripe-dispute": {
+        "items": 3,
+        "leaked": 0
+      },
+      "paypal-dispute": {
+        "items": 3,
+        "leaked": 0
+      },
+      "shopify-order": {
+        "items": 3,
+        "leaked": 0
+      },
+      "twilio-webhook": {
+        "items": 3,
+        "leaked": 0
+      },
+      "sendgrid-webhook": {
+        "items": 3,
+        "leaked": 0
+      },
+      "okta-audit": {
+        "items": 3,
+        "leaked": 0
+      },
+      "auth0-audit": {
+        "items": 3,
+        "leaked": 0
+      },
+      "vpn-auth": {
+        "items": 3,
+        "leaked": 0
+      },
+      "ssh-auth": {
+        "items": 3,
+        "leaked": 0
+      },
+      "gitlab-ci": {
+        "items": 3,
+        "leaked": 0
+      },
+      "ansible-run": {
+        "items": 3,
+        "leaked": 0
+      },
+      "chef-run": {
+        "items": 3,
+        "leaked": 0
+      },
+      "helm-release": {
+        "items": 3,
+        "leaked": 0
+      },
+      "openapi-example": {
+        "items": 3,
+        "leaked": 0
+      },
+      "sqlite-dump": {
+        "items": 3,
+        "leaked": 0
+      },
+      "hr-roster-csv": {
+        "items": 2,
+        "leaked": 0
+      },
+      "pdf-tax-return": {
+        "items": 2,
+        "leaked": 0
+      },
+      "mortgage-application": {
+        "items": 2,
+        "leaked": 0
+      },
+      "visa-application": {
+        "items": 2,
+        "leaked": 0
+      },
+      "hospital-discharge": {
+        "items": 2,
+        "leaked": 0
+      },
+      "school-report-card": {
+        "items": 2,
+        "leaked": 0
+      },
+      "dating-profile": {
+        "items": 2,
+        "leaked": 1
+      },
+      "gym-membership": {
+        "items": 2,
+        "leaked": 0
+      },
+      "airflow-log": {
+        "items": 2,
+        "leaked": 0
+      },
+      "dbt-log": {
+        "items": 2,
+        "leaked": 0
+      },
+      "negative": {
+        "items": 40,
+        "leaked": 3
+      }
+    },
+    "leaks": [
+      {
+        "id": "h5-073",
+        "planted_idx": [
+          1
+        ]
+      }
+    ],
+    "ms_per_item": 24.6
+  },
+  {
     "adapter": "maisecrets",
     "items": 80,
     "items_leaked": 78,
@@ -1460,12 +1605,12 @@
     "ms_per_item": 0.3
   },
   {
-    "adapter": "cloakroom full",
+    "adapter": "sensitive-canary (blocks)",
     "items": 80,
     "items_leaked": 1,
     "values_total": 394,
-    "values_leaked": 1,
-    "blocked": 0,
+    "values_leaked": 5,
+    "blocked": 79,
     "negatives": 40,
     "false_alarms": 3,
     "by_category": {
@@ -1475,7 +1620,7 @@
       },
       "teams-export": {
         "items": 3,
-        "leaked": 0
+        "leaked": 1
       },
       "outlook-eml": {
         "items": 3,
@@ -1575,7 +1720,7 @@
       },
       "dating-profile": {
         "items": 2,
-        "leaked": 1
+        "leaked": 0
       },
       "gym-membership": {
         "items": 2,
@@ -1596,12 +1741,3394 @@
     },
     "leaks": [
       {
-        "id": "h5-073",
+        "id": "h5-006",
         "planted_idx": [
-          1
+          0,
+          1,
+          2,
+          3,
+          4
         ]
       }
     ],
-    "ms_per_item": 18.6
+    "ms_per_item": 0.2
+  },
+  {
+    "adapter": "claude-code-redact (+pii)",
+    "items": 80,
+    "items_leaked": 79,
+    "values_total": 394,
+    "values_leaked": 238,
+    "blocked": 0,
+    "negatives": 40,
+    "false_alarms": 5,
+    "by_category": {
+      "slack-export": {
+        "items": 3,
+        "leaked": 3
+      },
+      "teams-export": {
+        "items": 3,
+        "leaked": 3
+      },
+      "outlook-eml": {
+        "items": 3,
+        "leaked": 3
+      },
+      "salesforce-export": {
+        "items": 3,
+        "leaked": 3
+      },
+      "hubspot-export": {
+        "items": 3,
+        "leaked": 3
+      },
+      "stripe-dispute": {
+        "items": 3,
+        "leaked": 3
+      },
+      "paypal-dispute": {
+        "items": 3,
+        "leaked": 3
+      },
+      "shopify-order": {
+        "items": 3,
+        "leaked": 3
+      },
+      "twilio-webhook": {
+        "items": 3,
+        "leaked": 3
+      },
+      "sendgrid-webhook": {
+        "items": 3,
+        "leaked": 3
+      },
+      "okta-audit": {
+        "items": 3,
+        "leaked": 3
+      },
+      "auth0-audit": {
+        "items": 3,
+        "leaked": 3
+      },
+      "vpn-auth": {
+        "items": 3,
+        "leaked": 3
+      },
+      "ssh-auth": {
+        "items": 3,
+        "leaked": 3
+      },
+      "gitlab-ci": {
+        "items": 3,
+        "leaked": 3
+      },
+      "ansible-run": {
+        "items": 3,
+        "leaked": 3
+      },
+      "chef-run": {
+        "items": 3,
+        "leaked": 3
+      },
+      "helm-release": {
+        "items": 3,
+        "leaked": 3
+      },
+      "openapi-example": {
+        "items": 3,
+        "leaked": 2
+      },
+      "sqlite-dump": {
+        "items": 3,
+        "leaked": 3
+      },
+      "hr-roster-csv": {
+        "items": 2,
+        "leaked": 2
+      },
+      "pdf-tax-return": {
+        "items": 2,
+        "leaked": 2
+      },
+      "mortgage-application": {
+        "items": 2,
+        "leaked": 2
+      },
+      "visa-application": {
+        "items": 2,
+        "leaked": 2
+      },
+      "hospital-discharge": {
+        "items": 2,
+        "leaked": 2
+      },
+      "school-report-card": {
+        "items": 2,
+        "leaked": 2
+      },
+      "dating-profile": {
+        "items": 2,
+        "leaked": 2
+      },
+      "gym-membership": {
+        "items": 2,
+        "leaked": 2
+      },
+      "airflow-log": {
+        "items": 2,
+        "leaked": 2
+      },
+      "dbt-log": {
+        "items": 2,
+        "leaked": 2
+      },
+      "negative": {
+        "items": 40,
+        "leaked": 5
+      }
+    },
+    "leaks": [
+      {
+        "id": "h5-001",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-002",
+        "planted_idx": [
+          0,
+          1,
+          4
+        ]
+      },
+      {
+        "id": "h5-003",
+        "planted_idx": [
+          0,
+          1,
+          3,
+          4
+        ]
+      },
+      {
+        "id": "h5-004",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-005",
+        "planted_idx": [
+          0,
+          1,
+          3
+        ]
+      },
+      {
+        "id": "h5-006",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      {
+        "id": "h5-007",
+        "planted_idx": [
+          0,
+          2,
+          4,
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      {
+        "id": "h5-008",
+        "planted_idx": [
+          3,
+          4,
+          5
+        ]
+      },
+      {
+        "id": "h5-009",
+        "planted_idx": [
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-010",
+        "planted_idx": [
+          0,
+          2,
+          3,
+          4
+        ]
+      },
+      {
+        "id": "h5-011",
+        "planted_idx": [
+          0,
+          3,
+          4
+        ]
+      },
+      {
+        "id": "h5-012",
+        "planted_idx": [
+          0,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-013",
+        "planted_idx": [
+          0,
+          3
+        ]
+      },
+      {
+        "id": "h5-014",
+        "planted_idx": [
+          0,
+          2
+        ]
+      },
+      {
+        "id": "h5-015",
+        "planted_idx": [
+          0,
+          3
+        ]
+      },
+      {
+        "id": "h5-016",
+        "planted_idx": [
+          0,
+          3
+        ]
+      },
+      {
+        "id": "h5-017",
+        "planted_idx": [
+          0,
+          2
+        ]
+      },
+      {
+        "id": "h5-018",
+        "planted_idx": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h5-019",
+        "planted_idx": [
+          0,
+          3,
+          4
+        ]
+      },
+      {
+        "id": "h5-020",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h5-021",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h5-022",
+        "planted_idx": [
+          1,
+          3
+        ]
+      },
+      {
+        "id": "h5-023",
+        "planted_idx": [
+          0,
+          3,
+          4
+        ]
+      },
+      {
+        "id": "h5-024",
+        "planted_idx": [
+          0,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-025",
+        "planted_idx": [
+          0,
+          2,
+          3,
+          4,
+          5,
+          6
+        ]
+      },
+      {
+        "id": "h5-026",
+        "planted_idx": [
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-027",
+        "planted_idx": [
+          0,
+          1,
+          3
+        ]
+      },
+      {
+        "id": "h5-028",
+        "planted_idx": [
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-029",
+        "planted_idx": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h5-030",
+        "planted_idx": [
+          0,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-031",
+        "planted_idx": [
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-032",
+        "planted_idx": [
+          0,
+          2
+        ]
+      },
+      {
+        "id": "h5-033",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h5-034",
+        "planted_idx": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h5-035",
+        "planted_idx": [
+          0,
+          1,
+          3,
+          4
+        ]
+      },
+      {
+        "id": "h5-036",
+        "planted_idx": [
+          0,
+          2
+        ]
+      },
+      {
+        "id": "h5-037",
+        "planted_idx": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h5-038",
+        "planted_idx": [
+          0,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-039",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-040",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-041",
+        "planted_idx": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h5-042",
+        "planted_idx": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h5-043",
+        "planted_idx": [
+          0,
+          2
+        ]
+      },
+      {
+        "id": "h5-044",
+        "planted_idx": [
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-045",
+        "planted_idx": [
+          1,
+          3
+        ]
+      },
+      {
+        "id": "h5-046",
+        "planted_idx": [
+          0,
+          2
+        ]
+      },
+      {
+        "id": "h5-047",
+        "planted_idx": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h5-048",
+        "planted_idx": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h5-049",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-050",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h5-051",
+        "planted_idx": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "h5-052",
+        "planted_idx": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h5-053",
+        "planted_idx": [
+          0,
+          3
+        ]
+      },
+      {
+        "id": "h5-054",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h5-055",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h5-056",
+        "planted_idx": [
+          1
+        ]
+      },
+      {
+        "id": "h5-058",
+        "planted_idx": [
+          0,
+          2,
+          3,
+          4,
+          7
+        ]
+      },
+      {
+        "id": "h5-059",
+        "planted_idx": [
+          0,
+          1,
+          3
+        ]
+      },
+      {
+        "id": "h5-060",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      {
+        "id": "h5-061",
+        "planted_idx": [
+          0,
+          3,
+          5,
+          7,
+          8,
+          9
+        ]
+      },
+      {
+        "id": "h5-062",
+        "planted_idx": [
+          0,
+          2,
+          4,
+          5,
+          6,
+          7
+        ]
+      },
+      {
+        "id": "h5-063",
+        "planted_idx": [
+          0,
+          2,
+          3,
+          4
+        ]
+      },
+      {
+        "id": "h5-064",
+        "planted_idx": [
+          0,
+          1,
+          4
+        ]
+      },
+      {
+        "id": "h5-065",
+        "planted_idx": [
+          0,
+          1,
+          3,
+          5
+        ]
+      },
+      {
+        "id": "h5-066",
+        "planted_idx": [
+          0,
+          3
+        ]
+      },
+      {
+        "id": "h5-067",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      {
+        "id": "h5-068",
+        "planted_idx": [
+          0,
+          1,
+          3,
+          4
+        ]
+      },
+      {
+        "id": "h5-069",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      {
+        "id": "h5-070",
+        "planted_idx": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h5-071",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          5
+        ]
+      },
+      {
+        "id": "h5-072",
+        "planted_idx": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h5-073",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          4
+        ]
+      },
+      {
+        "id": "h5-074",
+        "planted_idx": [
+          0,
+          3,
+          4
+        ]
+      },
+      {
+        "id": "h5-075",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          5
+        ]
+      },
+      {
+        "id": "h5-076",
+        "planted_idx": [
+          0,
+          3
+        ]
+      },
+      {
+        "id": "h5-077",
+        "planted_idx": [
+          2
+        ]
+      },
+      {
+        "id": "h5-078",
+        "planted_idx": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h5-079",
+        "planted_idx": [
+          0,
+          3
+        ]
+      },
+      {
+        "id": "h5-080",
+        "planted_idx": [
+          1,
+          2,
+          4
+        ]
+      }
+    ],
+    "ms_per_item": 0.1
+  },
+  {
+    "adapter": "claude-code-redact (secrets)",
+    "items": 80,
+    "items_leaked": 80,
+    "values_total": 394,
+    "values_leaked": 372,
+    "blocked": 0,
+    "negatives": 40,
+    "false_alarms": 0,
+    "by_category": {
+      "slack-export": {
+        "items": 3,
+        "leaked": 3
+      },
+      "teams-export": {
+        "items": 3,
+        "leaked": 3
+      },
+      "outlook-eml": {
+        "items": 3,
+        "leaked": 3
+      },
+      "salesforce-export": {
+        "items": 3,
+        "leaked": 3
+      },
+      "hubspot-export": {
+        "items": 3,
+        "leaked": 3
+      },
+      "stripe-dispute": {
+        "items": 3,
+        "leaked": 3
+      },
+      "paypal-dispute": {
+        "items": 3,
+        "leaked": 3
+      },
+      "shopify-order": {
+        "items": 3,
+        "leaked": 3
+      },
+      "twilio-webhook": {
+        "items": 3,
+        "leaked": 3
+      },
+      "sendgrid-webhook": {
+        "items": 3,
+        "leaked": 3
+      },
+      "okta-audit": {
+        "items": 3,
+        "leaked": 3
+      },
+      "auth0-audit": {
+        "items": 3,
+        "leaked": 3
+      },
+      "vpn-auth": {
+        "items": 3,
+        "leaked": 3
+      },
+      "ssh-auth": {
+        "items": 3,
+        "leaked": 3
+      },
+      "gitlab-ci": {
+        "items": 3,
+        "leaked": 3
+      },
+      "ansible-run": {
+        "items": 3,
+        "leaked": 3
+      },
+      "chef-run": {
+        "items": 3,
+        "leaked": 3
+      },
+      "helm-release": {
+        "items": 3,
+        "leaked": 3
+      },
+      "openapi-example": {
+        "items": 3,
+        "leaked": 3
+      },
+      "sqlite-dump": {
+        "items": 3,
+        "leaked": 3
+      },
+      "hr-roster-csv": {
+        "items": 2,
+        "leaked": 2
+      },
+      "pdf-tax-return": {
+        "items": 2,
+        "leaked": 2
+      },
+      "mortgage-application": {
+        "items": 2,
+        "leaked": 2
+      },
+      "visa-application": {
+        "items": 2,
+        "leaked": 2
+      },
+      "hospital-discharge": {
+        "items": 2,
+        "leaked": 2
+      },
+      "school-report-card": {
+        "items": 2,
+        "leaked": 2
+      },
+      "dating-profile": {
+        "items": 2,
+        "leaked": 2
+      },
+      "gym-membership": {
+        "items": 2,
+        "leaked": 2
+      },
+      "airflow-log": {
+        "items": 2,
+        "leaked": 2
+      },
+      "dbt-log": {
+        "items": 2,
+        "leaked": 2
+      },
+      "negative": {
+        "items": 40,
+        "leaked": 0
+      }
+    },
+    "leaks": [
+      {
+        "id": "h5-001",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      {
+        "id": "h5-002",
+        "planted_idx": [
+          0,
+          1,
+          3,
+          4
+        ]
+      },
+      {
+        "id": "h5-003",
+        "planted_idx": [
+          0,
+          1,
+          3,
+          4
+        ]
+      },
+      {
+        "id": "h5-004",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-005",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      {
+        "id": "h5-006",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      {
+        "id": "h5-007",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      {
+        "id": "h5-008",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      {
+        "id": "h5-009",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-010",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ]
+      },
+      {
+        "id": "h5-011",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      {
+        "id": "h5-012",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      {
+        "id": "h5-013",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-014",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-015",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-016",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      {
+        "id": "h5-017",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      {
+        "id": "h5-018",
+        "planted_idx": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h5-019",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      {
+        "id": "h5-020",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-021",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-022",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      {
+        "id": "h5-023",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      {
+        "id": "h5-024",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      {
+        "id": "h5-025",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ]
+      },
+      {
+        "id": "h5-026",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-027",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-028",
+        "planted_idx": [
+          0,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-029",
+        "planted_idx": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h5-030",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-031",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-032",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      {
+        "id": "h5-033",
+        "planted_idx": [
+          0,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-034",
+        "planted_idx": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h5-035",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      {
+        "id": "h5-036",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-037",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-038",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-039",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      {
+        "id": "h5-040",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      {
+        "id": "h5-041",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      {
+        "id": "h5-042",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      {
+        "id": "h5-043",
+        "planted_idx": [
+          0,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-044",
+        "planted_idx": [
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      {
+        "id": "h5-045",
+        "planted_idx": [
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-046",
+        "planted_idx": [
+          0,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-047",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-048",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-049",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      {
+        "id": "h5-050",
+        "planted_idx": [
+          0,
+          2
+        ]
+      },
+      {
+        "id": "h5-051",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-052",
+        "planted_idx": [
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-053",
+        "planted_idx": [
+          0,
+          1,
+          3
+        ]
+      },
+      {
+        "id": "h5-054",
+        "planted_idx": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "h5-055",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-056",
+        "planted_idx": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h5-057",
+        "planted_idx": [
+          1
+        ]
+      },
+      {
+        "id": "h5-058",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ]
+      },
+      {
+        "id": "h5-059",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-060",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      {
+        "id": "h5-061",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9
+        ]
+      },
+      {
+        "id": "h5-062",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      {
+        "id": "h5-063",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      {
+        "id": "h5-064",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      {
+        "id": "h5-065",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ]
+      },
+      {
+        "id": "h5-066",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-067",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      {
+        "id": "h5-068",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      {
+        "id": "h5-069",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ]
+      },
+      {
+        "id": "h5-070",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      {
+        "id": "h5-071",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      {
+        "id": "h5-072",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      {
+        "id": "h5-073",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      {
+        "id": "h5-074",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      {
+        "id": "h5-075",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      {
+        "id": "h5-076",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      {
+        "id": "h5-077",
+        "planted_idx": [
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-078",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      {
+        "id": "h5-079",
+        "planted_idx": [
+          0,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-080",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ]
+      }
+    ],
+    "ms_per_item": 0.1
+  },
+  {
+    "adapter": "redact-hook (default)",
+    "items": 80,
+    "items_leaked": 80,
+    "values_total": 394,
+    "values_leaked": 309,
+    "blocked": 0,
+    "negatives": 40,
+    "false_alarms": 10,
+    "by_category": {
+      "slack-export": {
+        "items": 3,
+        "leaked": 3
+      },
+      "teams-export": {
+        "items": 3,
+        "leaked": 3
+      },
+      "outlook-eml": {
+        "items": 3,
+        "leaked": 3
+      },
+      "salesforce-export": {
+        "items": 3,
+        "leaked": 3
+      },
+      "hubspot-export": {
+        "items": 3,
+        "leaked": 3
+      },
+      "stripe-dispute": {
+        "items": 3,
+        "leaked": 3
+      },
+      "paypal-dispute": {
+        "items": 3,
+        "leaked": 3
+      },
+      "shopify-order": {
+        "items": 3,
+        "leaked": 3
+      },
+      "twilio-webhook": {
+        "items": 3,
+        "leaked": 3
+      },
+      "sendgrid-webhook": {
+        "items": 3,
+        "leaked": 3
+      },
+      "okta-audit": {
+        "items": 3,
+        "leaked": 3
+      },
+      "auth0-audit": {
+        "items": 3,
+        "leaked": 3
+      },
+      "vpn-auth": {
+        "items": 3,
+        "leaked": 3
+      },
+      "ssh-auth": {
+        "items": 3,
+        "leaked": 3
+      },
+      "gitlab-ci": {
+        "items": 3,
+        "leaked": 3
+      },
+      "ansible-run": {
+        "items": 3,
+        "leaked": 3
+      },
+      "chef-run": {
+        "items": 3,
+        "leaked": 3
+      },
+      "helm-release": {
+        "items": 3,
+        "leaked": 3
+      },
+      "openapi-example": {
+        "items": 3,
+        "leaked": 3
+      },
+      "sqlite-dump": {
+        "items": 3,
+        "leaked": 3
+      },
+      "hr-roster-csv": {
+        "items": 2,
+        "leaked": 2
+      },
+      "pdf-tax-return": {
+        "items": 2,
+        "leaked": 2
+      },
+      "mortgage-application": {
+        "items": 2,
+        "leaked": 2
+      },
+      "visa-application": {
+        "items": 2,
+        "leaked": 2
+      },
+      "hospital-discharge": {
+        "items": 2,
+        "leaked": 2
+      },
+      "school-report-card": {
+        "items": 2,
+        "leaked": 2
+      },
+      "dating-profile": {
+        "items": 2,
+        "leaked": 2
+      },
+      "gym-membership": {
+        "items": 2,
+        "leaked": 2
+      },
+      "airflow-log": {
+        "items": 2,
+        "leaked": 2
+      },
+      "dbt-log": {
+        "items": 2,
+        "leaked": 2
+      },
+      "negative": {
+        "items": 40,
+        "leaked": 10
+      }
+    },
+    "leaks": [
+      {
+        "id": "h5-001",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-002",
+        "planted_idx": [
+          0,
+          1,
+          3
+        ]
+      },
+      {
+        "id": "h5-003",
+        "planted_idx": [
+          0,
+          1,
+          3,
+          4
+        ]
+      },
+      {
+        "id": "h5-004",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-005",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      {
+        "id": "h5-006",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-007",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          6,
+          7,
+          8
+        ]
+      },
+      {
+        "id": "h5-008",
+        "planted_idx": [
+          0,
+          1,
+          3,
+          4,
+          5
+        ]
+      },
+      {
+        "id": "h5-009",
+        "planted_idx": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h5-010",
+        "planted_idx": [
+          0,
+          1,
+          3,
+          4,
+          5,
+          6
+        ]
+      },
+      {
+        "id": "h5-011",
+        "planted_idx": [
+          0,
+          1,
+          3,
+          4
+        ]
+      },
+      {
+        "id": "h5-012",
+        "planted_idx": [
+          0,
+          2,
+          3,
+          4
+        ]
+      },
+      {
+        "id": "h5-013",
+        "planted_idx": [
+          0,
+          1,
+          3
+        ]
+      },
+      {
+        "id": "h5-014",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-015",
+        "planted_idx": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h5-016",
+        "planted_idx": [
+          0,
+          1,
+          3
+        ]
+      },
+      {
+        "id": "h5-017",
+        "planted_idx": [
+          0,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-018",
+        "planted_idx": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "h5-019",
+        "planted_idx": [
+          0,
+          1,
+          3
+        ]
+      },
+      {
+        "id": "h5-020",
+        "planted_idx": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h5-021",
+        "planted_idx": [
+          0,
+          2
+        ]
+      },
+      {
+        "id": "h5-022",
+        "planted_idx": [
+          0,
+          1,
+          3
+        ]
+      },
+      {
+        "id": "h5-023",
+        "planted_idx": [
+          0,
+          1,
+          3,
+          4
+        ]
+      },
+      {
+        "id": "h5-024",
+        "planted_idx": [
+          0,
+          1,
+          3,
+          4
+        ]
+      },
+      {
+        "id": "h5-025",
+        "planted_idx": [
+          0,
+          3,
+          4,
+          5,
+          6
+        ]
+      },
+      {
+        "id": "h5-026",
+        "planted_idx": [
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-027",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-028",
+        "planted_idx": [
+          0,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-029",
+        "planted_idx": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h5-030",
+        "planted_idx": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h5-031",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-032",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-033",
+        "planted_idx": [
+          0,
+          2
+        ]
+      },
+      {
+        "id": "h5-034",
+        "planted_idx": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h5-035",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-036",
+        "planted_idx": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h5-037",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-038",
+        "planted_idx": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h5-039",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      {
+        "id": "h5-040",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      {
+        "id": "h5-041",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-042",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-043",
+        "planted_idx": [
+          0,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-044",
+        "planted_idx": [
+          2,
+          3,
+          4
+        ]
+      },
+      {
+        "id": "h5-045",
+        "planted_idx": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h5-046",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-047",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-048",
+        "planted_idx": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h5-049",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      {
+        "id": "h5-050",
+        "planted_idx": [
+          0,
+          2
+        ]
+      },
+      {
+        "id": "h5-051",
+        "planted_idx": [
+          0,
+          1,
+          3
+        ]
+      },
+      {
+        "id": "h5-052",
+        "planted_idx": [
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-053",
+        "planted_idx": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "h5-054",
+        "planted_idx": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "h5-055",
+        "planted_idx": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h5-056",
+        "planted_idx": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h5-057",
+        "planted_idx": [
+          1
+        ]
+      },
+      {
+        "id": "h5-058",
+        "planted_idx": [
+          0,
+          1,
+          3,
+          4,
+          5,
+          7
+        ]
+      },
+      {
+        "id": "h5-059",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-060",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      {
+        "id": "h5-061",
+        "planted_idx": [
+          0,
+          1,
+          3,
+          4,
+          5,
+          6,
+          8,
+          9
+        ]
+      },
+      {
+        "id": "h5-062",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          7
+        ]
+      },
+      {
+        "id": "h5-063",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      {
+        "id": "h5-064",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          5
+        ]
+      },
+      {
+        "id": "h5-065",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      {
+        "id": "h5-066",
+        "planted_idx": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "h5-067",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          5
+        ]
+      },
+      {
+        "id": "h5-068",
+        "planted_idx": [
+          0,
+          1,
+          3,
+          4,
+          5
+        ]
+      },
+      {
+        "id": "h5-069",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          5,
+          6
+        ]
+      },
+      {
+        "id": "h5-070",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          4
+        ]
+      },
+      {
+        "id": "h5-071",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          5
+        ]
+      },
+      {
+        "id": "h5-072",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          4
+        ]
+      },
+      {
+        "id": "h5-073",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-074",
+        "planted_idx": [
+          0,
+          1,
+          3,
+          4
+        ]
+      },
+      {
+        "id": "h5-075",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          4,
+          5
+        ]
+      },
+      {
+        "id": "h5-076",
+        "planted_idx": [
+          0,
+          1,
+          3
+        ]
+      },
+      {
+        "id": "h5-077",
+        "planted_idx": [
+          0,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-078",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-079",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-080",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ]
+      }
+    ],
+    "ms_per_item": 0.1
+  },
+  {
+    "adapter": "redact-hook (aggressive)",
+    "items": 80,
+    "items_leaked": 80,
+    "values_total": 394,
+    "values_leaked": 308,
+    "blocked": 0,
+    "negatives": 40,
+    "false_alarms": 11,
+    "by_category": {
+      "slack-export": {
+        "items": 3,
+        "leaked": 3
+      },
+      "teams-export": {
+        "items": 3,
+        "leaked": 3
+      },
+      "outlook-eml": {
+        "items": 3,
+        "leaked": 3
+      },
+      "salesforce-export": {
+        "items": 3,
+        "leaked": 3
+      },
+      "hubspot-export": {
+        "items": 3,
+        "leaked": 3
+      },
+      "stripe-dispute": {
+        "items": 3,
+        "leaked": 3
+      },
+      "paypal-dispute": {
+        "items": 3,
+        "leaked": 3
+      },
+      "shopify-order": {
+        "items": 3,
+        "leaked": 3
+      },
+      "twilio-webhook": {
+        "items": 3,
+        "leaked": 3
+      },
+      "sendgrid-webhook": {
+        "items": 3,
+        "leaked": 3
+      },
+      "okta-audit": {
+        "items": 3,
+        "leaked": 3
+      },
+      "auth0-audit": {
+        "items": 3,
+        "leaked": 3
+      },
+      "vpn-auth": {
+        "items": 3,
+        "leaked": 3
+      },
+      "ssh-auth": {
+        "items": 3,
+        "leaked": 3
+      },
+      "gitlab-ci": {
+        "items": 3,
+        "leaked": 3
+      },
+      "ansible-run": {
+        "items": 3,
+        "leaked": 3
+      },
+      "chef-run": {
+        "items": 3,
+        "leaked": 3
+      },
+      "helm-release": {
+        "items": 3,
+        "leaked": 3
+      },
+      "openapi-example": {
+        "items": 3,
+        "leaked": 3
+      },
+      "sqlite-dump": {
+        "items": 3,
+        "leaked": 3
+      },
+      "hr-roster-csv": {
+        "items": 2,
+        "leaked": 2
+      },
+      "pdf-tax-return": {
+        "items": 2,
+        "leaked": 2
+      },
+      "mortgage-application": {
+        "items": 2,
+        "leaked": 2
+      },
+      "visa-application": {
+        "items": 2,
+        "leaked": 2
+      },
+      "hospital-discharge": {
+        "items": 2,
+        "leaked": 2
+      },
+      "school-report-card": {
+        "items": 2,
+        "leaked": 2
+      },
+      "dating-profile": {
+        "items": 2,
+        "leaked": 2
+      },
+      "gym-membership": {
+        "items": 2,
+        "leaked": 2
+      },
+      "airflow-log": {
+        "items": 2,
+        "leaked": 2
+      },
+      "dbt-log": {
+        "items": 2,
+        "leaked": 2
+      },
+      "negative": {
+        "items": 40,
+        "leaked": 11
+      }
+    },
+    "leaks": [
+      {
+        "id": "h5-001",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-002",
+        "planted_idx": [
+          0,
+          1,
+          3
+        ]
+      },
+      {
+        "id": "h5-003",
+        "planted_idx": [
+          0,
+          1,
+          3,
+          4
+        ]
+      },
+      {
+        "id": "h5-004",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-005",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      {
+        "id": "h5-006",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-007",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          6,
+          7,
+          8
+        ]
+      },
+      {
+        "id": "h5-008",
+        "planted_idx": [
+          0,
+          1,
+          3,
+          4,
+          5
+        ]
+      },
+      {
+        "id": "h5-009",
+        "planted_idx": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h5-010",
+        "planted_idx": [
+          0,
+          1,
+          3,
+          4,
+          5,
+          6
+        ]
+      },
+      {
+        "id": "h5-011",
+        "planted_idx": [
+          0,
+          1,
+          3,
+          4
+        ]
+      },
+      {
+        "id": "h5-012",
+        "planted_idx": [
+          0,
+          2,
+          3,
+          4
+        ]
+      },
+      {
+        "id": "h5-013",
+        "planted_idx": [
+          0,
+          1,
+          3
+        ]
+      },
+      {
+        "id": "h5-014",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-015",
+        "planted_idx": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h5-016",
+        "planted_idx": [
+          0,
+          1,
+          3
+        ]
+      },
+      {
+        "id": "h5-017",
+        "planted_idx": [
+          0,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-018",
+        "planted_idx": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "h5-019",
+        "planted_idx": [
+          0,
+          1,
+          3
+        ]
+      },
+      {
+        "id": "h5-020",
+        "planted_idx": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h5-021",
+        "planted_idx": [
+          0,
+          2
+        ]
+      },
+      {
+        "id": "h5-022",
+        "planted_idx": [
+          0,
+          1,
+          3
+        ]
+      },
+      {
+        "id": "h5-023",
+        "planted_idx": [
+          0,
+          1,
+          3,
+          4
+        ]
+      },
+      {
+        "id": "h5-024",
+        "planted_idx": [
+          0,
+          1,
+          3,
+          4
+        ]
+      },
+      {
+        "id": "h5-025",
+        "planted_idx": [
+          0,
+          3,
+          4,
+          5,
+          6
+        ]
+      },
+      {
+        "id": "h5-026",
+        "planted_idx": [
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-027",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-028",
+        "planted_idx": [
+          0,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-029",
+        "planted_idx": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h5-030",
+        "planted_idx": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h5-031",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-032",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-033",
+        "planted_idx": [
+          0,
+          2
+        ]
+      },
+      {
+        "id": "h5-034",
+        "planted_idx": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h5-035",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-036",
+        "planted_idx": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h5-037",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-038",
+        "planted_idx": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h5-039",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      {
+        "id": "h5-040",
+        "planted_idx": [
+          0,
+          1,
+          3,
+          4
+        ]
+      },
+      {
+        "id": "h5-041",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-042",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-043",
+        "planted_idx": [
+          0,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-044",
+        "planted_idx": [
+          2,
+          3,
+          4
+        ]
+      },
+      {
+        "id": "h5-045",
+        "planted_idx": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h5-046",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-047",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-048",
+        "planted_idx": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h5-049",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      {
+        "id": "h5-050",
+        "planted_idx": [
+          0,
+          2
+        ]
+      },
+      {
+        "id": "h5-051",
+        "planted_idx": [
+          0,
+          1,
+          3
+        ]
+      },
+      {
+        "id": "h5-052",
+        "planted_idx": [
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-053",
+        "planted_idx": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "h5-054",
+        "planted_idx": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "h5-055",
+        "planted_idx": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h5-056",
+        "planted_idx": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h5-057",
+        "planted_idx": [
+          1
+        ]
+      },
+      {
+        "id": "h5-058",
+        "planted_idx": [
+          0,
+          1,
+          3,
+          4,
+          5,
+          7
+        ]
+      },
+      {
+        "id": "h5-059",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-060",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      {
+        "id": "h5-061",
+        "planted_idx": [
+          0,
+          1,
+          3,
+          4,
+          5,
+          6,
+          8,
+          9
+        ]
+      },
+      {
+        "id": "h5-062",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          7
+        ]
+      },
+      {
+        "id": "h5-063",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      {
+        "id": "h5-064",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          5
+        ]
+      },
+      {
+        "id": "h5-065",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      {
+        "id": "h5-066",
+        "planted_idx": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "h5-067",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          5
+        ]
+      },
+      {
+        "id": "h5-068",
+        "planted_idx": [
+          0,
+          1,
+          3,
+          4,
+          5
+        ]
+      },
+      {
+        "id": "h5-069",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          5,
+          6
+        ]
+      },
+      {
+        "id": "h5-070",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          4
+        ]
+      },
+      {
+        "id": "h5-071",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          5
+        ]
+      },
+      {
+        "id": "h5-072",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          4
+        ]
+      },
+      {
+        "id": "h5-073",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-074",
+        "planted_idx": [
+          0,
+          1,
+          3,
+          4
+        ]
+      },
+      {
+        "id": "h5-075",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          4,
+          5
+        ]
+      },
+      {
+        "id": "h5-076",
+        "planted_idx": [
+          0,
+          1,
+          3
+        ]
+      },
+      {
+        "id": "h5-077",
+        "planted_idx": [
+          0,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-078",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-079",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-080",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ]
+      }
+    ],
+    "ms_per_item": 0.1
   }
 ]

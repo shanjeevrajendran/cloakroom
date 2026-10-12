@@ -26,7 +26,7 @@ for placeholders before the model sees them. When Claude writes a file, the real
 Runs on macOS, Windows and Linux.
 
 **Status:** v0.2. The plugin installs itself, a local dashboard shows every alert, and Cloakroom learns from your
-corrections. Tested on macOS and a real Windows machine (Linux in CI). It works; expect rough edges.
+corrections. Tested on macOS, Windows Server and Ubuntu, each from a clean install. It works; expect rough edges.
 
 <div align="center">
   <img src="https://raw.githubusercontent.com/shanjeevrajendran/cloakroom/main/assets/demo.gif" alt="Claude Code reads a support ticket and .env through Cloakroom: the model sees PII_PERSON_1 and PII_SECRET_1, and reply.md on disk gets the real customer name back" width="820">
@@ -41,21 +41,22 @@ in a log looks like ordinary text to a regex.
 
 ## What's different
 
-- **Catches personal data, not just keys.** A local detection model plus rules. Across five fresh test sets it
-  leaked none of 1,005 planted names, emails, phone numbers, addresses and birth dates. The other tools we tested
-  let 119 to 992 of them through.
+- **Catches personal data, not just keys.** A local detection model plus rules. On real court rulings (TAB) it
+  finds 95% of the personal data; on our agent-traffic sets it leaks 1 of 1,005 planted names, emails, phone
+  numbers and addresses, where the other tools we tested let 119 to 992 through.
 - **Claude keeps working.** Placeholders stay the same for the whole session, and the real values are put back
   when Claude writes a file or runs a command locally.
 - **Runs on your machine.** Detection, the encrypted vault and the restore are all local. The only network call is
   the one-time model download.
 - **Cross-platform.** One install on all three, with the vault key in each system's own secure store:
-  - **macOS:** Keychain. On Apple Silicon the model runs on the built-in GPU, about 20 ms per check.
-  - **Windows:** Credential Manager, hooks that run in PowerShell, tested on a real Windows machine.
-  - **Linux:** Secret Service, covered by CI on every change.
-- **No GPU needed.** On an Apple M-series CPU a check takes about 60 ms.
+  - **macOS:** Keychain. On Apple Silicon the model runs on the built-in GPU, about 20 to 70 ms per check.
+  - **Windows:** Credential Manager; hooks run in PowerShell or Git Bash. Tested on Windows Server.
+  - **Linux:** Secret Service. Tested on Ubuntu 24.04, plus CI on every change.
+- **No GPU needed.** A fast CPU version of the model is built on first start: about 60 ms per check on an Apple
+  M-series CPU, about 300 ms on a 2-core cloud VM.
 - **Catches encoded dumps.** `base64`, `xxd` and `od` output is decoded and checked too.
-- **Fails closed.** If Cloakroom isn't running, tool calls are denied instead of slipping through, and every prompt
-  carries a warning with the fix, so you're never locked out of Claude Code.
+- **Fails closed for tools.** If Cloakroom can't check, tool calls are held back instead of slipping through;
+  prompts are still checked by its rules and carry a warning with the fix, so you're never locked out.
 
 ## How it works
 
@@ -155,48 +156,55 @@ Exceptions, backends, CI and troubleshooting: [the handbook](https://github.com/
 
 ## Results
 
-Every number below comes from a set that was run once before any tuning on it, unless it says otherwise.
-Method and every run: [bench/RESULTS.md](https://github.com/shanjeevrajendran/cloakroom/blob/main/bench/RESULTS.md).
+**In one line:** Cloakroom is the best of the Claude Code tools we tested at keeping personal data and keys away
+from the model; maisecrets is the better scanner for secrets in real code; false alarms are our main open problem.
+Every number comes from a set run once before any tuning on it unless it says otherwise. Method and every run:
+[bench/RESULTS.md](https://github.com/shanjeevrajendran/cloakroom/blob/main/bench/RESULTS.md). Each tool at its
+latest version on 2026-10-12, default settings, offline.
 
-**Real credentials from public repositories** ([Samsung CredData](https://github.com/Samsung/CredData),
-29,893 labelled lines, each checked alone without its file path, the way a prompt or a tool output arrives):
+**Real credentials from public repositories** ([Samsung CredData](https://github.com/Samsung/CredData), 29,893
+labelled lines, each checked alone without its file path, the way a prompt or a tool output arrives):
 
 | Tool | Precision | Recall | F1 |
 |---|---|---|---|
-| maisecrets 0.6.14 | **0.90** | 0.61 | **0.73** |
-| **Cloakroom 0.2** | 0.66 | **0.65** | 0.66 |
+| maisecrets | **0.90** | 0.61 | **0.73** |
+| **Cloakroom** | 0.66 | **0.65** | 0.66 |
+| claude-code-redact | 0.81 | 0.31 | 0.45 |
+| sensitive-canary (blocks the call instead of masking) | 0.59 | 0.27 | 0.37 |
+| redact-hook (default / aggressive) | 0.81 / 0.54 | 0.19 / 0.26 | 0.31 / 0.35 |
 
 Cloakroom catches more passwords, tokens, URL credentials and AWS key IDs; maisecrets catches far more generic keys
-(0.88 vs 0.36) and masks far fewer harmless look-alikes. On real-world code it is the better secret scanner.
+(0.88 vs 0.36) and masks far fewer harmless look-alikes.
 
-**Keys in the formats vendors really issue** (a new set written after 0.2.0: 15 key types, shapeless passwords,
-encoded emails; 77 values, 15 look-alikes):
+**Keys in the formats vendors really issue** (a new set written after Cloakroom 0.2.0: 15 key types, shapeless
+passwords, encoded emails; 77 values, 15 look-alikes):
 
-| Tool | Leaked | False alarms |
+| Tool | Leaked (77) | False alarms (15) |
 |---|---|---|
-| **Cloakroom 0.2** | **0 of 77** | 3 of 15 |
-| maisecrets 0.6.14 | 13 of 77 (passwords without a known shape, Twilio account IDs) | 1 of 15 |
+| **Cloakroom** | **0** | 3 |
+| maisecrets | 13 | 1 |
+| sensitive-canary | 14 | 3 |
+| redact-hook (default / aggressive) | 15 | 5 |
+| claude-code-redact (PII on / secrets only) | 17 | 2 / 1 |
 
 **Synthetic agent traffic** (five sets written by a different model: chat, logs, configs, CSVs, tickets; 1,575
-planted values, 200 safe samples). The first runs, with Cloakroom 0.1 and each tool as it was then:
+planted values, 200 safe samples). These sets have been seen by now, so this is not an honest score for Cloakroom;
+its first runs (version 0.1) leaked 0 / 4 with 60 false alarms.
 
-| Tool | Personal data (1,005) | Keys, passwords, cards, IDs (334) | False alarms (200 safe samples) |
+| Tool | Personal data (1,005) | Keys, passwords, cards, IDs (334) | False alarms (200) |
 |---|---|---|---|
-| **Cloakroom 0.1** | **0** | **4** | 60 |
+| **Cloakroom** | **1** | **2** | 23 |
 | sensitive-canary (blocks the call instead of masking) | 119 | 40 | 16 |
-| maisecrets (just after 0.6.9) | 557 | 97 | 21 |
+| maisecrets (`"regions": ["us", "uk", "in"]`; default 78 keys) | 550 | 67 | 6 |
 | claude-code-redact, PII on | 607 | 101 | 31 |
 | redact-hook | 817-822 | 143-157 | 35-40 |
 | claude-code-redact, secrets only | 992 | 179 | 2 |
 
-Rerun on 2026-10-12 (these sets had been seen by then, so not an honest score): Cloakroom 0.2 leaks 1 / 2 and masks
-23 of 200 safe samples; maisecrets 0.6.14 leaks 550 / 78, or 550 / 67 with `"regions": ["us", "uk", "in"]` (it
-loads only your own country's ID rules by default), and masks 5. Some of these tools only aim at secrets, so their
-personal-data column shows scope as much as quality. maisecrets' maintainers reproduced our numbers and pointed out
-where the old sets were unfair to them (keys in formats vendors don't issue); the key-format set above is the fix.
-
-False alarms are Cloakroom's weak spot: a false alarm costs you a placeholder where Claude needed the real text; a
-miss sends the value to the model. The maintainers of the compared tools were contacted before publishing.
+Some of these tools only aim at secrets, so their personal-data column shows scope as much as quality. maisecrets'
+maintainers reproduced our numbers and pointed out where the older sets were unfair to them (keys in formats vendors
+don't issue, and the `regions` setting); the key-format set and the setting above are the fix. The maintainers of
+the compared tools were contacted before publishing. A false alarm costs you a placeholder where Claude needed the
+real text; a miss sends the value to the model.
 
 **On public datasets we didn't write** (v0.2, test split run once, details in
 [bench/public/RESULTS.md](https://github.com/shanjeevrajendran/cloakroom/blob/main/bench/public/RESULTS.md)):
@@ -215,7 +223,7 @@ its false alarms), plus names and addresses Gretel leaves unlabelled.
 version). Everything else runs on 127.0.0.1.
 
 **How much slower is Claude?** Each tool call is checked by a small local service: about 20 to 70 ms on Apple
-Silicon (an M5 Max to an 8 GB M1 Air), 60 ms on an Apple M-series CPU, 400 ms on a 2-core cloud VM. The first run
+Silicon (an M5 Max to an 8 GB M1 Air), 60 ms on an Apple M-series CPU, about 300 ms on a 2-core cloud VM. The first run
 downloads the model once (about 1 GB). `cloakroom doctor` prints your numbers.
 
 **Will it mask things it shouldn't?** Sometimes, see above. Documented examples (Stripe test cards,

@@ -361,3 +361,12 @@ a tool output arrives; a row counts as caught when the labelled value no longer 
 By category, Cloakroom catches more passwords (0.97 vs 0.62), tokens (0.96 vs 0.66), URL credentials (1.00 vs 0.70)
 and AWS client IDs (0.99 vs 0.36); maisecrets is far better on generic keys (0.88 vs 0.36) and raises far fewer
 false alarms (981 vs 4,750 candidates masked). Generic keys are Cloakroom's main gap on real-world code.
+
+### All five tools on the new sets (2026-10-12, latest versions: sensitive-canary 4a40eeb, maisecrets v0.6.14)
+
+CredData (29,893 lines): maisecrets P 0.90 / R 0.61 / F1 0.73; Cloakroom 0.66 / 0.65 / 0.66; claude-code-redact
+(PII on or secrets only) 0.81 / 0.31 / 0.45; sensitive-canary 0.59 / 0.27 / 0.37; redact-hook default 0.81 / 0.19 /
+0.31, aggressive 0.54 / 0.26 / 0.35. Holdout v7 (77 values, 15 negatives), leaked / false alarms: Cloakroom 0 / 3,
+maisecrets 13 / 1, sensitive-canary 14 / 3, redact-hook 15 / 5, claude-code-redact 17 / 2 (PII on) and 17 / 1
+(secrets only). Holdouts v2-v6 rerun: every tool except Cloakroom and maisecrets scores exactly as on its first
+run, the updated sensitive-canary included. Results in `bench/rerun-2026-10-12/`.

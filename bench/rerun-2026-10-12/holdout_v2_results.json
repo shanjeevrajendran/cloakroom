@@ -1,5 +1,103 @@
 [
   {
+    "adapter": "cloakroom full",
+    "items": 80,
+    "items_leaked": 0,
+    "values_total": 219,
+    "values_leaked": 0,
+    "blocked": 0,
+    "negatives": 40,
+    "false_alarms": 2,
+    "by_category": {
+      "chat-transcript": {
+        "items": 6,
+        "leaked": 0
+      },
+      "sql-dump": {
+        "items": 6,
+        "leaked": 0
+      },
+      "negative": {
+        "items": 40,
+        "leaked": 2
+      },
+      "docker-compose": {
+        "items": 4,
+        "leaked": 0
+      },
+      "invoice": {
+        "items": 4,
+        "leaked": 0
+      },
+      "crash-report": {
+        "items": 4,
+        "leaked": 0
+      },
+      "http-log": {
+        "items": 6,
+        "leaked": 0
+      },
+      "aws-credentials": {
+        "items": 3,
+        "leaked": 0
+      },
+      "k8s-secret": {
+        "items": 4,
+        "leaked": 0
+      },
+      "jupyter": {
+        "items": 4,
+        "leaked": 0
+      },
+      "csv": {
+        "items": 6,
+        "leaked": 0
+      },
+      "npmrc": {
+        "items": 2,
+        "leaked": 0
+      },
+      "postman": {
+        "items": 4,
+        "leaked": 0
+      },
+      "netrc": {
+        "items": 1,
+        "leaked": 0
+      },
+      "pypirc": {
+        "items": 2,
+        "leaked": 0
+      },
+      "slack-export": {
+        "items": 5,
+        "leaked": 0
+      },
+      "terraform-state": {
+        "items": 4,
+        "leaked": 0
+      },
+      "git-config": {
+        "items": 3,
+        "leaked": 0
+      },
+      "resume": {
+        "items": 2,
+        "leaked": 0
+      },
+      "email": {
+        "items": 8,
+        "leaked": 0
+      },
+      "medical-intake": {
+        "items": 2,
+        "leaked": 0
+      }
+    },
+    "leaks": [],
+    "ms_per_item": 68.3
+  },
+  {
     "adapter": "maisecrets",
     "items": 80,
     "items_leaked": 55,
@@ -937,34 +1035,34 @@
     "ms_per_item": 0.4
   },
   {
-    "adapter": "cloakroom full",
+    "adapter": "sensitive-canary (blocks)",
     "items": 80,
-    "items_leaked": 0,
+    "items_leaked": 23,
     "values_total": 219,
-    "values_leaked": 0,
-    "blocked": 0,
+    "values_leaked": 66,
+    "blocked": 57,
     "negatives": 40,
-    "false_alarms": 2,
+    "false_alarms": 4,
     "by_category": {
       "chat-transcript": {
         "items": 6,
-        "leaked": 0
+        "leaked": 4
       },
       "sql-dump": {
         "items": 6,
-        "leaked": 0
+        "leaked": 2
       },
       "negative": {
         "items": 40,
-        "leaked": 2
+        "leaked": 4
       },
       "docker-compose": {
         "items": 4,
-        "leaked": 0
+        "leaked": 1
       },
       "invoice": {
         "items": 4,
-        "leaked": 0
+        "leaked": 3
       },
       "crash-report": {
         "items": 4,
@@ -972,7 +1070,7 @@
       },
       "http-log": {
         "items": 6,
-        "leaked": 0
+        "leaked": 3
       },
       "aws-credentials": {
         "items": 3,
@@ -984,11 +1082,11 @@
       },
       "jupyter": {
         "items": 4,
-        "leaked": 0
+        "leaked": 1
       },
       "csv": {
         "items": 6,
-        "leaked": 0
+        "leaked": 5
       },
       "npmrc": {
         "items": 2,
@@ -1000,7 +1098,7 @@
       },
       "netrc": {
         "items": 1,
-        "leaked": 0
+        "leaked": 1
       },
       "pypirc": {
         "items": 2,
@@ -1008,7 +1106,7 @@
       },
       "slack-export": {
         "items": 5,
-        "leaked": 0
+        "leaked": 2
       },
       "terraform-state": {
         "items": 4,
@@ -1028,10 +1126,2418 @@
       },
       "medical-intake": {
         "items": 2,
-        "leaked": 0
+        "leaked": 1
       }
     },
-    "leaks": [],
-    "ms_per_item": 57.1
+    "leaks": [
+      {
+        "id": "h2-001",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h2-005",
+        "planted_idx": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h2-007",
+        "planted_idx": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "h2-015",
+        "planted_idx": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "h2-019",
+        "planted_idx": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "h2-024",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      {
+        "id": "h2-025",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h2-027",
+        "planted_idx": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "h2-031",
+        "planted_idx": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h2-033",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ]
+      },
+      {
+        "id": "h2-034",
+        "planted_idx": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h2-036",
+        "planted_idx": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h2-040",
+        "planted_idx": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "h2-043",
+        "planted_idx": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "h2-056",
+        "planted_idx": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "h2-069",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h2-076",
+        "planted_idx": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "h2-086",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h2-093",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h2-102",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      {
+        "id": "h2-106",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h2-114",
+        "planted_idx": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "h2-117",
+        "planted_idx": [
+          0,
+          1
+        ]
+      }
+    ],
+    "ms_per_item": 0.5
+  },
+  {
+    "adapter": "claude-code-redact (+pii)",
+    "items": 80,
+    "items_leaked": 64,
+    "values_total": 219,
+    "values_leaked": 115,
+    "blocked": 0,
+    "negatives": 40,
+    "false_alarms": 10,
+    "by_category": {
+      "chat-transcript": {
+        "items": 6,
+        "leaked": 5
+      },
+      "sql-dump": {
+        "items": 6,
+        "leaked": 5
+      },
+      "negative": {
+        "items": 40,
+        "leaked": 10
+      },
+      "docker-compose": {
+        "items": 4,
+        "leaked": 2
+      },
+      "invoice": {
+        "items": 4,
+        "leaked": 4
+      },
+      "crash-report": {
+        "items": 4,
+        "leaked": 4
+      },
+      "http-log": {
+        "items": 6,
+        "leaked": 6
+      },
+      "aws-credentials": {
+        "items": 3,
+        "leaked": 3
+      },
+      "k8s-secret": {
+        "items": 4,
+        "leaked": 3
+      },
+      "jupyter": {
+        "items": 4,
+        "leaked": 2
+      },
+      "csv": {
+        "items": 6,
+        "leaked": 6
+      },
+      "npmrc": {
+        "items": 2,
+        "leaked": 0
+      },
+      "postman": {
+        "items": 4,
+        "leaked": 1
+      },
+      "netrc": {
+        "items": 1,
+        "leaked": 1
+      },
+      "pypirc": {
+        "items": 2,
+        "leaked": 1
+      },
+      "slack-export": {
+        "items": 5,
+        "leaked": 3
+      },
+      "terraform-state": {
+        "items": 4,
+        "leaked": 3
+      },
+      "git-config": {
+        "items": 3,
+        "leaked": 3
+      },
+      "resume": {
+        "items": 2,
+        "leaked": 2
+      },
+      "email": {
+        "items": 8,
+        "leaked": 8
+      },
+      "medical-intake": {
+        "items": 2,
+        "leaked": 2
+      }
+    },
+    "leaks": [
+      {
+        "id": "h2-001",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h2-004",
+        "planted_idx": [
+          1
+        ]
+      },
+      {
+        "id": "h2-005",
+        "planted_idx": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h2-007",
+        "planted_idx": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "h2-008",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h2-009",
+        "planted_idx": [
+          1
+        ]
+      },
+      {
+        "id": "h2-010",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h2-012",
+        "planted_idx": [
+          1
+        ]
+      },
+      {
+        "id": "h2-015",
+        "planted_idx": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "h2-019",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h2-024",
+        "planted_idx": [
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      {
+        "id": "h2-027",
+        "planted_idx": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "h2-030",
+        "planted_idx": [
+          2
+        ]
+      },
+      {
+        "id": "h2-031",
+        "planted_idx": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "h2-032",
+        "planted_idx": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h2-033",
+        "planted_idx": [
+          2,
+          6,
+          7
+        ]
+      },
+      {
+        "id": "h2-034",
+        "planted_idx": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h2-036",
+        "planted_idx": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "h2-037",
+        "planted_idx": [
+          1
+        ]
+      },
+      {
+        "id": "h2-038",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h2-040",
+        "planted_idx": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "h2-041",
+        "planted_idx": [
+          1,
+          3
+        ]
+      },
+      {
+        "id": "h2-042",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h2-043",
+        "planted_idx": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "h2-044",
+        "planted_idx": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h2-047",
+        "planted_idx": [
+          0,
+          3,
+          4,
+          7,
+          8,
+          11
+        ]
+      },
+      {
+        "id": "h2-050",
+        "planted_idx": [
+          1
+        ]
+      },
+      {
+        "id": "h2-051",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h2-053",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h2-054",
+        "planted_idx": [
+          0,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h2-056",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h2-057",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h2-060",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h2-061",
+        "planted_idx": [
+          4,
+          5
+        ]
+      },
+      {
+        "id": "h2-062",
+        "planted_idx": [
+          2
+        ]
+      },
+      {
+        "id": "h2-066",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h2-069",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h2-073",
+        "planted_idx": [
+          1
+        ]
+      },
+      {
+        "id": "h2-074",
+        "planted_idx": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h2-075",
+        "planted_idx": [
+          0,
+          2
+        ]
+      },
+      {
+        "id": "h2-076",
+        "planted_idx": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "h2-077",
+        "planted_idx": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h2-078",
+        "planted_idx": [
+          1,
+          3
+        ]
+      },
+      {
+        "id": "h2-080",
+        "planted_idx": [
+          0,
+          1,
+          3,
+          6
+        ]
+      },
+      {
+        "id": "h2-081",
+        "planted_idx": [
+          0,
+          2,
+          4
+        ]
+      },
+      {
+        "id": "h2-084",
+        "planted_idx": [
+          2
+        ]
+      },
+      {
+        "id": "h2-086",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h2-087",
+        "planted_idx": [
+          1
+        ]
+      },
+      {
+        "id": "h2-088",
+        "planted_idx": [
+          0,
+          3
+        ]
+      },
+      {
+        "id": "h2-089",
+        "planted_idx": [
+          1
+        ]
+      },
+      {
+        "id": "h2-091",
+        "planted_idx": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h2-093",
+        "planted_idx": [
+          0,
+          1,
+          3
+        ]
+      },
+      {
+        "id": "h2-094",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h2-097",
+        "planted_idx": [
+          1
+        ]
+      },
+      {
+        "id": "h2-099",
+        "planted_idx": [
+          1
+        ]
+      },
+      {
+        "id": "h2-102",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      {
+        "id": "h2-103",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h2-104",
+        "planted_idx": [
+          1
+        ]
+      },
+      {
+        "id": "h2-106",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h2-111",
+        "planted_idx": [
+          1
+        ]
+      },
+      {
+        "id": "h2-112",
+        "planted_idx": [
+          1
+        ]
+      },
+      {
+        "id": "h2-114",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h2-116",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h2-117",
+        "planted_idx": [
+          0,
+          1
+        ]
+      }
+    ],
+    "ms_per_item": 0.1
+  },
+  {
+    "adapter": "claude-code-redact (secrets)",
+    "items": 80,
+    "items_leaked": 65,
+    "values_total": 219,
+    "values_leaked": 172,
+    "blocked": 0,
+    "negatives": 40,
+    "false_alarms": 1,
+    "by_category": {
+      "chat-transcript": {
+        "items": 6,
+        "leaked": 5
+      },
+      "sql-dump": {
+        "items": 6,
+        "leaked": 5
+      },
+      "negative": {
+        "items": 40,
+        "leaked": 1
+      },
+      "docker-compose": {
+        "items": 4,
+        "leaked": 2
+      },
+      "invoice": {
+        "items": 4,
+        "leaked": 4
+      },
+      "crash-report": {
+        "items": 4,
+        "leaked": 4
+      },
+      "http-log": {
+        "items": 6,
+        "leaked": 6
+      },
+      "aws-credentials": {
+        "items": 3,
+        "leaked": 3
+      },
+      "k8s-secret": {
+        "items": 4,
+        "leaked": 4
+      },
+      "jupyter": {
+        "items": 4,
+        "leaked": 2
+      },
+      "csv": {
+        "items": 6,
+        "leaked": 6
+      },
+      "npmrc": {
+        "items": 2,
+        "leaked": 0
+      },
+      "postman": {
+        "items": 4,
+        "leaked": 1
+      },
+      "netrc": {
+        "items": 1,
+        "leaked": 1
+      },
+      "pypirc": {
+        "items": 2,
+        "leaked": 1
+      },
+      "slack-export": {
+        "items": 5,
+        "leaked": 3
+      },
+      "terraform-state": {
+        "items": 4,
+        "leaked": 3
+      },
+      "git-config": {
+        "items": 3,
+        "leaked": 3
+      },
+      "resume": {
+        "items": 2,
+        "leaked": 2
+      },
+      "email": {
+        "items": 8,
+        "leaked": 8
+      },
+      "medical-intake": {
+        "items": 2,
+        "leaked": 2
+      }
+    },
+    "leaks": [
+      {
+        "id": "h2-001",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h2-004",
+        "planted_idx": [
+          1
+        ]
+      },
+      {
+        "id": "h2-005",
+        "planted_idx": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h2-007",
+        "planted_idx": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "h2-008",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h2-009",
+        "planted_idx": [
+          1
+        ]
+      },
+      {
+        "id": "h2-010",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h2-012",
+        "planted_idx": [
+          1
+        ]
+      },
+      {
+        "id": "h2-014",
+        "planted_idx": [
+          1
+        ]
+      },
+      {
+        "id": "h2-015",
+        "planted_idx": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "h2-019",
+        "planted_idx": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "h2-024",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      {
+        "id": "h2-027",
+        "planted_idx": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "h2-030",
+        "planted_idx": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h2-031",
+        "planted_idx": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h2-032",
+        "planted_idx": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h2-033",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ]
+      },
+      {
+        "id": "h2-034",
+        "planted_idx": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h2-036",
+        "planted_idx": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h2-037",
+        "planted_idx": [
+          1
+        ]
+      },
+      {
+        "id": "h2-038",
+        "planted_idx": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "h2-040",
+        "planted_idx": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "h2-041",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h2-042",
+        "planted_idx": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h2-043",
+        "planted_idx": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "h2-044",
+        "planted_idx": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h2-047",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11
+        ]
+      },
+      {
+        "id": "h2-050",
+        "planted_idx": [
+          1
+        ]
+      },
+      {
+        "id": "h2-051",
+        "planted_idx": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "h2-053",
+        "planted_idx": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "h2-054",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h2-056",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h2-057",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h2-060",
+        "planted_idx": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h2-061",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      {
+        "id": "h2-062",
+        "planted_idx": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h2-066",
+        "planted_idx": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "h2-069",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h2-073",
+        "planted_idx": [
+          1
+        ]
+      },
+      {
+        "id": "h2-074",
+        "planted_idx": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h2-075",
+        "planted_idx": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h2-076",
+        "planted_idx": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "h2-077",
+        "planted_idx": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h2-078",
+        "planted_idx": [
+          1,
+          3
+        ]
+      },
+      {
+        "id": "h2-080",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ]
+      },
+      {
+        "id": "h2-081",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      {
+        "id": "h2-084",
+        "planted_idx": [
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h2-086",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h2-087",
+        "planted_idx": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "h2-088",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h2-089",
+        "planted_idx": [
+          1
+        ]
+      },
+      {
+        "id": "h2-091",
+        "planted_idx": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h2-093",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h2-094",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h2-097",
+        "planted_idx": [
+          1
+        ]
+      },
+      {
+        "id": "h2-099",
+        "planted_idx": [
+          1
+        ]
+      },
+      {
+        "id": "h2-102",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      {
+        "id": "h2-103",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h2-104",
+        "planted_idx": [
+          1
+        ]
+      },
+      {
+        "id": "h2-106",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h2-111",
+        "planted_idx": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h2-112",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h2-114",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h2-116",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h2-117",
+        "planted_idx": [
+          0,
+          1
+        ]
+      }
+    ],
+    "ms_per_item": 0.1
+  },
+  {
+    "adapter": "redact-hook (default)",
+    "items": 80,
+    "items_leaked": 63,
+    "values_total": 219,
+    "values_leaked": 141,
+    "blocked": 0,
+    "negatives": 40,
+    "false_alarms": 8,
+    "by_category": {
+      "chat-transcript": {
+        "items": 6,
+        "leaked": 5
+      },
+      "sql-dump": {
+        "items": 6,
+        "leaked": 5
+      },
+      "negative": {
+        "items": 40,
+        "leaked": 8
+      },
+      "docker-compose": {
+        "items": 4,
+        "leaked": 1
+      },
+      "invoice": {
+        "items": 4,
+        "leaked": 4
+      },
+      "crash-report": {
+        "items": 4,
+        "leaked": 4
+      },
+      "http-log": {
+        "items": 6,
+        "leaked": 6
+      },
+      "aws-credentials": {
+        "items": 3,
+        "leaked": 3
+      },
+      "k8s-secret": {
+        "items": 4,
+        "leaked": 4
+      },
+      "jupyter": {
+        "items": 4,
+        "leaked": 2
+      },
+      "csv": {
+        "items": 6,
+        "leaked": 6
+      },
+      "npmrc": {
+        "items": 2,
+        "leaked": 0
+      },
+      "postman": {
+        "items": 4,
+        "leaked": 1
+      },
+      "netrc": {
+        "items": 1,
+        "leaked": 0
+      },
+      "pypirc": {
+        "items": 2,
+        "leaked": 1
+      },
+      "slack-export": {
+        "items": 5,
+        "leaked": 3
+      },
+      "terraform-state": {
+        "items": 4,
+        "leaked": 3
+      },
+      "git-config": {
+        "items": 3,
+        "leaked": 3
+      },
+      "resume": {
+        "items": 2,
+        "leaked": 2
+      },
+      "email": {
+        "items": 8,
+        "leaked": 8
+      },
+      "medical-intake": {
+        "items": 2,
+        "leaked": 2
+      }
+    },
+    "leaks": [
+      {
+        "id": "h2-001",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h2-004",
+        "planted_idx": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "h2-005",
+        "planted_idx": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h2-007",
+        "planted_idx": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "h2-008",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h2-010",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h2-012",
+        "planted_idx": [
+          1
+        ]
+      },
+      {
+        "id": "h2-014",
+        "planted_idx": [
+          1
+        ]
+      },
+      {
+        "id": "h2-015",
+        "planted_idx": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "h2-019",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h2-024",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h2-025",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h2-027",
+        "planted_idx": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "h2-030",
+        "planted_idx": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h2-031",
+        "planted_idx": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "h2-032",
+        "planted_idx": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h2-033",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          6,
+          7
+        ]
+      },
+      {
+        "id": "h2-034",
+        "planted_idx": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "h2-036",
+        "planted_idx": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "h2-037",
+        "planted_idx": [
+          1
+        ]
+      },
+      {
+        "id": "h2-038",
+        "planted_idx": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "h2-040",
+        "planted_idx": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "h2-041",
+        "planted_idx": [
+          1,
+          3
+        ]
+      },
+      {
+        "id": "h2-042",
+        "planted_idx": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "h2-044",
+        "planted_idx": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h2-047",
+        "planted_idx": [
+          0,
+          1,
+          3,
+          4,
+          5,
+          7,
+          8,
+          9,
+          11
+        ]
+      },
+      {
+        "id": "h2-050",
+        "planted_idx": [
+          1
+        ]
+      },
+      {
+        "id": "h2-051",
+        "planted_idx": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "h2-053",
+        "planted_idx": [
+          1
+        ]
+      },
+      {
+        "id": "h2-054",
+        "planted_idx": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h2-056",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h2-057",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h2-060",
+        "planted_idx": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "h2-061",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      {
+        "id": "h2-062",
+        "planted_idx": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h2-066",
+        "planted_idx": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "h2-069",
+        "planted_idx": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h2-073",
+        "planted_idx": [
+          1
+        ]
+      },
+      {
+        "id": "h2-074",
+        "planted_idx": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h2-075",
+        "planted_idx": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h2-076",
+        "planted_idx": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "h2-077",
+        "planted_idx": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h2-078",
+        "planted_idx": [
+          1,
+          3
+        ]
+      },
+      {
+        "id": "h2-080",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          5,
+          6
+        ]
+      },
+      {
+        "id": "h2-081",
+        "planted_idx": [
+          0,
+          1,
+          4
+        ]
+      },
+      {
+        "id": "h2-084",
+        "planted_idx": [
+          0,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h2-086",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h2-087",
+        "planted_idx": [
+          1
+        ]
+      },
+      {
+        "id": "h2-088",
+        "planted_idx": [
+          0,
+          1,
+          3
+        ]
+      },
+      {
+        "id": "h2-089",
+        "planted_idx": [
+          1
+        ]
+      },
+      {
+        "id": "h2-091",
+        "planted_idx": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "h2-093",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h2-094",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h2-097",
+        "planted_idx": [
+          1
+        ]
+      },
+      {
+        "id": "h2-099",
+        "planted_idx": [
+          1
+        ]
+      },
+      {
+        "id": "h2-102",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          4
+        ]
+      },
+      {
+        "id": "h2-103",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h2-104",
+        "planted_idx": [
+          1
+        ]
+      },
+      {
+        "id": "h2-111",
+        "planted_idx": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h2-112",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h2-114",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h2-116",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h2-117",
+        "planted_idx": [
+          0
+        ]
+      }
+    ],
+    "ms_per_item": 0.0
+  },
+  {
+    "adapter": "redact-hook (aggressive)",
+    "items": 80,
+    "items_leaked": 61,
+    "values_total": 219,
+    "values_leaked": 137,
+    "blocked": 0,
+    "negatives": 40,
+    "false_alarms": 8,
+    "by_category": {
+      "chat-transcript": {
+        "items": 6,
+        "leaked": 4
+      },
+      "sql-dump": {
+        "items": 6,
+        "leaked": 5
+      },
+      "negative": {
+        "items": 40,
+        "leaked": 8
+      },
+      "docker-compose": {
+        "items": 4,
+        "leaked": 1
+      },
+      "invoice": {
+        "items": 4,
+        "leaked": 4
+      },
+      "crash-report": {
+        "items": 4,
+        "leaked": 4
+      },
+      "http-log": {
+        "items": 6,
+        "leaked": 6
+      },
+      "aws-credentials": {
+        "items": 3,
+        "leaked": 3
+      },
+      "k8s-secret": {
+        "items": 4,
+        "leaked": 3
+      },
+      "jupyter": {
+        "items": 4,
+        "leaked": 2
+      },
+      "csv": {
+        "items": 6,
+        "leaked": 6
+      },
+      "npmrc": {
+        "items": 2,
+        "leaked": 0
+      },
+      "postman": {
+        "items": 4,
+        "leaked": 1
+      },
+      "netrc": {
+        "items": 1,
+        "leaked": 0
+      },
+      "pypirc": {
+        "items": 2,
+        "leaked": 1
+      },
+      "slack-export": {
+        "items": 5,
+        "leaked": 3
+      },
+      "terraform-state": {
+        "items": 4,
+        "leaked": 3
+      },
+      "git-config": {
+        "items": 3,
+        "leaked": 3
+      },
+      "resume": {
+        "items": 2,
+        "leaked": 2
+      },
+      "email": {
+        "items": 8,
+        "leaked": 8
+      },
+      "medical-intake": {
+        "items": 2,
+        "leaked": 2
+      }
+    },
+    "leaks": [
+      {
+        "id": "h2-001",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h2-004",
+        "planted_idx": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "h2-005",
+        "planted_idx": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h2-007",
+        "planted_idx": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "h2-008",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h2-010",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h2-012",
+        "planted_idx": [
+          1
+        ]
+      },
+      {
+        "id": "h2-014",
+        "planted_idx": [
+          1
+        ]
+      },
+      {
+        "id": "h2-015",
+        "planted_idx": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "h2-019",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h2-024",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h2-027",
+        "planted_idx": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "h2-030",
+        "planted_idx": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h2-031",
+        "planted_idx": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "h2-032",
+        "planted_idx": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h2-033",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          6,
+          7
+        ]
+      },
+      {
+        "id": "h2-034",
+        "planted_idx": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "h2-036",
+        "planted_idx": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "h2-037",
+        "planted_idx": [
+          1
+        ]
+      },
+      {
+        "id": "h2-038",
+        "planted_idx": [
+          1
+        ]
+      },
+      {
+        "id": "h2-040",
+        "planted_idx": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "h2-041",
+        "planted_idx": [
+          1,
+          3
+        ]
+      },
+      {
+        "id": "h2-042",
+        "planted_idx": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "h2-044",
+        "planted_idx": [
+          2
+        ]
+      },
+      {
+        "id": "h2-047",
+        "planted_idx": [
+          0,
+          1,
+          3,
+          4,
+          5,
+          7,
+          8,
+          9,
+          11
+        ]
+      },
+      {
+        "id": "h2-050",
+        "planted_idx": [
+          1
+        ]
+      },
+      {
+        "id": "h2-051",
+        "planted_idx": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "h2-053",
+        "planted_idx": [
+          1
+        ]
+      },
+      {
+        "id": "h2-054",
+        "planted_idx": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h2-056",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h2-057",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h2-060",
+        "planted_idx": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "h2-061",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      {
+        "id": "h2-062",
+        "planted_idx": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h2-066",
+        "planted_idx": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "h2-069",
+        "planted_idx": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h2-073",
+        "planted_idx": [
+          1
+        ]
+      },
+      {
+        "id": "h2-074",
+        "planted_idx": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h2-075",
+        "planted_idx": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h2-076",
+        "planted_idx": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "h2-077",
+        "planted_idx": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h2-078",
+        "planted_idx": [
+          1,
+          3
+        ]
+      },
+      {
+        "id": "h2-080",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          5,
+          6
+        ]
+      },
+      {
+        "id": "h2-081",
+        "planted_idx": [
+          0,
+          1,
+          4
+        ]
+      },
+      {
+        "id": "h2-084",
+        "planted_idx": [
+          0,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h2-086",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h2-087",
+        "planted_idx": [
+          1
+        ]
+      },
+      {
+        "id": "h2-088",
+        "planted_idx": [
+          0,
+          1,
+          3
+        ]
+      },
+      {
+        "id": "h2-091",
+        "planted_idx": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "h2-093",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h2-094",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h2-097",
+        "planted_idx": [
+          1
+        ]
+      },
+      {
+        "id": "h2-099",
+        "planted_idx": [
+          1
+        ]
+      },
+      {
+        "id": "h2-102",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          4
+        ]
+      },
+      {
+        "id": "h2-103",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h2-104",
+        "planted_idx": [
+          1
+        ]
+      },
+      {
+        "id": "h2-111",
+        "planted_idx": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h2-112",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h2-114",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h2-116",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h2-117",
+        "planted_idx": [
+          0
+        ]
+      }
+    ],
+    "ms_per_item": 0.1
   }
 ]
