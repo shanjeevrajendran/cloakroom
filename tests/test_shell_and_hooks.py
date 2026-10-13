@@ -320,3 +320,26 @@ def test_plugin_installers_pin_this_release():
         text = (root / "plugin" / "scripts" / script).read_text()
         assert f"cloakroom=={version}" in text and f"cloakroom[model,torch]=={version}" in text, script
     assert f'"version": "{version}"' in (root / "plugin" / ".claude-plugin" / "plugin.json").read_text()
+
+
+def test_hooks_only_launch_fixed_scripts():
+    """The Claude plugin directory must be able to read which program each hook runs: hooks.json holds no lookup
+    logic, only launchers for scripts/hook.sh and hook.ps1, and those files are what scripts/gen_hooks.py writes."""
+    import pathlib, subprocess
+    root = pathlib.Path(__file__).resolve().parents[1]
+    hooks = json.loads((root / "plugin" / "hooks" / "hooks.json").read_text())["hooks"]
+    assert set(hooks) == {"SessionStart", "UserPromptSubmit", "PreToolUse", "PostToolUse"}
+    for event, entries in hooks.items():
+        cmd = entries[0]["hooks"][0]["command"]
+        for banned in ("command -v", "uv tool dir", "uv ", "uvx", "pipx", "$CR", "Get-Command"):
+            assert banned not in cmd, (event, banned)
+        assert '"${CLAUDE_PLUGIN_ROOT}/scripts/hook.sh"' in cmd and '"${CLAUDE_PLUGIN_ROOT}/scripts/hook.ps1"' in cmd
+    for script in ("hook.sh", "hook.ps1"):
+        assert (root / "plugin" / "scripts" / script).is_file(), script
+    gen = subprocess.run([sys.executable, str(root / "scripts" / "gen_hooks.py"), "--check"],
+                         capture_output=True, text=True)
+    assert gen.returncode == 0, gen.stderr
+    if shutil.which("git") and (root / ".git").exists():
+        mode = subprocess.run(["git", "-C", str(root), "ls-files", "-s", "plugin/scripts/hook.sh"],
+                              capture_output=True, text=True).stdout.split()
+        assert mode and mode[0] == "100755", mode

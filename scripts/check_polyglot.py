@@ -1,7 +1,9 @@
 """CI check: every hook command works in each shell Claude Code may use, with and without cloakroom on PATH.
 
 With cloakroom: a post hook masks a planted key. Without: pre denies, prompt passes with a warning. Without
-cloakroom but with uv (a stub here): the first-start installer is launched.
+cloakroom but with uv (a stub here): the first-start installer is launched. Like Claude Code, it substitutes
+${CLAUDE_PLUGIN_ROOT} into each command as text (forward slashes) and also exports it. Every run gets its own
+CLOAKROOM_HOME and vault key, so a machine's real ~/.cloakroom is never touched.
     python scripts/check_polyglot.py
 """
 import json
@@ -10,14 +12,19 @@ import shutil
 import subprocess
 import sys
 
-hooks = json.load(open(os.path.join(os.path.dirname(__file__), "..", "plugin", "hooks", "hooks.json")))["hooks"]
-cmd = {ev: hooks[name][0]["hooks"][0]["command"] for ev, name in
+import base64
+import tempfile
+
+root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "plugin")).replace("\\", "/")
+hooks = json.load(open(os.path.join(root, "hooks", "hooks.json")))["hooks"]
+cmd = {ev: hooks[name][0]["hooks"][0]["command"].replace("${CLAUDE_PLUGIN_ROOT}", root) for ev, name in
        [("pre", "PreToolUse"), ("post", "PostToolUse"), ("prompt", "UserPromptSubmit"), ("start", "SessionStart")]}
 # Claude Code on Windows uses Git Bash, not the WSL launcher in System32 that `bash` may resolve to.
 git_bash = r"C:\Program Files\Git\bin\bash.exe"
 bash = git_bash if os.name == "nt" and os.path.exists(git_bash) else "bash"
-shells = [s for s in ([bash, "-c"], ["powershell", "-NoProfile", "-Command"], ["pwsh", "-NoProfile", "-Command"])
-          if shutil.which(s[0]) or os.path.exists(s[0])]
+# Claude Code runs shell-form hooks with `sh -c` on macOS and Linux, Git Bash on Windows, else PowerShell
+shells = [s for s in ([bash, "-c"], ["sh", "-c"] if os.name != "nt" else [""], ["powershell", "-NoProfile", "-Command"],
+                      ["pwsh", "-NoProfile", "-Command"]) if s[0] and (shutil.which(s[0]) or os.path.exists(s[0]))]
 # also hide uv, so the "without cloakroom" runs can never start a real install
 names = ("cloakroom", "cloakroom.exe", "cloakroom.cmd", "uv", "uv.exe")
 no_cloakroom_path = os.pathsep.join(p for p in os.environ["PATH"].split(os.pathsep)
@@ -26,15 +33,21 @@ key = "ghp_" + "R8kL2mQ9vX4nT7bW1cY5zH3jF6dS0aP2eG8u"
 failures = []
 
 
-import tempfile
 # "without cloakroom" runs also get an empty home: the hook looks in ~/.local/bin and ~/.cloakroom/venv too
 empty_home = tempfile.mkdtemp()
+own_home = tempfile.mkdtemp()
+vault_key = base64.b64encode(os.urandom(32)).decode()  # one key for own_home's vault across all runs
+os.environ.update(CLAUDE_PLUGIN_ROOT=root)
 
 
-def run(shell, event, payload, path):
-    env = dict(os.environ, PATH=path, CLOAKROOM_MODE="rules", PYTHONUTF8="1")
+def run(shell, event, payload, path, home=empty_home, installer="none"):
+    env = dict(os.environ, PATH=path, CLOAKROOM_MODE="rules", PYTHONUTF8="1", CLOAKROOM_HOME=own_home,
+               CLOAKROOM_VAULT_KEY=vault_key)
     if path != os.environ["PATH"]:
-        env.update(HOME=empty_home, USERPROFILE=empty_home, CLOAKROOM_HOME=os.path.join(empty_home, ".cloakroom"))
+        # an installer started here never downloads anything: CLOAKROOM_INSTALLER=none fails at once (the stub
+        # case below passes installer="" so bootstrap picks the stub uv)
+        env.update(HOME=home, USERPROFILE=home, CLOAKROOM_HOME=os.path.join(home, ".cloakroom"),
+                   CLOAKROOM_INSTALLER=installer)
     p = subprocess.run(shell + [cmd[event]], input=json.dumps(payload), capture_output=True, text=True,
                        encoding="utf-8", env=env, timeout=120)
     try:
@@ -66,9 +79,7 @@ with open(os.path.join(stub, "uv"), "w") as f:
 os.chmod(os.path.join(stub, "uv"), 0o755)
 if os.name != "nt":
     env_path = stub + os.pathsep + no_cloakroom_path
-    root = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "plugin")
-    os.environ.update(CLAUDE_PLUGIN_ROOT=root, CLOAKROOM_HOME=os.path.join(stub, "home"))
-    out = run([bash, "-c"], "start", {"session_id": "ci"}, env_path)
+    out = run([bash, "-c"], "start", {"session_id": "ci"}, env_path, home=tempfile.mkdtemp(), installer="")
     import time
     for _ in range(40):
         if os.path.exists(mark):

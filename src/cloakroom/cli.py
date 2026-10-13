@@ -14,7 +14,7 @@ import json
 import sys
 import urllib.request
 
-from . import config, engine
+from . import __version__, config, engine
 
 
 def _read(path: str) -> str:
@@ -33,6 +33,7 @@ def _utf8_stdio():
 def main(argv=None):
     _utf8_stdio()
     p = argparse.ArgumentParser(prog="cloakroom", description="Agents check their secrets at the door.")
+    p.add_argument("--version", action="version", version=f"cloakroom {__version__}")
     sub = p.add_subparsers(dest="cmd", required=True)
     for name in ("check", "mask", "explain"):
         s = sub.add_parser(name)

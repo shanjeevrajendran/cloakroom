@@ -1,5 +1,12 @@
 # First-start installer for Windows; same stages and installer order as bootstrap.sh (see there):
 # uv, pipx, else a private virtualenv in %USERPROFILE%\.cloakroom\venv (Python 3.10+ via the py launcher or python).
+# bootstrap.ps1 -Check only says whether an installer exists (exit 0) and installs nothing.
+param([switch]$Check)
+if ($Check) {
+  $can = (Get-Command uv -ErrorAction SilentlyContinue) -or (Get-Command pipx -ErrorAction SilentlyContinue) -or
+    (Get-Command py -ErrorAction SilentlyContinue) -or (Get-Command python -ErrorAction SilentlyContinue)
+  if ($can) { exit 0 } else { exit 1 }
+}
 $ErrorActionPreference = "Continue"
 $H = if ($env:CLOAKROOM_HOME) { $env:CLOAKROOM_HOME } else { Join-Path $env:USERPROFILE ".cloakroom" }
 New-Item -ItemType Directory -Force $H | Out-Null
@@ -57,8 +64,8 @@ function Find-Cloakroom {
 }
 
 try {
-  $Rules = if ($env:CLOAKROOM_SPEC_RULES) { $env:CLOAKROOM_SPEC_RULES } else { "cloakroom==0.2.2" }
-  $Full = if ($env:CLOAKROOM_SPEC_FULL) { $env:CLOAKROOM_SPEC_FULL } else { "cloakroom[model,torch]==0.2.2" }
+  $Rules = if ($env:CLOAKROOM_SPEC_RULES) { $env:CLOAKROOM_SPEC_RULES } else { "cloakroom==0.2.3" }
+  $Full = if ($env:CLOAKROOM_SPEC_FULL) { $env:CLOAKROOM_SPEC_FULL } else { "cloakroom[model,torch]==0.2.3" }
   "$(Get-Date -Format s) installer: $Who" | Add-Content $Log
   if ($Who -eq "none") {
     Set-Content $State "failed"

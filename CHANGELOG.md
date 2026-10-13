@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.3 (2026-10-12)
+- The plugin's hooks now run fixed scripts inside the plugin (`scripts/hook.sh`, `scripts/hook.ps1`) instead of long
+  inline commands, so the Claude plugin directory can read what each hook runs. No behaviour change: the same
+  lookup, the same messages when Cloakroom isn't installed yet, the same first-start install and 10-minute retry.
+  The hooks no longer ask uv for its tool folder; they look in `~/.local/bin`, where uv and pipx put the program
+  by default (a custom `UV_TOOL_BIN_DIR` needs `cloakroom` on your PATH).
+- `cloakroom --version` prints the installed version.
+
 ## 0.2.2 (2026-10-12)
 - Linux and other CPU-only machines with 8 GB: the first-start CPU model build no longer runs out of memory (it skips
   the opt-in int8 copy), and a build that is cut short can no longer leave a half model behind. In 0.2.1 such a

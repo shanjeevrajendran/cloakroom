@@ -6,8 +6,14 @@
 # Installer, the first that exists: uv, pipx, else a private virtualenv in ~/.cloakroom/venv (needs Python 3.10+).
 # Only Python packages are downloaded; uv itself is never fetched for you.
 # One installer at a time (lock dir; a lock older than 30 min is stale). Progress: ~/.cloakroom/bootstrap.log.
+# bootstrap.sh --check only says whether an installer exists (exit 0) and installs nothing.
 # CLOAKROOM_SPEC_RULES / CLOAKROOM_SPEC_FULL override what is installed, CLOAKROOM_INSTALLER picks one (tests).
 set -u
+# --check: exit 0 when this machine has something to install with (the hook asks this before starting the install)
+if [ "${1:-}" = --check ]; then
+  command -v uv >/dev/null 2>&1 || command -v pipx >/dev/null 2>&1 || command -v python3 >/dev/null 2>&1
+  exit
+fi
 H="${CLOAKROOM_HOME:-$HOME/.cloakroom}"
 mkdir -p "$H" && chmod 700 "$H"
 LOCK="$H/bootstrap.lock" STATE="$H/bootstrap.state" LOG="$H/bootstrap.log"
@@ -16,8 +22,8 @@ if ! mkdir "$LOCK" 2>/dev/null; then
   rm -rf "$LOCK" && mkdir "$LOCK" || exit 0
 fi
 trap 'rm -rf "$LOCK"' EXIT
-RULES="${CLOAKROOM_SPEC_RULES:-cloakroom==0.2.2}"  # pinned: each plugin version installs its own release
-FULL="${CLOAKROOM_SPEC_FULL:-cloakroom[model,torch]==0.2.2}"
+RULES="${CLOAKROOM_SPEC_RULES:-cloakroom==0.2.3}"  # pinned: each plugin version installs its own release
+FULL="${CLOAKROOM_SPEC_FULL:-cloakroom[model,torch]==0.2.3}"
 
 py310() {  # a Python 3.10+ interpreter on PATH, or nothing
   for p in python3 python; do
@@ -39,8 +45,8 @@ install() {  # install SPEC FORCE(0|1)
   case "$WHO" in
     # uv and pipx get the release spelled out (the Claude plugin directory checks these pins); the CLOAKROOM_SPEC_*
     # overrides, for tests, apply to the virtualenv route
-    uv)   if [ "$2" = 1 ]; then uv tool install --force "cloakroom[model,torch]==0.2.2"; else uv tool install "cloakroom==0.2.2"; fi ;;
-    pipx) if [ "$2" = 1 ]; then pipx install --force "cloakroom[model,torch]==0.2.2"; else pipx install "cloakroom==0.2.2"; fi ;;
+    uv)   if [ "$2" = 1 ]; then uv tool install --force "cloakroom[model,torch]==0.2.3"; else uv tool install "cloakroom==0.2.3"; fi ;;
+    pipx) if [ "$2" = 1 ]; then pipx install --force "cloakroom[model,torch]==0.2.3"; else pipx install "cloakroom==0.2.3"; fi ;;
     venv) { [ -x "$H/venv/bin/python" ] || "$(py310)" -m venv "$H/venv"; } && PIP_DISABLE_PIP_VERSION_CHECK=1 "$H/venv/bin/python" -m pip install -q -U "$1" ;;
     *)    return 1 ;;
   esac
