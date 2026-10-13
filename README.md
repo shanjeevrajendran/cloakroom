@@ -21,7 +21,7 @@
 
 </div>
 
-**Your customers' names and your API keys never reach the model. Claude still gets the job done.**
+**Your secrets and personal data never reach the model. Claude still gets the job done.**
 
 Runs on your machine. Installs itself. Mac, Windows and Linux. Free and open source.
 
