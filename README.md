@@ -21,16 +21,15 @@
 
 </div>
 
-Names, emails, addresses and API keys in the files Claude reads are swapped
-for placeholders before the model sees them. When Claude writes a file, the real values go back in, on your machine.
-Runs on macOS, Windows and Linux.
+**Your customers' names and your API keys never reach the model. Claude still gets the job done.**
 
-**Status:** v0.2. The plugin installs itself, a local dashboard shows every alert, and Cloakroom learns from your
-corrections. Tested on macOS, Windows Server and Ubuntu, each from a clean install. It works; expect rough edges.
+Runs on your machine. Installs itself. Mac, Windows and Linux. Free and open source.
+
+v0.2 · tested from clean installs on macOS, Windows and Ubuntu · young, expect rough edges.
 
 <div align="center">
   <img src="https://raw.githubusercontent.com/shanjeevrajendran/cloakroom/main/assets/demo.gif" alt="Claude Code reads a support ticket and .env through Cloakroom: the model sees PII_PERSON_1 and PII_SECRET_1, and reply.md on disk gets the real customer name back" width="820">
-  <br><sub>Claude sees <code>PII_PERSON_1</code>. The reply it writes lands on your disk as "Hi Nadia Petrov".</sub>
+  <br><sub>Claude writes the reply. The customer's name never left your machine.</sub>
 </div>
 
 ## Why

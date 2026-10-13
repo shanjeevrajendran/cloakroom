@@ -26,17 +26,28 @@ Then restart Claude Code. Cloakroom installs itself on first start (a few minute
   else a private virtual environment in `~/.cloakroom/venv`. Until that finishes, tool calls are held back.
 - **A local service** on `127.0.0.1` (port 37787) that keeps the model loaded between checks.
 
-## What it fetches and sends
+## Privacy
+
+Everything runs on your machine. Cloakroom reads your prompts, the output of Claude's tool calls and the files
+Claude writes, so it can mask and restore values. It sends none of it anywhere; the details are below. To remove
+everything: `/plugin uninstall cloakroom`, uninstall the program (`uv tool uninstall cloakroom` or
+`pipx uninstall cloakroom`), delete `~/.cloakroom`, and delete the `cloakroom` / `vault-key` entry from your
+system's secure store. How masking works and what it does not protect against:
+[How it works](https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-HOW-IT-WORKS.md#threat-model).
+Security reports: [SECURITY.md](https://github.com/shanjeevrajendran/cloakroom/blob/main/SECURITY.md).
+
+### What it fetches and sends
 
 - **Fetches once:** the `cloakroom` package and its dependencies from PyPI, and the PII-Tracer detection model
-  (a pinned revision) from Hugging Face. On machines without a GPU it builds a faster CPU copy of the model locally.
+  (`perplexity-ai/PII-Tracer`, a pinned revision) from Hugging Face. On machines without a GPU it builds a faster
+  CPU copy of the model locally.
 - **Sends nothing.** File contents, prompts and tool output never leave your machine through Cloakroom. The only
   network calls are the downloads above.
 
-## What it stores
+### What it stores
 
-- An encrypted vault of the real values for each session in `~/.cloakroom`, with the key in your system's secure
-  store (Keychain, Windows Credential Manager, Secret Service).
+- An AES-GCM encrypted vault of the real values for each session in `~/.cloakroom`, with the key in your system's
+  secure store (Keychain, Windows Credential Manager, Secret Service).
 - An activity log without values, and your labels and rules (encrypted) for the local dashboard
   (`cloakroom dashboard`).
 
