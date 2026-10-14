@@ -27,6 +27,15 @@ Runs on your machine. Installs itself. Mac, Windows and Linux. Free and open sou
 
 v0.2 · tested from clean installs on macOS, Windows and Ubuntu · young, expect rough edges.
 
+**Hand Claude the files you'd never paste into a chat:**
+
+- **Bank statements** (PDF or CSV): "sort a year of spending by category." Claude sees amounts and merchants, not your name, address or account number.
+- **Support tickets:** "draft replies to this week's tickets." Claude writes to PII_PERSON_1; the drafts on your disk have the real names.
+- **Medical or HR records:** names, birth dates, addresses and ID numbers are masked, so Claude can summarise or tidy a record without knowing whose it is.
+- **`.env` files and logs:** Claude fixes the config without ever seeing the password or API key.
+
+Scanned PDFs and photos are held back, not read ([known limits](https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-LIMITS.md)).
+
 <div align="center">
   <img src="https://raw.githubusercontent.com/shanjeevrajendran/cloakroom/main/assets/demo.gif" alt="Claude Code reads a support ticket and .env through Cloakroom: the model sees PII_PERSON_1 and PII_SECRET_1, and reply.md on disk gets the real customer name back" width="820">
   <br><sub>Claude writes the reply. The customer's name never left your machine.</sub>
