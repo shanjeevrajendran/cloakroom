@@ -165,42 +165,16 @@ Exceptions, backends, CI and troubleshooting: [the handbook](https://github.com/
 
 ## Results
 
-**In one line:** Cloakroom catches the most personal data and secrets of the Claude Code tools we tested; false
-alarms are its main open problem, and maisecrets is the most precise.
+**In one line:** Cloakroom catches the most personal data and secrets of the Claude Code tools we tested, and masks
+rather than blocks. maisecrets is the most precise secret scanner; it does not look for personal data. False alarms
+are Cloakroom's main open problem.
 Every number comes from a set run once before any tuning on it unless it says otherwise. Method and every run:
 [bench/RESULTS.md](https://github.com/shanjeevrajendran/cloakroom/blob/main/bench/RESULTS.md). Each tool at its
 latest version on 2026-10-12, default settings, offline.
 
-**Real credentials from public repositories** ([Samsung CredData](https://github.com/Samsung/CredData), 29,893
-labelled lines, each checked alone without its file path, the way a prompt or a tool output arrives):
-
-| Tool | All 29,893 lines: precision / recall / F1 | Without the crypto test-vector repo (23,667): P / R / F1 |
-|---|---|---|
-| **Cloakroom** | 0.66 / **0.65** / 0.66 | 0.66 / **0.73** / **0.69** |
-| maisecrets | **0.90** / 0.61 / **0.73** | **0.83** / 0.48 / 0.61 |
-| claude-code-redact | 0.81 / 0.31 / 0.45 | 0.77 / 0.36 / 0.49 |
-| sensitive-canary (blocks the call instead of masking) | 0.59 / 0.27 / 0.37 | 0.52 / 0.30 / 0.38 |
-| redact-hook (default / aggressive) | 0.81 / 0.54 precision, F1 0.31 / 0.35 | F1 0.41 / 0.48 |
-
-One of CredData's repositories holds 3,427 of its 3,822 "Key" credentials: cipher test vectors (`Key = 085a74…`),
-where maisecrets' keyword rule shines. Without that repository, Cloakroom has the best recall and F1; with it,
-maisecrets does. Either way maisecrets is the most precise: Cloakroom masks far more harmless look-alikes, which is
-what we're working on.
-
-**Keys in the formats vendors really issue** (a new set written after Cloakroom 0.2.0: 15 key types, shapeless
-passwords, encoded emails; 77 values, 15 look-alikes):
-
-| Tool | Leaked (77) | False alarms (15) |
-|---|---|---|
-| **Cloakroom** | **0** | 3 |
-| maisecrets | 13 | 1 |
-| sensitive-canary | 14 | 3 |
-| redact-hook (default / aggressive) | 15 | 5 |
-| claude-code-redact (PII on / secrets only) | 17 | 2 / 1 |
-
 **Synthetic agent traffic** (five sets written by a different model: chat, logs, configs, CSVs, tickets; 1,575
 planted values, 200 safe samples). These sets have been seen by now, so this is not an honest score for Cloakroom;
-its first runs (version 0.1) leaked 0 / 4 with 60 false alarms.
+its first runs leaked 0 / 4 with 60 false alarms.
 
 | Tool | Personal data (1,005) | Keys, passwords, cards, IDs (334) | False alarms (200) |
 |---|---|---|---|
@@ -214,8 +188,38 @@ its first runs (version 0.1) leaked 0 / 4 with 60 false alarms.
 Some of these tools only aim at secrets, so their personal-data column shows scope as much as quality. maisecrets'
 maintainers reproduced our numbers and pointed out where the older sets were unfair to them (keys in formats vendors
 don't issue, and the `regions` setting); the key-format set and the setting above are the fix. The maintainers of
-the compared tools were contacted before publishing. A false alarm costs you a placeholder where Claude needed the
-real text; a miss sends the value to the model.
+the compared tools were contacted before publishing.
+
+**Keys in the formats vendors really issue** (a new set written after the first comparison: 15 key types, shapeless
+passwords, encoded emails; 77 values, 15 look-alikes):
+
+| Tool | Leaked (77) | False alarms (15) |
+|---|---|---|
+| **Cloakroom** | **0** | 3 |
+| maisecrets | 13 | 1 |
+| sensitive-canary | 14 | 3 |
+| redact-hook (default / aggressive) | 15 | 5 |
+| claude-code-redact (PII on / secrets only) | 17 | 2 / 1 |
+
+**Real credentials from public repositories** ([Samsung CredData](https://github.com/Samsung/CredData), 29,893
+labelled lines, each checked alone without its file path, the way a prompt or a tool output arrives):
+
+How to read the numbers: precision = of what a tool masked, how much was a real secret; recall = of the real
+secrets, how many it caught; F1 = the two combined. A miss sends the value to the model; a false alarm costs you a
+placeholder where Claude needed the real text.
+
+| Tool | Without the crypto test-vector repo (23,667 lines): precision / recall / F1 | All 29,893 lines: precision / recall / F1 |
+|---|---|---|
+| **Cloakroom** | 0.66 / **0.73** / **0.69** | 0.66 / **0.65** / 0.66 |
+| maisecrets | **0.83** / 0.48 / 0.61 | **0.90** / 0.61 / **0.73** |
+| claude-code-redact | 0.77 / 0.36 / 0.49 | 0.81 / 0.31 / 0.45 |
+| sensitive-canary (blocks the call instead of masking) | 0.52 / 0.30 / 0.38 | 0.59 / 0.27 / 0.37 |
+| redact-hook (default / aggressive) | F1 0.41 / 0.48 | 0.81 / 0.54 precision, F1 0.31 / 0.35 |
+
+One of CredData's repositories holds 3,427 of its 3,822 "Key" credentials: cipher test vectors (`Key = 085a74…`),
+where maisecrets' keyword rule shines. Without that repository, Cloakroom has the best recall and F1; with it,
+maisecrets does. Either way maisecrets is the most precise: Cloakroom masks far more harmless look-alikes, which is
+what we're working on.
 
 **On public datasets we didn't write** (test split run once, details in
 [bench/public/RESULTS.md](https://github.com/shanjeevrajendran/cloakroom/blob/main/bench/public/RESULTS.md)):
