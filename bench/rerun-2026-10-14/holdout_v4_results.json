@@ -1,0 +1,698 @@
+[
+  {
+    "adapter": "maisecrets",
+    "items": 80,
+    "items_leaked": 76,
+    "values_total": 328,
+    "values_leaked": 177,
+    "blocked": 0,
+    "negatives": 40,
+    "false_alarms": 2,
+    "by_category": {
+      "docker-build-log": {
+        "items": 4,
+        "leaked": 4
+      },
+      "k8s-configmap": {
+        "items": 2,
+        "leaked": 2
+      },
+      "k8s-event": {
+        "items": 2,
+        "leaked": 2
+      },
+      "prometheus-alert": {
+        "items": 2,
+        "leaked": 1
+      },
+      "grafana-alert": {
+        "items": 2,
+        "leaked": 2
+      },
+      "datadog-log": {
+        "items": 2,
+        "leaked": 2
+      },
+      "newrelic-log": {
+        "items": 2,
+        "leaked": 1
+      },
+      "terraform-plan": {
+        "items": 4,
+        "leaked": 3
+      },
+      "cloudformation": {
+        "items": 4,
+        "leaked": 4
+      },
+      "nginx-access": {
+        "items": 2,
+        "leaked": 2
+      },
+      "apache-error": {
+        "items": 1,
+        "leaked": 0
+      },
+      "apache-access": {
+        "items": 1,
+        "leaked": 1
+      },
+      "postgres-slowlog": {
+        "items": 4,
+        "leaked": 4
+      },
+      "mongodb-doc": {
+        "items": 4,
+        "leaked": 4
+      },
+      "elasticsearch-hit": {
+        "items": 4,
+        "leaked": 4
+      },
+      "jira-ticket": {
+        "items": 2,
+        "leaked": 2
+      },
+      "linear-ticket": {
+        "items": 2,
+        "leaked": 2
+      },
+      "zendesk-ticket": {
+        "items": 2,
+        "leaked": 2
+      },
+      "intercom-ticket": {
+        "items": 2,
+        "leaked": 2
+      },
+      "ics-invite": {
+        "items": 4,
+        "leaked": 4
+      },
+      "vcard": {
+        "items": 4,
+        "leaked": 4
+      },
+      "pdf-bank-statement": {
+        "items": 3,
+        "leaked": 3
+      },
+      "insurance-claim": {
+        "items": 3,
+        "leaked": 3
+      },
+      "school-enrollment": {
+        "items": 3,
+        "leaked": 3
+      },
+      "pharmacy-rx": {
+        "items": 3,
+        "leaked": 3
+      },
+      "git-blame": {
+        "items": 2,
+        "leaked": 2
+      },
+      "git-log": {
+        "items": 1,
+        "leaked": 1
+      },
+      "jupyter-traceback": {
+        "items": 3,
+        "leaked": 3
+      },
+      "postman-env": {
+        "items": 3,
+        "leaked": 3
+      },
+      "kafka-payload": {
+        "items": 3,
+        "leaked": 3
+      },
+      "negative": {
+        "items": 40,
+        "leaked": 2
+      }
+    },
+    "leaks": [
+      {
+        "id": "h4-001",
+        "planted_idx": [
+          1
+        ]
+      },
+      {
+        "id": "h4-002",
+        "planted_idx": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "h4-003",
+        "planted_idx": [
+          0,
+          2
+        ]
+      },
+      {
+        "id": "h4-004",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h4-005",
+        "planted_idx": [
+          1
+        ]
+      },
+      {
+        "id": "h4-006",
+        "planted_idx": [
+          1
+        ]
+      },
+      {
+        "id": "h4-007",
+        "planted_idx": [
+          0,
+          3
+        ]
+      },
+      {
+        "id": "h4-008",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h4-010",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h4-011",
+        "planted_idx": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h4-012",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h4-013",
+        "planted_idx": [
+          1
+        ]
+      },
+      {
+        "id": "h4-014",
+        "planted_idx": [
+          0,
+          2
+        ]
+      },
+      {
+        "id": "h4-015",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h4-017",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h4-019",
+        "planted_idx": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "h4-020",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h4-021",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h4-022",
+        "planted_idx": [
+          1
+        ]
+      },
+      {
+        "id": "h4-023",
+        "planted_idx": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "h4-024",
+        "planted_idx": [
+          0,
+          2
+        ]
+      },
+      {
+        "id": "h4-025",
+        "planted_idx": [
+          1
+        ]
+      },
+      {
+        "id": "h4-027",
+        "planted_idx": [
+          3
+        ]
+      },
+      {
+        "id": "h4-028",
+        "planted_idx": [
+          1
+        ]
+      },
+      {
+        "id": "h4-029",
+        "planted_idx": [
+          2
+        ]
+      },
+      {
+        "id": "h4-030",
+        "planted_idx": [
+          1
+        ]
+      },
+      {
+        "id": "h4-031",
+        "planted_idx": [
+          1
+        ]
+      },
+      {
+        "id": "h4-032",
+        "planted_idx": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "h4-033",
+        "planted_idx": [
+          0,
+          3,
+          4,
+          5
+        ]
+      },
+      {
+        "id": "h4-034",
+        "planted_idx": [
+          0,
+          3
+        ]
+      },
+      {
+        "id": "h4-035",
+        "planted_idx": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h4-036",
+        "planted_idx": [
+          0,
+          2
+        ]
+      },
+      {
+        "id": "h4-037",
+        "planted_idx": [
+          1,
+          3
+        ]
+      },
+      {
+        "id": "h4-038",
+        "planted_idx": [
+          1
+        ]
+      },
+      {
+        "id": "h4-039",
+        "planted_idx": [
+          0,
+          1,
+          3
+        ]
+      },
+      {
+        "id": "h4-040",
+        "planted_idx": [
+          2
+        ]
+      },
+      {
+        "id": "h4-041",
+        "planted_idx": [
+          0,
+          2,
+          5,
+          6,
+          7,
+          9
+        ]
+      },
+      {
+        "id": "h4-042",
+        "planted_idx": [
+          0,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h4-043",
+        "planted_idx": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h4-044",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          6
+        ]
+      },
+      {
+        "id": "h4-045",
+        "planted_idx": [
+          0,
+          4
+        ]
+      },
+      {
+        "id": "h4-046",
+        "planted_idx": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h4-047",
+        "planted_idx": [
+          0,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h4-048",
+        "planted_idx": [
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h4-049",
+        "planted_idx": [
+          0,
+          2
+        ]
+      },
+      {
+        "id": "h4-050",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          4
+        ]
+      },
+      {
+        "id": "h4-051",
+        "planted_idx": [
+          0,
+          3,
+          4
+        ]
+      },
+      {
+        "id": "h4-052",
+        "planted_idx": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "h4-053",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6
+        ]
+      },
+      {
+        "id": "h4-054",
+        "planted_idx": [
+          0,
+          3
+        ]
+      },
+      {
+        "id": "h4-055",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          5
+        ]
+      },
+      {
+        "id": "h4-056",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          5
+        ]
+      },
+      {
+        "id": "h4-057",
+        "planted_idx": [
+          0,
+          1,
+          3
+        ]
+      },
+      {
+        "id": "h4-058",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h4-059",
+        "planted_idx": [
+          0,
+          1,
+          3
+        ]
+      },
+      {
+        "id": "h4-060",
+        "planted_idx": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h4-061",
+        "planted_idx": [
+          0,
+          2
+        ]
+      },
+      {
+        "id": "h4-062",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          4
+        ]
+      },
+      {
+        "id": "h4-063",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          5
+        ]
+      },
+      {
+        "id": "h4-064",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          4
+        ]
+      },
+      {
+        "id": "h4-065",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h4-066",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          6
+        ]
+      },
+      {
+        "id": "h4-067",
+        "planted_idx": [
+          0,
+          1,
+          3
+        ]
+      },
+      {
+        "id": "h4-068",
+        "planted_idx": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h4-069",
+        "planted_idx": [
+          0,
+          2,
+          4
+        ]
+      },
+      {
+        "id": "h4-070",
+        "planted_idx": [
+          0,
+          2
+        ]
+      },
+      {
+        "id": "h4-071",
+        "planted_idx": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h4-072",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h4-073",
+        "planted_idx": [
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h4-074",
+        "planted_idx": [
+          0,
+          1,
+          3
+        ]
+      },
+      {
+        "id": "h4-075",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h4-076",
+        "planted_idx": [
+          2
+        ]
+      },
+      {
+        "id": "h4-077",
+        "planted_idx": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "h4-078",
+        "planted_idx": [
+          0,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h4-079",
+        "planted_idx": [
+          1
+        ]
+      },
+      {
+        "id": "h4-080",
+        "planted_idx": [
+          0,
+          1,
+          2
+        ]
+      }
+    ],
+    "ms_per_item": 0.3
+  }
+]

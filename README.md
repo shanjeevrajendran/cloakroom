@@ -170,7 +170,8 @@ rather than blocks. maisecrets is the most precise secret scanner; it does not l
 are Cloakroom's main open problem.
 Every number comes from a set run once before any tuning on it unless it says otherwise. Method and every run:
 [bench/RESULTS.md](https://github.com/shanjeevrajendran/cloakroom/blob/main/bench/RESULTS.md). Each tool at its
-latest version on 2026-10-12, default settings, offline.
+latest version on 2026-10-12 (maisecrets rerun 2026-10-14 on its tool-output channel), default
+settings, offline.
 
 **Synthetic agent traffic** (five sets written by a different model: chat, logs, configs, CSVs, tickets; 1,575
 planted values, 200 safe samples). These sets have been seen by now, so this is not an honest score for Cloakroom;
@@ -180,7 +181,7 @@ its first runs leaked 0 / 4 with 60 false alarms.
 |---|---|---|---|
 | **Cloakroom** | **1** | **2** | 23 |
 | sensitive-canary (blocks the call instead of masking) | 119 | 40 | 16 |
-| maisecrets (`"regions": ["us", "uk", "in"]`; default 78 keys) | 550 | 67 | 6 |
+| maisecrets (`"regions": ["us", "uk", "in"]`; default 80 keys) | 547 | 54 | 6 |
 | claude-code-redact, PII on | 607 | 101 | 31 |
 | redact-hook | 817-822 | 143-157 | 35-40 |
 | claude-code-redact, secrets only | 992 | 179 | 2 |
@@ -196,13 +197,14 @@ passwords, encoded emails; 77 values, 15 look-alikes):
 | Tool | Leaked (77) | False alarms (15) |
 |---|---|---|
 | **Cloakroom** | **0** | 3 |
-| maisecrets | 13 | 1 |
+| maisecrets | 3 | 1 |
 | sensitive-canary | 14 | 3 |
 | redact-hook (default / aggressive) | 15 | 5 |
 | claude-code-redact (PII on / secrets only) | 17 | 2 / 1 |
 
 **Real credentials from public repositories** ([Samsung CredData](https://github.com/Samsung/CredData), 29,893
-labelled lines, each checked alone without its file path, the way a prompt or a tool output arrives):
+labelled lines, each checked alone without its file path, the way a prompt or a tool output arrives; Cloakroom and
+maisecrets rerun 2026-10-14, maisecrets on its tool-output channel):
 
 How to read the numbers: precision = of what a tool masked, how much was a real secret; recall = of the real
 secrets, how many it caught; F1 = the two combined. A miss sends the value to the model; a false alarm costs you a
@@ -210,8 +212,8 @@ placeholder where Claude needed the real text.
 
 | Tool | Without the crypto test-vector repo (23,667 lines): precision / recall / F1 | All 29,893 lines: precision / recall / F1 |
 |---|---|---|
-| **Cloakroom** | 0.66 / **0.73** / **0.69** | 0.66 / **0.65** / 0.66 |
-| maisecrets | **0.83** / 0.48 / 0.61 | **0.90** / 0.61 / **0.73** |
+| **Cloakroom** | 0.71 / **0.73** / **0.72** | 0.71 / 0.65 / 0.68 |
+| maisecrets | **0.86** / 0.58 / 0.69 | **0.91** / **0.68** / **0.78** |
 | claude-code-redact | 0.77 / 0.36 / 0.49 | 0.81 / 0.31 / 0.45 |
 | sensitive-canary (blocks the call instead of masking) | 0.52 / 0.30 / 0.38 | 0.59 / 0.27 / 0.37 |
 | redact-hook (default / aggressive) | F1 0.41 / 0.48 | 0.81 / 0.54 precision, F1 0.31 / 0.35 |

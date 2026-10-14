@@ -378,3 +378,35 @@ maisecrets 0.83 / 0.48 / 0.61; claude-code-redact 0.77 / 0.36 / 0.49; redact-hoo
 default 0.81 / 0.27 / 0.41; sensitive-canary 0.52 / 0.30 / 0.38. A generic-key rule (key-like name + random value)
 was tried: on all of CredData it caught 53 more keys but added 698 false alarms (F1 0.66 -> 0.64), so it was dropped.
 Results: `bench/rerun-2026-10-12/credata_results_no_testvectors.json`.
+
+## Cloakroom 0.4.0 and maisecrets 0.6.17 tool channel (2026-10-14)
+
+maisecrets 0.6.17 (a282aae) splits its password rule by channel: `detect.scan(text, channel="tool")` is what its hook
+runs on tool results and files, the default `channel="prompt"` on typed prompts (Mcpgate-de/maisecrets#17). The
+adapter now calls the tool channel, default regions as before. All maisecrets rows above (0.6.14) are the prompt
+channel. Cloakroom from the dev tree at the 0.4.0 release commit (27a100f; no source change since), full mode.
+Run once each, same method as above. Results: `bench/rerun-2026-10-14/`.
+
+**CredData**
+
+| Tool | Without 2ba83c6a (23,667 lines): P / R / F1 | All 29,893 lines: P / R / F1 |
+|---|---|---|
+| Cloakroom 0.4.0 full | 0.71 / **0.73** / **0.72** | 0.71 / 0.65 / 0.68 |
+| maisecrets 0.6.17, tool channel | **0.86** / 0.58 / 0.69 | **0.91** / **0.68** / **0.78** |
+| *was:* Cloakroom 0.2.2 full | 0.66 / 0.73 / 0.69 | 0.66 / 0.65 / 0.66 |
+| *was:* maisecrets 0.6.14, prompt channel | 0.83 / 0.48 / 0.61 | 0.90 / 0.61 / 0.73 |
+
+False alarms (candidates masked), all lines: Cloakroom 3,903 (was 4,750), maisecrets 997 (was 981). Without the
+test vectors Cloakroom keeps the recall and F1 lead; on all lines maisecrets now leads on all three. The
+maintainers' own figure for this split with US regions (0.86 / 0.58 / 0.690) matches ours.
+
+**Holdouts, maisecrets 0.6.17 tool channel only** (Cloakroom's are unchanged since 0.3.0's final check):
+
+| Set | Leaked | False alarms |
+|---|---|---|
+| v2-v6: critical (334) / high (1005) / low (221) | 80 / 554 / 161 (0.6.14 default regions: 78 / 550 / 161) | 5 of 200 (was 5) |
+| v7 (77 values, 15 negatives) | 3, all Twilio Account SIDs (was 13) | 1 (was 1) |
+| v2-v6, regions us/uk/in: critical / high / low | 54 / 547 / 161 (0.6.14: 67 / 550 / 161) | 6 of 200 (was 6) |
+
+These rows replaced the 0.6.14 maisecrets rows in the README on 2026-10-14 (synthetic-traffic table: regions
+us/uk/in row, default-regions critical count; key-formats table: v7). Regions results: `bench/rerun-2026-10-14/regions/`.

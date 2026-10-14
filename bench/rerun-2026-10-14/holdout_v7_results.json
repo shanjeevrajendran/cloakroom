@@ -1,0 +1,143 @@
+[
+  {
+    "adapter": "maisecrets",
+    "items": 70,
+    "items_leaked": 3,
+    "values_total": 77,
+    "values_leaked": 3,
+    "blocked": 0,
+    "negatives": 15,
+    "false_alarms": 1,
+    "by_category": {
+      "email_encoded": {
+        "items": 4,
+        "leaked": 0
+      },
+      "negative": {
+        "items": 15,
+        "leaked": 1
+      },
+      "key_gitlab": {
+        "items": 3,
+        "leaked": 0
+      },
+      "key_sendgrid": {
+        "items": 3,
+        "leaked": 0
+      },
+      "key_github_classic": {
+        "items": 3,
+        "leaked": 0
+      },
+      "key_slack_bot": {
+        "items": 3,
+        "leaked": 0
+      },
+      "key_google_api": {
+        "items": 3,
+        "leaked": 0
+      },
+      "pw_cli_flag": {
+        "items": 2,
+        "leaked": 0
+      },
+      "key_anthropic": {
+        "items": 3,
+        "leaked": 0
+      },
+      "key_aws_key_id": {
+        "items": 3,
+        "leaked": 0
+      },
+      "key_openai_project": {
+        "items": 3,
+        "leaked": 0
+      },
+      "key_twilio_api_key": {
+        "items": 3,
+        "leaked": 0
+      },
+      "pw_url": {
+        "items": 2,
+        "leaked": 0
+      },
+      "pw_mysql": {
+        "items": 2,
+        "leaked": 0
+      },
+      "key_aws_pair": {
+        "items": 4,
+        "leaked": 0
+      },
+      "pw_netrc": {
+        "items": 2,
+        "leaked": 0
+      },
+      "key_github_fine": {
+        "items": 3,
+        "leaked": 0
+      },
+      "key_openai_legacy": {
+        "items": 3,
+        "leaked": 0
+      },
+      "pw_redis": {
+        "items": 2,
+        "leaked": 0
+      },
+      "twilio_sid": {
+        "items": 3,
+        "leaked": 3
+      },
+      "key_jwt": {
+        "items": 1,
+        "leaked": 0
+      },
+      "key_slack_user": {
+        "items": 3,
+        "leaked": 0
+      },
+      "key_npm": {
+        "items": 3,
+        "leaked": 0
+      },
+      "key_stripe_secret": {
+        "items": 3,
+        "leaked": 0
+      },
+      "key_huggingface": {
+        "items": 3,
+        "leaked": 0
+      },
+      "key_pem": {
+        "items": 1,
+        "leaked": 0
+      },
+      "pw_prose": {
+        "items": 2,
+        "leaked": 0
+      }
+    },
+    "leaks": [
+      {
+        "id": "h7-033",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h7-072",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h7-076",
+        "planted_idx": [
+          0
+        ]
+      }
+    ],
+    "ms_per_item": 0.3
+  }
+]

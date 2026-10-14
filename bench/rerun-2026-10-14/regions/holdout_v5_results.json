@@ -1,0 +1,732 @@
+[
+  {
+    "adapter": "maisecrets-regions",
+    "items": 80,
+    "items_leaked": 78,
+    "values_total": 394,
+    "values_leaked": 201,
+    "blocked": 0,
+    "negatives": 40,
+    "false_alarms": 2,
+    "by_category": {
+      "slack-export": {
+        "items": 3,
+        "leaked": 3
+      },
+      "teams-export": {
+        "items": 3,
+        "leaked": 3
+      },
+      "outlook-eml": {
+        "items": 3,
+        "leaked": 3
+      },
+      "salesforce-export": {
+        "items": 3,
+        "leaked": 3
+      },
+      "hubspot-export": {
+        "items": 3,
+        "leaked": 3
+      },
+      "stripe-dispute": {
+        "items": 3,
+        "leaked": 3
+      },
+      "paypal-dispute": {
+        "items": 3,
+        "leaked": 3
+      },
+      "shopify-order": {
+        "items": 3,
+        "leaked": 3
+      },
+      "twilio-webhook": {
+        "items": 3,
+        "leaked": 3
+      },
+      "sendgrid-webhook": {
+        "items": 3,
+        "leaked": 3
+      },
+      "okta-audit": {
+        "items": 3,
+        "leaked": 3
+      },
+      "auth0-audit": {
+        "items": 3,
+        "leaked": 3
+      },
+      "vpn-auth": {
+        "items": 3,
+        "leaked": 3
+      },
+      "ssh-auth": {
+        "items": 3,
+        "leaked": 3
+      },
+      "gitlab-ci": {
+        "items": 3,
+        "leaked": 3
+      },
+      "ansible-run": {
+        "items": 3,
+        "leaked": 3
+      },
+      "chef-run": {
+        "items": 3,
+        "leaked": 2
+      },
+      "helm-release": {
+        "items": 3,
+        "leaked": 3
+      },
+      "openapi-example": {
+        "items": 3,
+        "leaked": 2
+      },
+      "sqlite-dump": {
+        "items": 3,
+        "leaked": 3
+      },
+      "hr-roster-csv": {
+        "items": 2,
+        "leaked": 2
+      },
+      "pdf-tax-return": {
+        "items": 2,
+        "leaked": 2
+      },
+      "mortgage-application": {
+        "items": 2,
+        "leaked": 2
+      },
+      "visa-application": {
+        "items": 2,
+        "leaked": 2
+      },
+      "hospital-discharge": {
+        "items": 2,
+        "leaked": 2
+      },
+      "school-report-card": {
+        "items": 2,
+        "leaked": 2
+      },
+      "dating-profile": {
+        "items": 2,
+        "leaked": 2
+      },
+      "gym-membership": {
+        "items": 2,
+        "leaked": 2
+      },
+      "airflow-log": {
+        "items": 2,
+        "leaked": 2
+      },
+      "dbt-log": {
+        "items": 2,
+        "leaked": 2
+      },
+      "negative": {
+        "items": 40,
+        "leaked": 2
+      }
+    },
+    "leaks": [
+      {
+        "id": "h5-001",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-002",
+        "planted_idx": [
+          0,
+          1,
+          4
+        ]
+      },
+      {
+        "id": "h5-003",
+        "planted_idx": [
+          0,
+          1,
+          3,
+          4
+        ]
+      },
+      {
+        "id": "h5-004",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-005",
+        "planted_idx": [
+          0,
+          1,
+          3
+        ]
+      },
+      {
+        "id": "h5-006",
+        "planted_idx": [
+          0,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-007",
+        "planted_idx": [
+          0,
+          2,
+          4,
+          7,
+          8
+        ]
+      },
+      {
+        "id": "h5-008",
+        "planted_idx": [
+          3,
+          4,
+          5
+        ]
+      },
+      {
+        "id": "h5-009",
+        "planted_idx": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h5-010",
+        "planted_idx": [
+          0,
+          2,
+          3,
+          4
+        ]
+      },
+      {
+        "id": "h5-011",
+        "planted_idx": [
+          0,
+          3,
+          4
+        ]
+      },
+      {
+        "id": "h5-012",
+        "planted_idx": [
+          0,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-013",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h5-014",
+        "planted_idx": [
+          0,
+          2
+        ]
+      },
+      {
+        "id": "h5-015",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h5-016",
+        "planted_idx": [
+          0,
+          3
+        ]
+      },
+      {
+        "id": "h5-017",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h5-018",
+        "planted_idx": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h5-019",
+        "planted_idx": [
+          0,
+          3
+        ]
+      },
+      {
+        "id": "h5-020",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h5-021",
+        "planted_idx": [
+          0,
+          3
+        ]
+      },
+      {
+        "id": "h5-022",
+        "planted_idx": [
+          1,
+          3
+        ]
+      },
+      {
+        "id": "h5-023",
+        "planted_idx": [
+          0,
+          3,
+          4
+        ]
+      },
+      {
+        "id": "h5-024",
+        "planted_idx": [
+          0,
+          3
+        ]
+      },
+      {
+        "id": "h5-025",
+        "planted_idx": [
+          0,
+          3,
+          4,
+          5,
+          6
+        ]
+      },
+      {
+        "id": "h5-026",
+        "planted_idx": [
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-027",
+        "planted_idx": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "h5-028",
+        "planted_idx": [
+          3
+        ]
+      },
+      {
+        "id": "h5-029",
+        "planted_idx": [
+          1
+        ]
+      },
+      {
+        "id": "h5-030",
+        "planted_idx": [
+          0,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-031",
+        "planted_idx": [
+          1,
+          3
+        ]
+      },
+      {
+        "id": "h5-032",
+        "planted_idx": [
+          0,
+          2
+        ]
+      },
+      {
+        "id": "h5-033",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h5-034",
+        "planted_idx": [
+          2
+        ]
+      },
+      {
+        "id": "h5-035",
+        "planted_idx": [
+          0,
+          1,
+          3
+        ]
+      },
+      {
+        "id": "h5-036",
+        "planted_idx": [
+          2
+        ]
+      },
+      {
+        "id": "h5-037",
+        "planted_idx": [
+          0,
+          2
+        ]
+      },
+      {
+        "id": "h5-038",
+        "planted_idx": [
+          0,
+          3
+        ]
+      },
+      {
+        "id": "h5-039",
+        "planted_idx": [
+          0,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-040",
+        "planted_idx": [
+          0,
+          3
+        ]
+      },
+      {
+        "id": "h5-041",
+        "planted_idx": [
+          0,
+          2
+        ]
+      },
+      {
+        "id": "h5-042",
+        "planted_idx": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h5-043",
+        "planted_idx": [
+          0,
+          2
+        ]
+      },
+      {
+        "id": "h5-044",
+        "planted_idx": [
+          1,
+          3
+        ]
+      },
+      {
+        "id": "h5-045",
+        "planted_idx": [
+          1
+        ]
+      },
+      {
+        "id": "h5-046",
+        "planted_idx": [
+          0,
+          2
+        ]
+      },
+      {
+        "id": "h5-047",
+        "planted_idx": [
+          2
+        ]
+      },
+      {
+        "id": "h5-048",
+        "planted_idx": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h5-049",
+        "planted_idx": [
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "h5-051",
+        "planted_idx": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "h5-052",
+        "planted_idx": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h5-053",
+        "planted_idx": [
+          0,
+          3
+        ]
+      },
+      {
+        "id": "h5-054",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h5-055",
+        "planted_idx": [
+          0
+        ]
+      },
+      {
+        "id": "h5-056",
+        "planted_idx": [
+          1
+        ]
+      },
+      {
+        "id": "h5-058",
+        "planted_idx": [
+          0,
+          3,
+          4,
+          7
+        ]
+      },
+      {
+        "id": "h5-059",
+        "planted_idx": [
+          0,
+          1,
+          3
+        ]
+      },
+      {
+        "id": "h5-060",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      {
+        "id": "h5-061",
+        "planted_idx": [
+          0,
+          3,
+          5,
+          8
+        ]
+      },
+      {
+        "id": "h5-062",
+        "planted_idx": [
+          0,
+          2,
+          4,
+          5,
+          6,
+          7
+        ]
+      },
+      {
+        "id": "h5-063",
+        "planted_idx": [
+          0,
+          2,
+          3,
+          4
+        ]
+      },
+      {
+        "id": "h5-064",
+        "planted_idx": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "h5-065",
+        "planted_idx": [
+          0,
+          1,
+          3,
+          5
+        ]
+      },
+      {
+        "id": "h5-066",
+        "planted_idx": [
+          0,
+          3
+        ]
+      },
+      {
+        "id": "h5-067",
+        "planted_idx": [
+          0,
+          2,
+          3,
+          4
+        ]
+      },
+      {
+        "id": "h5-068",
+        "planted_idx": [
+          0,
+          1,
+          3,
+          4
+        ]
+      },
+      {
+        "id": "h5-069",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          5
+        ]
+      },
+      {
+        "id": "h5-070",
+        "planted_idx": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h5-071",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          5
+        ]
+      },
+      {
+        "id": "h5-072",
+        "planted_idx": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h5-073",
+        "planted_idx": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h5-074",
+        "planted_idx": [
+          0,
+          3,
+          4
+        ]
+      },
+      {
+        "id": "h5-075",
+        "planted_idx": [
+          0,
+          1,
+          2,
+          3,
+          5
+        ]
+      },
+      {
+        "id": "h5-076",
+        "planted_idx": [
+          0,
+          3
+        ]
+      },
+      {
+        "id": "h5-077",
+        "planted_idx": [
+          0,
+          2
+        ]
+      },
+      {
+        "id": "h5-078",
+        "planted_idx": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "h5-079",
+        "planted_idx": [
+          0,
+          3
+        ]
+      },
+      {
+        "id": "h5-080",
+        "planted_idx": [
+          1,
+          2
+        ]
+      }
+    ],
+    "ms_per_item": 0.4
+  }
+]
