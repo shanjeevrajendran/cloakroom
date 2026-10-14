@@ -334,7 +334,7 @@ def test_precision_round_scrubbed_templates_and_references():
     # (keyed-secret only: the keyed-password rule for password / pwd / pin keys is unchanged)
     for line in ("auth_token: session.authToken,", "token = opts.AccessToken;", 'secret="NATS_SECRET"',
                  "secret: dockerhub_password"):
-        assert mask(line, Vault()).text == line, line
+        assert mask(line, Vault(), mode="rules").text == line, line
     for line in ('password: "Zq8vT3mW9xK2pL7n"', "token = Zq8vT3mW9xK2pL7n", 'secret: "mysecretvalue"',
                  "api_key=hunter2Password99"):
-        assert "PII_SECRET" in mask(line, Vault()).text, line
+        assert "PII_SECRET" in mask(line, Vault(), mode="rules").text, line
