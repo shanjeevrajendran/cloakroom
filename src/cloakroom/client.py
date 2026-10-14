@@ -102,12 +102,13 @@ def start_background():
                          stdin=subprocess.DEVNULL, env=os.environ.copy(), **detach)
 
 
-def mask(text: str, session: str) -> dict:
+def mask(text: str, session: str, ocr: bool = False) -> dict:
+    """ocr: the text came from OCR (engine.OCR_DIGITS also applies)."""
     cfg = config.load()
     if cfg["mode"] == "rules":
-        r = engine.mask(text, Vault(config.vault_path(session)), "rules", cfg["allow"], cfg["always"])
+        r = engine.mask(text, Vault(config.vault_path(session)), "rules", cfg["allow"], cfg["always"], ocr)
         return {"text": r.text, "mode": "rules", "masked": r.masked, "skipped": r.skipped}
-    return _post("/mask", {"text": text, "session": session})
+    return _post("/mask", {"text": text, "session": session, **({"ocr": True} if ocr else {})})
 
 
 def restore(text: str, session: str) -> dict:

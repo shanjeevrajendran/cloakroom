@@ -50,8 +50,23 @@ out += f"xref\n0 {len(objs) + 1}\n0000000000 65535 f \n".encode() + "".join(f"{o
 out += f"trailer\n<< /Size {len(objs) + 1} /Root 1 0 R >>\nstartxref\n{x}\n%%EOF\n".encode()
 open(sys.argv[1], "wb").write(out)
 PDF
+# A scanned statement: an image-only PDF (no text layer), drawn with PIL. Needs the ocr extra in .venv.
+"$REPO/.venv/bin/python" - "$W/proj/scan.pdf" <<'SCAN' || true
+import sys
+from PIL import Image, ImageDraw, ImageFont
+lines = ["Larkspur Savings - Statement", "Account holder: Ingrid Solberg",
+         "Account number: 6203 1187 4429 0156", "Email: i.solberg@marrowgate.io"]
+try:
+    font = ImageFont.truetype("/System/Library/Fonts/Supplemental/Arial.ttf", 32)
+except OSError:
+    font = ImageFont.load_default(size=32)
+im = Image.new("RGB", (1240, 440), "white"); d = ImageDraw.Draw(im)
+for i, t in enumerate(lines):
+    d.text((60, 60 + i * 80), t, fill="black", font=font)
+im.save(sys.argv[1], "PDF", resolution=150)
+SCAN
 
-PROMPT="This is an approved test of a local masking tool on fake data. Read config.py and customers.csv. Create notes.md with one line: 'Owner: <owner as you see it>, contact <admin email as you see it>'. Run grep -n with the admin email as you see it on config.py. Then run od -c config.py | head -5 and say only whether its output was readable or withheld. Read statement.pdf and say only whether its account holder came through as a placeholder. Do not quote values."
+PROMPT="This is an approved test of a local masking tool on fake data. Read config.py and customers.csv. Create notes.md with one line: 'Owner: <owner as you see it>, contact <admin email as you see it>'. Run grep -n with the admin email as you see it on config.py. Then run od -c config.py | head -5 and say only whether its output was readable or withheld. Read statement.pdf and say only whether its account holder came through as a placeholder. Read scan.pdf with the Read tool and say the same for it. Do not quote values."
 
 [[ $CONTROL == 1 ]] && echo "CONTROL run: no plugin, expect FAIL on the leak checks"
 echo "running claude -p in $W/proj (port $CLOAKROOM_PORT) ..."
@@ -65,7 +80,7 @@ W = sys.argv[1]
 home = os.environ["CLOAKROOM_HOME"]
 vals = ['henrik.dahl@quillfield.com', 'sk_live_9fQ2xLmV7tR4pW8nK3jH6bYd', 'Henrik Dahl',
         'npetrov@marrowgate.io', 'Nadia Petrov', 'cdoyle@tessellate.org', 'Cormac Doyle', '555-2381', '555-7710',
-        '4417 2290 5531 8820']
+        '4417 2290 5531 8820', 'Ingrid Solberg', '6203 1187 4429 0156', 'i.solberg@marrowgate.io']
 sq = lambda s: re.sub(r'\s+', '', s)
 def frag(v, t):  # any 8-char window of a value (or the whole value if shorter)
     v = sq(v); n = min(8, len(v))
@@ -90,6 +105,12 @@ if tx:
     raw = open(tx[0]).read()
     # the PDF must reach Claude as masked text (not as a document block, which no hook can check)
     check("PDF read as masked text", "Account holder: PII_PERSON_" in raw and "JVBER" not in raw)
+    # the scanned PDF: read by local OCR and masked (name, account number and email as placeholders)
+    ocr = raw[raw.find("local OCR"):][:800] if "local OCR" in raw else ""
+    logged = re.search(r"post Read \S+ ocr pages=1 ms=\d+", open(log).read()) if os.path.exists(log) else None
+    check("scanned PDF read by OCR as masked text",
+          bool(logged) and all(f"PII_{k}_" in ocr for k in ("PERSON", "ACCOUNT", "EMAIL")),
+          "no OCR in hook.log (is the ocr extra in .venv?)" if not logged else "")
     n = 0
     for line in open(tx[0]):
         for b in (json.loads(line).get("message") or {}).get("content") or []:

@@ -291,8 +291,14 @@ def _always(text: str, always) -> list[rules.Finding]:
     return out
 
 
-def detect(text: str, mode: str = "full", allow=(), always=()) -> tuple[list[rules.Finding], list[tuple]]:
-    """Findings to mask, and findings skipped as safe (with the reason)."""
+# OCR text: a run of 10+ digits, spaces or dashes allowed between them, is taken as an account or card number.
+# OCR drops and adds spaces inside numbers ("4417 22901185 3306"), and the rules alone don't catch account numbers
+# that fail the card checksum, so in OCR text these are masked without the usual safe-value judgement.
+OCR_DIGITS = re.compile(r"(?<![\d.,])\d(?:[ -]?\d){9,}(?!\d)")
+
+
+def detect(text: str, mode: str = "full", allow=(), always=(), ocr: bool = False) -> tuple[list[rules.Finding], list[tuple]]:
+    """Findings to mask, and findings skipped as safe (with the reason). ocr: the text came from OCR."""
     if mode not in ("full", "rules"):
         raise ValueError("mode must be 'full' or 'rules'")
     found = rules.scan(text)
@@ -325,6 +331,9 @@ def detect(text: str, mode: str = "full", allow=(), always=()) -> tuple[list[rul
             if (a, b) != (f.start, f.end):
                 why = safe.reason(text[a:b], f.kind, f.keyed)
         (skipped.append((f.kind, f.source, why)) if why else keep.append(f))
+    if ocr:
+        keep += [rules.Finding(m.start(), m.end(), "ACCOUNT", "ocr-digits") for m in OCR_DIGITS.finditer(text)
+                 if not any(s <= m.start() and m.end() <= e for s, e in own)]
     return _merge(keep + _repeats(text, keep)), skipped
 
 
@@ -350,9 +359,9 @@ def _repeats(text: str, found: list[rules.Finding]) -> list[rules.Finding]:
     return out
 
 
-def mask(text: str, vault: Vault | None = None, mode: str = "full", allow=(), always=()) -> Result:
+def mask(text: str, vault: Vault | None = None, mode: str = "full", allow=(), always=(), ocr: bool = False) -> Result:
     vault = vault if vault is not None else Vault()
-    findings, skipped = detect(text, mode, allow, always)
+    findings, skipped = detect(text, mode, allow, always, ocr)
     out, last, masked = [], 0, []
     for f in findings:
         ph = vault.placeholder(f.value(text), f.kind)

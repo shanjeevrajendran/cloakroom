@@ -28,6 +28,7 @@ GUIDE = ("Cloakroom note: values like PII_EMAIL_1 are placeholders for real data
          "placeholders, or rewrite the file with Write. Don't try to recover the real values.")
 PRIME_MAX_BYTES = 512 * 1024
 _ACTION = [""]  # set when a prompt passes by your own choice (sent anyway, paused), for the event log
+_NOTE = [""]  # extra detail for the hook.log line (OCR pages and time), never values
 _FOUND: list[tuple[str, str]] = []  # (placeholder, kind) found during the current hook call, for the event log
 TIP = ("Cloakroom can't rewrite a prompt, only block it. Put the detail in a file and ask Claude to read it: "
        "it will be masked on the way in and restored for local edits. Send it anyway: add cr! at the start. "
@@ -147,14 +148,19 @@ def on_post(data: dict) -> dict | None:
     def fn(s):
         if len(s) < 4:
             return s
-        r = client.mask(s, session)
+        r = client.mask(s, session, ocr=converted == "ocr")
         kinds.extend(k for _, k, _ in r["masked"])
         _FOUND.extend((p, k) for p, k, _ in r["masked"])
         return r["text"]
     raw, converted = data.get("tool_response"), ""
-    if data.get("tool_name") == "Read":  # PDFs become their text layer, pictures are held back (media.py)
+    if data.get("tool_name") == "Read":  # PDFs become their text layer, scans and pictures OCR text (media.py)
+        cfg = config.load()
+        ocr = media.Ocr.from_config(cfg)
         raw, converted = media.convert(raw, (data.get("tool_input") or {}).get("file_path", ""),
-                                       allow_images=bool(config.load().get("allow_images")))
+                                       allow_images=bool(cfg.get("allow_images")), ocr=ocr)
+        if ocr.pages or ocr.error:
+            _NOTE[0] = (f"ocr pages={ocr.pages} ms={ocr.ms:.0f}" if not ocr.error else
+                        f"ocr failed ({ocr.error})")
         if converted == "image-allowed":
             _ACTION[0] = "image passed"
             return {"systemMessage": "cloakroom: an image went to Claude unchecked (allow_images is on)"}
@@ -198,7 +204,7 @@ def on_post(data: dict) -> dict | None:
     if _dry("post", f"{data.get('tool_name')}: would mask {_summary(kinds)}"):
         return None
     out = {"hookEventName": "PostToolUse", "updatedToolOutput": new}
-    what = {"pdf": "PDF text", "figures": "notebook (figures held back)"}.get(converted, f"{data.get('tool_name')} output")
+    what = {"pdf": "PDF text", "ocr": "OCR text", "figures": "notebook (figures held back)"}.get(converted, f"{data.get('tool_name')} output")
     if not changed:
         return {"hookSpecificOutput": out, "systemMessage": f"cloakroom: checked {what}, nothing to mask"}
     guide = _guide_once(session)
@@ -391,7 +397,7 @@ def _prompt_rules_only(data: dict, why: str) -> dict:
 
 def handle(event: str, data: dict) -> dict | None:
     _FOUND.clear()
-    _ACTION[0] = ""
+    _ACTION[0] = _NOTE[0] = ""
     t0 = time.perf_counter()
     try:
         out = HANDLERS[event](data)
@@ -427,7 +433,8 @@ def _log(event: str, data, out, ms: float = 0.0):
             "masked" if "updatedToolOutput" in h else "restored" if "updatedInput" in h else "pass")
         tool = data.get("tool_name", "-") if isinstance(data, dict) else "-"
         with open(config.private_dir() / "hook.log", "a") as f:
-            f.write(f"{time.strftime('%Y-%m-%dT%H:%M:%S')} {event} {tool} {decision}\n")
+            note = f" {_NOTE[0]}" if _NOTE[0] else ""
+            f.write(f"{time.strftime('%Y-%m-%dT%H:%M:%S')} {event} {tool} {decision}{note}\n")
         target = events.target(tool, data.get("tool_input")) if isinstance(data, dict) and _FOUND else ""
         if target:  # a file name can hold a name or an email too: log it masked, like the output
             try:

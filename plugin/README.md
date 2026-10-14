@@ -20,7 +20,7 @@ Then restart Claude Code. Cloakroom installs itself on first start (a few minute
 
 - **Hooks** on SessionStart, UserPromptSubmit, PreToolUse and PostToolUse. Each hook calls the `cloakroom`
   program installed on your machine and passes it the hook's JSON. Detection runs locally: rules plus a small
-  detection model.
+  detection model, and local OCR (RapidOCR) for scanned PDFs and photos.
 - **A first-start installer** (`scripts/bootstrap.sh`, `scripts/bootstrap.ps1` on Windows). When `cloakroom` isn't
   installed yet, it installs the pinned release of the `cloakroom` Python package from PyPI, using uv, else pipx,
   else a private virtual environment in `~/.cloakroom/venv`. Until that finishes, tool calls are held back.
@@ -40,7 +40,8 @@ Security reports: [SECURITY.md](https://github.com/shanjeevrajendran/cloakroom/b
 
 - **Fetches once:** the `cloakroom` package and its dependencies from PyPI, and the PII-Tracer detection model
   (`perplexity-ai/PII-Tracer`, a pinned revision) from Hugging Face. On machines without a GPU it builds a faster
-  CPU copy of the model locally.
+  CPU copy of the model locally. The OCR models for scanned PDFs and photos ship inside the package, so OCR
+  downloads nothing and runs on your CPU.
 - **Sends nothing.** File contents, prompts and tool output never leave your machine through Cloakroom. The only
   network calls are the downloads above.
 

@@ -8,7 +8,7 @@ from pathlib import Path
 
 HOME = Path(os.environ.get("CLOAKROOM_HOME", Path.home() / ".cloakroom"))
 DEFAULTS = {"mode": "full", "port": 37787, "allow": [], "mask_own_username": False, "mask_all_dates": False,
-            "allow_images": False}  # not 8787: Headroom's proxy defaults to it
+            "allow_images": False, "ocr": True, "ocr_max_pages": 20, "ocr_timeout": 30}  # not 8787: Headroom's proxy defaults to it
 
 
 def load() -> dict:

@@ -64,8 +64,10 @@ function Find-Cloakroom {
 }
 
 try {
-  $Rules = if ($env:CLOAKROOM_SPEC_RULES) { $env:CLOAKROOM_SPEC_RULES } else { "cloakroom==0.3.0" }
-  $Full = if ($env:CLOAKROOM_SPEC_FULL) { $env:CLOAKROOM_SPEC_FULL } else { "cloakroom[model,torch]==0.3.0" }
+  $Rules = if ($env:CLOAKROOM_SPEC_RULES) { $env:CLOAKROOM_SPEC_RULES } else { "cloakroom==0.4.0" }
+  $Full = if ($env:CLOAKROOM_SPEC_FULL) { $env:CLOAKROOM_SPEC_FULL } else { "cloakroom[model,torch,ocr]==0.4.0" }
+  # stage 2 again without local OCR if its wheels fail, so a broken OCR wheel never blocks the model
+  $NoOcr = if ($env:CLOAKROOM_SPEC_NO_OCR) { $env:CLOAKROOM_SPEC_NO_OCR } else { "cloakroom[model,torch]==0.4.0" }
   "$(Get-Date -Format s) installer: $Who" | Add-Content $Log
   if ($Who -eq "none") {
     Set-Content $State "failed"
@@ -76,8 +78,13 @@ try {
   Set-Content $State "rules"
   if (-not (Install-Spec $Rules $false)) { Set-Content $State "failed"; "stage 1 failed" | Add-Content $Log; exit 1 }
   Set-Content $State "model"
-  "$(Get-Date -Format s) stage 2 of 2: installing the model ($Full; about 1 GB on a Mac, up to about 4 GB elsewhere)" | Add-Content $Log
-  if (Install-Spec $Full $true) {
+  "$(Get-Date -Format s) stage 2 of 2: installing the model ($Full; about 1 GB on a Mac, up to about 4 GB elsewhere, of which local OCR about 100 MB)" | Add-Content $Log
+  $ok = Install-Spec $Full $true
+  if (-not $ok) {
+    "$(Get-Date -Format s) the install with OCR failed: retrying without it ($NoOcr); scanned PDFs and photos stay held back" | Add-Content $Log
+    $ok = Install-Spec $NoOcr $true
+  }
+  if ($ok) {
     $cr = Find-Cloakroom
     if ($cr) {
       "$(Get-Date -Format s) building the fast CPU model if this machine has no GPU (a few minutes)" | Add-Content $Log

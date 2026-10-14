@@ -1,7 +1,7 @@
 """Local service that keeps the model loaded. Listens on 127.0.0.1 only and requires the token from
 ~/.cloakroom/token on every call. Never logs request bodies or values.
 
-POST /mask     {"text", "session", "mode"?} -> {"text", "mode", "masked": [[placeholder, kind, source]], "skipped": [...]}
+POST /mask     {"text", "session", "mode"?, "ocr"?} -> {"text", "mode", "masked": [[placeholder, kind, source]], "skipped": [...]}
 POST /restore  {"text", "session"}          -> {"text", "unknown": [placeholders not in the vault]}
 GET  /health                                 -> {"ok": true, "service": "cloakroom", "model": bool}
 POST /dashboard/code                         -> {"code"}: one-time sign-in code for `cloakroom dashboard`
@@ -95,7 +95,8 @@ class Handler(BaseHTTPRequestHandler):
             with LOCK:
                 if self.path == "/mask":
                     cfg = config.load()
-                    r = engine.mask(req["text"], vault, req.get("mode") or self.server.mode, cfg["allow"], cfg["always"])
+                    r = engine.mask(req["text"], vault, req.get("mode") or self.server.mode, cfg["allow"], cfg["always"],
+                                    bool(req.get("ocr")))
                     return self._send(200, {"text": r.text, "mode": r.mode, "masked": r.masked, "skipped": r.skipped})
                 if self.path == "/restore":
                     text, unknown = vault.restore(req["text"])

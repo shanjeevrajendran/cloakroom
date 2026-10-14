@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "cloakroom"
-version = "0.3.0"
+version = "0.4.0"
 description = "A privacy layer for Claude Code: names, emails, addresses and API keys are swapped for placeholders before the model sees them, and restored locally."
 readme = "README.md"
 license = "Apache-2.0"
@@ -27,6 +27,9 @@ dependencies = ["cryptography>=42", "keyring>=24", "pypdf>=5"]  # pypdf: PDF tex
 [project.optional-dependencies]
 # CPU: ONNX Runtime, no PyTorch at runtime (the ONNX file comes from scripts/export_onnx.py)
 model = ["onnxruntime>=1.20", "tokenizers>=0.20", "numpy", "huggingface_hub"]
+# Local OCR for scanned PDFs and pictures: RapidOCR's PP-OCR models (inside its wheel) on ONNX Runtime, pages
+# rendered with pdfium. No system programs. Without it, scans and pictures are held back.
+ocr = ["rapidocr>=3.10,<4", "onnxruntime>=1.20", "pypdfium2>=4.30", "pillow", "numpy"]
 # MPS/CUDA, and the one-off ONNX export
 torch = ["torch>=2.5", "transformers>=5.2", "safetensors", "huggingface_hub", "onnx>=1.16"]
 

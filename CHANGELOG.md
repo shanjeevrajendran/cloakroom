@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.4.0 (2026-10-14)
+- Scanned PDFs and photos are now read and masked instead of held back: with the new optional `ocr` extra
+  (`cloakroom[ocr]`: RapidOCR on ONNX Runtime, pdfium to render pages; models inside the wheel, no system programs,
+  no network), pages without a text layer and png/jpg pictures read with Read are OCR'd locally and the text is
+  masked like any file. Mixed PDFs keep their text layer for typed pages. In OCR text, any run of 10+ digits is masked
+  as an account number, since OCR drops or adds spaces inside numbers. Up to 20 pages and 30 seconds per Read
+  (`ocr_max_pages`, `ocr_timeout`; `"ocr": false` turns it off); the hook log notes `ocr pages=N ms=M`.
+- Held back as before: encrypted PDFs, unsupported pictures, notebook figures, and any OCR failure or timeout.
+  Without the extra, behaviour is exactly 0.3.0.
+- The plugin's first-start install adds the `ocr` extra to stage 2 (about 100 MB more); if it fails to install,
+  stage 2 is retried without it, so OCR never blocks the model.
+
 ## 0.3.0 (2026-10-14)
 - Fewer false alarms on code and config: Cloakroom now leaves alone values that say they were scrubbed
   (`login_and_password_removed`, `REDACTED_TOKEN`), template values (`$t(label)`, `{{ var }}`, `${var}`), and

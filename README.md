@@ -29,12 +29,13 @@ Tested from clean installs on macOS, Windows and Ubuntu · young, expect rough e
 
 **Hand Claude the files you'd never paste into a chat:**
 
-- **Bank statements** (PDF or CSV): "sort a year of spending by category." Claude sees amounts and merchants, not your name, address or account number.
+- **Bank statements** (PDF, scan or CSV): "sort a year of spending by category." Claude sees amounts and merchants, not your name, address or account number.
 - **Support tickets:** "draft replies to this week's tickets." Claude writes to PII_PERSON_1; the drafts on your disk have the real names.
 - **Medical or HR records:** names, birth dates, addresses and ID numbers are masked, so Claude can summarise or tidy a record without knowing whose it is.
 - **`.env` files and logs:** Claude fixes the config without ever seeing the password or API key.
 
-Scanned PDFs and photos are held back, not read ([known limits](https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-LIMITS.md)).
+Scanned PDFs and photos (png, jpg) are read on your machine by local OCR and masked like any file; the OCR models
+come inside the package, nothing is sent out. A scan OCR can't read in time is held back ([known limits](https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-LIMITS.md)).
 
 <div align="center">
   <img src="https://raw.githubusercontent.com/shanjeevrajendran/cloakroom/main/assets/demo.gif" alt="Claude Code reads a support ticket and .env through Cloakroom: the model sees PII_PERSON_1 and PII_SECRET_1, and reply.md on disk gets the real customer name back" width="820">
@@ -54,8 +55,8 @@ in a log looks like ordinary text to a regex.
   numbers and addresses, where the other tools we tested let 119 to 992 through.
 - **Claude keeps working.** Placeholders stay the same for the whole session, and the real values are put back
   when Claude writes a file or runs a command locally.
-- **Runs on your machine.** Detection, the encrypted vault and the restore are all local. The only network call is
-  the one-time model download.
+- **Runs on your machine.** Detection, OCR, the encrypted vault and the restore are all local. The only network call
+  is the one-time model download (the OCR models ship inside the package).
 - **Cross-platform.** One install on all three, with the vault key in each system's own secure store:
   - **macOS:** Keychain. On Apple Silicon the model runs on the built-in GPU, about 20 to 70 ms per check.
   - **Windows:** Credential Manager; hooks run in PowerShell or Git Bash. Tested on Windows Server.
@@ -112,7 +113,7 @@ cloakroom doctor       # checks Python, the key store, the model and the service
 cloakroom dashboard    # opens your alerts in the browser
 ```
 
-Prefer to install by hand: `uv tool install "cloakroom[model,torch]"` (Python 3.10+), then add the plugin as above.
+Prefer to install by hand: `uv tool install "cloakroom[model,torch,ocr]"` (Python 3.10+), then add the plugin as above.
 
 ## When Cloakroom blocks your prompt
 
@@ -230,7 +231,7 @@ its false alarms), plus names and addresses Gretel leaves unlabelled.
 ## FAQ
 
 **Does it send my data anywhere?** No. It downloads the detection model once from Hugging Face (a pinned
-version). Everything else runs on 127.0.0.1.
+version); the OCR models come inside the package. Everything else runs on 127.0.0.1.
 
 **How much slower is Claude?** Each tool call is checked by a small local service: about 20 to 70 ms on Apple
 Silicon (an M5 Max to an 8 GB M1 Air), 60 ms on an Apple M-series CPU, about 300 ms on a 2-core cloud VM. The first run
@@ -246,9 +247,15 @@ set on smuggling data out piece by piece, what you type into a prompt (a prompt 
 and names alone go through), and Claude Code's own local logs. Details: [docs-LIMITS.md](https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-LIMITS.md).
 
 **What about PDFs and images?** When Claude reads a PDF, Cloakroom pulls out its text on your machine and masks
-it like any file; Claude gets that text, not the PDF itself. Pictures can't be checked, so Cloakroom holds them back
-(screenshots, photos, a scanned PDF with no text in it, figures in a notebook) and tells Claude so. To show Claude a
-picture anyway, attach it to your own prompt. Cloakroom doesn't read text inside images (no OCR).
+it like any file; Claude gets that text, not the PDF itself.
+
+**Scanned PDFs and photos:** a scanned page or a photo of a document (png, jpg) is read by local OCR (RapidOCR,
+running on your CPU with its models bundled in the package: no download, no cloud, no account) and the text is masked before Claude sees it; Claude gets the text, never
+the picture. OCR comes with the plugin's install, or add it yourself: `uv tool install "cloakroom[model,torch,ocr]"`.
+It reads up to 20 scanned pages per Read in up to 30 seconds (`ocr_max_pages`, `ocr_timeout` in the config). OCR can
+misread a character, so in OCR text any run of ten or more digits is masked as an account number. Without OCR, or
+when it fails or runs out of time, the scan or photo is held back and Claude is told so; encrypted PDFs, figures in a
+notebook and other pictures are held back too. To show Claude a picture anyway, attach it to your own prompt.
 
 **How do I remove it?** See [Uninstall](https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-SETUP.md#uninstall).
 

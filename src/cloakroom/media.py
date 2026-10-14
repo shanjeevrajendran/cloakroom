@@ -2,7 +2,9 @@
 
 Claude Code sends a PDF to the model as a document (or as page pictures with `pages`), and a picture as an image:
 none of it is text the detectors can check. So a PDF becomes its text layer, extracted here and then masked like any
-file, and a picture is held back with a note saying how to get the content another way. The replacement uses Read's
+file. With the `ocr` extra (ocr.py), scanned pages and pictures are read locally and their text is masked the same
+way; without it, or when OCR fails or runs out of time, they are held back with a note saying how to get the content
+another way. The replacement uses Read's
 text shape: Claude Code accepts a result switched to `{"type": "text", ...}` and drops the document; a `pdf` result
 with its data emptied, or a plain string, is ignored and the original PDF goes through (live test 2026-10-14).
 """
@@ -21,6 +23,7 @@ NO_TEXT = ("[Cloakroom held back this PDF: {why}, so it can't be checked for sec
            "masked. A scanned PDF has no text to extract: ask the user to paste the part you need.]")
 IMAGE = ("[Cloakroom held back this image: it can't check pictures for secrets or personal data. If the user wants "
          "you to see it, they can attach it to their own prompt.]")
+OCR_NOTE = "[Text read from this {what} by Cloakroom's local OCR; the {what} itself was not sent. OCR can misread.]\n"
 FIGURE = "[figure held back by Cloakroom: pictures can't be checked]"
 OTHER = "[Cloakroom held back this {kind} result: it isn't text, so it can't be checked.]"
 
@@ -40,25 +43,56 @@ def _page_range(response: dict) -> range | None:
     return None
 
 
-def pdf_text(data: bytes, pages: range | None = None) -> tuple[str, int, int]:
-    """The PDF's text layer page by page, how many pages had none, and how many pages. Raises if it can't be parsed."""
+class Ocr:
+    """OCR settings for one Read, and what it did (for the hook log)."""
+
+    def __init__(self, on: bool = False, max_pages: int = 20, timeout: float = 30):
+        self.on, self.max_pages, self.timeout = on, max_pages, timeout
+        self.pages, self.ms, self.error = 0, 0.0, ""
+
+    @classmethod
+    def from_config(cls, cfg: dict) -> "Ocr":
+        from . import ocr
+        return cls(bool(cfg.get("ocr", True)) and ocr.available(), int(cfg.get("ocr_max_pages", 20)),
+                   float(cfg.get("ocr_timeout", 30)))
+
+
+def pdf_text(data: bytes, pages: range | None = None, ocr: Ocr | None = None) -> tuple[str, int, int]:
+    """The PDF's text layer page by page, how many pages had none, and how many pages. Raises if it can't be parsed.
+    With OCR on, pages without a text layer (up to ocr.max_pages) are rendered and read instead; if OCR fails they
+    stay held back, as without it."""
     from pypdf import PdfReader  # imported here so a missing pypdf holds the PDF back instead of breaking the hook
     reader = PdfReader(io.BytesIO(data))
     if reader.is_encrypted:
         reader.decrypt("")  # an empty owner password is common; anything else raises and holds the PDF back
     idx = [i for i in (pages if pages is not None else range(len(reader.pages))) if 0 <= i < len(reader.pages)]
+    # NFKC: PDF text often carries ligatures ("ﬁ" for "fi") that would hide an email or a name from the detectors
+    texts = {i: unicodedata.normalize("NFKC", reader.pages[i].extract_text() or "").strip() for i in idx}
+    scans = [i for i in idx if len(re.sub(r"\s", "", texts[i])) < MIN_PAGE_CHARS]
+    read = {}
+    # an encrypted PDF is never rendered: it keeps the 0.2.4 behaviour (text layer, else held back)
+    if ocr and ocr.on and scans and not reader.is_encrypted:
+        from . import ocr as engine
+        try:
+            read, ocr.ms = engine.pdf_pages_text(data, scans[:ocr.max_pages], ocr.timeout)
+        except Exception as e:  # OCR missing, failed or too slow: the pages stay held back
+            ocr.error = str(e) or type(e).__name__
+        read = {i: unicodedata.normalize("NFKC", t).strip() for i, t in read.items()
+                if len(re.sub(r"\s", "", t)) >= 2}  # a blank page reads as nothing: still held back
+        ocr.pages = len(read)
     out, empty = [], 0
     for i in idx:
-        # NFKC: PDF text often carries ligatures ("ﬁ" for "fi") that would hide an email or a name from the detectors
-        t = unicodedata.normalize("NFKC", reader.pages[i].extract_text() or "").strip()
-        if len(re.sub(r"\s", "", t)) < MIN_PAGE_CHARS:
+        t = texts[i]
+        if i in read:
+            t = OCR_NOTE.format(what="page") + read[i]
+        elif i in scans:
             empty += 1
             t = "[no text layer on this page: held back]"
         out.append(f"--- page {i + 1} ---\n{t}" if len(idx) > 1 else t)
     return "\n\n".join(out), empty, len(idx)
 
 
-def _pdf(response: dict, path: str) -> tuple[dict, str]:
+def _pdf(response: dict, path: str, ocr: Ocr | None = None) -> tuple[dict, str]:
     f = response.get("file") or {}
     try:
         if response.get("type") == "pdf" and f.get("base64"):
@@ -66,14 +100,29 @@ def _pdf(response: dict, path: str) -> tuple[dict, str]:
         else:
             with open(path, "rb") as fh:
                 data = fh.read()
-        text, empty, total = pdf_text(data, _page_range(response) if response.get("type") == "parts" else None)
+        text, empty, total = pdf_text(data, _page_range(response) if response.get("type") == "parts" else None, ocr)
     except ImportError:
         return text_result(path, NO_TEXT.format(why="its text reader (pypdf) isn't installed", path=path)), "held"
     except Exception as e:  # damaged, encrypted, unreadable: fail closed
         return text_result(path, NO_TEXT.format(why=f"it couldn't be read ({type(e).__name__})", path=path)), "held"
     if empty == total:  # no page with text (or no pages at all)
         return text_result(path, NO_TEXT.format(why="it has no text layer (a scan or pictures only)", path=path)), "held"
-    return text_result(path, text), "pdf"
+    return text_result(path, text), ("ocr" if ocr and ocr.pages else "pdf")
+
+
+def _image(response: dict, path: str, ocr: Ocr) -> tuple[dict, str]:
+    """A picture's text by local OCR, or held back (no OCR, unreadable, too slow, or no text in it)."""
+    from . import ocr as engine
+    try:
+        text, ocr.ms = engine.image_text(base64.b64decode(response["file"]["base64"]), ocr.timeout)
+    except Exception as e:
+        ocr.error = str(e) or type(e).__name__
+        return text_result(path, IMAGE), "held"
+    text = unicodedata.normalize("NFKC", text).strip()
+    if len(re.sub(r"\s", "", text)) < 2:
+        return text_result(path, IMAGE), "held"
+    ocr.pages = 1
+    return text_result(path, OCR_NOTE.format(what="image") + text), "ocr"
 
 
 def _notebook(response: dict) -> tuple[dict, bool]:
@@ -97,17 +146,18 @@ def _notebook(response: dict) -> tuple[dict, bool]:
     return {**response, "file": {**response["file"], "cells": new_cells}}, held
 
 
-def convert(response, path: str = "", allow_images: bool = False):
+def convert(response, path: str = "", allow_images: bool = False, ocr: Ocr | None = None):
     """Turn a non-text Read result into something the masking can check.
 
-    Returns (response, what): what is "" (unchanged), "pdf" (text layer extracted), "held" (held back),
-    "figures" (notebook pictures dropped) or "image-allowed" (passed by the allow_images setting)."""
+    Returns (response, what): what is "" (unchanged), "pdf" (text layer extracted), "ocr" (text read by OCR, from
+    scanned pages or a picture), "held" (held back), "figures" (notebook pictures dropped) or "image-allowed"
+    (passed by the allow_images setting)."""
     if not isinstance(response, dict) or not isinstance(response.get("file"), dict):
         return response, ""
     kind = response.get("type")
     path = response["file"].get("filePath") or path  # an image result carries no filePath
     if kind in ("pdf", "parts"):
-        return _pdf(response, path)
+        return _pdf(response, path, ocr)
     if kind == "notebook":
         if allow_images:
             return response, ""
@@ -116,5 +166,9 @@ def convert(response, path: str = "", allow_images: bool = False):
     if kind is None or kind in TEXT_TYPES:
         return response, ""
     if kind == "image":
-        return (response, "image-allowed") if allow_images else (text_result(path, IMAGE), "held")
+        if allow_images:
+            return response, "image-allowed"
+        if ocr and ocr.on and response["file"].get("base64"):
+            return _image(response, path, ocr)
+        return text_result(path, IMAGE), "held"
     return text_result(path, OTHER.format(kind=str(kind or "unknown"))), "held"  # a Read result type we don't know

@@ -1,13 +1,15 @@
 #!/usr/bin/env bash
 # First-start installer, run in the background by the plugin's hooks when the cloakroom program is missing.
 # Stage 1: install `cloakroom` (small, seconds) -> rules-only protection.
-# Stage 2: the model extras (about 1 GB on a Mac, up to about 4 GB elsewhere; minutes); on a machine without an Apple Silicon or NVIDIA GPU it also builds
-#          the fast CPU model (cloakroom export-onnx --if-no-gpu) before full mode switches on by itself.
+# Stage 2: the model extras (about 1 GB on a Mac, up to about 4 GB elsewhere; minutes) plus local OCR for scans and
+#          photos (the ocr extra, about 100 MB; if it fails to install, stage 2 is retried without it); on a machine
+#          without an Apple Silicon or NVIDIA GPU it also builds the fast CPU model (cloakroom export-onnx --if-no-gpu)
+#          before full mode switches on by itself.
 # Installer, the first that exists: uv, pipx, else a private virtualenv in ~/.cloakroom/venv (needs Python 3.10+).
 # Only Python packages are downloaded; uv itself is never fetched for you.
 # One installer at a time (lock dir; a lock older than 30 min is stale). Progress: ~/.cloakroom/bootstrap.log.
 # bootstrap.sh --check only says whether an installer exists (exit 0) and installs nothing.
-# CLOAKROOM_SPEC_RULES / CLOAKROOM_SPEC_FULL override what is installed, CLOAKROOM_INSTALLER picks one (tests).
+# CLOAKROOM_SPEC_RULES / CLOAKROOM_SPEC_FULL / CLOAKROOM_SPEC_NO_OCR override what is installed, CLOAKROOM_INSTALLER picks one (tests).
 set -u
 # --check: exit 0 when this machine has something to install with (the hook asks this before starting the install)
 if [ "${1:-}" = --check ]; then
@@ -22,8 +24,9 @@ if ! mkdir "$LOCK" 2>/dev/null; then
   rm -rf "$LOCK" && mkdir "$LOCK" || exit 0
 fi
 trap 'rm -rf "$LOCK"' EXIT
-RULES="${CLOAKROOM_SPEC_RULES:-cloakroom==0.3.0}"  # pinned: each plugin version installs its own release
-FULL="${CLOAKROOM_SPEC_FULL:-cloakroom[model,torch]==0.3.0}"
+RULES="${CLOAKROOM_SPEC_RULES:-cloakroom==0.4.0}"  # pinned: each plugin version installs its own release
+FULL="${CLOAKROOM_SPEC_FULL:-cloakroom[model,torch,ocr]==0.4.0}"
+NO_OCR="${CLOAKROOM_SPEC_NO_OCR:-cloakroom[model,torch]==0.4.0}"  # stage 2 again without OCR if its wheels fail
 
 py310() {  # a Python 3.10+ interpreter on PATH, or nothing
   for p in python3 python; do
@@ -41,12 +44,20 @@ if [ -z "$WHO" ]; then
   else WHO=none; fi
 fi
 
-install() {  # install SPEC FORCE(0|1)
+install() {  # install SPEC STAGE(0 rules | 1 model and OCR | 2 model only)
   case "$WHO" in
     # uv and pipx get the release spelled out (the Claude plugin directory checks these pins); the CLOAKROOM_SPEC_*
     # overrides, for tests, apply to the virtualenv route
-    uv)   if [ "$2" = 1 ]; then uv tool install --force "cloakroom[model,torch]==0.3.0"; else uv tool install "cloakroom==0.3.0"; fi ;;
-    pipx) if [ "$2" = 1 ]; then pipx install --force "cloakroom[model,torch]==0.3.0"; else pipx install "cloakroom==0.3.0"; fi ;;
+    uv)   case "$2" in
+            1) uv tool install --force "cloakroom[model,torch,ocr]==0.4.0" ;;
+            2) uv tool install --force "cloakroom[model,torch]==0.4.0" ;;
+            *) uv tool install "cloakroom==0.4.0" ;;
+          esac ;;
+    pipx) case "$2" in
+            1) pipx install --force "cloakroom[model,torch,ocr]==0.4.0" ;;
+            2) pipx install --force "cloakroom[model,torch]==0.4.0" ;;
+            *) pipx install "cloakroom==0.4.0" ;;
+          esac ;;
     venv) { [ -x "$H/venv/bin/python" ] || "$(py310)" -m venv "$H/venv"; } && PIP_DISABLE_PIP_VERSION_CHECK=1 "$H/venv/bin/python" -m pip install -q -U "$1" ;;
     *)    return 1 ;;
   esac
@@ -75,8 +86,14 @@ cloakroom_bin() {  # where the installer put the program (often not on the PATH 
   echo rules > "$STATE"
   if ! install "$RULES" 0; then echo failed > "$STATE"; echo "stage 1 failed"; exit 1; fi
   echo model > "$STATE"
-  echo "$(date '+%F %T') stage 2 of 2: installing the model ($FULL; about 1 GB on a Mac, up to about 4 GB elsewhere)"
-  if install "$FULL" 1; then
+  echo "$(date '+%F %T') stage 2 of 2: installing the model ($FULL; about 1 GB on a Mac, up to about 4 GB elsewhere, of which local OCR about 100 MB)"
+  OK=0
+  if install "$FULL" 1; then OK=1
+  else
+    echo "$(date '+%F %T') the install with OCR failed: retrying without it ($NO_OCR); scanned PDFs and photos stay held back"
+    install "$NO_OCR" 2 && OK=1
+  fi
+  if [ "$OK" = 1 ]; then
     CR="$(cloakroom_bin)"
     if [ -n "$CR" ]; then
       echo "$(date '+%F %T') building the fast CPU model if this machine has no GPU (a few minutes)"

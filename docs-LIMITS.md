@@ -1,4 +1,4 @@
-# Known limits (v0.2; live Claude Code tests 2026-10-09, 2026-10-12 and 2026-10-14, benchmarks through 2026-10-12)
+# Known limits (live Claude Code tests 2026-10-09, 2026-10-12 and 2026-10-14, benchmarks through 2026-10-12)
 
 - Prompts can only be blocked, not masked (UserPromptSubmit can't rewrite). A blocked prompt never reaches the
   model, but Claude Code keeps it in its local session records on disk. To limit blocks:
@@ -34,11 +34,18 @@
 - PDFs (live test 2026-10-14): Claude Code sends a PDF read to the model as a document (or as page pictures with
   `pages`), which a hook can't mask in place. Cloakroom extracts the text layer locally (pypdf), masks it and gives
   Claude that text instead, so layout, pictures and charts in the PDF are not seen. Pages without a text layer are
-  marked as held back; a PDF with no text at all (a scan), an encrypted or damaged one is held back whole, with a note
-  telling Claude to run `pdftotext file -` (masked like any command output) or ask you to paste the text. No OCR:
-  text that exists only as a picture is never read, so it can't leak, but Claude can't use it either.
-- Images: Read results that are pictures (png, jpg, gif, webp...) and figures in notebook outputs are held back,
-  because Cloakroom can't check pixels. Attach a picture to your own prompt to show it to Claude, or set
+  read by local OCR when the `ocr` extra is installed (below), else marked as held back; a PDF with no text at all
+  and no OCR, an encrypted or damaged one is held back whole, with a note telling Claude to run `pdftotext file -`
+  (masked like any command output) or ask you to paste the text.
+- Scans and photos (OCR): with `cloakroom[ocr]`, scanned PDF pages and pictures read with Read go through RapidOCR
+  on the CPU (models inside the package, never downloaded at run time; pages rendered with pdfium) and the text is
+  masked. Limits: up to `ocr_max_pages` (20) scanned pages per Read, later pages stay held back; one `ocr_timeout`
+  (30 s) per Read, after which the read is held back. OCR can misread or split a number, so in OCR text every run of
+  10+ digits (spaces and dashes allowed) is masked as an account number; a misread name or email may still slip past
+  the detectors, as it would in a typed file with a typo. Handwriting, very small print and photos at an angle read
+  poorly. Encrypted PDFs are never rendered. `"ocr": false` turns it off.
+- Images: without OCR, Read results that are pictures (png, jpg, gif, webp...) are held back, and figures in
+  notebook outputs always are, because Cloakroom can't check pixels. Attach a picture to your own prompt to show it to Claude, or set
   `"allow_images": true` to let them through with a warning. Pictures returned by other tools (MCP servers, for
   example) are not checked or held back.
 - Claude Code auto-approves read-only commands such as `od`, so permissions alone can't stop a dump.
