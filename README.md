@@ -7,6 +7,7 @@
   <a href="#when-cloakroom-blocks-your-prompt">Blocked prompt?</a> ·
   <a href="#results">Results</a> ·
   <a href="#how-it-works">How it works</a> ·
+  <a href="#dashboard">Dashboard</a> ·
   <a href="#faq">FAQ</a> ·
   <a href="https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-LIMITS.md">Known limits</a>
 </p>
@@ -24,6 +25,8 @@
 **Cloakroom swaps your secrets and personal data for placeholders before Claude sees them, and puts the real values
 back in the files Claude writes.**
 
+The only Claude Code privacy tool that catches personal data, masks instead of blocking, and learns from your corrections.
+
 Runs on your machine, sets itself up on first start, works on Mac, Windows and Linux. Free and open source. Young:
 expect rough edges.
 
@@ -35,6 +38,7 @@ expect rough edges.
 - **Medical or HR records:** names, birth dates, addresses and ID numbers are masked, so Claude can summarise or tidy a record without knowing whose it is.
 - **`.env` files and logs:** Claude fixes the config without ever seeing the password or API key.
 - **Scans and photos of documents:** read on your machine (no upload) and masked like any other file.
+- **Learns from you:** mark a false alarm once in the dashboard and a rule stops it next time.
 
 <div align="center">
   <img src="https://raw.githubusercontent.com/shanjeevrajendran/cloakroom/main/assets/demo.gif" alt="Claude Code reads a support ticket and .env through Cloakroom: the model sees PII_PERSON_1 and PII_SECRET_1, and reply.md on disk gets the real customer name back" width="820">
@@ -90,6 +94,25 @@ the detection model and OCR), then add the plugin as above.
 
 Details: [docs-HOW-IT-WORKS.md](https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-HOW-IT-WORKS.md).
 
+## Dashboard
+
+Where your labels become rules: false alarms fall as you label them, and the detection model itself never changes.
+
+`cloakroom dashboard` opens a page served by Cloakroom itself on 127.0.0.1, signed in with a one-time link.
+
+<div align="center">
+  <img src="https://raw.githubusercontent.com/shanjeevrajendran/cloakroom/main/assets/dashboard-preview.png" alt="The Cloakroom dashboard: health status, values kept from the model, the alert feed with labels, and the learning panel" width="820">
+</div>
+
+- **Alerts:** every masked, withheld or blocked call, with the kinds found and how long the check took. Open one
+  to see its placeholders; the real values show only when you click Reveal.
+- **Your labels:** mark an alert *correct*, a *false alarm*, or type what it *missed*.
+- **Rules from your labels:** a false alarm suggests "never mask this", a miss suggests "always mask this". You
+  approve each one, or later let rules apply by themselves after a replay test against your past labels; rules that
+  would unmask a key, password, card or ID number always wait for you. Undo puts everything back. The detection model
+  never changes. Details: [the handbook](https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-HANDBOOK.md).
+- **Private by design:** the activity log holds no values or text; labels and rules are encrypted like the vault.
+
 ## When Cloakroom blocks your prompt
 
 Claude Code lets Cloakroom block a prompt but not rewrite it, so a prompt holding a key, an email, a phone, a card or
@@ -132,25 +155,24 @@ in a log looks like ordinary text to them.
 
 ## Results
 
-**In short.**
-
 - **Good at:** personal data (names, emails, phone numbers, addresses) and secrets in odd places. On fresh test
   sets it let through 0 of 1,005 personal details; the other Claude Code tools we tested let through 119 to 992.
   It masks, so Claude keeps working; one other tool blocks the whole step instead.
-- **Weaker at:** false alarms, Cloakroom's main open problem. It masks more harmless text than the secret-only
-  scanners. On real code from public repositories, maisecrets raises about a quarter as many false alarms, and
-  catches more secrets once a large set of sample encryption keys is counted.
+- **Weaker at:** False alarms. Cloakroom is tuned to mask rather than risk a leak, so it masks more harmless text
+  than secret-only scanners; Claude still gets the job done with a placeholder. Label a false alarm in the dashboard
+  and a rule stops it next time.
 - **What a false alarm costs:** Claude sees a placeholder where it needed the real text. Nothing leaks.
 
 Every number comes from a set run once before any tuning on it unless it says otherwise. All tools at default
-settings, offline, tested 12 to 14 October 2026. Method, versions and every run:
-[bench/RESULTS.md](https://github.com/shanjeevrajendran/cloakroom/blob/main/bench/RESULTS.md).
+settings, offline, tested 12 to 14 October 2026. maisecrets' maintainers reproduced our numbers and pointed out
+where the older sets were unfair to them (keys in formats vendors don't issue, and the `regions` setting); the
+key-format set and the setting below are the fix. The maintainers of the compared tools were contacted before
+publishing. Method, versions and every run: [bench/RESULTS.md](https://github.com/shanjeevrajendran/cloakroom/blob/main/bench/RESULTS.md).
 
 **Made-up agent traffic** (five sets written by a different model: chats, logs, config files, spreadsheets, support
-tickets). We hid 1,575 sensitive values in them and added 200 safe look-alikes. The table shows the 1,339 that
-matter most; usernames, IP addresses and fictional phone numbers are in RESULTS.md. Fewer is better in every
-column. These sets have been seen by now, so Cloakroom's second row is not an honest score; the first row is its
-run before any tuning on them.
+tickets): 1,339 key and personal values (the rest are in RESULTS.md) and 200 safe look-alikes. Fewer is better.
+These sets have been seen by now, so Cloakroom's second row is not an honest score; the first row is its run before
+any tuning on them.
 
 | Tool | Personal data leaked (of 1,005) | Keys, passwords, cards, IDs leaked (of 334) | False alarms (of 200 safe samples) |
 |---|---|---|---|
@@ -162,11 +184,8 @@ run before any tuning on them.
 | redact-hook | 817-822 | 143-157 | 35-40 |
 | claude-code-redact, secrets only | 992 | 179 | **2** |
 
-Cloakroom's one personal-data leak today is a date of birth in a dating-profile export, missed since plain dates
-stopped being masked to cut false alarms. Some of these tools only aim at secrets, so their personal-data column
-shows scope as much as quality. maisecrets' maintainers reproduced our numbers and pointed out where the older sets
-were unfair to them (keys in formats vendors don't issue, and the `regions` setting); the key-format set and the
-setting above are the fix. The maintainers of the compared tools were contacted before publishing.
+Some of these tools only aim at secrets, so their personal-data column shows scope as much as quality. Cloakroom's
+one leak today: a date of birth in a dating-profile export.
 
 **Keys in the formats vendors really issue** (a new set written after the first comparison: 15 key types,
 passwords with no fixed shape, encoded emails; 77 values, 15 look-alikes):
@@ -180,10 +199,9 @@ passwords with no fixed shape, encoded emails; 77 values, 15 look-alikes):
 | claude-code-redact (PII on / secrets only) | 17 | 2 / **1** |
 
 **Real passwords and keys from public code** ([Samsung CredData](https://github.com/Samsung/CredData)): 14,471
-real secrets and 15,422 harmless lines that look like secrets, each checked on its own, without its file path, the
-way a tool output reaches Claude. One repository in the set is almost all cipher test vectors (sample keys
-published to test encryption code, `Key = 085a74…`), which maisecrets' keyword rule is built to catch. First
-number: without that repository. In brackets: the whole set. A missed secret reaches the model.
+real secrets and 15,422 harmless look-alikes, each line checked alone, the way a tool output reaches Claude. One
+repository is almost all cipher test vectors (sample keys for testing encryption code), which maisecrets' keyword
+rule is built to catch: first number without it, in brackets the whole set.
 
 | Tool | Real secrets caught (of every 100), higher is better | False alarms (of every 100 harmless look-alikes), lower is better |
 |---|---|---|
@@ -194,11 +212,10 @@ number: without that repository. In brackets: the whole set. A missed secret rea
 | redact-hook, default | 27 (19) | **5** (**4**) |
 | redact-hook, aggressive | 36 (26) | 12 (20) |
 
-Without the test-vector repository, Cloakroom catches the most; with it, maisecrets does. Either way maisecrets is
-the most precise: of what it masks, 86 to 91 in 100 are real secrets, against Cloakroom's 71. Cloakroom masks far
-more harmless look-alikes (3,903 against maisecrets' 997 on the whole set), which is what we're working on.
-redact-hook's default masks the fewest look-alikes but also catches the fewest secrets. Precision, recall and F1
-for every tool: [bench/RESULTS.md](https://github.com/shanjeevrajendran/cloakroom/blob/main/bench/RESULTS.md).
+Without the test-vector repository, Cloakroom catches the most; with it, maisecrets does, and maisecrets is the most
+precise either way (of what it masks, 86 to 91 in 100 are real secrets, against Cloakroom's 71). Cloakroom masks far
+more harmless look-alikes (3,903 against maisecrets' 997 on the whole set): false alarms are Cloakroom's main open
+problem ([precision, recall and F1 for every tool](https://github.com/shanjeevrajendran/cloakroom/blob/main/bench/RESULTS.md)).
 
 **On public datasets we didn't write** (run once; details in
 [bench/public/RESULTS.md](https://github.com/shanjeevrajendran/cloakroom/blob/main/bench/public/RESULTS.md)):
@@ -225,23 +242,6 @@ rest are mostly names and addresses Gretel leaves unlabelled.
 
 Exceptions, backends, CI and troubleshooting: [the handbook](https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-HANDBOOK.md).
 
-## Dashboard
-
-`cloakroom dashboard` opens a page served by Cloakroom itself on 127.0.0.1, signed in with a one-time link.
-
-<div align="center">
-  <img src="https://raw.githubusercontent.com/shanjeevrajendran/cloakroom/main/assets/dashboard-preview.png" alt="The Cloakroom dashboard: health status, values kept from the model, the alert feed with labels, and the learning panel" width="820">
-</div>
-
-- **Alerts:** every masked, withheld or blocked call, with the kinds found and how long the check took. Open one
-  to see its placeholders; the real values show only when you click Reveal.
-- **Your labels:** mark an alert *correct*, a *false alarm*, or type what it *missed*.
-- **Rules from your labels:** a false alarm suggests "never mask this", a miss suggests "always mask this". You
-  approve each one, or later let rules apply by themselves after a replay test against your past labels; rules that
-  would unmask a key, password, card or ID number always wait for you. Undo puts everything back. The detection model
-  never changes. Details: [the handbook](https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-HANDBOOK.md).
-- **Private by design:** the activity log holds no values or text; labels and rules are encrypted like the vault.
-
 ## FAQ
 
 **Does it send my data anywhere?** No. It downloads the detection model once from Hugging Face (a pinned
@@ -252,10 +252,9 @@ Silicon, where the model runs on the built-in GPU (an M5 Max to an 8 GB M1 Air),
 about 300 ms on a 2-core cloud VM. Without an Apple Silicon or NVIDIA GPU, a fast CPU version of the model is built
 on first start. The first run downloads the model once (about 1 GB). `cloakroom doctor` prints your numbers.
 
-**Will it mask things it shouldn't?** Sometimes, see above. Documented examples (Stripe test cards,
-`example.com`, fictional 555 numbers) are left alone, plain dates and job titles too. Mark a false alarm on the
-dashboard and it suggests a rule; or add your own exceptions to `allow` in `~/.cloakroom/config.json`.
-`cloakroom check FILE` shows what would be masked.
+**Will it mask things it shouldn't?** Sometimes, see above. Documented examples (Stripe test cards, `example.com`,
+fictional 555 numbers), plain dates and job titles are left alone. Mark a false alarm on the dashboard and it
+suggests a rule, or add exceptions to `allow` in `~/.cloakroom/config.json`. `cloakroom check FILE` previews masks.
 
 **What doesn't it protect?** It stops accidental exposure; it isn't a sandbox. Out of scope: a prompt injection
 (text in a file that steers Claude) set on smuggling data out piece by piece, what you type into a prompt (a prompt

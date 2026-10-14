@@ -433,3 +433,13 @@ look-alike masked; Cloakroom and maisecrets from this run, the other tools from 
 
 These rows replaced the 0.6.14 maisecrets rows in the README on 2026-10-14 (synthetic-traffic table: regions
 us/uk/in row, default-regions critical count; key-formats table: v7). Regions results: `bench/rerun-2026-10-14/regions/`.
+
+## Notes moved from the README (2026-10-14)
+
+The README keeps one or two sentences under each results table; these details moved here.
+
+- Synthetic-traffic table: it shows the 1,339 critical and high values; the 221 low (usernames in paths, public
+  IPs) and 15 fictional 555-01xx numbers are in the tier table above. Cloakroom's one personal-data leak today
+  is a date of birth in a dating-profile export, missed since plain dates stopped being masked to cut false alarms.
+- CredData: test vectors look like `Key = 085a74…`. A missed secret reaches the model. redact-hook's default masks
+  the fewest look-alikes but also catches the fewest secrets.
