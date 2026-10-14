@@ -252,7 +252,7 @@ header.top { position: sticky; top: 0; z-index: 5; background: var(--bg); paddin
     $("#t-legend").innerHTML = Object.keys(sevs).map(k => `<span><i style="background:${cols[k]}"></i>${sevs[k]} ${names[k]}</span>`).join("");
     const tools = evs.filter(e => e.event === "pre" || e.event === "post"), n = a => tools.filter(e => e.action === a).length;
     $("#t-checked").textContent = tools.length.toLocaleString();
-    $("#t-checked-sub").textContent = `${n("masked")} masked · ${n("withheld")} encoded dumps withheld · ${n("deny")} denied`;
+    $("#t-checked-sub").textContent = `${n("masked")} masked · ${n("withheld")} withheld · ${n("deny")} denied`;
     $("#t-blocked").textContent = evs.filter(e => e.event === "prompt" && e.action === "block").length;
     const lab = evs.filter(e => e.label), fa = lab.filter(e => e.label === "false_alarm").length;
     $("#t-fa").textContent = lab.length ? Math.round(fa / lab.length * 100) + "%" : "-";

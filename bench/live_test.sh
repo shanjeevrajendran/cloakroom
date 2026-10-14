@@ -33,8 +33,25 @@ stop_service
 mkdir -p "$W/proj"
 printf 'ADMIN_EMAIL = "henrik.dahl@quillfield.com"\nSTRIPE_KEY = "sk_live_9fQ2xLmV7tR4pW8nK3jH6bYd"\nOWNER = "Henrik Dahl"\n' > "$W/proj/config.py"
 printf 'name,email,phone\nNadia Petrov,npetrov@marrowgate.io,(415) 555-2381\nCormac Doyle,cdoyle@tessellate.org,(312) 555-7710\n' > "$W/proj/customers.csv"
+# A one-page bank statement PDF (text layer), written by hand so no PDF tool is needed.
+"$REPO/.venv/bin/python" - "$W/proj/statement.pdf" <<'PDF'
+import sys
+lines = ["Brightwater Bank - Monthly Statement", "Account holder: Henrik Dahl",
+         "Account number: 4417 2290 5531 8820", "Email: henrik.dahl@quillfield.com"]
+ops = "".join(f"BT /F1 12 Tf 72 {720 - 18 * i} Td ({t}) Tj ET\n" for i, t in enumerate(lines))
+objs = ["<< /Type /Catalog /Pages 2 0 R >>", "<< /Type /Pages /Kids [5 0 R] /Count 1 >>",
+        "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>", f"<< /Length {len(ops)} >>\nstream\n{ops}endstream",
+        "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 4 0 R >>"]
+out, offs = b"%PDF-1.4\n", []
+for i, o in enumerate(objs, 1):
+    offs.append(len(out)); out += f"{i} 0 obj\n{o}\nendobj\n".encode()
+x = len(out)
+out += f"xref\n0 {len(objs) + 1}\n0000000000 65535 f \n".encode() + "".join(f"{o:010d} 00000 n \n" for o in offs).encode()
+out += f"trailer\n<< /Size {len(objs) + 1} /Root 1 0 R >>\nstartxref\n{x}\n%%EOF\n".encode()
+open(sys.argv[1], "wb").write(out)
+PDF
 
-PROMPT="This is an approved test of a local masking tool on fake data. Read config.py and customers.csv. Create notes.md with one line: 'Owner: <owner as you see it>, contact <admin email as you see it>'. Run grep -n with the admin email as you see it on config.py. Then run od -c config.py | head -5 and say only whether its output was readable or withheld. Do not quote values."
+PROMPT="This is an approved test of a local masking tool on fake data. Read config.py and customers.csv. Create notes.md with one line: 'Owner: <owner as you see it>, contact <admin email as you see it>'. Run grep -n with the admin email as you see it on config.py. Then run od -c config.py | head -5 and say only whether its output was readable or withheld. Read statement.pdf and say only whether its account holder came through as a placeholder. Do not quote values."
 
 [[ $CONTROL == 1 ]] && echo "CONTROL run: no plugin, expect FAIL on the leak checks"
 echo "running claude -p in $W/proj (port $CLOAKROOM_PORT) ..."
@@ -47,7 +64,8 @@ import glob, json, os, re, sys
 W = sys.argv[1]
 home = os.environ["CLOAKROOM_HOME"]
 vals = ['henrik.dahl@quillfield.com', 'sk_live_9fQ2xLmV7tR4pW8nK3jH6bYd', 'Henrik Dahl',
-        'npetrov@marrowgate.io', 'Nadia Petrov', 'cdoyle@tessellate.org', 'Cormac Doyle', '555-2381', '555-7710']
+        'npetrov@marrowgate.io', 'Nadia Petrov', 'cdoyle@tessellate.org', 'Cormac Doyle', '555-2381', '555-7710',
+        '4417 2290 5531 8820']
 sq = lambda s: re.sub(r'\s+', '', s)
 def frag(v, t):  # any 8-char window of a value (or the whole value if shorter)
     v = sq(v); n = min(8, len(v))
@@ -69,6 +87,9 @@ check("hooks fired", os.path.exists(log) and os.path.getsize(log) > 0)
 
 tx = glob.glob(os.path.expanduser(f"~/.claude/projects/*/{run.get('session_id')}.jsonl"))
 if tx:
+    raw = open(tx[0]).read()
+    # the PDF must reach Claude as masked text (not as a document block, which no hook can check)
+    check("PDF read as masked text", "Account holder: PII_PERSON_" in raw and "JVBER" not in raw)
     n = 0
     for line in open(tx[0]):
         for b in (json.loads(line).get("message") or {}).get("content") or []:

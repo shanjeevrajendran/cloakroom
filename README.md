@@ -131,7 +131,7 @@ masked on the way in and the real values come back when Claude writes.
 - **Dry run** (`CLOAKROOM_DRY_RUN=1`): lets everything through and logs what it would have done.
 - **Settings** in `~/.cloakroom/config.json`: `"allow"` for your own exceptions, `"mask_all_dates": true` to mask
   every date (by default only birth dates and dates in someone's record), `"mask_own_username": true` to mask your
-  own login name in paths too.
+  own login name in paths too, `"allow_images": true` to let pictures through unchecked (with a warning).
 
 Exceptions, backends, CI and troubleshooting: [the handbook](https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-HANDBOOK.md).
 
@@ -235,6 +235,11 @@ dashboard and it suggests a rule; or add your own exceptions to `allow` in `~/.c
 **What doesn't it protect?** It stops accidental exposure; it isn't a sandbox. Out of scope: a prompt injection
 set on smuggling data out piece by piece, what you type into a prompt (a prompt can be blocked but not rewritten,
 and names alone go through), and Claude Code's own local logs. Details: [docs-LIMITS.md](https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-LIMITS.md).
+
+**What about PDFs and images?** When Claude reads a PDF, Cloakroom pulls out its text on your machine and masks
+it like any file; Claude gets that text, not the PDF itself. Pictures can't be checked, so Cloakroom holds them back
+(screenshots, photos, a scanned PDF with no text in it, figures in a notebook) and tells Claude so. To show Claude a
+picture anyway, attach it to your own prompt. Cloakroom doesn't read text inside images (no OCR).
 
 **How do I remove it?** See [Uninstall](https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-SETUP.md#uninstall).
 

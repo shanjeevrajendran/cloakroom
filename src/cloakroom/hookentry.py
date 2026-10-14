@@ -13,6 +13,9 @@ STRUCTURAL = {"type", "filePath", "file_path", "mode", "kind", "status", "encodi
               "interrupted", "noOutputExpected", "returnCodeInterpretation"}
 
 
+NON_TEXT_READ = {"pdf", "parts", "image"}  # Read results whose content isn't text
+
+
 def _withhold(raw, msg):
     """Replace every content string with msg (first) or "" (rest), keeping structural fields and the shape."""
     if isinstance(raw, dict):
@@ -44,6 +47,13 @@ def closed(event, why, data):
         return prompt_warning(why)
     if event == "post":
         raw = data.get("tool_response") if isinstance(data, dict) else None
+        if isinstance(raw, dict) and raw.get("type") in NON_TEXT_READ:
+            # Claude Code ignores a pdf/image result with its data blanked and sends the original: switch to Read's
+            # text shape instead (media.py has the same rule)
+            path = (raw.get("file") or {}).get("filePath") or (data.get("tool_input") or {}).get("file_path", "")
+            raw = {"type": "text", "file": {"filePath": path, "content": f"[{msg}]", "numLines": 1, "startLine": 1,
+                                            "totalLines": 1}}
+            return {"hookSpecificOutput": {"hookEventName": "PostToolUse", "updatedToolOutput": raw}}
         return {"hookSpecificOutput": {"hookEventName": "PostToolUse", "updatedToolOutput": _withhold(raw, f"[{msg}]")}}
     return {"hookSpecificOutput": {"hookEventName": "PreToolUse", "permissionDecision": "deny",
                                    "permissionDecisionReason": msg}}

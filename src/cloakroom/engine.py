@@ -123,6 +123,29 @@ _SHAPE = {"PERSON": lambda v: any(c.isalpha() for c in v) and not any(c.isdigit(
           "PHONE": lambda v: sum(c.isdigit() for c in v) >= 7 and re.fullmatch(r"[\d\s()+.\-]+", v) is not None}
 
 
+# "STRIPE_KEY=", "api_key: ", "\"email\": " in front of a value. A colon counts only with space after it, or space
+# or a quote before it, so "admin:hunter2" (a credential pair) and "https://" stay whole.
+_KEY_PREFIX = re.compile(r"""[A-Za-z_][\w.\-]*(?:["']?[ \t]*=[ \t]*(?!=)|[ \t]*:[ \t]+|["'][ \t]*:[ \t]*|[ \t]+:[ \t]*)""")
+
+
+def _unkey(text: str, a: int, b: int) -> tuple[int, int]:
+    """Trim a model span to the value: the model sometimes starts a span at the key ("STRIPE_KEY=sk_...") or on the
+    "=" ("=priya@..."). A masked key would be dropped by restore on write-back and corrupt the file. A span that
+    would trim to nothing is kept whole: over-masking beats leaking."""
+    a0, b0 = a, b
+    while a < b:
+        m = _KEY_PREFIX.match(text, a, b)
+        if m and m.end() < b:
+            a = m.end()
+        elif text[a] in "=:" or text[a].isspace() or text[a] in _EDGE_PUNCT:
+            a += 1
+        else:
+            break
+    while b > a and (text[b - 1] == ":" or text[b - 1].isspace()):
+        b -= 1
+    return (a, b) if a < b else (a0, b0)
+
+
 def _pieces(text: str, start: int, end: int, kind: str) -> list[tuple[int, int, str]]:
     """Clean up one model span. The model sometimes runs a span across rows (a CSV row's phone, city, the next rows,
     up to the next name): split such a span at line breaks and separators and keep the pieces that fit the kind.
@@ -145,6 +168,7 @@ def _pieces(text: str, start: int, end: int, kind: str) -> list[tuple[int, int, 
             a += 1
         while b > a and (text[b - 1].isspace() or text[b - 1] in _EDGE_PUNCT):
             b -= 1
+        a, b = _unkey(text, a, b)
         if b <= a:
             continue
         piece = text[a:b]

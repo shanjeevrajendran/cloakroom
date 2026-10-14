@@ -1,4 +1,4 @@
-# Known limits (v0.2; live Claude Code tests 2026-10-09 and 2026-10-12, benchmarks through 2026-10-12)
+# Known limits (v0.2; live Claude Code tests 2026-10-09, 2026-10-12 and 2026-10-14, benchmarks through 2026-10-12)
 
 - Prompts can only be blocked, not masked (UserPromptSubmit can't rewrite). A blocked prompt never reaches the
   model, but Claude Code keeps it in its local session records on disk. To limit blocks:
@@ -31,6 +31,16 @@
   session's known values (10-character fragments) and the detectors; any hit withholds the whole output. Files a
   Bash command names are scanned first (up to 512 KB). Arbitrary transformations (ROT13, custom ciphers, values
   computed piece by piece) are out of scope: Cloakroom stops accidental leaks, not a model determined to leak.
+- PDFs (live test 2026-10-14): Claude Code sends a PDF read to the model as a document (or as page pictures with
+  `pages`), which a hook can't mask in place. Cloakroom extracts the text layer locally (pypdf), masks it and gives
+  Claude that text instead, so layout, pictures and charts in the PDF are not seen. Pages without a text layer are
+  marked as held back; a PDF with no text at all (a scan), an encrypted or damaged one is held back whole, with a note
+  telling Claude to run `pdftotext file -` (masked like any command output) or ask you to paste the text. No OCR:
+  text that exists only as a picture is never read, so it can't leak, but Claude can't use it either.
+- Images: Read results that are pictures (png, jpg, gif, webp...) and figures in notebook outputs are held back,
+  because Cloakroom can't check pixels. Attach a picture to your own prompt to show it to Claude, or set
+  `"allow_images": true` to let them through with a warning. Pictures returned by other tools (MCP servers, for
+  example) are not checked or held back.
 - Claude Code auto-approves read-only commands such as `od`, so permissions alone can't stop a dump.
 - Claude's own tool calls can't change `~/.cloakroom` (writes there, or shell commands naming it, are denied), so
   it can't pause Cloakroom or edit its rules. A side effect: Claude can't read Cloakroom's logs with shell commands

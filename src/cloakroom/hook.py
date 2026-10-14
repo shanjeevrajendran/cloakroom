@@ -15,7 +15,7 @@ import re
 import sys
 import time
 
-from . import client, config, decode, engine, events, shell
+from . import client, config, decode, engine, events, media, shell
 from .hookentry import STRUCTURAL, _withhold, closed
 from .vault import PLACEHOLDER, Vault
 
@@ -151,7 +151,19 @@ def on_post(data: dict) -> dict | None:
         kinds.extend(k for _, k, _ in r["masked"])
         _FOUND.extend((p, k) for p, k, _ in r["masked"])
         return r["text"]
-    raw = data.get("tool_response")
+    raw, converted = data.get("tool_response"), ""
+    if data.get("tool_name") == "Read":  # PDFs become their text layer, pictures are held back (media.py)
+        raw, converted = media.convert(raw, (data.get("tool_input") or {}).get("file_path", ""),
+                                       allow_images=bool(config.load().get("allow_images")))
+        if converted == "image-allowed":
+            _ACTION[0] = "image passed"
+            return {"systemMessage": "cloakroom: an image went to Claude unchecked (allow_images is on)"}
+        if converted == "held":
+            _ACTION[0] = "withheld"
+            if _dry("post", "Read: would hold back a non-text result"):
+                return None
+            return {"hookSpecificOutput": {"hookEventName": "PostToolUse", "updatedToolOutput": raw},
+                    "systemMessage": "cloakroom: held back a Read result it can't check (image or PDF without text)"}
     new, changed = _strings(raw, fn)
     # Encoded output (od -c, xxd, base64, rev...) can carry values the detectors can't read: decode and re-check
     # each text field, and replace only the fields that hit (structural fields must stay as they are).
@@ -181,16 +193,19 @@ def on_post(data: dict) -> dict | None:
             return None
         return {"hookSpecificOutput": {"hookEventName": "PostToolUse", "updatedToolOutput": new},
                 "systemMessage": f"cloakroom: withheld encoded {data.get('tool_name')} output"}
-    if not changed:
+    if not changed and not converted:
         return None
     if _dry("post", f"{data.get('tool_name')}: would mask {_summary(kinds)}"):
         return None
     out = {"hookEventName": "PostToolUse", "updatedToolOutput": new}
+    what = {"pdf": "PDF text", "figures": "notebook (figures held back)"}.get(converted, f"{data.get('tool_name')} output")
+    if not changed:
+        return {"hookSpecificOutput": out, "systemMessage": f"cloakroom: checked {what}, nothing to mask"}
     guide = _guide_once(session)
     if guide:
         out["additionalContext"] = guide
     return {"hookSpecificOutput": out,
-            "systemMessage": f"cloakroom: masked {_summary(kinds)} in {data.get('tool_name')} output"}
+            "systemMessage": f"cloakroom: masked {_summary(kinds)} in {what}"}
 
 
 def _prime(command: str, cwd: str, session: str, powershell: bool = False):

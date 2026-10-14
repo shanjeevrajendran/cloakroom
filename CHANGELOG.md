@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.2.4 (2026-10-14)
+- PDFs that Claude reads with its Read tool now arrive as masked text: Cloakroom extracts the text locally (pypdf,
+  pure Python, now a core dependency), normalises it and masks it like any other file. Before, the PDF went to the
+  model unchecked as a document. Pictures, scanned or encrypted or damaged PDFs, notebook figures and unknown Read
+  types are held back with a note (scans: run `pdftotext file -`, whose output is masked); `"allow_images": true`
+  lets pictures through with a warning. Not covered: pictures returned by MCP and other non-Read tools (see LIMITS).
+- Full mode: a model span that started at a key name or on `=` (`STRIPE_KEY=sk_...`) is trimmed to the value, so the
+  key name is no longer dropped on write-back. Credential pairs, URLs and base64 padding stay whole.
+- A crash while checking a non-text read now holds the read back instead of letting it through.
+
 ## 0.2.3 (2026-10-12)
 - The plugin's hooks now run fixed scripts inside the plugin (`scripts/hook.sh`, `scripts/hook.ps1`) instead of long
   inline commands, so the Claude plugin directory can read what each hook runs. No behaviour change: the same

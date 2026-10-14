@@ -152,6 +152,7 @@ are stored encrypted in `~/.cloakroom/rules.bin`; the `allow` list above stays y
 | allow | `config.json` `allow` | none | exact values, `re:<regex>` |
 | mask_all_dates | `config.json` | `false` | `true` masks every date, not only birth dates and dates in someone's record |
 | mask_own_username | `config.json` | `false` | `true` masks your own login name in home-folder paths too |
+| allow_images | `config.json` | `false` | `true` lets pictures from Read through unchecked, with a warning (by default they are held back) |
 | port | `config.json` `port`, `CLOAKROOM_PORT` | `37787` | any free local port |
 | backend | `CLOAKROOM_BACKEND` | `auto` | `auto`, `torch`, `onnx` |
 | ONNX variant | `CLOAKROOM_ONNX` | `fp32` | `fp32`, `int8` |
