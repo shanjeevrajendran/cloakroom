@@ -11,10 +11,15 @@ import re
 EXAMPLE_MARKERS = re.compile(r"(?i)example|dummy|placeholder|changeme|your[-_ ]|xxxx|<[^>]+>|\{\{|\$\{|\*\*\*\*|^test[-_]|^fake")
 ENV_REFERENCE = re.compile(r"(?:os\.environ|os\.getenv|process\.env|ENV\[|getenv\(|settings\.|config\.)"
                            r"|^\$\{?[A-Za-z_][A-Za-z0-9_]*\}?$|^%[A-Za-z_][A-Za-z0-9_]*%$")
+# a template, not a literal: $t(key) ..., ${var}..., {{var}}, %(name)s, {0}
+TEMPLATE_START = re.compile(r"^(?:\$[A-Za-z_]\w*\(|\$\{|\{\{|%\(|\{\d*\})")
 TOLL_FREE = re.compile(r"^(?:\+?1[\s.-]?)?\(?8(?:00|33|44|55|66|77|88)\)?[\s.-]")  # business lines, not people
 TWILIO_TEST_PHONE = re.compile(r"^1?500555\d{4}$")  # Twilio's documented magic test numbers
 TEST_KEY = re.compile(r"^(?:sk|pk|rk)[_-]test[_-]")
 REDACTED = re.compile(r"(?i)^[\[<*]*(?:redacted|masked|hidden|removed|filtered|omitted)[\]>*]*$|^\*{3,}$|^x{4,}$")
+# a scrubbed value that says so in one of its words: login_and_password_removed, REDACTED_TOKEN, secret-masked
+SCRUBBED_WORD = re.compile(r"(?i)(?:^|[_\-.\s])(?:redacted|removed|masked|hidden|omitted|filtered|scrubbed|stripped|"
+                           r"saniti[sz]ed|censored|obfuscated|elided)(?:$|[_\-.\s])")
 PLACEHOLDER_NAME = re.compile(r"(?i)^(?:john|jane|richard|baby) doe$|^(?:john|jane) (?:smith|q\.? public)$")
 UK_NINO_TEST = re.compile(r"^QQ ?\d{2} ?\d{2} ?\d{2} ?[A-D]$")  # HMRC never issues the QQ prefix
 TIME_OR_EXPIRY = re.compile(r"(?i)^\d{1,2}(?::\d{2})?\s*[ap]\.?m\.?$|^(?:0?[1-9]|1[0-2])/\d{2}$"
@@ -117,11 +122,11 @@ def reason(value: str, kind: str, keyed: bool) -> str | None:
     v = value.strip().strip("\"'.,;()[]")
     if EXAMPLE_MARKERS.search(v):
         return "example value"
-    if ENV_REFERENCE.search(v):
+    if ENV_REFERENCE.search(v) or TEMPLATE_START.match(v):
         return "reference to a variable, not a value"
     if TEST_KEY.match(v):
         return "test-mode key"
-    if REDACTED.match(v):
+    if REDACTED.match(v) or SCRUBBED_WORD.search(v):
         return "already redacted"
     if v.startswith(JWT_IO_EXAMPLE):
         return "jwt.io documentation example"

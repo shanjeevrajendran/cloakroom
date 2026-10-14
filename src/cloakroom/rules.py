@@ -157,12 +157,35 @@ def _csv_cells(text: str) -> list[Finding]:
     return out
 
 
+# Segments of a variable name that say "this holds the secret": password = user.password, token: NATS_TOKEN
+_SECRET_WORDS = {"password", "passwd", "passphrase", "pass", "pwd", "secret", "secrets", "token", "tokens", "key",
+                 "keys", "apikey", "secretkey", "accesskey", "authtoken", "accesstoken", "auth", "credential",
+                 "credentials", "cred", "creds"}
+
+
+def _names_a_variable(text: str, start: int, end: int) -> bool:
+    """The value under a secret key is itself a variable named after the secret: an unquoted identifier or dotted
+    path that ends in the word (user.password, hashedPassword;, opts.AccessToken), or an UPPER_SNAKE constant
+    (NATS_PASSWORD) even in quotes. A literal is still masked: quoted ("mysecret"), with digits (hunter2Password99),
+    or not ending in the word."""
+    v = text[start:end].rstrip(",;)}]")
+    quoted = start > 0 and text[start - 1] in "\"'"
+    if quoted and not re.fullmatch(r"[A-Z][A-Z0-9]*(?:_[A-Z0-9]+)+", v):
+        return False
+    if not re.fullmatch(r"[A-Za-z_][A-Za-z_.]*", v):  # digits: could be a literal (hunter2Password99), keep masking
+        return False
+    segs = re.findall(r"[A-Z]+(?![a-z])|[A-Z]?[a-z]+", v)
+    return bool(segs) and segs[-1].lower() in _SECRET_WORDS  # ends in the word: user.password, opts.AccessToken
+
+
 def scan(text: str) -> list[Finding]:
     out = []
     for rule_id, kind, rx, group, validate in _COMPILED:
         for m in rx.finditer(text):
             start, end = m.span(group)
             if start < 0 or (validate and not validate(m.group(group))):
+                continue
+            if rule_id == "keyed-secret" and _names_a_variable(text, start, end):
                 continue
             if rule_id == "keyed-password":  # the value sits in whichever group matched (quoted or bare)
                 g = next(i for i in (1, 2, 3) if m.group(i) is not None)

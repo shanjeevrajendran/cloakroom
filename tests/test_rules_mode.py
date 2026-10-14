@@ -319,3 +319,22 @@ def test_link_count_beside_own_login_is_still_the_owner_column(monkeypatch):
     from cloakroom import engine
     monkeypatch.setattr(getpass, "getuser", lambda: "kai")
     assert engine._own_account("1 kai  staff") and not engine._own_account("kai okafor")
+
+
+def test_precision_round_scrubbed_templates_and_references():
+    from cloakroom import safe
+    # values that say they were scrubbed, and templates, are not secrets
+    assert safe.reason("login_and_password_removed", "SECRET", True) == "already redacted"
+    assert safe.reason("REDACTED_TOKEN", "SECRET", True) == "already redacted"
+    assert safe.reason("$t(lockRoomPassword) annuleren", "SECRET", True)
+    assert safe.reason("{{ vault_db_password }}", "SECRET", True)
+    # a scrub word glued inside a longer token is not a scrub marker
+    assert safe.reason("Zq8vT3mWremovedK2pL7n", "SECRET", True) is None
+    # a variable named after the secret is a reference; a literal (even one holding the word) is still masked
+    # (keyed-secret only: the keyed-password rule for password / pwd / pin keys is unchanged)
+    for line in ("auth_token: session.authToken,", "token = opts.AccessToken;", 'secret="NATS_SECRET"',
+                 "secret: dockerhub_password"):
+        assert mask(line, Vault()).text == line, line
+    for line in ('password: "Zq8vT3mW9xK2pL7n"', "token = Zq8vT3mW9xK2pL7n", 'secret: "mysecretvalue"',
+                 "api_key=hunter2Password99"):
+        assert "PII_SECRET" in mask(line, Vault()).text, line

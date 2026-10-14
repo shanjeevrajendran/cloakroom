@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.0 (2026-10-14)
+- Fewer false alarms on code and config: Cloakroom now leaves alone values that say they were scrubbed
+  (`login_and_password_removed`, `REDACTED_TOKEN`), template values (`$t(label)`, `{{ var }}`, `${var}`), and
+  variable names under a secret key that end in the secret word (`token: opts.AccessToken`,
+  `secret = "NATS_SECRET"`). Literal values, quoted values and anything with digits are still masked, and the
+  benchmark secrets caught before are still caught. Details: `bench/precision-2026-10/levers.md`.
+
 ## 0.2.4 (2026-10-14)
 - PDFs that Claude reads with its Read tool now arrive as masked text: Cloakroom extracts the text locally (pypdf,
   pure Python, now a core dependency), normalises it and masks it like any other file. Before, the PDF went to the
