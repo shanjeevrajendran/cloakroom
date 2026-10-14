@@ -1,4 +1,14 @@
-# Benchmark results (2026-10-09, synthetic agent-traffic corpus v1)
+# Benchmark results
+
+**Latest numbers** (2026-10-14; the README's tables come from here, oldest runs first below):
+- Made-up agent traffic, first runs: Cloakroom leaked 0 of 1,005 personal details and 4 of 334 critical values, with 60 false alarms of 200; the other tools leaked 119-992 and 40-179 ([by tier](#leaks-by-how-much-they-matter-holdouts-v2-v6-first-runs)).
+- Keys in real vendor formats (holdout v7): Cloakroom leaked 0 of 77 with 3 false alarms of 15; maisecrets 3 and 1.
+- CredData, per 100 real secrets / 100 look-alikes: Cloakroom catches 73 with 22 false alarms without the test-vector repository (65 and 25 on all lines); maisecrets 58 and 7 (68 and 6) ([latest run](#cloakroom-040-and-maisecrets-0617-tool-channel-2026-10-14)).
+- Public sets: TAB recall 0.95, precision 0.81; Gretel 0.85, 0.52 ([public/RESULTS.md](public/RESULTS.md)). False alarms are Cloakroom's main open problem.
+
+A **holdout** is a test set written and committed before Cloakroom saw it and scored once; any tuning on it afterwards makes later scores on that set "seen", not honest.
+
+## Corpus v1 (2026-10-09, synthetic agent-traffic corpus v1)
 
 112 items: 92 with planted values (530 total: API keys, passwords, names, emails, phones, addresses, SSNs, cards,
 IBANs, DOBs, private keys) across env files, JSON configs, app logs, CSV exports, source code, git/env shell output
@@ -399,6 +409,19 @@ Run once each, same method as above. Results: `bench/rerun-2026-10-14/`.
 False alarms (candidates masked), all lines: Cloakroom 3,903 (was 4,750), maisecrets 997 (was 981). Without the
 test vectors Cloakroom keeps the recall and F1 lead; on all lines maisecrets now leads on all three. The
 maintainers' own figure for this split with US regions (0.86 / 0.58 / 0.690) matches ours.
+
+**Raw counts behind the README's per-100 table** (caught = labelled secret gone from the output, false alarm =
+look-alike masked; Cloakroom and maisecrets from this run, the other tools from `rerun-2026-10-12/`, unchanged since):
+
+| Tool | Without 2ba83c6a: caught / missed / false alarms (of 10,106 secrets, 13,561 look-alikes) | All lines: caught / missed / false alarms (of 14,471, 15,422) |
+|---|---|---|
+| Cloakroom full | 7,377 / 2,729 / 2,982 | 9,353 / 5,118 / 3,903 |
+| maisecrets, tool channel | 5,838 / 4,268 / 989 | 9,889 / 4,582 / 997 |
+| claude-code-redact, PII on | 3,627 / 6,479 / 1,083 | 4,483 / 9,988 / 1,085 |
+| claude-code-redact, secrets only | 3,624 / 6,482 / 1,066 | 4,480 / 9,991 / 1,068 |
+| sensitive-canary (blocks) | 3,053 / 7,053 / 2,784 | 3,933 / 10,538 / 2,788 |
+| redact-hook, default | 2,751 / 7,355 / 662 | 2,764 / 11,707 / 669 |
+| redact-hook, aggressive | 3,677 / 6,429 / 1,572 | 3,738 / 10,733 / 3,155 |
 
 **Holdouts, maisecrets 0.6.17 tool channel only** (Cloakroom's are unchanged since 0.3.0's final check):
 
