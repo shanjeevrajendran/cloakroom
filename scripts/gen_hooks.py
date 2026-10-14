@@ -8,7 +8,7 @@ each hook runs. Claude Code runs hook commands with sh/bash (Git Bash on Windows
 without Git Bash, so each command is a short bash/PowerShell polyglot (idea from maisecrets, Apache-2.0:
 https://github.com/Mcpgate-de/maisecrets): bash runs `set -- \\`# <#\\`` (the backticks hold only a comment), then
 scripts/hook.sh, and exits; PowerShell reads `# <#` ... `#>` as a comment, skips the bash lines, and runs
-scripts/hook.ps1. Claude Code substitutes ${CLAUDE_PLUGIN_ROOT} as text before either shell sees the command.
+scripts/hook.ps1 in a second copy of the same PowerShell (pwsh or powershell.exe, so execution policy can be bypassed). Claude Code substitutes ${CLAUDE_PLUGIN_ROOT} as text before either shell sees the command.
 
 The scripts find the cloakroom program on PATH, in ~/.local/bin (where uv and pipx put it) or in ~/.cloakroom/venv,
 since those are often missing from the PATH Claude Code sees. If it isn't installed the hook still answers itself:
@@ -70,7 +70,9 @@ def command(event: str) -> str:
         # UTF-8 without a byte-order mark: Windows PowerShell 5.1's [Text.Encoding]::UTF8 adds one to piped input
         "$u = New-Object System.Text.UTF8Encoding $false; [Console]::InputEncoding = $u; "
         "[Console]::OutputEncoding = $u; $OutputEncoding = $u",
-        "[Console]::In.ReadToEnd() | powershell -NoProfile -ExecutionPolicy Bypass -File "
+        # the same PowerShell that runs this command (powershell.exe 5.1 or pwsh 7): `powershell` by name only exists
+        # on Windows, and `-ExecutionPolicy Bypass -File` is accepted by both
+        "[Console]::In.ReadToEnd() | & (Get-Process -Id $PID).Path -NoProfile -ExecutionPolicy Bypass -File "
         f'"${{CLAUDE_PLUGIN_ROOT}}/scripts/hook.ps1" {event}; exit $LASTEXITCODE',
         "#PS_END",
     ])
