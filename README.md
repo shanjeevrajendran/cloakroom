@@ -25,7 +25,7 @@
 
 Runs on your machine. Installs itself. Mac, Windows and Linux. Free and open source.
 
-v0.2 · tested from clean installs on macOS, Windows and Ubuntu · young, expect rough edges.
+Tested from clean installs on macOS, Windows and Ubuntu · young, expect rough edges.
 
 **Hand Claude the files you'd never paste into a chat:**
 
@@ -216,7 +216,7 @@ don't issue, and the `regions` setting); the key-format set and the setting abov
 the compared tools were contacted before publishing. A false alarm costs you a placeholder where Claude needed the
 real text; a miss sends the value to the model.
 
-**On public datasets we didn't write** (v0.2, test split run once, details in
+**On public datasets we didn't write** (test split run once, details in
 [bench/public/RESULTS.md](https://github.com/shanjeevrajendran/cloakroom/blob/main/bench/public/RESULTS.md)):
 
 | Dataset | Recall | Precision |
