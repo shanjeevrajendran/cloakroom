@@ -3,6 +3,7 @@
 <img src="https://raw.githubusercontent.com/shanjeevrajendran/cloakroom/main/assets/hero.svg" alt="Cloakroom, a privacy layer for Claude Code: names, emails, addresses and API keys are swapped for placeholders before the model sees them." width="880">
 
 <p>
+  <a href="https://www.youtube.com/shorts/U9lN4emgeE0">▶ 40-second demo</a> ·
   <a href="#get-started">Get started</a> ·
   <a href="#when-cloakroom-blocks-your-prompt">Blocked prompt?</a> ·
   <a href="#results">Results</a> ·
