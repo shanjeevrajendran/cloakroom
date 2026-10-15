@@ -23,8 +23,11 @@ cmd = {ev: hooks[name][0]["hooks"][0]["command"].replace("${CLAUDE_PLUGIN_ROOT}"
 git_bash = r"C:\Program Files\Git\bin\bash.exe"
 bash = git_bash if os.name == "nt" and os.path.exists(git_bash) else "bash"
 # Claude Code runs shell-form hooks with `sh -c` on macOS and Linux, Git Bash on Windows, else PowerShell
-shells = [s for s in ([bash, "-c"], ["sh", "-c"] if os.name != "nt" else [""], ["powershell", "-NoProfile", "-Command"],
-                      ["pwsh", "-NoProfile", "-Command"]) if s[0] and (shutil.which(s[0]) or os.path.exists(s[0]))]
+# PowerShell only on Windows: the hook starts `powershell` by name, which Linux/macOS pwsh lacks, and Claude Code
+# there runs the sh branch anyway
+ps = (["powershell", "-NoProfile", "-Command"], ["pwsh", "-NoProfile", "-Command"]) if os.name == "nt" else ()
+shells = [s for s in ([bash, "-c"], ["sh", "-c"] if os.name != "nt" else [""], *ps)
+          if s[0] and (shutil.which(s[0]) or os.path.exists(s[0]))]
 # also hide uv, so the "without cloakroom" runs can never start a real install
 names = ("cloakroom", "cloakroom.exe", "cloakroom.cmd", "uv", "uv.exe")
 no_cloakroom_path = os.pathsep.join(p for p in os.environ["PATH"].split(os.pathsep)

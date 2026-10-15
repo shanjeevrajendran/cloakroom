@@ -70,12 +70,10 @@ def command(event: str) -> str:
         # UTF-8 without a byte-order mark: Windows PowerShell 5.1's [Text.Encoding]::UTF8 adds one to piped input
         "$u = New-Object System.Text.UTF8Encoding $false; [Console]::InputEncoding = $u; "
         "[Console]::OutputEncoding = $u; $OutputEncoding = $u",
-        # the same PowerShell that runs this command (pwsh 7 or powershell.exe 5.1; `powershell` only exists on
-        # Windows), spelled by name: the Claude plugin directory refuses a computed program path
-        "$in = [Console]::In.ReadToEnd(); if ($PSVersionTable.PSEdition -eq 'Core') "
-        f'{{ $in | pwsh -NoProfile -ExecutionPolicy Bypass -File "${{CLAUDE_PLUGIN_ROOT}}/scripts/hook.ps1" {event} }} '
-        f'else {{ $in | powershell -NoProfile -ExecutionPolicy Bypass -File "${{CLAUDE_PLUGIN_ROOT}}/scripts/hook.ps1" {event} }}; '
-        "exit $LASTEXITCODE",
+        # `powershell` by name: it exists on every Windows, also when Claude Code runs under pwsh 7, and the Claude
+        # plugin directory refuses a computed program or a statement that starts with a variable
+        "[Console]::In.ReadToEnd() | powershell -NoProfile -ExecutionPolicy Bypass -File "
+        f'"${{CLAUDE_PLUGIN_ROOT}}/scripts/hook.ps1" {event}; exit $LASTEXITCODE',
         "#PS_END",
     ])
 

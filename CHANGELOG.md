@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.2 (2026-10-15)
+- Windows hooks start `powershell` with the same line as 0.2.3, the form the Claude plugin directory accepts
+  (0.4.0 and 0.4.1 were held back by its launcher check). No behaviour change; Python code is the same as 0.4.1.
+
 ## 0.4.1 (2026-10-15)
 - Masking: when one model span swallows several rule findings, the rule labels are kept, so
   `Priya Raman 415-820-4471 SSN 529-31-8846` masks as person, phone, "SSN", SSN instead of one long span. A model
@@ -7,8 +11,7 @@
   The "Loading weights" progress bar no longer prints.
 - Locked Keychain (for example over SSH): no crash. User rules are skipped with one warning, Cloakroom never mints a
   new vault.key when the OS secure store refuses access, and `cloakroom doctor` shows the real error.
-- Windows hooks start PowerShell by name (`pwsh` or `powershell`, whichever runs the hook) instead of computing the
-  program path, which the Claude plugin directory refuses. No behaviour change.
+- Windows hooks start `pwsh` or `powershell` by name (whichever runs the hook) instead of computing the program path.
 
 ## 0.4.0 (2026-10-14)
 - Scanned PDFs and photos are now read and masked instead of held back: with the new optional `ocr` extra
