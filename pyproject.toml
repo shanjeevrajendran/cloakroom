@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "cloakroom"
-version = "0.4.0"
+version = "0.4.1"
 description = "A privacy layer for Claude Code: names, emails, addresses and API keys are swapped for placeholders before the model sees them, and restored locally."
 readme = "README.md"
 license = "Apache-2.0"

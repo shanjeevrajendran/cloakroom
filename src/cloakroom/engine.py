@@ -10,6 +10,7 @@ import re
 
 # The model is public: no Hugging Face login needed, so hide the "unauthenticated requests" warning.
 os.environ.setdefault("HF_HUB_VERBOSITY", "error")
+os.environ.setdefault("HF_HUB_DISABLE_PROGRESS_BARS", "1")  # the "Loading weights" bar on every mask / check
 from dataclasses import dataclass, field
 
 from . import rules, safe
@@ -306,12 +307,21 @@ def detect(text: str, mode: str = "full", allow=(), always=(), ocr: bool = False
         found += model_findings(text)
     own = [m.span() for m in rules.OWN_PLACEHOLDER.finditer(text)]
     keep, skipped = [], []
+    rule_verdict: dict = {}  # (start, end) -> (rule kind, skip reason or None); rules come before the model in found
     for f in found + _always(text, always):
         if any(s <= f.start and f.end <= e for s, e in own):
             continue
         if f.source == "your-rule":  # you said mask it: no safe-value judgement
             keep.append(f)
             continue
+        if f.source.startswith("model:") and (f.start, f.end) in rule_verdict:
+            # Same span as a rule finding: judge it as the rule's kind, so whether a value is safe doesn't depend on
+            # which detector's label wins (a 555-01xx phone the model calls an account number)
+            kind, rule_why = rule_verdict[(f.start, f.end)]
+            if rule_why:
+                skipped.append((f.kind, f.source, rule_why))
+                continue
+            f = rules.Finding(f.start, f.end, kind, f.source, f.keyed)
         why = "on your allowlist" if _allowed(f.value(text), allow) else safe.reason(f.value(text), f.kind, f.keyed)
         if not why and f.kind == "DATE" and f.source.startswith("model:") and not _personal_date(
                 text, f.start, f.end, [(n.start, n.end) for n in found
@@ -330,11 +340,38 @@ def detect(text: str, mode: str = "full", allow=(), always=(), ocr: bool = False
                 b += 1
             if (a, b) != (f.start, f.end):
                 why = safe.reason(text[a:b], f.kind, f.keyed)
+        if not f.source.startswith("model:"):
+            rule_verdict.setdefault((f.start, f.end), (f.kind, why))
         (skipped.append((f.kind, f.source, why)) if why else keep.append(f))
     if ocr:
         keep += [rules.Finding(m.start(), m.end(), "ACCOUNT", "ocr-digits") for m in OCR_DIGITS.finditer(text)
                  if not any(s <= m.start() and m.end() <= e for s, e in own)]
+    keep = _unmerge_runs(text, keep)
     return _merge(keep + _repeats(text, keep)), skipped
+
+
+def _unmerge_runs(text: str, keep: list[rules.Finding]) -> list[rules.Finding]:
+    """A model ACCOUNT / SECRET span that runs over two or more kept rule findings ("415-820-4471 SSN 529-31-8846")
+    would win the merge as the longest and hide the words between them under the wrong label. Drop it and keep the
+    rule findings; a gap between them that holds a digit stays masked under the model's label, so nothing leaks."""
+    by_rule = [f for f in keep if not f.source.startswith("model:")]
+    out = []
+    for f in keep:
+        inside = sorted((r for r in by_rule if f.start <= r.start and r.end <= f.end), key=lambda r: r.start)
+        if not (f.source.startswith("model:") and f.kind in ("ACCOUNT", "SECRET") and len(inside) >= 2):
+            out.append(f)
+            continue
+        last = f.start
+        for a, b in [(r.start, r.end) for r in inside] + [(f.end, f.end)]:
+            if a > last and any(c.isdigit() for c in text[last:a]):
+                g, h = last, a
+                while g < h and (text[g].isspace() or text[g] in _EDGE_PUNCT):
+                    g += 1
+                while h > g and (text[h - 1].isspace() or text[h - 1] in _EDGE_PUNCT):
+                    h -= 1
+                out.append(rules.Finding(g, h, f.kind, f.source, f.keyed))
+            last = max(last, b)
+    return out
 
 
 def _digit_run(text: str, f: rules.Finding) -> str:

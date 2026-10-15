@@ -6,6 +6,8 @@ Manager/DPAPI, Linux Secret Service). Vault files are AES-GCM encrypted with it.
   2. the OS secure store
   3. a key file readable only by you, when no secure store exists (headless Linux, some WSL); `cloakroom doctor`
      says so. Vaults are never written in plain text.
+A secure store that exists but refuses access (a locked macOS Keychain in an SSH shell) raises KeyUnavailable: a
+new key file then would orphan everything sealed with the stored key.
 """
 from __future__ import annotations
 
@@ -19,6 +21,10 @@ SERVICE, ACCOUNT = "cloakroom", "vault-key"
 MAGIC, AAD = b"CRV1", b"cloakroom-vault-v1"
 _KEY: bytes | None = None
 KEY_SOURCE = ""
+
+
+class KeyUnavailable(RuntimeError):
+    """The OS secure store holds the key but won't hand it over right now."""
 
 
 def _secure_store():
@@ -50,8 +56,9 @@ def key() -> bytes:
                 store.set_password(SERVICE, ACCOUNT, stored)
             _KEY, KEY_SOURCE = base64.b64decode(stored), "os-secure-store"
             return _KEY
-        except Exception:
-            pass
+        except Exception as e:
+            raise KeyUnavailable(f"can't read the vault key from the OS secure store ({type(e).__name__}); "
+                                 "unlock it (macOS over SSH: security unlock-keychain) or set CLOAKROOM_VAULT_KEY") from e
     path = config.private_dir() / "vault.key"
     if not path.exists():
         fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)

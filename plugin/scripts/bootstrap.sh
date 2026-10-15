@@ -24,9 +24,9 @@ if ! mkdir "$LOCK" 2>/dev/null; then
   rm -rf "$LOCK" && mkdir "$LOCK" || exit 0
 fi
 trap 'rm -rf "$LOCK"' EXIT
-RULES="${CLOAKROOM_SPEC_RULES:-cloakroom==0.4.0}"  # pinned: each plugin version installs its own release
-FULL="${CLOAKROOM_SPEC_FULL:-cloakroom[model,torch,ocr]==0.4.0}"
-NO_OCR="${CLOAKROOM_SPEC_NO_OCR:-cloakroom[model,torch]==0.4.0}"  # stage 2 again without OCR if its wheels fail
+RULES="${CLOAKROOM_SPEC_RULES:-cloakroom==0.4.1}"  # pinned: each plugin version installs its own release
+FULL="${CLOAKROOM_SPEC_FULL:-cloakroom[model,torch,ocr]==0.4.1}"
+NO_OCR="${CLOAKROOM_SPEC_NO_OCR:-cloakroom[model,torch]==0.4.1}"  # stage 2 again without OCR if its wheels fail
 
 py310() {  # a Python 3.10+ interpreter on PATH, or nothing
   for p in python3 python; do
@@ -49,14 +49,14 @@ install() {  # install SPEC STAGE(0 rules | 1 model and OCR | 2 model only)
     # uv and pipx get the release spelled out (the Claude plugin directory checks these pins); the CLOAKROOM_SPEC_*
     # overrides, for tests, apply to the virtualenv route
     uv)   case "$2" in
-            1) uv tool install --force "cloakroom[model,torch,ocr]==0.4.0" ;;
-            2) uv tool install --force "cloakroom[model,torch]==0.4.0" ;;
-            *) uv tool install "cloakroom==0.4.0" ;;
+            1) uv tool install --force "cloakroom[model,torch,ocr]==0.4.1" ;;
+            2) uv tool install --force "cloakroom[model,torch]==0.4.1" ;;
+            *) uv tool install "cloakroom==0.4.1" ;;
           esac ;;
     pipx) case "$2" in
-            1) pipx install --force "cloakroom[model,torch,ocr]==0.4.0" ;;
-            2) pipx install --force "cloakroom[model,torch]==0.4.0" ;;
-            *) pipx install "cloakroom==0.4.0" ;;
+            1) pipx install --force "cloakroom[model,torch,ocr]==0.4.1" ;;
+            2) pipx install --force "cloakroom[model,torch]==0.4.1" ;;
+            *) pipx install "cloakroom==0.4.1" ;;
           esac ;;
     venv) { [ -x "$H/venv/bin/python" ] || "$(py310)" -m venv "$H/venv"; } && PIP_DISABLE_PIP_VERSION_CHECK=1 "$H/venv/bin/python" -m pip install -q -U "$1" ;;
     *)    return 1 ;;

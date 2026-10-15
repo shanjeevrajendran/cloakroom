@@ -35,7 +35,9 @@ elseif ($recent) { $failed }
 else {
   & $boot -Check
   if ($LASTEXITCODE -eq 0) {
-    Start-Process (Get-Process -Id $PID).Path -WindowStyle Hidden -ArgumentList '-NoProfile','-ExecutionPolicy','Bypass','-File',('"' + $boot + '"') | Out-Null
+    $bargs = '-NoProfile','-ExecutionPolicy','Bypass','-File',('"' + $boot + '"')
+    if ($PSVersionTable.PSEdition -eq 'Core') { Start-Process pwsh -WindowStyle Hidden -ArgumentList $bargs | Out-Null }
+    else { Start-Process powershell -WindowStyle Hidden -ArgumentList $bargs | Out-Null }
     $inst
   }
   else { $noinst }

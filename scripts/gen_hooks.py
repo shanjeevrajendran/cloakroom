@@ -70,10 +70,12 @@ def command(event: str) -> str:
         # UTF-8 without a byte-order mark: Windows PowerShell 5.1's [Text.Encoding]::UTF8 adds one to piped input
         "$u = New-Object System.Text.UTF8Encoding $false; [Console]::InputEncoding = $u; "
         "[Console]::OutputEncoding = $u; $OutputEncoding = $u",
-        # the same PowerShell that runs this command (powershell.exe 5.1 or pwsh 7): `powershell` by name only exists
-        # on Windows, and `-ExecutionPolicy Bypass -File` is accepted by both
-        "[Console]::In.ReadToEnd() | & (Get-Process -Id $PID).Path -NoProfile -ExecutionPolicy Bypass -File "
-        f'"${{CLAUDE_PLUGIN_ROOT}}/scripts/hook.ps1" {event}; exit $LASTEXITCODE',
+        # the same PowerShell that runs this command (pwsh 7 or powershell.exe 5.1; `powershell` only exists on
+        # Windows), spelled by name: the Claude plugin directory refuses a computed program path
+        "$in = [Console]::In.ReadToEnd(); if ($PSVersionTable.PSEdition -eq 'Core') "
+        f'{{ $in | pwsh -NoProfile -ExecutionPolicy Bypass -File "${{CLAUDE_PLUGIN_ROOT}}/scripts/hook.ps1" {event} }} '
+        f'else {{ $in | powershell -NoProfile -ExecutionPolicy Bypass -File "${{CLAUDE_PLUGIN_ROOT}}/scripts/hook.ps1" {event} }}; '
+        "exit $LASTEXITCODE",
         "#PS_END",
     ])
 
@@ -155,7 +157,9 @@ elseif ($recent) {{ $failed }}
 else {{
   & $boot -Check
   if ($LASTEXITCODE -eq 0) {{
-    Start-Process (Get-Process -Id $PID).Path -WindowStyle Hidden -ArgumentList '-NoProfile','-ExecutionPolicy','Bypass','-File',('"' + $boot + '"') | Out-Null
+    $bargs = '-NoProfile','-ExecutionPolicy','Bypass','-File',('"' + $boot + '"')
+    if ($PSVersionTable.PSEdition -eq 'Core') {{ Start-Process pwsh -WindowStyle Hidden -ArgumentList $bargs | Out-Null }}
+    else {{ Start-Process powershell -WindowStyle Hidden -ArgumentList $bargs | Out-Null }}
     $inst
   }}
   else {{ $noinst }}

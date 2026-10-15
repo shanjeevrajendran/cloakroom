@@ -146,13 +146,15 @@ def _doctor() -> int:
                                "model": "first-start install, stage 2 of 2: the model is downloading",
                                "model-failed": "the model download failed; see ~/.cloakroom/bootstrap.log"}
              .get(cfg["installing"], cfg["installing"]))
+    from . import crypto
     try:
-        from . import crypto
         crypto.key()
         line(crypto.KEY_SOURCE != "key-file" or None, "vault key",
              {"os-secure-store": "OS secure store", "environment": "CLOAKROOM_VAULT_KEY",
               "key-file": "key file (no OS secure store found; set CLOAKROOM_VAULT_KEY or install a keyring backend)"}
              [crypto.KEY_SOURCE])
+    except crypto.KeyUnavailable as e:
+        line(False, "vault key", str(e))
     except Exception as e:
         line(False, "vault key", f"{type(e).__name__}: install the 'cryptography' and 'keyring' packages")
     if cfg["mode"] == "full":

@@ -5,7 +5,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "set -- `# <#`\nbash \"${CLAUDE_PLUGIN_ROOT}/scripts/hook.sh\" start\nexit\n: <<'#PS_END'\n#>\n$u = New-Object System.Text.UTF8Encoding $false; [Console]::InputEncoding = $u; [Console]::OutputEncoding = $u; $OutputEncoding = $u\n[Console]::In.ReadToEnd() | & (Get-Process -Id $PID).Path -NoProfile -ExecutionPolicy Bypass -File \"${CLAUDE_PLUGIN_ROOT}/scripts/hook.ps1\" start; exit $LASTEXITCODE\n#PS_END",
+            "command": "set -- `# <#`\nbash \"${CLAUDE_PLUGIN_ROOT}/scripts/hook.sh\" start\nexit\n: <<'#PS_END'\n#>\n$u = New-Object System.Text.UTF8Encoding $false; [Console]::InputEncoding = $u; [Console]::OutputEncoding = $u; $OutputEncoding = $u\n$in = [Console]::In.ReadToEnd(); if ($PSVersionTable.PSEdition -eq 'Core') { $in | pwsh -NoProfile -ExecutionPolicy Bypass -File \"${CLAUDE_PLUGIN_ROOT}/scripts/hook.ps1\" start } else { $in | powershell -NoProfile -ExecutionPolicy Bypass -File \"${CLAUDE_PLUGIN_ROOT}/scripts/hook.ps1\" start }; exit $LASTEXITCODE\n#PS_END",
             "timeout": 30
           }
         ]
@@ -16,7 +16,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "set -- `# <#`\nbash \"${CLAUDE_PLUGIN_ROOT}/scripts/hook.sh\" prompt\nexit\n: <<'#PS_END'\n#>\n$u = New-Object System.Text.UTF8Encoding $false; [Console]::InputEncoding = $u; [Console]::OutputEncoding = $u; $OutputEncoding = $u\n[Console]::In.ReadToEnd() | & (Get-Process -Id $PID).Path -NoProfile -ExecutionPolicy Bypass -File \"${CLAUDE_PLUGIN_ROOT}/scripts/hook.ps1\" prompt; exit $LASTEXITCODE\n#PS_END",
+            "command": "set -- `# <#`\nbash \"${CLAUDE_PLUGIN_ROOT}/scripts/hook.sh\" prompt\nexit\n: <<'#PS_END'\n#>\n$u = New-Object System.Text.UTF8Encoding $false; [Console]::InputEncoding = $u; [Console]::OutputEncoding = $u; $OutputEncoding = $u\n$in = [Console]::In.ReadToEnd(); if ($PSVersionTable.PSEdition -eq 'Core') { $in | pwsh -NoProfile -ExecutionPolicy Bypass -File \"${CLAUDE_PLUGIN_ROOT}/scripts/hook.ps1\" prompt } else { $in | powershell -NoProfile -ExecutionPolicy Bypass -File \"${CLAUDE_PLUGIN_ROOT}/scripts/hook.ps1\" prompt }; exit $LASTEXITCODE\n#PS_END",
             "timeout": 60
           }
         ]
@@ -28,7 +28,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "set -- `# <#`\nbash \"${CLAUDE_PLUGIN_ROOT}/scripts/hook.sh\" pre\nexit\n: <<'#PS_END'\n#>\n$u = New-Object System.Text.UTF8Encoding $false; [Console]::InputEncoding = $u; [Console]::OutputEncoding = $u; $OutputEncoding = $u\n[Console]::In.ReadToEnd() | & (Get-Process -Id $PID).Path -NoProfile -ExecutionPolicy Bypass -File \"${CLAUDE_PLUGIN_ROOT}/scripts/hook.ps1\" pre; exit $LASTEXITCODE\n#PS_END",
+            "command": "set -- `# <#`\nbash \"${CLAUDE_PLUGIN_ROOT}/scripts/hook.sh\" pre\nexit\n: <<'#PS_END'\n#>\n$u = New-Object System.Text.UTF8Encoding $false; [Console]::InputEncoding = $u; [Console]::OutputEncoding = $u; $OutputEncoding = $u\n$in = [Console]::In.ReadToEnd(); if ($PSVersionTable.PSEdition -eq 'Core') { $in | pwsh -NoProfile -ExecutionPolicy Bypass -File \"${CLAUDE_PLUGIN_ROOT}/scripts/hook.ps1\" pre } else { $in | powershell -NoProfile -ExecutionPolicy Bypass -File \"${CLAUDE_PLUGIN_ROOT}/scripts/hook.ps1\" pre }; exit $LASTEXITCODE\n#PS_END",
             "timeout": 60
           }
         ]
@@ -40,7 +40,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "set -- `# <#`\nbash \"${CLAUDE_PLUGIN_ROOT}/scripts/hook.sh\" post\nexit\n: <<'#PS_END'\n#>\n$u = New-Object System.Text.UTF8Encoding $false; [Console]::InputEncoding = $u; [Console]::OutputEncoding = $u; $OutputEncoding = $u\n[Console]::In.ReadToEnd() | & (Get-Process -Id $PID).Path -NoProfile -ExecutionPolicy Bypass -File \"${CLAUDE_PLUGIN_ROOT}/scripts/hook.ps1\" post; exit $LASTEXITCODE\n#PS_END",
+            "command": "set -- `# <#`\nbash \"${CLAUDE_PLUGIN_ROOT}/scripts/hook.sh\" post\nexit\n: <<'#PS_END'\n#>\n$u = New-Object System.Text.UTF8Encoding $false; [Console]::InputEncoding = $u; [Console]::OutputEncoding = $u; $OutputEncoding = $u\n$in = [Console]::In.ReadToEnd(); if ($PSVersionTable.PSEdition -eq 'Core') { $in | pwsh -NoProfile -ExecutionPolicy Bypass -File \"${CLAUDE_PLUGIN_ROOT}/scripts/hook.ps1\" post } else { $in | powershell -NoProfile -ExecutionPolicy Bypass -File \"${CLAUDE_PLUGIN_ROOT}/scripts/hook.ps1\" post }; exit $LASTEXITCODE\n#PS_END",
             "timeout": 120
           }
         ]

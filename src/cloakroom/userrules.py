@@ -13,6 +13,7 @@ import json
 import os
 import re
 import secrets
+import sys
 import time
 
 from . import config, crypto
@@ -40,8 +41,16 @@ def _save(rules: list[dict]):
 
 
 def effective() -> tuple[list[str], list[tuple[str, str]]]:
-    """Active rules as the engine takes them: (allow entries, [(always-mask entry, kind)])."""
-    active = [r for r in load() if r["state"] == "active"]
+    """Active rules as the engine takes them: (allow entries, [(always-mask entry, kind)]).
+    No key, or the wrong one: skip your rules with a warning (masking still runs on the built-in rules)."""
+    from cryptography.exceptions import InvalidTag
+    try:
+        rules = load()
+    except (crypto.KeyUnavailable, InvalidTag) as e:
+        why = str(e) if isinstance(e, crypto.KeyUnavailable) else "rules.bin doesn't decrypt with this vault key"
+        print(f"cloakroom: skipping your rules: {why}", file=sys.stderr)
+        return [], []
+    active = [r for r in rules if r["state"] == "active"]
     return ([r["text"] for r in active if r["type"] == "allow"],
             [(r["text"], re.sub(r"[^A-Z]", "", r["kind"].upper()) or "SECRET")  # placeholders take letters only
              for r in active if r["type"] == "always_mask"])

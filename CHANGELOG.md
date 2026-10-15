@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.4.1 (2026-10-15)
+- Masking: when one model span swallows several rule findings, the rule labels are kept, so
+  `Priya Raman 415-820-4471 SSN 529-31-8846` masks as person, phone, "SSN", SSN instead of one long span. A model
+  finding on the same span as a rule finding is judged by the rule's kind, so fictional 555-01xx numbers stay unmasked.
+  The "Loading weights" progress bar no longer prints.
+- Locked Keychain (for example over SSH): no crash. User rules are skipped with one warning, Cloakroom never mints a
+  new vault.key when the OS secure store refuses access, and `cloakroom doctor` shows the real error.
+- Windows hooks start PowerShell by name (`pwsh` or `powershell`, whichever runs the hook) instead of computing the
+  program path, which the Claude plugin directory refuses. No behaviour change.
+
 ## 0.4.0 (2026-10-14)
 - Scanned PDFs and photos are now read and masked instead of held back: with the new optional `ocr` extra
   (`cloakroom[ocr]`: RapidOCR on ONNX Runtime, pdfium to render pages; models inside the wheel, no system programs,
