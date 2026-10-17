@@ -46,8 +46,10 @@ def effective() -> tuple[list[str], list[tuple[str, str]]]:
     from cryptography.exceptions import InvalidTag
     try:
         rules = load()
-    except (crypto.KeyUnavailable, InvalidTag) as e:
-        why = str(e) if isinstance(e, crypto.KeyUnavailable) else "rules.bin doesn't decrypt with this vault key"
+    except (crypto.KeyUnavailable, InvalidTag, ValueError, KeyError) as e:
+        why = (str(e) if isinstance(e, crypto.KeyUnavailable) else
+               "rules.bin doesn't decrypt with this vault key" if isinstance(e, InvalidTag) else
+               "rules.bin is damaged (delete it to start your rules over)")
         print(f"cloakroom: skipping your rules: {why}", file=sys.stderr)
         return [], []
     active = [r for r in rules if r["state"] == "active"]

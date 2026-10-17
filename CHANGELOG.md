@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+- `scripts/release_check.sh` runs every pre-publish check in order (versions, generated hooks, polyglot, tests, live test, bare-venv suite) and stops at the first failure; `--quick` skips the last two.
+- A damaged `~/.cloakroom/rules.bin` no longer crashes every command and hook: your rules are skipped with one
+  warning (as with a locked Keychain) and masking runs on the built-in rules.
+
 ## 0.4.2 (2026-10-15)
 - Windows hooks start `powershell` with the same line as 0.2.3, the form the Claude plugin directory accepts
   (0.4.0 and 0.4.1 were held back by its launcher check). No behaviour change; Python code is the same as 0.4.1.

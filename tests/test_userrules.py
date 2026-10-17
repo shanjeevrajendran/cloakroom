@@ -101,3 +101,10 @@ def test_rules_sealed_with_another_key_are_skipped(monkeypatch, capsys):
     crypto._KEY = None
     assert config.load()["always"] == []
     assert "doesn't decrypt" in capsys.readouterr().err
+
+
+def test_damaged_rules_file_is_skipped_not_a_crash(capsys):
+    from cloakroom import config
+    (config.private_dir() / "rules.bin").write_bytes(b"not a vault at all")
+    assert config.load()["always"] == []
+    assert "rules.bin is damaged" in capsys.readouterr().err
