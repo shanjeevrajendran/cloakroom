@@ -49,9 +49,9 @@ install() {  # install SPEC STAGE(0 rules | 1 model and OCR | 2 model only)
     # uv and pipx get the release spelled out (the Claude plugin directory checks these pins); the CLOAKROOM_SPEC_*
     # overrides, for tests, apply to the virtualenv route
     uv)   case "$2" in
-            1) uv tool install --force "cloakroom[model,torch,ocr]==0.4.2" ;;
-            2) uv tool install --force "cloakroom[model,torch]==0.4.2" ;;
-            *) uv tool install "cloakroom==0.4.2" ;;
+            1) uv tool install --python 3.12 --force "cloakroom[model,torch,ocr]==0.4.2" ;;
+            2) uv tool install --python 3.12 --force "cloakroom[model,torch]==0.4.2" ;;
+            *) uv tool install --python 3.12 "cloakroom==0.4.2" ;;
           esac ;;
     pipx) case "$2" in
             1) pipx install --force "cloakroom[model,torch,ocr]==0.4.2" ;;
@@ -99,7 +99,11 @@ cloakroom_bin() {  # where the installer put the program (often not on the PATH 
       echo "$(date '+%F %T') building the fast CPU model if this machine has no GPU (a few minutes)"
       "$CR" export-onnx --if-no-gpu || echo "CPU model build failed: full mode still works, just slower"
     fi
-    rm -f "$STATE"; echo "$(date '+%F %T') done: full protection"
+    if [ -n "$CR" ] && [ "$CR" = "$H/venv/bin/cloakroom" ]; then  # venv route: put a link on the usual user bin path
+      mkdir -p "$HOME/.local/bin" && ln -sf "$CR" "$HOME/.local/bin/cloakroom" && CR="$HOME/.local/bin/cloakroom"
+      case ":$PATH:" in *":$HOME/.local/bin:"*) ;; *) echo "hint: $HOME/.local/bin is not on your PATH; add it to your shell profile, or run $CR" ;; esac
+    fi
+    rm -f "$STATE"; echo "$(date '+%F %T') done: full protection. Program: ${CR:-unknown} (if 'cloakroom' is not found, open a new terminal or use that full path)"
     # start the service now, so the user's next prompt doesn't wait for the model's first load
     if [ -n "$CR" ]; then (nohup "$CR" serve </dev/null >>"$H/serve.log" 2>&1 &); echo "$(date '+%F %T') service starting"; fi
   else

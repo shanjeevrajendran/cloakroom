@@ -14,7 +14,8 @@ Full documentation, benchmark results and source: https://github.com/shanjeevraj
 ```
 
 Then restart Claude Code. Cloakroom installs itself on first start (a few minutes; progress in
-`~/.cloakroom/bootstrap.log`).
+`~/.cloakroom/bootstrap.log`). If `cloakroom` isn't found afterwards, open a new terminal, or run the full path
+shown on the "done" line of that log.
 
 ## What this plugin runs
 

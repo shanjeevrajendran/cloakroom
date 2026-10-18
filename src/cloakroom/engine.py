@@ -13,8 +13,10 @@ os.environ.setdefault("HF_HUB_VERBOSITY", "error")
 os.environ.setdefault("HF_HUB_DISABLE_PROGRESS_BARS", "1")  # the "Loading weights" bar on every mask / check
 from dataclasses import dataclass, field
 
-from . import rules, safe
+from . import rules, safe, winlibs
 from .vault import Vault
+
+winlibs.add_dll_dirs()  # Windows: the VC++ runtime DLLs from msvc-runtime, before torch or onnxruntime load
 
 MODEL_ID = "perplexity-ai/PII-Tracer"
 MODEL_REVISION = "d25c16f2e57e321f6d2527715c01df9112f956f5"  # remote code reviewed 2026-10-08
@@ -81,6 +83,8 @@ def _onnx_model():
         return onnx_backend.OnnxModel(path)
     except ImportError as e:
         raise ModelUnavailable("onnx backend needs: pip install 'cloakroom[model]'") from e
+    except OSError as e:  # a DLL that onnxruntime needs is missing (Windows)
+        raise ModelUnavailable(winlibs.vcpp_hint(e)) from e
 
 
 def _torch_model():
@@ -89,6 +93,8 @@ def _torch_model():
         from transformers import AutoModel
     except ImportError as e:
         raise ModelUnavailable("torch backend needs: pip install 'cloakroom[model,torch]'") from e
+    except OSError as e:  # a DLL that torch needs is missing (Windows: the Visual C++ runtime)
+        raise ModelUnavailable(winlibs.vcpp_hint(e)) from e
     device = "mps" if torch.backends.mps.is_available() else "cuda" if torch.cuda.is_available() else "cpu"
     return AutoModel.from_pretrained(MODEL_ID, revision=MODEL_REVISION, trust_remote_code=True).to(device).eval()
 

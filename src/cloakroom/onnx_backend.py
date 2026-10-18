@@ -139,6 +139,8 @@ class OnnxModel:
     """Same predict() contract as the PyTorch model: (spans, sensitivity). Sensitivity isn't exported: None."""
 
     def __init__(self, path: Path | None = None):
+        from . import winlibs
+        winlibs.add_dll_dirs()
         import onnxruntime as ort
         from tokenizers import Tokenizer
 

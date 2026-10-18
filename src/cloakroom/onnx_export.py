@@ -18,6 +18,9 @@ def export(final: pathlib.Path, int8: bool = True) -> None:
     there: a build killed half-way (out of memory on an 8 GB machine) must never leave a model that can't load.
     The optional int8 copy comes after, in place, written under a temporary name."""
     import shutil
+
+    from . import winlibs
+    winlibs.add_dll_dirs()
     import torch
     from transformers import AutoModel
 

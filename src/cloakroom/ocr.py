@@ -21,6 +21,8 @@ class OCRError(RuntimeError):
 
 
 def available() -> bool:
+    from . import winlibs
+    winlibs.add_dll_dirs()
     try:
         import pypdfium2  # noqa: F401
         import rapidocr  # noqa: F401
@@ -33,6 +35,8 @@ def _engine():
     if not _ENGINE:
         import logging
 
+        from . import winlibs
+        winlibs.add_dll_dirs()
         import rapidocr
         from rapidocr import RapidOCR
         models = Path(rapidocr.__file__).parent / "models"
