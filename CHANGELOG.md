@@ -1,5 +1,19 @@
 # Changelog
 
+## Unreleased
+- macOS and Linux: the plugin installs Cloakroom on a machine with nothing on it, like Windows. When neither uv nor
+  pipx is there it fetches uv (with curl, else wget) before trying a virtualenv, and uv brings its own Python 3.12,
+  so no system Python or `python3-venv` is needed.
+- The uv fetch is pinned on every system: the uv 0.13.1 installer from astral.sh, run only when its SHA-256 matches
+  the one in the plugin; on a mismatch it isn't run, the log says so, and the install falls back.
+- Every install route puts `~/.local/bin` on the PATH of new terminals (`uv tool update-shell`, `pipx ensurepath`,
+  or the same profile line for the virtualenv route), and logs which files it changed.
+- When the install needs you, the plugin's message and `~/.cloakroom/bootstrap.log` give numbered steps for the
+  cause (no curl or wget, offline, uv checksum mismatch, model download failed), each ending with restarting Claude
+  Code. `bootstrap.sh --check` now also counts curl or wget as something to install with.
+- Intel Mac: rules-only protection, said plainly (PyTorch and ONNX Runtime have no Intel Mac builds); the install
+  uses prebuilt wheels only there, so the rules-only program installs without a compiler.
+
 ## 0.4.3 (2026-10-19)
 - Windows: the plugin installs Cloakroom on a machine with nothing on it. When neither uv nor pipx is there, it
   fetches uv first, and every install route puts `cloakroom` in `%USERPROFILE%\.local\bin` and adds that folder to

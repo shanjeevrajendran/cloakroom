@@ -72,16 +72,20 @@ You need Claude Code, installed and signed in. Then:
 
 What you need first:
 
-- **Windows:** nothing. Cloakroom fetches what it needs.
-- **Mac and Linux:** uv, or Python 3.10 or newer (on Ubuntu and Debian, also `python3-venv`). If Cloakroom says it
-  has nothing to install itself with, run `curl -LsSf https://astral.sh/uv/install.sh | sh` in a terminal and
-  restart Claude Code.
+- **Windows, Mac and Linux:** nothing. When neither uv nor pipx is there, Cloakroom fetches uv (a pinned version,
+  checked against its SHA-256 before it runs), and uv brings its own Python. That needs `curl` or `wget`, which
+  macOS and most Linux systems have. If a Linux machine has neither, Cloakroom tells you the steps:
+  `sudo apt install curl` (Ubuntu/Debian) or `sudo dnf install curl` (Fedora/RHEL), then restart Claude Code.
+- **Intel Mac:** rules-only protection (keys, cards, IDs). PyTorch and ONNX Runtime publish no Intel Mac builds, so
+  the detection model for names and addresses can't run there.
 
 If something looks wrong:
 
 - **`cloakroom` not found:** open a new terminal. The program lives in `~/.local/bin` (on Windows,
-  `%USERPROFILE%\.local\bin`).
-- **Still setting up:** progress is written to `~/.cloakroom/bootstrap.log`. More in
+  `%USERPROFILE%\.local\bin`); the installer adds that folder to your shell profile (`~/.zshenv` for zsh,
+  `~/.bashrc` and `~/.profile` or `~/.bash_profile` for bash) or, on Windows, to your user PATH.
+- **Still setting up, or it failed:** progress, and numbered steps when something needs you, are written to
+  `~/.cloakroom/bootstrap.log`. More in
   [Setup](https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-SETUP.md).
 
 Tested from clean installs on macOS, Windows and Ubuntu.

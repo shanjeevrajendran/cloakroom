@@ -5,9 +5,23 @@ loaded in a small local service. No GPU needed. Without the extras, use rules-on
 (`CLOAKROOM_MODE=rules`): instant, but it misses names and free-text PII.
 
 The `cloakroom` command must be on PATH where Claude Code runs; `cloakroom doctor` warns if it isn't. Without it
-the hooks deny every tool call, and prompts carry a warning. On Windows, after `uv tool install`, run
-`uv tool update-shell` and open a new terminal (pipx: `pipx ensurepath`). The plugin's Windows installer does this
-for you: it fetches uv when neither uv nor pipx is there, and adds `%USERPROFILE%\.local\bin` to your user PATH.
+the hooks deny every tool call, and prompts carry a warning. After a manual `uv tool install`, run
+`uv tool update-shell` and open a new terminal (pipx: `pipx ensurepath`). The plugin's installer does this for you
+on every system: it fetches uv when neither uv nor pipx is there (the pinned uv 0.13.1 installer from astral.sh, run
+only when its SHA-256 matches), then puts `~/.local/bin` on the PATH of new terminals (`uv tool update-shell`,
+`pipx ensurepath`, or for its own virtualenv the same profile line uv writes: `~/.zshenv` for zsh, `~/.bashrc` plus
+`~/.profile` or `~/.bash_profile` for bash). On Windows it adds `%USERPROFILE%\.local\bin` to your user PATH.
+
+When the install needs you, `~/.cloakroom/bootstrap.log` and the plugin's message give numbered steps for the
+cause: no `curl` or `wget` (Linux: `sudo apt install curl` or `sudo dnf install curl`), no internet (allow
+astral.sh, releases.astral.sh, pypi.org, files.pythonhosted.org and huggingface.co), a uv installer that doesn't
+match its checksum (install uv yourself), or a failed model download (the exact command to retry). Each ends with
+restarting Claude Code.
+
+Platform limits: Intel Macs get rules-only protection (no PyTorch or ONNX Runtime builds for them; the installer
+says so and sets `"mode": "rules"`). Linux aarch64 gets full protection. Linux without a Secret Service keyring
+keeps the vault key in a file readable only by you (`cloakroom doctor`: "key file"); set `CLOAKROOM_VAULT_KEY`
+to supply your own.
 
 ## Backends
 
