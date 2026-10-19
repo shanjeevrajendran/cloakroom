@@ -102,10 +102,10 @@ function Publish-Cloakroom([string]$Exe) {  # exe in ~\.local\bin and that folde
 
 $modelBroken = $false
 try {
-  $Rules = if ($env:CLOAKROOM_SPEC_RULES) { $env:CLOAKROOM_SPEC_RULES } else { "cloakroom==0.4.2" }
-  $Full = if ($env:CLOAKROOM_SPEC_FULL) { $env:CLOAKROOM_SPEC_FULL } else { "cloakroom[model,torch,ocr]==0.4.2" }
+  $Rules = if ($env:CLOAKROOM_SPEC_RULES) { $env:CLOAKROOM_SPEC_RULES } else { "cloakroom==0.4.3" }
+  $Full = if ($env:CLOAKROOM_SPEC_FULL) { $env:CLOAKROOM_SPEC_FULL } else { "cloakroom[model,torch,ocr]==0.4.3" }
   # stage 2 again without local OCR if its wheels fail, so a broken OCR wheel never blocks the model
-  $NoOcr = if ($env:CLOAKROOM_SPEC_NO_OCR) { $env:CLOAKROOM_SPEC_NO_OCR } else { "cloakroom[model,torch]==0.4.2" }
+  $NoOcr = if ($env:CLOAKROOM_SPEC_NO_OCR) { $env:CLOAKROOM_SPEC_NO_OCR } else { "cloakroom[model,torch]==0.4.3" }
   "$(Get-Date -Format s) installer: $Who" | Add-Content $Log
   if ($Who -eq "none") {
     Set-Content $State "failed"

@@ -1,6 +1,16 @@
 # Changelog
 
-## Unreleased
+## 0.4.3 (2026-10-19)
+- Windows: the plugin installs Cloakroom on a machine with nothing on it. When neither uv nor pipx is there, it
+  fetches uv first, and every install route puts `cloakroom` in `%USERPROFILE%\.local\bin` and adds that folder to
+  your user PATH, so `cloakroom` works in a new terminal.
+- Windows: the plugin's install adds the Microsoft Visual C++ runtime (the `msvc-runtime` package), and Cloakroom
+  finds it before the model libraries load, so a machine without it works, no admin rights needed. If it is still missing,
+  `cloakroom doctor` says so in one line instead of printing a traceback, and the installer no longer reports full
+  protection when the model can't load.
+- The plugin's installs through uv use Python 3.12 on every system (a newer Python had no wheels for the model runtime).
+- macOS and Linux: when the plugin installs into its own virtual environment, it links `~/.local/bin/cloakroom`,
+  so the command is found like the other routes.
 - `scripts/release_check.sh` runs every pre-publish check in order (versions, generated hooks, polyglot, tests, live test, bare-venv suite) and stops at the first failure; `--quick` skips the last two.
 - A damaged `~/.cloakroom/rules.bin` no longer crashes every command and hook: your rules are skipped with one
   warning (as with a locked Keychain) and masking runs on the built-in rules.

@@ -6,7 +6,8 @@ loaded in a small local service. No GPU needed. Without the extras, use rules-on
 
 The `cloakroom` command must be on PATH where Claude Code runs; `cloakroom doctor` warns if it isn't. Without it
 the hooks deny every tool call, and prompts carry a warning. On Windows, after `uv tool install`, run
-`uv tool update-shell` and open a new terminal (pipx: `pipx ensurepath`).
+`uv tool update-shell` and open a new terminal (pipx: `pipx ensurepath`). The plugin's Windows installer does this
+for you: it fetches uv when neither uv nor pipx is there, and adds `%USERPROFILE%\.local\bin` to your user PATH.
 
 ## Backends
 
