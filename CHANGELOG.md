@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.4.4 (2026-10-19)
 - macOS and Linux: the plugin installs Cloakroom on a machine with nothing on it, like Windows. When neither uv nor
   pipx is there it fetches uv (with curl, else wget) before trying a virtualenv, and uv brings its own Python 3.12,
   so no system Python or `python3-venv` is needed.
