@@ -1,5 +1,8 @@
 # Changelog
 
+## Unreleased
+- A failed model install now shows numbered steps in Claude's message (what happened, how to retry, the log, Intel Macs), like the installer's other failure messages.
+
 ## 0.4.4 (2026-10-19)
 - macOS and Linux: the plugin installs Cloakroom on a machine with nothing on it, like Windows. When neither uv nor
   pipx is there it fetches uv (with curl, else wget) before trying a virtualenv, and uv brings its own Python 3.12,

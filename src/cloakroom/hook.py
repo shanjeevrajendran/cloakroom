@@ -336,9 +336,19 @@ def _install_note(cfg: dict) -> str | None:
                 "and IDs are covered; names and addresses may be missed until it's done. Progress: "
                 "~/.cloakroom/bootstrap.log")
     if cfg.get("installing") == "model-failed":
-        return ("cloakroom: the model download failed, so only rules protect this session (names and addresses may "
-                "be missed). Retry: uv tool install --force 'cloakroom[model,torch]', then delete "
-                "~/.cloakroom/bootstrap.state. Details: ~/.cloakroom/bootstrap.log")
+        import platform
+        from . import __version__
+        cmd = f"uv tool install --force --python 3.12 'cloakroom[model,torch]=={__version__}'"
+        win = sys.platform == "win32"
+        state = "%USERPROFILE%\\.cloakroom\\bootstrap.state" if win else "~/.cloakroom/bootstrap.state"
+        log = "%USERPROFILE%\\.cloakroom\\bootstrap.log" if win else "~/.cloakroom/bootstrap.log"
+        steps = ["Cloakroom's model install failed. Rules-only protection is on: keys, cards and IDs are covered, "
+                 "names and addresses are not yet.",
+                 f"To retry: delete {state} and restart Claude Code (/exit, then claude), or run: {cmd}",
+                 f"Log: {log}"]
+        if sys.platform == "darwin" and platform.machine() == "x86_64":
+            steps.append("Intel Macs stay rules-only by design: PyTorch and ONNX Runtime have no Intel Mac builds.")
+        return "\n".join(f"{i}. {t}" for i, t in enumerate(steps, 1))
     return None
 
 

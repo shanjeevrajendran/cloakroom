@@ -312,6 +312,24 @@ def test_install_note_shows_on_the_first_prompt_once(monkeypatch, capsys):
     assert blocked["decision"] == "block" and "model downloads" in blocked["systemMessage"]
 
 
+def test_failed_model_install_note_has_numbered_steps(monkeypatch):
+    import platform
+    from cloakroom import hook
+    monkeypatch.setattr(sys, "platform", "darwin")
+    monkeypatch.setattr(platform, "machine", lambda: "x86_64")
+    note = hook._install_note({"installing": "model-failed"})
+    lines = note.splitlines()
+    assert [l[:3] for l in lines] == ["1. ", "2. ", "3. ", "4. "]
+    assert "bootstrap.state" in note and "bootstrap.log" in note and "Intel" in note
+    from cloakroom import __version__
+    assert f"uv tool install --force --python 3.12 'cloakroom[model,torch]=={__version__}'" in note
+    monkeypatch.setattr(platform, "machine", lambda: "arm64")
+    assert len(hook._install_note({"installing": "model-failed"}).splitlines()) == 3
+    monkeypatch.setattr(sys, "platform", "win32")
+    win = hook._install_note({"installing": "model-failed"})
+    assert "%USERPROFILE%\\.cloakroom\\bootstrap.state" in win and "uv tool install" in win
+
+
 def test_plugin_installers_pin_this_release():
     import pathlib, re
     root = pathlib.Path(__file__).resolve().parents[1]
