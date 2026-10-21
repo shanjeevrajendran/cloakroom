@@ -5,6 +5,11 @@
   (`openssl rand -hex 32`) is now accepted and a wrong-length key gets a clear error, instead of a vault write
   failing with ValueError; when an MCP result can't be checked, each image becomes a text block with the reason,
   in both `updatedToolOutput` and `updatedMCPToolOutput`.
+- Updates itself when the plugin updates: an install made by the plugin, uv or pipx that is older than the plugin's
+  release is upgraded in the background, with the same extras, and the running service restarts on the new version.
+  The old version keeps protecting until the new one is in place. A newer, dev or editable install is never
+  touched; an older one installed another way (Homebrew, system pip, conda) gets the upgrade steps once, at the next
+  session start. `/health` now reports the version.
 
 ## 0.5.0 (2026-10-20)
 - Egress hold: a shell command that would send a known secret off this machine (curl, wget, ssh, scp, rsync, nc,

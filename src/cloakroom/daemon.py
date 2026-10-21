@@ -15,7 +15,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from threading import Lock
 from urllib.parse import parse_qs, urlsplit
 
-from . import config, dashboard, engine
+from . import __version__, config, dashboard, engine
 from .vault import Vault
 
 LOCK = Lock()  # one model instance; calls are serialized
@@ -54,7 +54,8 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         url = urlsplit(self.path)
         if url.path == "/health":
-            return self._send(200, {"ok": True, "service": "cloakroom", "model": engine._MODEL is not None})
+            return self._send(200, {"ok": True, "service": "cloakroom", "version": __version__,
+                                    "model": engine._MODEL is not None})
         if url.path == "/dashboard":
             code = parse_qs(url.query).get("code", [""])[0]
             if code and self._local_host() and dashboard.redeem(code):
