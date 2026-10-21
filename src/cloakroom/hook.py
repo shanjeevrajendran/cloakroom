@@ -33,6 +33,8 @@ _FOUND: list[tuple[str, str]] = []  # (placeholder, kind) found during the curre
 TIP = ("Cloakroom can't rewrite a prompt, only block it. Put the detail in a file and ask Claude to read it: "
        "it will be masked on the way in and restored for local edits. Send it anyway: add cr! at the start. "
        "Pause prompt checks: type cr: pause 10m (tool output stays masked). Resume: cr: resume.")
+_ALLOW_CMD = re.compile(r"(?i)^\s*cr:\s*allow(?:\s+once)?\s*$")
+HOLD_MINUTES = 10  # how long a held command can be allowed with cr: allow
 _PAUSE_CMD = re.compile(r"(?i)^\s*cr:\s*(pause(?:\s+(\d{1,3})\s*m(?:in(?:utes?)?)?)?|resume)\s*$")
 
 
@@ -94,6 +96,8 @@ def paused_minutes() -> int:
 def _control(prompt: str) -> dict | None:
     """Your own controls, typed as a prompt. They are answered here and never reach Claude (a block is the only way
     a prompt hook can stop a prompt), so only you can pause: Claude never sees or sends these."""
+    if _ALLOW_CMD.match(prompt):
+        return {"decision": "block", "reason": _arm_held()}
     m = _PAUSE_CMD.match(prompt)
     if not m:
         return None
@@ -106,6 +110,95 @@ def _control(prompt: str) -> dict | None:
         json.dump({"until": time.time() + 60 * minutes}, f)
     return {"decision": "block", "reason": f"Cloakroom: prompt checks paused for {minutes} min. Tool output is still "
                                            "masked. Turn checks back on early: cr: resume."}
+
+
+def _held_file():
+    return config.private_dir() / "held.json"
+
+
+def _command_mac(command: str) -> str:
+    """A keyed hash of a held command, so the file never holds the command (or the secret in it)."""
+    import hashlib
+    import hmac
+    return hmac.new(config.token().encode(), command.encode(), hashlib.sha256).hexdigest()
+
+
+def _write_held(state: dict):
+    fd = os.open(_held_file(), os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+    with os.fdopen(fd, "w") as f:
+        json.dump(state, f)
+
+
+def _read_held() -> dict | None:
+    try:
+        state = json.loads(_held_file().read_text())
+    except (OSError, ValueError):
+        return None
+    return state if isinstance(state, dict) and state.get("until", 0) > time.time() else None
+
+
+def _arm_held() -> str:
+    """cr: allow - let the last held command run once (Claude can't type this: it is your prompt)."""
+    state = _read_held()
+    if not state:
+        return "Cloakroom: no command is being held right now, so there is nothing to allow."
+    state["armed"] = True
+    _write_held(state)
+    return ("Cloakroom: the held command may run once. Ask Claude to run it again, unchanged; a changed command is "
+            "held again.")
+
+
+def _allowed_once(command: str) -> bool:
+    """The command you allowed with cr: allow, run unchanged: it passes this one time."""
+    state = _read_held()
+    if not (state and state.get("armed") and state.get("mac") == _command_mac(command)):
+        return False
+    _held_file().unlink(missing_ok=True)
+    return True
+
+
+def _egress_hold(command: str, session: str, vault: Vault, powershell: bool) -> dict | None:
+    """Hold a command that would send a known secret off this machine: a value already in the session vault (plain
+    or encoded), a key the rules recognise, or a literal token in a credential header. Labels only in the reason."""
+    via = shell.egress(command, powershell)
+    if not via:
+        return None
+    cfg = config.load()
+    found, spans = [], []
+    by_value = vault.by_value
+    for a, b, value, how in decode.find_known(command, engine.known_values(vault, cfg["always"])):
+        ph = by_value.get(value)
+        label = ph or "one of your always-mask values"
+        found.append(label if how == "plain" else f"{label} ({how})")
+        spans.append((a, b))
+        _FOUND.append((ph or "", ph.split("_")[1] if ph else "SECRET"))
+    literal = [] if found else shell.literal_tokens(command)  # a literal token the rules may not know
+    for where in literal:
+        found.append(f"a literal token in an {where}" if where[0].lower() in "aeioux" else
+                     f"a literal token in a {where}")
+        _FOUND.append(("", "SECRET"))
+    keys, _ = engine.detect(command, "rules", cfg["allow"], cfg["always"])
+    for f in keys:
+        if f.kind not in ("SECRET", "PASSWORD") or any(a < f.end and f.start < b for a, b in spans):
+            continue
+        if literal and f.source == "keyed-secret":  # the same header value, already named above
+            continue
+        found.append(f"a {f.kind} ({f.source})")
+        _FOUND.append(("", f.kind))
+    if not found:
+        return None
+    if _allowed_once(command):
+        _ACTION[0] = "allowed once"
+        return None
+    what = ", ".join(dict.fromkeys(found))
+    if _dry("pre", f"egress via {via}: would hold"):
+        return None
+    _write_held({"mac": _command_mac(command), "until": time.time() + 60 * HOLD_MINUTES, "armed": False})
+    _ACTION[0] = "held"
+    return _deny(f"Cloakroom held this command: it would send {what} off this machine (via {via}). A secret that "
+                 f"has left can't be called back. To send it anyway, type cr: allow, then ask Claude to run the same "
+                 f"command again: it passes once, within {HOLD_MINUTES} min. Claude: don't change or re-encode the "
+                 f"value to get past this; use an environment variable the user sets, or ask the user.")
 
 
 def on_prompt(data: dict) -> dict | None:
@@ -279,6 +372,9 @@ def on_pre(data: dict) -> dict | None:
     vault = Vault(config.vault_path(session))
 
     if tool in SHELL_TOOLS:
+        held = _egress_hold(args.get("command", ""), session, vault, tool == "PowerShell")
+        if held:
+            return held
         _prime(args.get("command", ""), data.get("cwd") or os.getcwd(), session, powershell=tool == "PowerShell")
     if tool in LOCAL_FILE_TOOLS or tool in SHELL_TOOLS:
         if not has_ph:

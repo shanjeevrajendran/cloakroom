@@ -1,6 +1,12 @@
 # Changelog
 
 ## Unreleased
+- Egress hold: a shell command that would send a known secret off this machine (curl, wget, ssh, scp, rsync, nc,
+  git push or remote with credentials, a literal token in an `Authorization` / `X-Api-Key` / `token=` header) is
+  held. The reason names the placeholder or rule, never the value. Type `cr: allow`, then rerun the same command,
+  to send it once.
+- Secrets Cloakroom has seen are also caught base64-encoded (standard or URL-safe, any padding), URL-encoded or
+  JSON-escaped, in prompts, tool inputs and tool output.
 - A failed model install now shows numbered steps in Claude's message (what happened, how to retry, the log, Intel Macs), like the installer's other failure messages.
 
 ## 0.4.4 (2026-10-19)

@@ -115,6 +115,12 @@ the detection model and OCR), then add the plugin as above.
   reply.md on your disk: "Hi Nadia Petrov,"
 ```
 
+- **Secrets don't leave through a command:** a command that would send a known secret off your machine (curl,
+  wget, ssh, scp, rsync, nc, git push with credentials, a literal token in an `Authorization` header) is held, and
+  the message names what it found by placeholder only. If you meant it, type `cr: allow`, then ask Claude to run
+  the same command again: it passes once.
+- **Encoded copies count:** a secret Cloakroom has seen is also caught base64-encoded, URL-encoded or JSON-escaped.
+
 Details: [docs-HOW-IT-WORKS.md](https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-HOW-IT-WORKS.md).
 
 ## Dashboard

@@ -81,3 +81,77 @@ def known_value_hit(text: str, values) -> bool:
         if any(v[i:i + FRAGMENT] in flat for i in range(len(v) - FRAGMENT + 1)):
             return True
     return False
+
+
+# Known secrets in encoded form. Rather than decode every base64-looking run (false alarms), each known value is
+# encoded the ways a command or a file would carry it, and those exact strings are looked for. A hit is derived
+# from one stored secret, so ordinary text can't trip it.
+KNOWN_MIN = 8  # shorter values are too likely to turn up by chance
+_B64_CHARS = set("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/_-")
+
+
+def _b64_cores(value: str) -> set[str]:
+    """The part of value's base64 that doesn't depend on what comes before or after it, at each of the three byte
+    offsets, standard and URL-safe: so 'user:<secret>' encoded as a whole (Basic auth) still holds a match."""
+    raw, out = value.encode(), set()
+    for shift in range(3):
+        enc = base64.b64encode(b"\0" * shift + raw).decode().rstrip("=")
+        core = enc[-(-8 * shift // 6):(8 * (shift + len(raw))) // 6]
+        if len(core) >= KNOWN_MIN:
+            out |= {core, core.replace("+", "-").replace("/", "_")}
+    return out
+
+
+def encoded_forms(value: str) -> dict[str, str]:
+    """{encoded string: how} for one known value: base64 (both alphabets, any padding), URL-encoded, JSON-escaped.
+    Forms equal to the value itself are left out (the plain value is matched on its own)."""
+    import json
+    from urllib.parse import quote, quote_plus
+    forms = {f: "base64" for f in _b64_cores(value)}
+    for f in (quote(value, safe=""), quote(value), quote_plus(value)):
+        forms.setdefault(f, "URL-encoded")
+        forms.setdefault(re.sub(r"%[0-9A-F]{2}", lambda m: m.group().lower(), f), "URL-encoded")
+    for f in (json.dumps(value)[1:-1], json.dumps(value, ensure_ascii=False)[1:-1]):
+        forms.setdefault(f, "JSON-escaped")
+        forms.setdefault(f.replace("/", "\\/"), "JSON-escaped")
+    return {f: how for f, how in forms.items() if f != value and len(f) >= KNOWN_MIN}
+
+
+_KNOWN_CACHE: dict = {}
+
+
+def _known_regex(values: tuple[str, ...]):
+    if values not in _KNOWN_CACHE:
+        table = {}
+        for v in values:
+            if len(v) < KNOWN_MIN:
+                continue
+            table.setdefault(v, (v, "plain"))
+            for f, how in encoded_forms(v).items():
+                table.setdefault(f, (v, how))
+        rx = re.compile("|".join(re.escape(f) for f in sorted(table, key=len, reverse=True))) if table else None
+        if len(_KNOWN_CACHE) > 64:
+            _KNOWN_CACHE.clear()
+        _KNOWN_CACHE[values] = (rx, table)
+    return _KNOWN_CACHE[values]
+
+
+def find_known(text: str, values) -> list[tuple[int, int, str, str]]:
+    """(start, end, known value, how) for each place a known value appears, plain or encoded. A base64 hit is
+    widened to the whole base64 run around it, so no piece of the encoding is left showing."""
+    rx, table = _known_regex(tuple(sorted(set(values))))
+    if rx is None:
+        return []
+    out = []
+    for m in rx.finditer(text):
+        value, how = table[m.group()]
+        a, b = m.span()
+        if how == "base64":
+            while a > 0 and text[a - 1] in _B64_CHARS:
+                a -= 1
+            while b < len(text) and text[b] in _B64_CHARS:
+                b += 1
+            while b < len(text) and text[b] == "=":
+                b += 1
+        out.append((a, b, value, how))
+    return out
