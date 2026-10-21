@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+- Updates itself when the plugin updates: an install made by the plugin, uv or pipx that is older than the plugin's
+  release is upgraded in the background, with the same extras, and the running service restarts on the new version.
+  The old version keeps protecting until the new one is in place. A newer, dev or editable install is never
+  touched; an older one installed another way (Homebrew, system pip, conda) gets the upgrade steps once, at the next
+  session start. `/health` now reports the version.
+
 ## 0.5.0 (2026-10-20)
 - Egress hold: a shell command that would send a known secret off this machine (curl, wget, ssh, scp, rsync, nc,
   git push or remote with credentials, a literal token in an `Authorization` / `X-Api-Key` / `token=` header) is

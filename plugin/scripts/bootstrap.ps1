@@ -5,13 +5,17 @@
 # msvc-runtime (PyPI) ships the Visual C++ runtime DLLs torch needs, so no admin install of the redistributable is required.
 # Every route ends with cloakroom.exe in %USERPROFILE%\.local\bin and that folder on the User PATH.
 # bootstrap.ps1 -Check exits 0 and installs nothing (the install itself fails and is retried when offline).
-param([switch]$Check)
+# bootstrap.ps1 -Upgrade: the plugin was updated; same as bootstrap.sh --upgrade (see there), except that the service is
+# stopped before the install, since Windows can't replace a running program, and started again after it.
+param([switch]$Check, [switch]$Upgrade)
 if ($Check) { exit 0 }  # Windows can always try: uv is fetched when no installer exists, and a failed install retries later
 $ErrorActionPreference = "Continue"
 $H = if ($env:CLOAKROOM_HOME) { $env:CLOAKROOM_HOME } else { Join-Path $env:USERPROFILE ".cloakroom" }
 New-Item -ItemType Directory -Force $H | Out-Null
 $Lock = Join-Path $H "bootstrap.lock"; $State = Join-Path $H "bootstrap.state"; $Log = Join-Path $H "bootstrap.log"
 $ReasonFile = Join-Path $H "bootstrap.reason"
+$Pin = "0.5.0"  # the release this plugin version installs (scripts/gen_hooks.py bakes the same into the hooks)
+$Stamp = Join-Path $H "upgrade.stamp"; $Notice = Join-Path $H "upgrade.notice"; $Probe = Join-Path $PSScriptRoot "upgrade_probe.py"
 $UvVersion = "0.13.1"
 $UvPs1Url = "https://astral.sh/uv/$UvVersion/install.ps1"
 # SHA-256 of that script: the digest GitHub lists for uv-installer.ps1 in the uv 0.13.1 release
@@ -80,6 +84,107 @@ function Stop-Failed([string]$Why, [string]$What) {
   "$(Get-Date -Format s) $What" | Add-Content $Log
   Write-Steps $Why
   exit 1
+}
+
+function Write-Plain([string]$Path, [string]$Text) {  # no byte-order mark, no CRLF: hook.sh (Git Bash) reads these too
+  [IO.File]::WriteAllText($Path, $Text, (New-Object System.Text.UTF8Encoding $false))
+}
+
+function Stop-CloakroomService([string[]]$Marks) {  # stop `serve` processes whose command line names one of $Marks
+  $n = 0
+  $procs = Get-CimInstance Win32_Process -ErrorAction SilentlyContinue | Where-Object {
+    $cl = $_.CommandLine
+    $cl -and $cl -match '\sserve"?\s*$' -and @($Marks | Where-Object { $_ -and $cl.ToLower().Contains($_.ToLower()) }).Count -gt 0
+  }
+  foreach ($p in @($procs)) { Stop-Process -Id $p.ProcessId -Force -ErrorAction SilentlyContinue; $n++ }
+  return $n
+}
+
+function Invoke-Upgrade {  # the plugin moved to $Pin: bring an older install up to it (see bootstrap.sh --upgrade)
+  $cr = (Get-Command cloakroom -ErrorAction SilentlyContinue).Source
+  foreach ($c in @((Join-Path $LocalBin "cloakroom.exe"), (Join-Path $Venv "Scripts\cloakroom.exe"))) {
+    if (-not $cr -and (Test-Path $c)) { $cr = $c }
+  }
+  if (-not $cr) { return 0 }  # nothing installed: the hook starts the first install instead
+  $uv = (Get-Command uv -ErrorAction SilentlyContinue).Source
+  if (-not $uv -and (Test-Path $UvExe)) { $uv = $UvExe }
+  $envs = @()  # route, environment folder
+  if ($uv) { $d = (& $uv tool dir 2>$null | Select-Object -First 1); if ($d) { $envs += , @("uv", (Join-Path $d "cloakroom")) } }
+  if (Get-Command pipx -ErrorAction SilentlyContinue) {
+    $d = (& pipx environment --value PIPX_LOCAL_VENVS 2>$null | Select-Object -First 1)
+    if ($d) { $envs += , @("pipx", (Join-Path $d "cloakroom")) }
+  }
+  $envs += , @("venv", $Venv)
+  # the Python of the program's environment: next to it (venv, conda, system pip), else the uv/pipx/venv one it
+  # was copied from into ~\.local\bin
+  $py = $null; $dir = Split-Path $cr
+  $cands = @((Join-Path $dir "python.exe"), (Join-Path (Split-Path $dir) "python.exe"))
+  foreach ($e in $envs) { if ($cr.ToLower().StartsWith($e[1].ToLower() + "\")) { $cands = @(Join-Path $e[1] "Scripts\python.exe") + $cands } }
+  if ($dir.TrimEnd('\') -eq $LocalBin.TrimEnd('\')) { foreach ($e in $envs) { $cands += Join-Path $e[1] "Scripts\python.exe" } }
+  foreach ($p in $cands) { if (-not $py -and (Test-Path $p)) { $py = $p } }
+  $line = if ($py -and (Test-Path $Probe)) { (& $py -I $Probe $Pin 2>$null) | Select-Object -First 1 } else { "" }
+  $f = "$line" -split " ", 4
+  if ($f.Length -lt 4) {
+    Write-Plain $Stamp $Pin
+    "$(Get-Date -Format s) upgrade check: could not read the version of $cr; left as is" | Add-Content $Log; return 0
+  }
+  $kind, $ver, $ext, $prefix = $f
+  if ($kind -ne "older") {
+    Write-Plain $Stamp $Pin
+    "$(Get-Date -Format s) upgrade check: cloakroom $ver ($kind) left as is for plugin $Pin" | Add-Content $Log; return 0
+  }
+  if ($ext -eq "-") { $ext = "" }
+  $spec = if ($env:CLOAKROOM_SPEC_UPGRADE) { $env:CLOAKROOM_SPEC_UPGRADE } elseif ($ext) { "cloakroom[$ext]==0.5.0" } else { "cloakroom==0.5.0" }
+  $route = "unknown"
+  foreach ($e in $envs) { if ($prefix.TrimEnd('\').ToLower() -eq $e[1].TrimEnd('\').ToLower()) { $route = $e[0]; break } }
+  if ($route -eq "unknown") {  # installed some other way: the user upgrades it, with these steps, once
+    $msg = "cloakroom: version $ver is installed, but the plugin now uses $Pin, and this copy wasn't installed by uv, pipx or the plugin, so it can't upgrade itself. To finish: 1. Run: & `"$py`" -m pip install -U `"$spec`" (or, with uv: uv tool install --force --python 3.12 `"$spec`"). 2. Then restart Claude Code (/exit, then claude). Until then version $ver keeps protecting you."
+    Write-Plain $Notice ((@{ systemMessage = $msg } | ConvertTo-Json -Compress) + "`n")
+    Write-Plain $Stamp $Pin
+    "$(Get-Date -Format s) upgrade check: cloakroom $ver in $prefix is older than $Pin but not installed by uv, pipx or this script: steps shown at the next session start" | Add-Content $Log
+    $msg | Add-Content $Log; return 0
+  }
+  "$(Get-Date -Format s) upgrading $ver -> $Pin ($route`: $spec)" | Add-Content $Log
+  # Windows can't replace a program that is running: stop the service first (the hook restarts it on demand, and
+  # it is restarted below); a hook running at that moment makes the install fail, and it retries in 10 minutes
+  $marks = @($prefix, $cr, (Join-Path $LocalBin "cloakroom"))
+  $was = Stop-CloakroomService $marks
+  if ($was -gt 0) { Start-Sleep -Seconds 2 }
+  switch ($route) {
+    "uv"   { & $uv tool install --python 3.12 --with msvc-runtime --force $spec *>> $Log }
+    "pipx" { & pipx install --preinstall msvc-runtime --force $spec *>> $Log }
+    "venv" { $env:PIP_DISABLE_PIP_VERSION_CHECK = "1"; & (Join-Path $Venv "Scripts\python.exe") -m pip install -q -U $spec msvc-runtime *>> $Log }
+  }
+  $ok = ($LASTEXITCODE -eq 0)
+  $cr2 = (Get-Command cloakroom -ErrorAction SilentlyContinue).Source
+  if (-not $cr2 -or -not (Test-Path $cr2)) { $cr2 = $cr }
+  if (-not $ok) {
+    & $cr2 --version *> $null
+    if ($LASTEXITCODE -eq 0) {
+      Write-Plain $Stamp "failed:$Pin"
+      "$(Get-Date -Format s) upgrade failed: the installed version stays in use; it tries again in 10 minutes" | Add-Content $Log
+    }
+    else {  # the program is gone: the hook denies tool calls and starts the first install again
+      Remove-Item -Force $Stamp -ErrorAction SilentlyContinue
+      "$(Get-Date -Format s) upgrade failed and the old program is gone: reinstalling from scratch" | Add-Content $Log
+    }
+    if ($was -gt 0) { Start-Process $cr2 -ArgumentList "serve" -WindowStyle Hidden | Out-Null }
+    return 1
+  }
+  $new = (& $cr2 --version 2>$null | Select-Object -First 1)
+  if ($was -gt 0) {
+    Start-Process $cr2 -ArgumentList "serve" -WindowStyle Hidden | Out-Null
+    "$(Get-Date -Format s) service restarted on the new version" | Add-Content $Log
+  }
+  Write-Plain $Stamp $Pin
+  "$(Get-Date -Format s) done: $(if ($new) { $new } else { "cloakroom $Pin" })" | Add-Content $Log
+  return 0
+}
+
+if ($Upgrade) {
+  try { $rc = Invoke-Upgrade } catch { "upgrade error: $_" | Add-Content $Log; $rc = 1 }
+  finally { Remove-Item -Recurse -Force $Lock -ErrorAction SilentlyContinue }
+  exit $rc
 }
 
 $Who = $env:CLOAKROOM_INSTALLER
@@ -160,6 +265,7 @@ try {
   "$(Get-Date -Format s) stage 1 of 2: installing $Rules (rules-only protection)" | Add-Content $Log
   Set-Content $State "rules"
   if (-not (Install-Spec $Rules $false)) { Stop-Failed "failed" "stage 1 failed" }
+  Write-Plain $Stamp $Pin  # this plugin version's release is in: no upgrade check on the first hook call
   Set-Content $State "model"
   "$(Get-Date -Format s) stage 2 of 2: installing the model ($Full; about 1 GB on a Mac, up to about 4 GB elsewhere, of which local OCR about 100 MB)" | Add-Content $Log
   $ok = Install-Spec $Full $true

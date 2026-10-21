@@ -14,14 +14,24 @@
 # One installer at a time (lock dir; a lock older than 30 min is stale). Progress: ~/.cloakroom/bootstrap.log.
 # On failure ~/.cloakroom/bootstrap.reason says why (nofetch | offline | checksum | failed) for the hook's message.
 # bootstrap.sh --check only says whether this machine has something to install with (exit 0) and installs nothing.
+# bootstrap.sh --upgrade: the plugin was updated (the hook saw ~/.cloakroom/upgrade.stamp differ from its version).
+#   It asks the installed program's own Python (upgrade_probe.py) for its version, extras and environment, and, when
+#   it is older than PIN and was installed by uv, pipx or this script's virtualenv, installs PIN on the same route with
+#   the same extras, then restarts a running `cloakroom serve`. Newer, dev and editable installs are left alone. An
+#   older install on any other route (Homebrew, system pip, conda) gets the steps once, at the next session start
+#   (~/.cloakroom/upgrade.notice). The old program serves until the installer swaps it; a hook that finds no program
+#   in that moment denies the tool call. A failed upgrade keeps the old version and retries after 10 minutes.
 # Tests: CLOAKROOM_SPEC_RULES / CLOAKROOM_SPEC_FULL / CLOAKROOM_SPEC_NO_OCR override what is installed on every route
-# (e.g. "cloakroom @ file:///path/to.whl"), CLOAKROOM_INSTALLER picks one, CLOAKROOM_PLATFORM fakes `uname -s`-`uname -m`.
+# (e.g. "cloakroom @ file:///path/to.whl"), CLOAKROOM_INSTALLER picks one, CLOAKROOM_PLATFORM fakes `uname -s`-`uname -m`,
+# CLOAKROOM_SPEC_UPGRADE replaces what --upgrade installs.
 set -u
+PIN=0.5.0  # the release this plugin version installs (scripts/gen_hooks.py bakes the same into the hooks)
 UV_VERSION=0.13.1
 UV_SH_URL="https://astral.sh/uv/$UV_VERSION/install.sh"
 # SHA-256 of that script: the digest GitHub lists for uv-installer.sh in the uv 0.13.1 release
 UV_SH_SHA256=7c482d409673a53f4d9bd34ae95c9166be3b8d89ca82f27dd7bca3cab457afff
 H="${CLOAKROOM_HOME:-$HOME/.cloakroom}"
+STAMP="$H/upgrade.stamp" NOTICE="$H/upgrade.notice" PROBE="$(dirname "$0")/upgrade_probe.py"
 LOCK="$H/bootstrap.lock" STATE="$H/bootstrap.state" LOG="$H/bootstrap.log" REASONF="$H/bootstrap.reason"
 PLAT="${CLOAKROOM_PLATFORM:-$(uname -s)-$(uname -m)}"
 
@@ -152,7 +162,7 @@ retry_cmd() {  # the stage 2 command, for the user to run by hand
 cloakroom_bin() {  # where the installer put the program (often not on the PATH Claude Code sees)
   UVB=""; [ "$WHO" = uv ] && UVB="$("$UV" tool dir --bin 2>/dev/null)/cloakroom"
   for c in "$(command -v cloakroom 2>/dev/null)" "$UVB" "$HOME/.local/bin/cloakroom" "$H/venv/bin/cloakroom"; do
-    if [ -n "$c" ] && [ -x "$c" ]; then echo "$c"; return; fi
+    if [ -n "$c" ] && [ -f "$c" ] && [ -x "$c" ]; then echo "$c"; return; fi
   done
 }
 
@@ -190,6 +200,100 @@ fail() {  # fail REASON WHAT: state failed, the reason for the hook, the steps f
   echo "$(date '+%F %T') $2"; steps "$1"; exit 1
 }
 
+env_python() {  # the Python of the environment program $1 lives in, from its script's #! line, or nothing
+  local f="$1" l n=0 l1="" l2="" p=""
+  while [ -L "$f" ] && [ "$n" -lt 20 ]; do
+    l="$(readlink "$f")"; case "$l" in /*) f="$l" ;; *) f="$(dirname "$f")/$l" ;; esac; n=$((n + 1))
+  done
+  { IFS= read -r l1; IFS= read -r l2; } <"$f" 2>/dev/null
+  case "$l1" in
+    # a long or spaced path: pip and uv write #!/bin/sh, then '''exec' "/path/python" "$0" "$@"
+    '#!/bin/sh') p="${l2#\'\'\'exec\' }"; p="${p%% \"\$0\"*}"; p="${p#[\"\']}"; p="${p%[\"\']}" ;;
+    '#!'*) p="${l1#??}"; p="${p%% *}" ;;
+  esac
+  if [ -n "$p" ] && [ -x "$p" ]; then echo "$p"; fi
+}
+canon() { (cd -P "$1" 2>/dev/null && pwd); }  # a folder with symlinks resolved, or nothing
+json_text() { printf '%s' "$1" | sed 's/\\/\\\\/g; s/"/\\"/g'; }
+stop_service() {  # stop_service PREFIX CANONICAL-PREFIX PROGRAM: stop this environment's `serve`, print how many
+  local pid args n=0
+  while read -r pid args; do
+    case "$args" in
+      *"$1/"*" serve"|*"$2/"*" serve"|*"$3 serve") kill "$pid" 2>/dev/null && n=$((n + 1)) ;;
+    esac
+  done <<EOF
+$(ps -eo pid=,args= 2>/dev/null)
+EOF
+  echo "$n"
+}
+upgrade_install() {  # upgrade_install SPEC: the pinned release on the route the program came from, extras kept
+  case "$WHO" in
+    uv)   "$UV" tool install --python 3.12 $NB --force "$1" ;;
+    pipx) pipx install --force "$1" ;;
+    venv) PIP_DISABLE_PIP_VERSION_CHECK=1 "$H/venv/bin/python" -m pip install -q -U "$1" ;;
+    *)    return 1 ;;
+  esac
+}
+upgrade() {  # the plugin moved to PIN: bring an older install up to it (see the header)
+  local CR PY="" KIND="" VER="" EXT="" PREFIX="" P UVDIR="" PIPXDIR="" SPEC CMD MSG NEW n i
+  WHO=""; UV="$(find_uv)"
+  CR="$(cloakroom_bin)"
+  [ -n "$CR" ] || return 0  # nothing installed: the hook starts the first install instead
+  PY="$(env_python "$CR")"
+  if [ -n "$PY" ] && [ -f "$PROBE" ]; then
+    read -r KIND VER EXT PREFIX <<EOF
+$("$PY" -I "$PROBE" "$PIN" 2>/dev/null)
+EOF
+  fi
+  if [ -z "$KIND" ]; then
+    echo "$PIN" >"$STAMP"
+    echo "$(date '+%F %T') upgrade check: could not read the version of $CR; left as is"; return 0
+  fi
+  case "$KIND" in
+    same|newer|dev|missing) echo "$PIN" >"$STAMP"
+      echo "$(date '+%F %T') upgrade check: cloakroom $VER ($KIND) left as is for plugin $PIN"; return 0 ;;
+  esac
+  [ "$EXT" = - ] && EXT=""
+  SPEC="${CLOAKROOM_SPEC_UPGRADE:-cloakroom${EXT:+[$EXT]}==0.5.0}"
+  P="$(canon "$PREFIX")"
+  [ -n "$UV" ] && UVDIR="$(canon "$("$UV" tool dir 2>/dev/null)")"
+  command -v pipx >/dev/null 2>&1 && PIPXDIR="$(canon "$(pipx environment --value PIPX_LOCAL_VENVS 2>/dev/null)")"
+  if [ -n "$UVDIR" ] && [ "$P" = "$UVDIR/cloakroom" ]; then WHO=uv
+  elif [ -n "$PIPXDIR" ] && [ "$P" = "$PIPXDIR/cloakroom" ]; then WHO=pipx
+  elif [ -n "$P" ] && [ "$P" = "$(canon "$H/venv")" ]; then WHO=venv
+  else
+    # installed some other way: the user upgrades it, with these steps, shown once at the next session start
+    CMD="$PY -m pip install -U \"$SPEC\""
+    MSG="cloakroom: version $VER is installed, but the plugin now uses $PIN, and this copy wasn't installed by uv, pipx or the plugin, so it can't upgrade itself. To finish: 1. Run: $CMD (or, with uv: uv tool install --force --python 3.12 \"$SPEC\"). 2. Then restart Claude Code (/exit, then claude). Until then version $VER keeps protecting you."
+    printf '{"systemMessage": "%s"}\n' "$(json_text "$MSG")" >"$NOTICE"
+    echo "$PIN" >"$STAMP"
+    echo "$(date '+%F %T') upgrade check: cloakroom $VER in $PREFIX is older than $PIN but not installed by uv, pipx or this script: steps shown at the next session start"
+    echo "$MSG"; return 0
+  fi
+  echo "$(date '+%F %T') upgrading $VER -> $PIN ($WHO: $SPEC)"
+  if ! upgrade_install "$SPEC"; then
+    echo "failed:$PIN" >"$STAMP"
+    if "$CR" --version >/dev/null 2>&1; then
+      echo "$(date '+%F %T') upgrade failed: cloakroom $VER stays in use; it tries again in 10 minutes"
+    else  # the program is gone: the hook denies tool calls and starts the first install again
+      rm -f "$STAMP"; echo "$(date '+%F %T') upgrade failed and the old program is gone: reinstalling from scratch"
+    fi
+    return 1
+  fi
+  CR="$(cloakroom_bin)"
+  NEW="$("$CR" --version 2>/dev/null)"
+  # the running service still has the old code loaded: restart it on the new version
+  n="$(stop_service "$PREFIX" "$P" "$CR")"
+  if [ "$n" -gt 0 ]; then
+    i=0; while [ "$i" -lt 20 ] && [ "$(stop_service "$PREFIX" "$P" "$CR")" -gt 0 ]; do sleep 0.5; i=$((i + 1)); done
+    (nohup "$CR" serve </dev/null >>"$H/serve.log" 2>&1 &)
+    echo "$(date '+%F %T') service restarted on the new version"
+  fi
+  echo "$PIN" >"$STAMP"
+  echo "$(date '+%F %T') done: ${NEW:-cloakroom $PIN}"
+}
+if [ "${1:-}" = --upgrade ]; then upgrade >>"$LOG" 2>&1; exit $?; fi
+
 {
   rm -f "$REASONF"
   WHO="${CLOAKROOM_INSTALLER:-}"
@@ -216,6 +320,7 @@ fail() {  # fail REASON WHAT: state failed, the reason for the hook, the steps f
     if online; then fail failed "stage 1 failed"; else fail offline "stage 1 failed: PyPI can't be reached"; fi
   fi
   CR="$(cloakroom_bin)"
+  echo "$PIN" >"$STAMP"  # this plugin version's release is in: no upgrade check on the first hook call
   if [ "$INTEL_MAC" = 1 ]; then
     publish
     echo "$(date '+%F %T') Intel Mac: rules-only protection. PyTorch and ONNX Runtime publish no Intel Mac builds, so the detection model can't run here: keys, cards and IDs are masked, names and addresses are not."

@@ -28,6 +28,7 @@ switch ($E) {
   default { [Console]::Error.WriteLine('usage: hook.ps1 start|prompt|pre|post'); exit 2 }
 }
 $h = if ($env:CLOAKROOM_HOME) { $env:CLOAKROOM_HOME } else { Join-Path $env:USERPROFILE '.cloakroom' }
+$pin = '0.5.0'
 # the program: on PATH, in ~/.local/bin (where the installers put it) or in ~/.cloakroom/venv
 $cr = (Get-Command cloakroom -ErrorAction SilentlyContinue).Source
 foreach ($c in @((Join-Path $env:USERPROFILE '.local\bin\cloakroom.exe'), (Join-Path $h 'venv\Scripts\cloakroom.exe'))) {
@@ -38,7 +39,23 @@ $st = Join-Path $h 'bootstrap.state'
 $recent = (Test-Path $st) -and ((Get-Content $st -ErrorAction SilentlyContinue) -eq 'failed') -and
   (((Get-Date) - (Get-Item $st).LastWriteTime).TotalMinutes -lt 10)
 $boot = Join-Path $env:CLAUDE_PLUGIN_ROOT 'scripts\bootstrap.ps1'
-if ($cr) { [Console]::In.ReadToEnd() | & $cr hook $E }
+$bargs = '-NoProfile','-ExecutionPolicy','Bypass','-File',('"' + $boot + '"')
+$ps = if ($PSVersionTable.PSEdition -eq 'Core') { 'pwsh' } else { 'powershell' }
+if ($cr) {
+  # the plugin was updated: upgrade in the background, keep running the installed program meanwhile
+  $sf = Join-Path $h 'upgrade.stamp'
+  $s = if (Test-Path $sf) { (Get-Content $sf -TotalCount 1 -ErrorAction SilentlyContinue) -join '' } else { '' }
+  if ($s -ne $pin -and -not (Test-Path (Join-Path $h 'bootstrap.lock')) -and
+      ($s -ne "failed:$pin" -or ((Get-Date) - (Get-Item $sf).LastWriteTime).TotalMinutes -ge 10)) {
+    Start-Process $ps -WindowStyle Hidden -ArgumentList ($bargs + '-Upgrade') | Out-Null
+  }
+  # steps the user must take to upgrade (left by the installer): once, at a session start
+  $nf = Join-Path $h 'upgrade.notice'
+  if ($E -eq 'start' -and (Test-Path $nf)) {
+    [Console]::In.ReadToEnd() | & $cr hook $E | Out-Null; Get-Content $nf -Raw; Remove-Item -Force $nf
+  }
+  else { [Console]::In.ReadToEnd() | & $cr hook $E }
+}
 elseif ($recent) {  # the installer leaves the reason for the steps
   switch ((Get-Content (Join-Path $h 'bootstrap.reason') -ErrorAction SilentlyContinue) -join '') {
     'offline' { $offline }
@@ -49,9 +66,7 @@ elseif ($recent) {  # the installer leaves the reason for the steps
 else {
   & $boot -Check
   if ($LASTEXITCODE -eq 0) {
-    $bargs = '-NoProfile','-ExecutionPolicy','Bypass','-File',('"' + $boot + '"')
-    if ($PSVersionTable.PSEdition -eq 'Core') { Start-Process pwsh -WindowStyle Hidden -ArgumentList $bargs | Out-Null }
-    else { Start-Process powershell -WindowStyle Hidden -ArgumentList $bargs | Out-Null }
+    Start-Process $ps -WindowStyle Hidden -ArgumentList $bargs | Out-Null
     $inst
   }
   else { $noinst }

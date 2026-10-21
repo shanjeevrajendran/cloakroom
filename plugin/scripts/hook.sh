@@ -27,6 +27,7 @@ case "$E" in
   *) echo "usage: hook.sh start|prompt|pre|post" >&2; exit 2 ;;
 esac
 H="${CLOAKROOM_HOME:-$HOME/.cloakroom}"
+PIN=0.5.0
 # Git Bash on Windows (W=1): .exe programs, and the PowerShell installer (bootstrap.ps1), which builds the same
 # Windows layout the PowerShell hook looks in
 W=; case "$(uname -s 2>/dev/null)" in MINGW*|MSYS*|CYGWIN*) W=1 ;; esac
@@ -36,7 +37,22 @@ for C in "$HOME/.local/bin/cloakroom" "$HOME/.local/bin/cloakroom.exe" "$H/venv/
   [ -z "$CR" ] && [ -x "$C" ] && CR="$C"
 done
 if [ -n "$CR" ]; then
-  "$CR" hook "$E"
+  # the plugin was updated: upgrade in the background, keep running the installed program meanwhile
+  S=; [ -f "$H/upgrade.stamp" ] && read -r S <"$H/upgrade.stamp"
+  if [ "$S" != "$PIN" ] && [ ! -d "$H/bootstrap.lock" ] &&
+     { [ "$S" != "failed:$PIN" ] || [ -n "$(find "$H/upgrade.stamp" -mmin +10 2>/dev/null)" ]; }; then
+    if [ -n "$W" ] && command -v powershell >/dev/null 2>&1; then
+      (nohup powershell -NoProfile -ExecutionPolicy Bypass -File "${CLAUDE_PLUGIN_ROOT}/scripts/bootstrap.ps1" -Upgrade </dev/null >/dev/null 2>&1 &)
+    else
+      (nohup bash "${CLAUDE_PLUGIN_ROOT}/scripts/bootstrap.sh" --upgrade </dev/null >/dev/null 2>&1 &)
+    fi
+  fi
+  # steps the user must take to upgrade (left by the installer): once, at a session start
+  if [ "$E" = start ] && [ -f "$H/upgrade.notice" ]; then
+    "$CR" hook "$E" >/dev/null; cat "$H/upgrade.notice"; rm -f "$H/upgrade.notice"
+  else
+    "$CR" hook "$E"
+  fi
 # a failed install retries after 10 minutes, not on every call; the installer leaves the reason for the steps
 elif [ "$(cat "$H/bootstrap.state" 2>/dev/null)" = failed ] && [ -z "$(find "$H/bootstrap.state" -mmin +10 2>/dev/null)" ]; then
   case "$(cat "$H/bootstrap.reason" 2>/dev/null)" in

@@ -63,6 +63,7 @@ You need Claude Code, installed and signed in. Then:
 3. **Restart Claude Code.** Type `/exit`, then `claude` again. Cloakroom now installs itself. Keys and card numbers
    are covered in about a minute; names and addresses a few minutes later, once the detection model has downloaded
    (about 1 GB on a Mac, up to about 4 GB elsewhere). Claude's tool calls are held back until then.
+   It also updates itself when the plugin updates (an install you made by hand is left alone).
 4. **Check it.** Open a new terminal window and run:
 
    ```bash
