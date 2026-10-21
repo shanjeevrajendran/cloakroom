@@ -61,6 +61,10 @@ UUID = re.compile(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12
 HEX_DIGEST = re.compile(r"^(?:[0-9a-f]{32}|[0-9a-f]{40}|[0-9a-f]{64})$", re.I)
 PUBLIC_GIT = re.compile(r"(?i)^(?:git@|https://)(?:github\.com|gitlab\.com|bitbucket\.org)[:/][\w.-]+/[\w.-]+?(?:\.git)?$")
 BOT_NAME = re.compile(r"(?i)\[bot\]|bot$")
+# epoch and "unknown" defaults that forms and databases fill in: 1970-01-01, 01/01/1970, 1900-01-01 (any order)
+DEFAULT_DATE = re.compile(r"^(?:(?:19(?:70|00))[-/.]0?1[-/.]0?1|0?1[-/.]0?1[-/.](?:19(?:70|00))|0?1 jan(?:uary)? (?:1970|1900)|"
+                          r"jan(?:uary)? 0?1,? (?:1970|1900))$", re.I)
+ELLIPSIS = re.compile(r"\.{3}|…")
 CODE_LOCATION = re.compile(r"^(?=[\w.-]*[A-Za-z])[\w.-]+:\d+(?::\d+)?$")  # node:net:1555:16, file.py:42 (not IP:port)
 
 
@@ -91,6 +95,16 @@ def _sequential(digits: str) -> bool:
 def _year(v: str) -> int | None:
     m = re.search(r"\b(1[0-9]{3}|20[0-9]{2})\b", v)
     return int(m.group(1)) if m else None
+
+
+def _filler(v: str) -> bool:
+    """AC00000000000000000000000000000000, sk-...your-key-here..., ghp_xxxx...: a value whose varying part (after a
+    short letter prefix such as AC, sk-, ghp_) is one character repeated 8+ times, or that is cut short with an
+    ellipsis, with no run of more than 8 letters and digits left in it (a real key is longer)."""
+    if ELLIPSIS.search(v):
+        return max((len(r) for r in re.findall(r"[A-Za-z0-9]+", v)), default=0) <= 8
+    m = re.fullmatch(r"([A-Za-z]{0,4}[_-]?)([A-Za-z0-9])\2{7,}", v)
+    return m is not None
 
 
 def _is_internal_ip(v: str) -> bool:
@@ -130,6 +144,8 @@ def reason(value: str, kind: str, keyed: bool) -> str | None:
         return "already redacted"
     if v.startswith(JWT_IO_EXAMPLE):
         return "jwt.io documentation example"
+    if kind == "DATE" and DEFAULT_DATE.match(v):
+        return "default placeholder date"
     if keyed:  # a value named by a secret label: only explicit example markers above can clear it
         return None
     if _doc_ips_only(v):
@@ -138,6 +154,8 @@ def reason(value: str, kind: str, keyed: bool) -> str | None:
         return "truncated or prefix-only key"
     if kind == "SECRET" and (_alphabet_run(v.split()[-1]) or re.fullmatch(r"\d{6,}", v) and v in "01234567890123456789"):
         return "alphabet or counting placeholder"
+    if kind in ("SECRET", "ACCOUNT") and _filler(value.strip()):
+        return "filler placeholder (one repeated character, or cut short with ...)"
     if kind == "PERSON" and re.fullmatch(r"[a-z]{1,3}", v):
         return "too short to be a name"
     if kind == "PERSON" and not re.search(r"[^\W\d_]", v):

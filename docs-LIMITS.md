@@ -46,8 +46,13 @@
   poorly. Encrypted PDFs are never rendered. `"ocr": false` turns it off.
 - Images: without OCR, Read results that are pictures (png, jpg, gif, webp...) are held back, and figures in
   notebook outputs always are, because Cloakroom can't check pixels. Attach a picture to your own prompt to show it to Claude, or set
-  `"allow_images": true` to let them through with a warning. Pictures returned by other tools (MCP servers, for
-  example) are not checked or held back.
+  `"allow_images": true` to let them through with a warning.
+- MCP images: an image in an MCP tool's result (an `image` block, or an embedded `image/*` resource) is replaced by
+  its OCR text, masked like any output, or held back with a one-line reason when OCR isn't there, fails, or finds
+  no text. An image block Cloakroom can't decode is held back too. Claude gets text, not the picture: layout and
+  anything that isn't text are lost, and small or low-contrast text can be missed. Each image counts against
+  `ocr_timeout` on its own. A `resource_link` (a URI with no pixels in the result) is left as it is.
+  `"allow_images": true` passes MCP images unchanged, with a warning.
 - Claude Code auto-approves read-only commands such as `od`, so permissions alone can't stop a dump.
 - Claude's own tool calls can't change `~/.cloakroom` (writes there, or shell commands naming it, are denied), so
   it can't pause Cloakroom or edit its rules. A side effect: Claude can't read Cloakroom's logs with shell commands

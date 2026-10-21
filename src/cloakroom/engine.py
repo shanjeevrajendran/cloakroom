@@ -115,6 +115,10 @@ def model_findings(text: str) -> list[rules.Finding]:
 _FIELD_TAG = re.compile(r":?\d{2,3}[A-Z]?:|\d{1,3}=")  # SWIFT MT ":35E:" / FIX "54=" field tags
 
 
+# a standard's name right before the number: RFC 5737, ISO 27001, ISO/IEC 27001, ICAO 9303, PEP 8
+_STANDARD = re.compile(r"\b(?:RFC|ISO(?:/IEC)?|IEC|IEEE|ICAO|ECMA|PEP)[ -]?(?:Doc\.? )?$")
+
+
 def _not_account(value: str) -> bool:
     """A short account match with no digits ('DDA', ':CRED') or a bare field tag ('77S', '62F'). A longer one with no
     digits (a member ID like MBR-ALPLCBLKIW) stays masked."""
@@ -365,6 +369,12 @@ def detect(text: str, mode: str = "full", allow=(), always=(), ocr: bool = False
         if not why and (f.source == "home-dir-user" and _own_username(f.value(text))
                         or f.kind == "PERSON" and _own_account(f.value(text))):
             why = "your own username (already visible in the working folder)"
+        if not why and f.kind in ("SECRET", "ACCOUNT") and not f.keyed and safe.ELLIPSIS.match(text, f.end) \
+                and safe.reason(f.value(text) + "...", f.kind, f.keyed):
+            why = "cut short with ... (a placeholder, not a key)"  # "sk-...your-key-here...": the span stops at "sk-"
+        if not why and f.kind == "ACCOUNT" and _STANDARD.search(text, max(0, f.start - 12), f.start) \
+                and re.fullmatch(r"\d{1,5}(?:[-:]\d{1,4})?", f.value(text).strip()):
+            why = "standard or spec number (RFC 5737, ISO 27001)"
         if not why and f.kind in ("CARD", "ACCOUNT") and _digit_run(text, f) in safe.TEST_CARDS:
             why = "published test card"
         if not why and f.kind == "PERSON":

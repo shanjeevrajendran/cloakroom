@@ -172,3 +172,82 @@ def convert(response, path: str = "", allow_images: bool = False, ocr: Ocr | Non
             return _image(response, path, ocr)
         return text_result(path, IMAGE), "held"
     return text_result(path, OTHER.format(kind=str(kind or "unknown"))), "held"  # a Read result type we don't know
+
+
+# --- MCP tool results -------------------------------------------------------------------------------------------
+# An MCP tool (a browser or desktop screenshot tool, say) returns a list of content blocks; an image block carries
+# the picture as base64: MCP's {"type": "image", "data", "mimeType"}, or the API's {"type": "image", "source":
+# {"data", "media_type"}}, or an embedded {"type": "resource", "resource": {"blob", "mimeType": "image/..."}}.
+# Each one becomes a text block holding its OCR text (masked afterwards like any output), or a held-back note.
+# The pixels are never passed on, unless allow_images is on.
+MCP_IMAGE = "[Cloakroom held back an image from this tool: {why}, so it can't be checked for secrets or personal data.]"
+
+
+def _mcp_image(block: dict) -> tuple[bool, str | None]:
+    """(is an image block, its base64 data or None when it can't be found)."""
+    kind = block.get("type")
+    if kind == "image":
+        src = block.get("source")
+        data = block.get("data") if "data" in block else (src.get("data") if isinstance(src, dict) else None)
+        return True, data if isinstance(data, str) and data else None
+    if kind == "resource" and isinstance(block.get("resource"), dict):
+        res = block["resource"]
+        if str(res.get("mimeType", "")).lower().startswith("image/"):
+            return True, res.get("blob") if isinstance(res.get("blob"), str) and res.get("blob") else None
+    if kind == "image_url" or (str(block.get("mimeType", "")).lower().startswith("image/")
+                               and ("data" in block or "blob" in block)):  # a resource_link (a URI) has no pixels
+        data = block.get("data") or block.get("blob")
+        return True, data if isinstance(data, str) and data else None
+    return False, None
+
+
+def _mcp_ocr(data: str, ocr: Ocr | None) -> tuple[str, bool]:
+    """Text for one MCP image block, and whether it holds OCR text (False: held back)."""
+    if not (ocr and ocr.on):
+        return MCP_IMAGE.format(why="local OCR isn't installed (the cloakroom[ocr] extra)"), False
+    from . import ocr as engine
+    try:
+        text, ms = engine.image_text(base64.b64decode(data, validate=False), ocr.timeout)
+    except Exception as e:  # undecodable, not a picture, OCR failed or too slow
+        ocr.error = str(e) or type(e).__name__
+        return MCP_IMAGE.format(why="it couldn't be read by local OCR"), False
+    ocr.ms += ms
+    text = unicodedata.normalize("NFKC", text).strip()
+    if len(re.sub(r"\s", "", text)) < 2:
+        return MCP_IMAGE.format(why="local OCR found no text in it"), False
+    ocr.pages += 1
+    return OCR_NOTE.format(what="image") + text, True
+
+
+def convert_mcp(response, allow_images: bool = False, ocr: Ocr | None = None):
+    """Replace every image block in an MCP tool result. Returns (response, counts) with counts
+    {"ocr": n, "held": n, "allowed": n}; the response is unchanged when there is no image in it."""
+    counts = {"ocr": 0, "held": 0, "allowed": 0}
+
+    def walk(v):
+        if isinstance(v, list):
+            return [walk(x) for x in v]
+        if not isinstance(v, dict):
+            return v
+        is_image, data = _mcp_image(v)
+        if not is_image:
+            return {k: walk(x) for k, x in v.items()}
+        if allow_images:
+            counts["allowed"] += 1
+            return v
+        if data is None:  # an image block we can't decode: fail closed
+            counts["held"] += 1
+            return {"type": "text", "text": MCP_IMAGE.format(why="it isn't in a form Cloakroom can read")}
+        text, read = _mcp_ocr(data, ocr)
+        counts["ocr" if read else "held"] += 1
+        return {"type": "text", "text": text}
+
+    if isinstance(response, str) and response.lstrip()[:1] in ("[", "{") and '"image' in response:
+        import json
+        try:
+            parsed = json.loads(response)
+        except ValueError:
+            return response, counts
+        new = walk(parsed)
+        return (json.dumps(new) if new != parsed else response), counts
+    return walk(response), counts
