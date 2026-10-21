@@ -8,6 +8,7 @@ CLOAKROOM_HOME and vault key, so a machine's real ~/.cloakroom is never touched.
 """
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -38,15 +39,28 @@ failures = []
 
 # "without cloakroom" runs also get an empty home: the hook looks in ~/.local/bin and ~/.cloakroom/venv too
 empty_home = tempfile.mkdtemp()
+# "with cloakroom" runs are hermetic too: a temp HOME and CLOAKROOM_HOME, a PATH that starts with a shim running this
+# repo's own source, and an upgrade stamp already at the plugin's PIN. The machine's installed cloakroom (maybe older
+# than the PIN, which would start a real self-upgrade) is never seen, run or changed.
 own_home = tempfile.mkdtemp()
+os.makedirs(os.path.join(own_home, ".cloakroom"))
+pin = re.search(r"^PIN=(\S+)", open(os.path.join(root, "scripts", "hook.sh")).read(), re.M).group(1)
+with open(os.path.join(own_home, ".cloakroom", "upgrade.stamp"), "w") as f:
+    f.write(pin + "\n")
+src = os.path.abspath(os.path.join(root, "..", "src"))
+shim_dir = tempfile.mkdtemp()
+with open(os.path.join(shim_dir, "cloakroom"), "w") as f:
+    f.write(f'#!/bin/sh\nPYTHONPATH="{src}${{PYTHONPATH:+:$PYTHONPATH}}" exec "{sys.executable}" -m cloakroom "$@"\n')
+os.chmod(os.path.join(shim_dir, "cloakroom"), 0o755)
+shim_path = shim_dir + os.pathsep + os.environ["PATH"]
 vault_key = base64.b64encode(os.urandom(32)).decode()  # one key for own_home's vault across all runs
 os.environ.update(CLAUDE_PLUGIN_ROOT=root)
 
 
 def run(shell, event, payload, path, home=empty_home, installer="none"):
-    env = dict(os.environ, PATH=path, CLOAKROOM_MODE="rules", PYTHONUTF8="1", CLOAKROOM_HOME=own_home,
-               CLOAKROOM_VAULT_KEY=vault_key)
-    if path != os.environ["PATH"]:
+    env = dict(os.environ, PATH=path, CLOAKROOM_MODE="rules", PYTHONUTF8="1", HOME=own_home, USERPROFILE=own_home,
+               CLOAKROOM_HOME=os.path.join(own_home, ".cloakroom"), CLOAKROOM_VAULT_KEY=vault_key)
+    if path != shim_path:
         # an installer started here never downloads anything: CLOAKROOM_INSTALLER=none fails at once (the stub
         # case below passes installer="" so bootstrap picks the stub uv)
         env.update(HOME=home, USERPROFILE=home, CLOAKROOM_HOME=os.path.join(home, ".cloakroom"),
@@ -61,7 +75,7 @@ def run(shell, event, payload, path, home=empty_home, installer="none"):
 
 for sh in shells:
     name = "git-bash" if sh[0] == git_bash else os.path.basename(sh[0])
-    out = run(sh, "post", {"session_id": "ci", "tool_name": "Bash", "tool_response": {"stdout": f"key {key}"}}, os.environ["PATH"])
+    out = run(sh, "post", {"session_id": "ci", "tool_name": "Bash", "tool_response": {"stdout": f"key {key}"}}, shim_path)
     ok = key not in json.dumps(out) and "PII_SECRET_1" in json.dumps(out)
     print(f"{name:<11} with cloakroom    post masks key: {ok}")
     failures += [] if ok else [(name, "post", out)]
