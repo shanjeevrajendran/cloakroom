@@ -71,9 +71,9 @@ if ! mkdir "$LOCK" 2>/dev/null; then
   rm -rf "$LOCK" && mkdir "$LOCK" || exit 0
 fi
 trap 'rm -rf "$LOCK"' EXIT
-RULES="${CLOAKROOM_SPEC_RULES:-cloakroom==0.4.4}"  # pinned: each plugin version installs its own release
-FULL="${CLOAKROOM_SPEC_FULL:-cloakroom[model,torch,ocr]==0.4.4}"
-NO_OCR="${CLOAKROOM_SPEC_NO_OCR:-cloakroom[model,torch]==0.4.4}"  # stage 2 again without OCR if its wheels fail
+RULES="${CLOAKROOM_SPEC_RULES:-cloakroom==0.5.0}"  # pinned: each plugin version installs its own release
+FULL="${CLOAKROOM_SPEC_FULL:-cloakroom[model,torch,ocr]==0.5.0}"
+NO_OCR="${CLOAKROOM_SPEC_NO_OCR:-cloakroom[model,torch]==0.5.0}"  # stage 2 again without OCR if its wheels fail
 TESTSPEC="${CLOAKROOM_SPEC_RULES:-}${CLOAKROOM_SPEC_FULL:-}${CLOAKROOM_SPEC_NO_OCR:-}"
 # Intel Mac: newer cryptography releases ship no Intel Mac wheel and would need a Rust build, so only prebuilt wheels
 # are used there (the resolver then picks the last release that has one); the model's runtimes have none at all
@@ -126,16 +126,16 @@ install() {  # install SPEC STAGE(0 rules | 1 model and OCR | 2 model only)
     uv)   if [ -n "$TESTSPEC" ]; then
             if [ "$2" = 0 ]; then "$UV" tool install --python 3.12 $NB "$1"; else "$UV" tool install --python 3.12 $NB --force "$1"; fi
           else case "$2" in
-            1) "$UV" tool install --python 3.12 $NB --force "cloakroom[model,torch,ocr]==0.4.4" ;;
-            2) "$UV" tool install --python 3.12 $NB --force "cloakroom[model,torch]==0.4.4" ;;
-            *) "$UV" tool install --python 3.12 $NB "cloakroom==0.4.4" ;;
+            1) "$UV" tool install --python 3.12 $NB --force "cloakroom[model,torch,ocr]==0.5.0" ;;
+            2) "$UV" tool install --python 3.12 $NB --force "cloakroom[model,torch]==0.5.0" ;;
+            *) "$UV" tool install --python 3.12 $NB "cloakroom==0.5.0" ;;
           esac; fi ;;
     pipx) if [ -n "$TESTSPEC" ]; then
             if [ "$2" = 0 ]; then pipx install "$1"; else pipx install --force "$1"; fi
           else case "$2" in
-            1) pipx install --force "cloakroom[model,torch,ocr]==0.4.4" ;;
-            2) pipx install --force "cloakroom[model,torch]==0.4.4" ;;
-            *) pipx install "cloakroom==0.4.4" ;;
+            1) pipx install --force "cloakroom[model,torch,ocr]==0.5.0" ;;
+            2) pipx install --force "cloakroom[model,torch]==0.5.0" ;;
+            *) pipx install "cloakroom==0.5.0" ;;
           esac; fi ;;
     venv) { [ -x "$H/venv/bin/python" ] || "$(py310)" -m venv "$H/venv"; } && PIP_DISABLE_PIP_VERSION_CHECK=1 "$H/venv/bin/python" -m pip install -q -U "$1" ;;
     *)    return 1 ;;

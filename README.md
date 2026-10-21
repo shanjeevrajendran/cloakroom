@@ -120,6 +120,8 @@ the detection model and OCR), then add the plugin as above.
   the message names what it found by placeholder only. If you meant it, type `cr: allow`, then ask Claude to run
   the same command again: it passes once.
 - **Encoded copies count:** a secret Cloakroom has seen is also caught base64-encoded, URL-encoded or JSON-escaped.
+- **MCP images are read locally:** a screenshot or image returned by an MCP tool is read by local OCR and Claude
+  gets the masked text instead of the picture; without OCR the image is held back, with a one-line reason.
 
 Details: [docs-HOW-IT-WORKS.md](https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-HOW-IT-WORKS.md).
 

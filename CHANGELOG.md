@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.5.0 (2026-10-20)
 - Egress hold: a shell command that would send a known secret off this machine (curl, wget, ssh, scp, rsync, nc,
   git push or remote with credentials, a literal token in an `Authorization` / `X-Api-Key` / `token=` header) is
   held. The reason names the placeholder or rule, never the value. Type `cr: allow`, then rerun the same command,
