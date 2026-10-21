@@ -200,11 +200,12 @@ def installed(tmp_path):
     tools = home / ".local" / "share" / "uv" / "tools"
     pipxv = home / ".local" / "share" / "pipx" / "venvs"
     stub(bindir / "uv", f'case "$*" in "tool dir --bin") echo "{home}/.local/bin" ;; "tool dir") echo "{tools}" ;; '
-                        f'"tool install"*) echo "uv $*" >> "{log}" ;; esac')
+                        f'"tool install"*) echo "uv $* hold=$([ -e "{h}/bootstrap.lock/upgrade" ] && echo y || echo n)" >> "{log}" ;; '
+                        'esac')
     stub(bindir / "pipx", f'case "$1" in environment) echo "{pipxv}" ;; install) echo "pipx $*" >> "{log}" ;; esac')
     h.mkdir()
 
-    def make(route="uv", answer="older 0.4.2 model,torch"):
+    def make(route="uv", answer="older 0.4.2 model,torch", runs=True):
         prefix = {"uv": tools / "cloakroom", "pipx": pipxv / "cloakroom", "venv": h / "venv",
                   "other": tmp_path / "brew" / "cloakroom"}[route]
         calls = tmp_path / "program-calls"
@@ -213,7 +214,7 @@ def installed(tmp_path):
                                        f'*pip*) echo "pip $*" >> "{log}" ;; *) exec /bin/sh "$@" ;; esac')
         # the program: `serve` waits (and dies on TERM), --version answers the new release
         prog = stub(prefix / "bin" / "cloakroom", f'echo "$* $$" >> "{calls}"; '
-                                                  f'[ "$1" = --version ] && echo "cloakroom {PIN}"; '
+                                                  f'[ "$1" = --version ] && {{ {"" if runs else "exit 1; "}echo "cloakroom {PIN}"; }}; '
                                                   '[ "$1" = serve ] && { sleep 60 & wait; }; exit 0')
         prog.write_text(f"#!{prefix}/bin/python\n" + prog.read_text().split("\n", 1)[1])
         (home / ".local" / "bin").mkdir(parents=True, exist_ok=True)
@@ -224,7 +225,7 @@ def installed(tmp_path):
         e = {**env, **(extra or {})}
         return subprocess.run([shutil.which("bash"), str(SCRIPTS / "bootstrap.sh"), "--upgrade"], env=e,
                               capture_output=True, text=True, timeout=60)
-    return make, run, h, log
+    return make, run, h, log, env
 
 
 def boot_log(h):
@@ -238,20 +239,23 @@ def boot_log(h):
     ("venv", f"pip -m pip install -q -U cloakroom[model,torch]=={PIN}"),
 ])
 def test_upgrade_on_the_route_it_came_from_with_its_extras(installed, route, want):
-    make, run, h, log = installed
+    make, run, h, log, _ = installed
     make(route)
     assert run().returncode == 0
     assert want in log.read_text()
     text = boot_log(h)
     assert f"upgrading 0.4.2 -> {PIN}" in text and f"done: cloakroom {PIN}" in text
+    if route == "uv":
+        assert "hold=y" in log.read_text()  # hooks were held while the files were swapped
+    assert not (h / "bootstrap.lock").exists()  # and released after
     assert (h / "upgrade.stamp").read_text().strip() == PIN
     assert not (h / "upgrade.notice").exists()
 
 
 @needs_bash
-@pytest.mark.parametrize("answer", ["newer 0.9.0 -", "dev 0.4.2 model", "same 0.5.0 -", "missing - -"])
+@pytest.mark.parametrize("answer", ["newer 0.9.0 -", "dev 0.4.2 model", "same 0.5.0 -"])
 def test_newer_dev_and_current_installs_are_left_alone(installed, answer):
-    make, run, h, log = installed
+    make, run, h, log, _ = installed
     make("uv", answer)
     assert run().returncode == 0
     assert not log.exists()  # nothing installed
@@ -262,7 +266,7 @@ def test_newer_dev_and_current_installs_are_left_alone(installed, answer):
 
 @needs_bash
 def test_older_install_elsewhere_gets_the_steps_once(installed):
-    make, run, h, log = installed
+    make, run, h, log, _ = installed
     prefix, _ = make("other", "older 0.4.2 -")
     assert run().returncode == 0
     assert not log.exists()
@@ -274,7 +278,7 @@ def test_older_install_elsewhere_gets_the_steps_once(installed):
 
 @needs_bash
 def test_failed_upgrade_keeps_the_old_program_and_retries(installed, tmp_path):
-    make, run, h, log = installed
+    make, run, h, log, _ = installed
     make("uv")
     stub(tmp_path / "bin" / "uv", f'case "$1 $2" in "tool dir") echo "{pathlib.Path(tmp_path, "home", ".local", "share", "uv", "tools")}" ;; '
                                   '*) exit 1 ;; esac')
@@ -285,7 +289,7 @@ def test_failed_upgrade_keeps_the_old_program_and_retries(installed, tmp_path):
 
 @needs_bash
 def test_running_service_restarts_on_the_new_version(installed):
-    make, run, h, _ = installed
+    make, run, h, _, _ = installed
     prefix, calls = make("uv")
     old = subprocess.Popen([str(prefix / "bin" / "python"), str(prefix / "bin" / "cloakroom"), "serve"])
     try:
@@ -324,3 +328,61 @@ def test_fresh_install_writes_the_stamp(tmp_path):
 
 def test_generator_reads_the_plugin_version():
     assert gen_hooks.PIN == PIN
+
+
+@needs_bash
+def test_hook_holds_tool_calls_while_files_are_swapped(hooked):
+    hook, h, called = hooked
+    (h / "bootstrap.lock").mkdir()
+    (h / "bootstrap.lock" / "upgrade").write_text("")
+    out = hook("pre")
+    assert "updating itself" in out and '"permissionDecision": "deny"' in out
+    assert "cloakroom hook" not in out  # the old program is never started
+    assert "updating itself" in hook("post") and "updatedToolOutput" in hook("post")
+    old = time.time() - 31 * 60  # a hold left by a killed installer goes stale
+    os.utime(h / "bootstrap.lock" / "upgrade", (old, old))
+    assert '"cloakroom hook pre"' in hook("pre")
+
+
+def reinstall_uv(bindir, home, log, works=True):
+    """A uv whose uninstall removes the program and whose install puts a working (or no) program in place."""
+    prog = home / ".local" / "bin" / "cloakroom"
+    make = (f'mkdir -p "{prog.parent}"; rm -f "{prog}"; printf "#!/bin/sh\\necho cloakroom {PIN}\\n" > "{prog}"; '
+            f'chmod 755 "{prog}"' if works else "exit 1")
+    stub(bindir / "uv", f'echo "uv $*" >> "{log}"; case "$*" in "tool dir --bin") echo "{prog.parent}" ;; '
+                        f'"tool dir") echo "{home}/.local/share/uv/tools" ;; '
+                        f'"tool uninstall"*) rm -rf "{prog}" "{home}/.local/share/uv/tools/cloakroom" ;; '
+                        f'"tool install"*) {make} ;; esac; exit 0')
+
+
+@needs_bash
+@pytest.mark.parametrize("answer,runs", [("missing - -", True),             # the env lost the cloakroom module
+                                         ("older 0.4.2 -", False)])         # --version fails
+def test_broken_program_is_reinstalled_from_scratch(installed, tmp_path, answer, runs):
+    make, run, h, log, env = installed
+    make("uv", answer, runs=runs)
+    reinstall_uv(tmp_path / "bin", pathlib.Path(env["HOME"]), log)
+    assert run().returncode == 0, boot_log(h)
+    text, installs = boot_log(h), log.read_text()
+    assert "does not run" in text and "removing it (uv) and installing again" in text
+    assert "uv tool uninstall cloakroom" in installs
+    assert f"cloakroom=={PIN}" in installs and f"cloakroom[model,torch,ocr]=={PIN}" in installs  # stage 1, stage 2
+    assert "stage 1 of 2" in text and "done: full protection" in text
+    assert (h / "upgrade.stamp").read_text().strip() == PIN  # only once --version works
+
+
+@needs_bash
+def test_failed_reinstall_ends_failed_with_steps_and_no_stamp(installed, tmp_path):
+    make, run, h, log, env = installed
+    make("uv", "missing - -")
+    reinstall_uv(tmp_path / "bin", pathlib.Path(env["HOME"]), log, works=False)
+    run()
+    assert not (h / "upgrade.stamp").exists()
+    assert (h / "bootstrap.state").read_text().strip() == "failed"
+    text = boot_log(h)
+    assert "stage 1 failed" in text and "1. Read the error" in text
+    # the hook now finds no program: tool calls denied with the steps, retried after 10 minutes
+    e = {**env, "CLAUDE_PLUGIN_ROOT": str(ROOT / "plugin")}
+    r = subprocess.run([shutil.which("bash"), str(SCRIPTS / "hook.sh"), "pre"], env=e, input="{}",
+                       capture_output=True, text=True, timeout=30)
+    assert "the automatic install failed; it tries again in 10 minutes" in r.stdout and '"deny"' in r.stdout

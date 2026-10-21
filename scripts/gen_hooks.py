@@ -51,6 +51,9 @@ CHECKSUM = (FAILED_HEAD + "The uv installer from astral.sh did not match its pin
             "https://docs.astral.sh/uv/getting-started/installation/, or on Ubuntu/Debian sudo apt install "
             "python3-venv instead). 2. " + RESTART + ". " + LOG + STOP)
 MESSAGES = (INSTALLING, NO_UV, FAILED, OFFLINE, CHECKSUM)  # hook variables INST NOINST FAILED OFFLINE CHECKSUM
+UPDATING = ("cloakroom: updating itself to the new plugin version (about a minute). Tool calls are held back until "
+            "then; progress in ~/.cloakroom/bootstrap.log. " + STOP)
+ANSWERS = MESSAGES + (UPDATING,)  # ... and UPDATING
 EVENTS = ("start", "prompt", "pre", "post")
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "plugin")
 with open(os.path.join(ROOT, ".claude-plugin", "plugin.json"), encoding="utf-8") as _f:
@@ -65,9 +68,10 @@ def fallback(event: str, msg: str) -> dict:
     return {
         "start": {"systemMessage": msg},
         "prompt": {"systemMessage": msg, "hookSpecificOutput": {"hookEventName": "UserPromptSubmit",
-                   "additionalContext": "The Cloakroom privacy plugin is enabled but its program is not installed "
-                                        "yet, so every tool call is denied until it is. Tell the user what the "
-                                        "Cloakroom message says if they ask why tools are blocked."}},
+                   "additionalContext": "The Cloakroom privacy plugin is enabled but its program is not ready "
+                                        "yet (installing or updating), so every tool call is denied until it is. "
+                                        "Tell the user what the Cloakroom message says if they ask why tools are "
+                                        "blocked."}},
         "pre": {"hookSpecificOutput": {"hookEventName": "PreToolUse", "permissionDecision": "deny",
                                        "permissionDecisionReason": deny}},
         # tools never run while cloakroom is missing (pre denies), so there is no real output to withhold here
@@ -77,7 +81,7 @@ def fallback(event: str, msg: str) -> dict:
 
 def answers(event: str) -> tuple[str, ...]:
     """The MESSAGES answers for one event, as one-line JSON without single quotes."""
-    return tuple(json.dumps(fallback(event, m)).replace("'", "") for m in MESSAGES)
+    return tuple(json.dumps(fallback(event, m)).replace("'", "") for m in ANSWERS)
 
 
 def command(event: str) -> str:
@@ -110,8 +114,9 @@ def hooks() -> dict:
 
 
 def hook_sh() -> str:
-    cases = "".join(f"  {e}) INST='{i}'\n    NOINST='{n}'\n    FAILED='{f}'\n    OFFLINE='{o}'\n    CHECKSUM='{c}' ;;\n"
-                    for e in EVENTS for i, n, f, o, c in [answers(e)])
+    cases = "".join(f"  {e}) INST='{i}'\n    NOINST='{n}'\n    FAILED='{f}'\n    OFFLINE='{o}'\n    CHECKSUM='{c}'\n"
+                    f"    UPDATING='{u}' ;;\n"
+                    for e in EVENTS for i, n, f, o, c, u in [answers(e)])
     return f"""#!/usr/bin/env bash
 # Cloakroom hook launcher for bash (macOS, Linux, Git Bash on Windows): hook.sh start|prompt|pre|post, hook JSON on
 # stdin. Runs the cloakroom program if it is installed; otherwise answers for it and starts the installer.
@@ -130,7 +135,11 @@ CR="$(command -v cloakroom 2>/dev/null)"
 for C in "$HOME/.local/bin/cloakroom" "$HOME/.local/bin/cloakroom.exe" "$H/venv/bin/cloakroom" "$H/venv/Scripts/cloakroom.exe"; do
   [ -z "$CR" ] && [ -x "$C" ] && CR="$C"
 done
-if [ -n "$CR" ]; then
+# an upgrade is swapping the program's files: answer for it, never run half-replaced code (a hold older than 30
+# minutes is stale)
+if [ -e "$H/bootstrap.lock/upgrade" ] && [ -z "$(find "$H/bootstrap.lock/upgrade" -mmin +30 2>/dev/null)" ]; then
+  printf '%s\\n' "$UPDATING"
+elif [ -n "$CR" ]; then
   # the plugin was updated: upgrade in the background, keep running the installed program meanwhile
   S=; [ -f "$H/upgrade.stamp" ] && read -r S <"$H/upgrade.stamp"
   if [ "$S" != "$PIN" ] && [ ! -d "$H/bootstrap.lock" ] &&
@@ -171,8 +180,8 @@ exit 0
 def hook_ps1() -> str:
     q = lambda s: s.replace("'", "''")  # noqa: E731  PowerShell single-quoted string
     cases = "".join(f"  '{e}' {{ $inst = '{q(i)}'\n    $noinst = '{q(n)}'\n    $failed = '{q(f)}'\n"
-                    f"    $offline = '{q(o)}'\n    $checksum = '{q(c)}' }}\n"
-                    for e in EVENTS for i, n, f, o, c in [answers(e)])
+                    f"    $offline = '{q(o)}'\n    $checksum = '{q(c)}'\n    $updating = '{q(u)}' }}\n"
+                    for e in EVENTS for i, n, f, o, c, u in [answers(e)])
     return f"""# Cloakroom hook launcher for PowerShell (Windows without Git Bash): hook.ps1 start|prompt|pre|post, hook JSON on
 # stdin. Runs the cloakroom program if it is installed; otherwise answers for it and starts the installer.
 # {GENERATED}
@@ -196,7 +205,11 @@ $recent = (Test-Path $st) -and ((Get-Content $st -ErrorAction SilentlyContinue) 
 $boot = Join-Path $env:CLAUDE_PLUGIN_ROOT 'scripts\\bootstrap.ps1'
 $bargs = '-NoProfile','-ExecutionPolicy','Bypass','-File',('"' + $boot + '"')
 $ps = if ($PSVersionTable.PSEdition -eq 'Core') {{ 'pwsh' }} else {{ 'powershell' }}
-if ($cr) {{
+# an upgrade is swapping the program's files (Windows can't replace files in use): answer for it, never start the
+# old program (a hold older than 30 minutes is stale)
+$hold = Join-Path $h 'bootstrap.lock\\upgrade'
+if ((Test-Path $hold) -and (((Get-Date) - (Get-Item $hold).LastWriteTime).TotalMinutes -lt 30)) {{ $updating }}
+elseif ($cr) {{
   # the plugin was updated: upgrade in the background, keep running the installed program meanwhile
   $sf = Join-Path $h 'upgrade.stamp'
   $s = if (Test-Path $sf) {{ (Get-Content $sf -TotalCount 1 -ErrorAction SilentlyContinue) -join '' }} else {{ '' }}

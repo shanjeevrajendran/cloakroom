@@ -21,6 +21,9 @@
 #   older install on any other route (Homebrew, system pip, conda) gets the steps once, at the next session start
 #   (~/.cloakroom/upgrade.notice). The old program serves until the installer swaps it; a hook that finds no program
 #   in that moment denies the tool call. A failed upgrade keeps the old version and retries after 10 minutes.
+#   While files are swapped, $LOCK/upgrade exists and the hooks hold tool calls without starting the program. A
+#   program that doesn't run (missing module, lost Python) is removed and installed again from scratch (stage 1,
+#   stage 2); it is stamped only once `cloakroom --version` works, and a failed reinstall ends as state failed.
 # Tests: CLOAKROOM_SPEC_RULES / CLOAKROOM_SPEC_FULL / CLOAKROOM_SPEC_NO_OCR override what is installed on every route
 # (e.g. "cloakroom @ file:///path/to.whl"), CLOAKROOM_INSTALLER picks one, CLOAKROOM_PLATFORM fakes `uname -s`-`uname -m`,
 # CLOAKROOM_SPEC_UPGRADE replaces what --upgrade installs.
@@ -234,7 +237,19 @@ upgrade_install() {  # upgrade_install SPEC: the pinned release on the route the
     *)    return 1 ;;
   esac
 }
-upgrade() {  # the plugin moved to PIN: bring an older install up to it (see the header)
+remove_install() {  # remove_install [PREFIX]: take away a broken program of ours, so the hook fails closed
+  case "$WHO" in
+    uv)   "$UV" tool uninstall cloakroom || { [ -n "${1:-}" ] && rm -rf "$1"; } ;;
+    pipx) pipx uninstall cloakroom || { [ -n "${1:-}" ] && rm -rf "$1"; } ;;
+    venv) rm -rf "$H/venv" ;;
+  esac
+  # a link left pointing at nothing (uv on macOS/Linux, and this script's venv route, link ~/.local/bin/cloakroom)
+  if [ -L "$HOME/.local/bin/cloakroom" ] && [ ! -e "$HOME/.local/bin/cloakroom" ]; then rm -f "$HOME/.local/bin/cloakroom"; fi
+}
+# While the files are swapped, hooks answer for the program (tool calls held), so nothing runs half-replaced code
+hold() { : >"$LOCK/upgrade"; }
+unhold() { rm -f "$LOCK/upgrade"; }
+upgrade() {  # the plugin moved to PIN: bring an older install up to it (see the header). 2 = install from scratch
   local CR PY="" KIND="" VER="" EXT="" PREFIX="" P UVDIR="" PIPXDIR="" SPEC CMD MSG NEW n i
   WHO=""; UV="$(find_uv)"
   CR="$(cloakroom_bin)"
@@ -245,12 +260,11 @@ upgrade() {  # the plugin moved to PIN: bring an older install up to it (see the
 $("$PY" -I "$PROBE" "$PIN" 2>/dev/null)
 EOF
   fi
-  if [ -z "$KIND" ]; then
-    echo "$PIN" >"$STAMP"
-    echo "$(date '+%F %T') upgrade check: could not read the version of $CR; left as is"; return 0
-  fi
+  # a program that doesn't run (its environment lost cloakroom, or its Python) is broken, never "done"
+  [ -n "$PREFIX" ] && [ "$PREFIX" != - ] || PREFIX="${PY:+$(dirname "$(dirname "$PY")")}"
+  if [ -z "$KIND" ] || [ "$KIND" = missing ] || ! "$CR" --version >/dev/null 2>&1; then KIND=broken; fi
   case "$KIND" in
-    same|newer|dev|missing) echo "$PIN" >"$STAMP"
+    same|newer|dev) echo "$PIN" >"$STAMP"
       echo "$(date '+%F %T') upgrade check: cloakroom $VER ($KIND) left as is for plugin $PIN"; return 0 ;;
   esac
   [ "$EXT" = - ] && EXT=""
@@ -258,10 +272,22 @@ EOF
   P="$(canon "$PREFIX")"
   [ -n "$UV" ] && UVDIR="$(canon "$("$UV" tool dir 2>/dev/null)")"
   command -v pipx >/dev/null 2>&1 && PIPXDIR="$(canon "$(pipx environment --value PIPX_LOCAL_VENVS 2>/dev/null)")"
-  if [ -n "$UVDIR" ] && [ "$P" = "$UVDIR/cloakroom" ]; then WHO=uv
-  elif [ -n "$PIPXDIR" ] && [ "$P" = "$PIPXDIR/cloakroom" ]; then WHO=pipx
+  if [ -n "$P" ] && [ -n "$UVDIR" ] && [ "$P" = "$UVDIR/cloakroom" ]; then WHO=uv
+  elif [ -n "$P" ] && [ -n "$PIPXDIR" ] && [ "$P" = "$PIPXDIR/cloakroom" ]; then WHO=pipx
   elif [ -n "$P" ] && [ "$P" = "$(canon "$H/venv")" ]; then WHO=venv
-  else
+  fi
+  if [ "$KIND" = broken ]; then
+    if [ -z "$WHO" ]; then  # not ours to remove: the user reinstalls it, with steps at the next session start
+      echo "failed:$PIN" >"$STAMP"
+      MSG="cloakroom: the installed program ($CR) does not run, and it wasn't installed by uv, pipx or the plugin, so it can't repair itself. To finish: 1. Run: uv tool install --force --python 3.12 \"cloakroom==0.5.0\" (or reinstall it the way you installed it). 2. Then restart Claude Code (/exit, then claude)."
+      printf '{"systemMessage": "%s"}\n' "$(json_text "$MSG")" >"$NOTICE"
+      echo "$(date '+%F %T') upgrade check: $CR does not run and was not installed by uv, pipx or this script"; echo "$MSG"
+      return 1
+    fi
+    echo "$(date '+%F %T') upgrade check: $CR does not run (${VER:-no version}): removing it ($WHO) and installing again"
+    hold; remove_install "$P"; unhold; rm -f "$STAMP"; return 2
+  fi
+  if [ -z "$WHO" ]; then
     # installed some other way: the user upgrades it, with these steps, shown once at the next session start
     CMD="$PY -m pip install -U \"$SPEC\""
     MSG="cloakroom: version $VER is installed, but the plugin now uses $PIN, and this copy wasn't installed by uv, pipx or the plugin, so it can't upgrade itself. To finish: 1. Run: $CMD (or, with uv: uv tool install --force --python 3.12 \"$SPEC\"). 2. Then restart Claude Code (/exit, then claude). Until then version $VER keeps protecting you."
@@ -271,17 +297,22 @@ EOF
     echo "$MSG"; return 0
   fi
   echo "$(date '+%F %T') upgrading $VER -> $PIN ($WHO: $SPEC)"
+  hold
   if ! upgrade_install "$SPEC"; then
-    echo "failed:$PIN" >"$STAMP"
+    unhold
     if "$CR" --version >/dev/null 2>&1; then
-      echo "$(date '+%F %T') upgrade failed: cloakroom $VER stays in use; it tries again in 10 minutes"
-    else  # the program is gone: the hook denies tool calls and starts the first install again
-      rm -f "$STAMP"; echo "$(date '+%F %T') upgrade failed and the old program is gone: reinstalling from scratch"
+      echo "failed:$PIN" >"$STAMP"
+      echo "$(date '+%F %T') upgrade failed: cloakroom $VER stays in use; it tries again in 10 minutes"; return 1
     fi
-    return 1
+    echo "$(date '+%F %T') upgrade failed and the program no longer runs: removing it and installing again"
+    hold; remove_install "$P"; unhold; rm -f "$STAMP"; return 2
   fi
+  unhold
   CR="$(cloakroom_bin)"
-  NEW="$("$CR" --version 2>/dev/null)"
+  if [ -z "$CR" ] || ! NEW="$("$CR" --version 2>/dev/null)"; then
+    echo "$(date '+%F %T') upgrade installed, but the program does not run: removing it and installing again"
+    hold; remove_install "$P"; unhold; rm -f "$STAMP"; return 2
+  fi
   # the running service still has the old code loaded: restart it on the new version
   n="$(stop_service "$PREFIX" "$P" "$CR")"
   if [ "$n" -gt 0 ]; then
@@ -292,7 +323,11 @@ EOF
   echo "$PIN" >"$STAMP"
   echo "$(date '+%F %T') done: ${NEW:-cloakroom $PIN}"
 }
-if [ "${1:-}" = --upgrade ]; then upgrade >>"$LOG" 2>&1; exit $?; fi
+if [ "${1:-}" = --upgrade ]; then
+  upgrade >>"$LOG" 2>&1; RC=$?
+  [ "$RC" = 2 ] || exit "$RC"
+  WHO="" UV=""  # broken install removed: the first install, below
+fi
 
 {
   rm -f "$REASONF"
@@ -320,7 +355,10 @@ if [ "${1:-}" = --upgrade ]; then upgrade >>"$LOG" 2>&1; exit $?; fi
     if online; then fail failed "stage 1 failed"; else fail offline "stage 1 failed: PyPI can't be reached"; fi
   fi
   CR="$(cloakroom_bin)"
-  echo "$PIN" >"$STAMP"  # this plugin version's release is in: no upgrade check on the first hook call
+  if [ -z "$CR" ] || ! "$CR" --version >/dev/null 2>&1; then
+    remove_install; fail failed "stage 1 installed cloakroom, but the program does not run (${CR:-not found})"
+  fi
+  echo "$PIN" >"$STAMP"  # this plugin version's release is in, and runs: no upgrade check on the first hook call
   if [ "$INTEL_MAC" = 1 ]; then
     publish
     echo "$(date '+%F %T') Intel Mac: rules-only protection. PyTorch and ONNX Runtime publish no Intel Mac builds, so the detection model can't run here: keys, cards and IDs are masked, names and addresses are not."
