@@ -1,7 +1,7 @@
 {
   "name": "cloakroom",
   "displayName": "Cloakroom",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Agents check their secrets at the door: secrets and PII are masked before the model sees them and restored only for local tools.",
   "license": "Apache-2.0",
   "keywords": [

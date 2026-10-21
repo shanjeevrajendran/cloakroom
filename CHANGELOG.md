@@ -1,10 +1,9 @@
 # Changelog
 
-## Unreleased
-- Fix: an MCP result that is only a screenshot now comes back as masked OCR text. A hex `CLOAKROOM_VAULT_KEY`
-  (`openssl rand -hex 32`) is now accepted and a wrong-length key gets a clear error, instead of a vault write
-  failing with ValueError; when an MCP result can't be checked, each image becomes a text block with the reason,
-  in both `updatedToolOutput` and `updatedMCPToolOutput`.
+## 0.5.1 (2026-10-21)
+- Fix: a hex `CLOAKROOM_VAULT_KEY` (`openssl rand -hex 32`) is now accepted and a wrong-length key gets a clear error,
+  instead of a vault write failing with ValueError. When an MCP result can't be checked, each image becomes a text
+  block with the reason, in both `updatedToolOutput` and `updatedMCPToolOutput`.
 - Updates itself when the plugin updates: an install made by the plugin, uv or pipx that is older than the plugin's
   release is upgraded in the background, with the same extras, and the running service restarts on the new version.
   The old version keeps protecting until the new one is in place. A newer, dev or editable install is never
