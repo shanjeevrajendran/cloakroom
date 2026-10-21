@@ -148,3 +148,81 @@ def test_blank_screenshot_is_held(monkeypatch, capsys):
     shot = screenshot(lines=())
     out = run_post(mcp_call([{"type": "image", "data": shot, "mimeType": "image/png"}]), monkeypatch, capsys)
     assert shot not in json.dumps(out) and "found no text" in json.dumps(out)
+
+
+# --- image-only results, the shape a browser screenshot tool returns (bug found 2026-10-20) -------------------------
+
+CUSTOMER = ("Customer: Henrik Dahl", "Email: henrik.dahl@quillfield.com")  # fake
+
+
+def full_mode_in_process(monkeypatch):
+    """Full mode without the service or model weights: a fake model finds the person, the rules find the email."""
+    from cloakroom import Vault, client, config, engine, rules
+
+    def model_findings(text):
+        return [rules.Finding(m.start(), m.end(), "PERSON", "model:private_person")
+                for m in __import__("re").finditer(r"Henrik\s+Dahl", text)]
+    monkeypatch.setattr(engine, "model_findings", model_findings)
+
+    def mask(text, session, ocr=False):
+        r = engine.mask(text, Vault(config.vault_path(session)), "full", ocr=ocr)
+        return {"text": r.text, "mode": "full", "masked": r.masked, "skipped": r.skipped}
+    monkeypatch.setattr(client, "mask", mask)
+
+
+@needs_ocr
+@pytest.mark.parametrize("shape", ["list", "wrapper", "json-string"])
+def test_image_only_result_becomes_masked_ocr_text(shape, monkeypatch, capsys):
+    full_mode_in_process(monkeypatch)
+    shot = screenshot(lines=CUSTOMER)
+    block = {"type": "image", "data": shot, "mimeType": "image/png"}
+    response = {"list": [block], "wrapper": {"content": [block]}, "json-string": json.dumps([block])}[shape]
+    out = run_post(mcp_call(response, tool="mcp__claude-in-chrome__computer"), monkeypatch, capsys)
+    h = out["hookSpecificOutput"]
+    res = h["updatedToolOutput"]
+    assert h["updatedMCPToolOutput"] == res
+    blocks = {"list": lambda r: r, "wrapper": lambda r: r["content"], "json-string": json.loads}[shape](res)
+    assert [b["type"] for b in blocks] == ["text"]
+    text = blocks[0]["text"]
+    assert "local OCR" in text and "PII_PERSON_" in text and "PII_EMAIL_" in text
+    dump = json.dumps(out)
+    assert shot not in dump and "Henrik" not in dump and "Dahl" not in dump and "quillfield" not in dump
+    assert "read by local OCR" in out["systemMessage"]
+
+
+# --- fail closed: an MCP result is never an image block with text in its data field --------------------------------
+
+@pytest.mark.parametrize("shape", ["list", "wrapper", "json-string"])
+def test_fail_closed_mcp_image_becomes_text_block(shape, monkeypatch, capsys):
+    from cloakroom import client, hook
+    no_ocr(monkeypatch)
+
+    def broken(*a, **k):
+        raise client.Unavailable("ValueError")
+    monkeypatch.setitem(hook.HANDLERS, "post", broken)
+    block = {"type": "image", "data": PIXELS, "mimeType": "image/png"}
+    response = {"list": [{"type": "text", "text": "Took a screenshot"}, block], "wrapper": {"content": [block]},
+                "json-string": json.dumps([block])}[shape]
+    out = run_post(mcp_call(response), monkeypatch, capsys)
+    h = out["hookSpecificOutput"]
+    res = h["updatedToolOutput"]
+    assert h["updatedMCPToolOutput"] == res
+    blocks = {"list": lambda r: r, "wrapper": lambda r: r["content"], "json-string": json.loads}[shape](res)
+    assert all(set(b) == {"type", "text"} and b["type"] == "text" for b in blocks)
+    assert "couldn't check this (ValueError)" in blocks[-1]["text"]
+    assert PIXELS not in json.dumps(out) and "Took a screenshot" not in json.dumps(out)
+
+
+def test_env_vault_key_accepts_hex_and_rejects_wrong_length(monkeypatch):
+    """A hex key (openssl rand -hex 32) read as base64 is 48 bytes: AES-GCM refused it at the first vault write,
+    which made every masked tool result fail closed (2026-10-20)."""
+    from cloakroom import crypto
+    monkeypatch.setenv("CLOAKROOM_VAULT_KEY", "ab" * 32)
+    crypto._KEY = None
+    assert crypto.key() == bytes.fromhex("ab" * 32)
+    assert crypto.decrypt(crypto.encrypt(b"x")) == b"x"
+    monkeypatch.setenv("CLOAKROOM_VAULT_KEY", "c2hvcnQ=")  # "short"
+    crypto._KEY = None
+    with pytest.raises(crypto.KeyUnavailable, match="256-bit"):
+        crypto.key()
+    crypto._KEY = None

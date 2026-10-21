@@ -137,7 +137,7 @@ are stored encrypted in `~/.cloakroom/rules.bin`; the `allow` list above stays y
 ## 7. Headless machines, CI and testing
 
 - **Vault key.** The vault key lives in the OS secure store (Keychain, Credential Manager, Secret Service). On a
-  machine without one, set `CLOAKROOM_VAULT_KEY` (base64), or Cloakroom falls back to a key file readable only by
+  machine without one, set `CLOAKROOM_VAULT_KEY` (a 256-bit key, base64 or 64 hex characters), or Cloakroom falls back to a key file readable only by
   you, and `doctor` says so.
 - **Dry run.** `CLOAKROOM_DRY_RUN=1` lets everything through and logs what Cloakroom would have done to
   `~/.cloakroom/dry-run.log`. Useful for trying it on a real project before trusting it.
@@ -158,7 +158,7 @@ are stored encrypted in `~/.cloakroom/rules.bin`; the `allow` list above stays y
 | ONNX variant | `CLOAKROOM_ONNX` | `fp32` | `fp32`, `int8` |
 | ONNX folder | `CLOAKROOM_ONNX_DIR` | `~/.cloakroom/onnx/<model version>` | a path |
 | home | `CLOAKROOM_HOME` | `~/.cloakroom` | a path |
-| vault key | `CLOAKROOM_VAULT_KEY` | OS secure store | base64 key |
+| vault key | `CLOAKROOM_VAULT_KEY` | OS secure store | 256-bit key, base64 or hex |
 | dry run | `CLOAKROOM_DRY_RUN` | off | any value turns it on |
 
 ## 9. When something's wrong
