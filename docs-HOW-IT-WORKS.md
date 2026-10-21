@@ -11,6 +11,20 @@
 - **Restore:** values go into an encrypted per-session vault (AES-GCM, key in the OS secure store). When Claude
   writes a file or runs a command with a placeholder, the real value is put back locally. The model never sees it.
 - **Encoded dumps:** `od`, `xxd`, `base64` and spaced-out output are decoded and checked; a hit withholds the output.
+- **Encoded secrets:** each secret already in the session vault (keys, passwords, card, account and ID numbers) and
+  each exact always-mask value is also looked for in its encoded forms: base64 (standard and URL-safe, with or
+  without padding, also inside a longer encoded string such as `user:secret`), URL-encoded and JSON-escaped. These
+  are made from the known values, not guessed from the text, so ordinary text can't trip them. Prompts, tool inputs
+  and tool output all get this check; an encoded copy gets its own placeholder, so restoring puts it back as it was.
+- **Egress hold:** before a shell command runs, Cloakroom checks whether it can send data off the machine (curl,
+  wget, httpie, nc, telnet, ssh, scp, sftp, rsync, ftp, mail, cloud and database clients, `git push`/`fetch`/`clone`/
+  `remote`, `npm publish`, `docker push`/`login`, `/dev/tcp`, PowerShell web calls) or carries a credential header
+  (`Authorization:`, `X-Api-Key:`, `token=`). If it does and it holds a known secret (plain or encoded), a key the
+  rules recognise, or a literal token of 16+ characters in such a header, the command is denied. The reason names
+  the placeholder or the rule, never the value. A variable (`$TOKEN`) or a placeholder passes as before.
+  To send it anyway, type `cr: allow` as your prompt (Claude never sees it), then ask Claude to run the same command
+  again: it passes once, within 10 minutes. A changed command is held again. Only a keyed hash of the held command
+  is stored (`~/.cloakroom/held.json`).
 - **Fail closed:** if the `cloakroom` command is missing, the plugin blocks prompts and denies tool calls instead
   of letting data through.
 

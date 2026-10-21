@@ -56,10 +56,12 @@ def _first_words(segment: str, powershell: bool = False) -> tuple[str, str]:
     return (cmd.lower() if powershell else cmd), (words[1] if len(words) > 1 else "")
 
 
-def classify(command: str, powershell: bool = False) -> str:
-    """'network' if any part can send data out, 'local' if every part is known-local, else 'unknown'."""
-    if "/dev/tcp/" in command or "/dev/udp/" in command or (powershell and PS_NETWORK_CODE.search(command)):
-        return "network"
+def _scan(command: str, powershell: bool = False) -> tuple[str, str]:
+    """(verdict, the first network program found or "")."""
+    if "/dev/tcp/" in command or "/dev/udp/" in command:
+        return "network", "/dev/tcp"
+    if powershell and PS_NETWORK_CODE.search(command):
+        return "network", "a .NET network call"
     network, local = (PS_NETWORK, PS_LOCAL | LOCAL) if powershell else (NETWORK, LOCAL)
     verdict = "local"
     for seg in (_PS_SEGMENT_SPLIT if powershell else _SEGMENT_SPLIT).split(command):
@@ -68,11 +70,53 @@ def classify(command: str, powershell: bool = False) -> str:
         cmd, sub = _first_words(seg, powershell)
         if not cmd:
             continue
-        if cmd in network or sub in NETWORK_SUB.get(cmd, ()):
-            return "network"
+        if cmd in network:
+            return "network", cmd
+        if sub in NETWORK_SUB.get(cmd, ()):
+            return "network", f"{cmd} {sub}"
         if not (cmd in local or sub in LOCAL_SUB.get(cmd, ())):
             verdict = "unknown"
-    return verdict
+    return verdict, ""
+
+
+def classify(command: str, powershell: bool = False) -> str:
+    """'network' if any part can send data out, 'local' if every part is known-local, else 'unknown'."""
+    return _scan(command, powershell)[0]
+
+
+# Credential headers and parameters. A value that is a variable ($TOKEN, ${TOKEN}, $env:TOKEN) or a placeholder
+# is not a literal: Cloakroom can't see it, and the shell fills it in.
+_AUTH = re.compile(r"(?i)(?P<name>authorization|proxy-authorization|x-api-key|api[-_]?key|x-auth-token|"
+                   r"(?:access[-_]?|auth[-_]?)?token)\s*(?P<sep>[:=])\s*(?:(?:bearer|basic|token)\s+)?"
+                   r"(?P<value>[^\s'\"&;|)]+)")
+LITERAL_MIN = 16
+
+
+def auth_headers(command: str) -> list[tuple[str, str]]:
+    """(where, value) for each credential header or token= parameter: where is "Authorization header",
+    "token= parameter"..."""
+    return [(f"{m.group('name')} header" if m.group("sep") == ":" else f"{m.group('name')}= parameter", m.group("value"))
+            for m in _AUTH.finditer(command)]
+
+
+def literal_tokens(command: str) -> list[str]:
+    """Where credential headers or parameters carry a literal token of LITERAL_MIN+ characters (not a variable, not a
+    placeholder). Never the value."""
+    out = []
+    for name, value in auth_headers(command):
+        if len(value) < LITERAL_MIN or "$" in value or "%" in value and re.search(r"%\w+%", value) or PLACEHOLDER.search(value):
+            continue
+        out.append(name)
+    return out
+
+
+def egress(command: str, powershell: bool = False) -> str:
+    """How a command could send data off this machine ("curl", "git push", "an Authorization header"), or ""."""
+    verdict, via = _scan(command, powershell)
+    if verdict == "network":
+        return via
+    headers = auth_headers(command)
+    return f"a {headers[0][0]}" if headers else ""
 
 
 def _quote_for(value: str, state: str, powershell: bool = False) -> str:

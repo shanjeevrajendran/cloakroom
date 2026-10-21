@@ -13,7 +13,7 @@ os.environ.setdefault("HF_HUB_VERBOSITY", "error")
 os.environ.setdefault("HF_HUB_DISABLE_PROGRESS_BARS", "1")  # the "Loading weights" bar on every mask / check
 from dataclasses import dataclass, field
 
-from . import rules, safe, winlibs
+from . import decode, rules, safe, winlibs
 from .vault import Vault
 
 winlibs.add_dll_dirs()  # Windows: the VC++ runtime DLLs from msvc-runtime, before torch or onnxruntime load
@@ -304,8 +304,37 @@ def _always(text: str, always) -> list[rules.Finding]:
 OCR_DIGITS = re.compile(r"(?<![\d.,])\d(?:[ -]?\d){9,}(?!\d)")
 
 
-def detect(text: str, mode: str = "full", allow=(), always=(), ocr: bool = False) -> tuple[list[rules.Finding], list[tuple]]:
-    """Findings to mask, and findings skipped as safe (with the reason). ocr: the text came from OCR."""
+# Kinds whose stored values are looked for again in every later text, plain and encoded (decode.find_known)
+KNOWN_KINDS = {"SECRET", "PASSWORD", "CARD", "SSN", "IBAN", "ACCOUNT"}
+
+
+def known_values(vault: Vault | None, always=()) -> dict[str, str]:
+    """{value: kind} for the session's known secrets (vault values of the kinds above) and your exact always-mask
+    values. Never logged."""
+    out = {}
+    if vault is not None:
+        for ph, v in vault.by_placeholder.items():
+            kind = ph.split("_")[1]
+            if kind in KNOWN_KINDS and len(v) >= decode.KNOWN_MIN:
+                out[v] = kind
+    for entry, kind in always:
+        if not entry.startswith("re:") and len(entry) >= decode.KNOWN_MIN:
+            out.setdefault(entry, kind)
+    return out
+
+
+def _known(text: str, known: dict) -> list[rules.Finding]:
+    """A known secret seen again: plain keeps its kind (and its placeholder); an encoded form is a SECRET of its own,
+    so restoring it puts the encoded text back as it was. Keyed, so they win overlaps."""
+    return [rules.Finding(a, b, known[v] if how == "plain" else "SECRET",
+                          "known" if how == "plain" else "known-" + how.split("-")[0].lower(), keyed=True)
+            for a, b, v, how in decode.find_known(text, known)]
+
+
+def detect(text: str, mode: str = "full", allow=(), always=(), ocr: bool = False,
+           known: dict | None = None) -> tuple[list[rules.Finding], list[tuple]]:
+    """Findings to mask, and findings skipped as safe (with the reason). ocr: the text came from OCR.
+    known: {value: kind} of secrets already seen, matched plain and encoded (known_values)."""
     if mode not in ("full", "rules"):
         raise ValueError("mode must be 'full' or 'rules'")
     found = rules.scan(text)
@@ -314,10 +343,10 @@ def detect(text: str, mode: str = "full", allow=(), always=(), ocr: bool = False
     own = [m.span() for m in rules.OWN_PLACEHOLDER.finditer(text)]
     keep, skipped = [], []
     rule_verdict: dict = {}  # (start, end) -> (rule kind, skip reason or None); rules come before the model in found
-    for f in found + _always(text, always):
+    for f in found + _always(text, always) + _known(text, known or {}):
         if any(s <= f.start and f.end <= e for s, e in own):
             continue
-        if f.source == "your-rule":  # you said mask it: no safe-value judgement
+        if f.source == "your-rule" or f.source.startswith("known"):  # you said mask it: no safe-value judgement
             keep.append(f)
             continue
         if f.source.startswith("model:") and (f.start, f.end) in rule_verdict:
@@ -404,7 +433,7 @@ def _repeats(text: str, found: list[rules.Finding]) -> list[rules.Finding]:
 
 def mask(text: str, vault: Vault | None = None, mode: str = "full", allow=(), always=(), ocr: bool = False) -> Result:
     vault = vault if vault is not None else Vault()
-    findings, skipped = detect(text, mode, allow, always, ocr)
+    findings, skipped = detect(text, mode, allow, always, ocr, known_values(vault, always))
     out, last, masked = [], 0, []
     for f in findings:
         ph = vault.placeholder(f.value(text), f.kind)
