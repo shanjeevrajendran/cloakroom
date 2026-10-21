@@ -1,6 +1,13 @@
 # Changelog
 
 ## Unreleased
+- MCP tools: screenshots and other images in an MCP tool's result are read by local OCR and passed on as masked
+  text, like pictures read with Read; the pixels are not sent. Without OCR (no `ocr` extra, Intel Mac), or when OCR
+  fails or finds no text, the image is held back with a one-line reason. `"allow_images": true` still lets
+  pictures through with a warning. Claude gets the text, not the picture, and small text can be missed.
+- Fewer false alarms: filler placeholders (a key or ID that is one repeated character, or cut short with `...`),
+  standard and spec numbers right after RFC, ISO, IEC, IEEE, ICAO, ECMA or PEP, and the default dates 1970-01-01
+  and 1900-01-01 are no longer masked. Holdout false alarms 26 to 22, leaks unchanged.
 - A failed model install now shows numbered steps in Claude's message (what happened, how to retry, the log, Intel Macs), like the installer's other failure messages.
 
 ## 0.4.4 (2026-10-19)

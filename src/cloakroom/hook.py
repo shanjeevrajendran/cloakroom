@@ -170,6 +170,23 @@ def on_post(data: dict) -> dict | None:
                 return None
             return {"hookSpecificOutput": {"hookEventName": "PostToolUse", "updatedToolOutput": raw},
                     "systemMessage": "cloakroom: held back a Read result it can't check (image or PDF without text)"}
+    img = ""  # what happened to MCP images, for every message below
+    if str(data.get("tool_name", "")).startswith("mcp__"):  # screenshots and pictures: OCR text, never pixels
+        cfg = config.load()
+        ocr = media.Ocr.from_config(cfg)
+        raw, n = media.convert_mcp(raw, allow_images=bool(cfg.get("allow_images")), ocr=ocr)
+        if ocr.pages or ocr.error:
+            _NOTE[0] = f"ocr pages={ocr.pages} ms={ocr.ms:.0f}" + (f" ocr failed ({ocr.error})" if ocr.error else "")
+        img = "; ".join(x for x in (
+            f"{n['ocr']} image(s) read by local OCR, the picture not sent" if n["ocr"] else "",
+            f"{n['held']} image(s) held back (no OCR text)" if n["held"] else "",
+            f"{n['allowed']} image(s) sent unchecked (allow_images is on)" if n["allowed"] else "") if x)
+        if n["ocr"]:
+            converted = "ocr"  # the OCR text gets OCR masking (digit runs), like a Read picture
+        elif n["held"]:
+            converted = "held"
+        if n["allowed"] and not (n["ocr"] or n["held"]):
+            _ACTION[0] = "image passed"
     new, changed = _strings(raw, fn)
     # Encoded output (od -c, xxd, base64, rev...) can carry values the detectors can't read: decode and re-check
     # each text field, and replace only the fields that hit (structural fields must stay as they are).
@@ -194,24 +211,36 @@ def on_post(data: dict) -> dict | None:
             return msg
         return t
     new, _ = _strings(new, check)
+    tail = f" (MCP: {img})" if img else ""
+    mcp = str(data.get("tool_name", "")).startswith("mcp__")
+
+    def output(value):  # MCP output: also the older field, for Claude Code versions before updatedToolOutput
+        o = {"hookEventName": "PostToolUse", "updatedToolOutput": value}
+        if mcp:
+            o["updatedMCPToolOutput"] = value
+        return o
     if hits:
         if _dry("post", f"{data.get('tool_name')}: would withhold encoded output"):
             return None
-        return {"hookSpecificOutput": {"hookEventName": "PostToolUse", "updatedToolOutput": new},
-                "systemMessage": f"cloakroom: withheld encoded {data.get('tool_name')} output"}
+        return {"hookSpecificOutput": output(new),
+                "systemMessage": f"cloakroom: withheld encoded {data.get('tool_name')} output{tail}"}
+    if img and not (n["ocr"] or n["held"]) and not changed:  # only allow_images passes: nothing replaced
+        return {"systemMessage": f"cloakroom: {img}"}
     if not changed and not converted:
         return None
-    if _dry("post", f"{data.get('tool_name')}: would mask {_summary(kinds)}"):
+    if _dry("post", f"{data.get('tool_name')}: would mask {_summary(kinds)}{tail}"):
         return None
-    out = {"hookEventName": "PostToolUse", "updatedToolOutput": new}
+    out = output(new)
     what = {"pdf": "PDF text", "ocr": "OCR text", "figures": "notebook (figures held back)"}.get(converted, f"{data.get('tool_name')} output")
+    if mcp:
+        what = f"{data.get('tool_name')} output"
     if not changed:
-        return {"hookSpecificOutput": out, "systemMessage": f"cloakroom: checked {what}, nothing to mask"}
+        return {"hookSpecificOutput": out, "systemMessage": f"cloakroom: checked {what}, nothing to mask{tail}"}
     guide = _guide_once(session)
     if guide:
         out["additionalContext"] = guide
     return {"hookSpecificOutput": out,
-            "systemMessage": f"cloakroom: masked {_summary(kinds)} in {what}"}
+            "systemMessage": f"cloakroom: masked {_summary(kinds)} in {what}{tail}"}
 
 
 def _prime(command: str, cwd: str, session: str, powershell: bool = False):

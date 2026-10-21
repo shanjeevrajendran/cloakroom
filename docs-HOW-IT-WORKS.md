@@ -7,7 +7,11 @@
   and the PII-Tracer model for names, addresses and other free-text personal data. A value found once is masked
   everywhere it repeats.
 - **Filter:** a known-safe filter leaves documented examples alone: published test cards and keys, sandbox IDs,
-  reserved domains, bot and role mailboxes, loopback addresses, UUIDs and hashes, redaction markers.
+  reserved domains, bot and role mailboxes, loopback addresses, UUIDs and hashes, redaction markers, filler
+  placeholders (`AC000…`, `sk-...`), standard numbers after RFC / ISO / ICAO / IEEE / PEP, and default dates
+  (1970-01-01, 1900-01-01).
+- **Pictures:** PDFs become their text layer; scans, Read pictures and images in MCP tool results are read by local
+  OCR (the `ocr` extra) and only the masked text goes to Claude. Without OCR they are held back.
 - **Restore:** values go into an encrypted per-session vault (AES-GCM, key in the OS secure store). When Claude
   writes a file or runs a command with a placeholder, the real value is put back locally. The model never sees it.
 - **Encoded dumps:** `od`, `xxd`, `base64` and spaced-out output are decoded and checked; a hit withholds the output.
