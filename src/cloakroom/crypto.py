@@ -2,7 +2,7 @@
 
 One random 256-bit key per user, kept in the OS secure store through `keyring` (macOS Keychain, Windows Credential
 Manager/DPAPI, Linux Secret Service). Vault files are AES-GCM encrypted with it. Key lookup order:
-  1. CLOAKROOM_VAULT_KEY (base64), for CI and headless machines
+  1. CLOAKROOM_VAULT_KEY (base64, or 64 hex characters), for CI and headless machines
   2. the OS secure store
   3. a key file readable only by you, when no secure store exists (headless Linux, some WSL); `cloakroom doctor`
      says so. Vaults are never written in plain text.
@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import base64
 import os
+import re
 import secrets
 
 from . import config
@@ -45,7 +46,7 @@ def key() -> bytes:
         return _KEY
     env = os.environ.get("CLOAKROOM_VAULT_KEY")
     if env:
-        _KEY, KEY_SOURCE = base64.b64decode(env), "environment"
+        _KEY, KEY_SOURCE = _env_key(env.strip()), "environment"
         return _KEY
     store = _secure_store()
     if store:
@@ -66,6 +67,21 @@ def key() -> bytes:
             f.write(base64.b64encode(secrets.token_bytes(32)).decode())
     _KEY, KEY_SOURCE = base64.b64decode(path.read_text().strip()), "key-file"
     return _KEY
+
+
+def _env_key(value: str) -> bytes:
+    """CLOAKROOM_VAULT_KEY as a 256-bit key: base64, or 64 hex characters (`openssl rand -hex 32`). A hex string
+    read as base64 gives 48 bytes, which AES-GCM refuses at the first vault write; say so up front instead."""
+    if re.fullmatch(r"[0-9a-fA-F]{64}", value):
+        return bytes.fromhex(value)
+    try:
+        raw = base64.b64decode(value, validate=True)
+    except ValueError:
+        raw = b""
+    if len(raw) not in (16, 24, 32):
+        raise KeyUnavailable("CLOAKROOM_VAULT_KEY must be a 256-bit key in base64 (openssl rand -base64 32) "
+                             "or 64 hex characters (openssl rand -hex 32)")
+    return raw
 
 
 def encrypt(data: bytes) -> bytes:

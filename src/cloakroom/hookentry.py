@@ -32,6 +32,40 @@ def _withhold(raw, msg):
     return msg
 
 
+def _mcp_withhold(raw, msg):
+    """Fail-closed MCP result: every content block becomes a text block (an image block holds the reason, never
+    pixels or text in its data field), other strings are blanked, wrappers and the JSON-string form keep their shape."""
+    placed = [False]
+
+    def text():
+        t = "" if placed[0] else msg
+        placed[0] = True
+        return t
+
+    def walk(v):
+        if isinstance(v, list):
+            return [walk(x) for x in v]
+        if isinstance(v, dict):
+            kind = v.get("type")
+            if kind == "text":
+                return {"type": "text", "text": text()}
+            if isinstance(kind, str):  # image, resource, image_url...: a text block with the reason
+                placed[0] = True
+                return {"type": "text", "text": msg}
+            return {k: x if k in STRUCTURAL or not isinstance(x, (str, dict, list)) else walk(x) for k, x in v.items()}
+        return text() if isinstance(v, str) else v
+
+    if isinstance(raw, str) and raw.lstrip()[:1] in ("[", "{"):
+        try:
+            parsed = json.loads(raw)
+        except ValueError:
+            return msg
+        return json.dumps(walk(parsed)) if isinstance(parsed, (dict, list)) else msg
+    if raw is None:
+        return [{"type": "text", "text": msg}]
+    return walk(raw)
+
+
 def prompt_warning(why):
     return {"systemMessage": f"cloakroom: this message was NOT fully checked ({why}). Tool calls stay blocked "
                              "until Cloakroom works again. Run: cloakroom doctor"}
@@ -54,6 +88,11 @@ def closed(event, why, data):
             raw = {"type": "text", "file": {"filePath": path, "content": f"[{msg}]", "numLines": 1, "startLine": 1,
                                             "totalLines": 1}}
             return {"hookSpecificOutput": {"hookEventName": "PostToolUse", "updatedToolOutput": raw}}
+        if isinstance(data, dict) and str(data.get("tool_name", "")).startswith("mcp__"):
+            # MCP: text blocks only, in both fields (updatedMCPToolOutput for Claude Code before updatedToolOutput)
+            new = _mcp_withhold(raw, f"[{msg}]")
+            return {"hookSpecificOutput": {"hookEventName": "PostToolUse", "updatedToolOutput": new,
+                                           "updatedMCPToolOutput": new}}
         return {"hookSpecificOutput": {"hookEventName": "PostToolUse", "updatedToolOutput": _withhold(raw, f"[{msg}]")}}
     return {"hookSpecificOutput": {"hookEventName": "PreToolUse", "permissionDecision": "deny",
                                    "permissionDecisionReason": msg}}
