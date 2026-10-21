@@ -166,9 +166,9 @@ function Invoke-Upgrade {  # the plugin moved to $Pin: bring an older install up
   $uv = (Get-Command uv -ErrorAction SilentlyContinue).Source
   if (-not $uv -and (Test-Path $UvExe)) { $uv = $UvExe }
   $envs = @()  # route, environment folder
-  if ($uv) { $d = (& $uv tool dir 2>$null | Select-Object -First 1); if ($d) { $envs += , @("uv", (Join-Path $d "cloakroom")) } }
+  if ($uv) { $d = ((& $uv tool dir 2>$null) | Select-Object -First 1); if ($d) { $envs += , @("uv", (Join-Path $d "cloakroom")) } }
   if (Get-Command pipx -ErrorAction SilentlyContinue) {
-    $d = (& pipx environment --value PIPX_LOCAL_VENVS 2>$null | Select-Object -First 1)
+    $d = ((& pipx environment --value PIPX_LOCAL_VENVS 2>$null) | Select-Object -First 1)
     if ($d) { $envs += , @("pipx", (Join-Path $d "cloakroom")) }
   }
   $envs += , @("venv", $Venv)
@@ -234,7 +234,7 @@ function Invoke-Upgrade {  # the plugin moved to $Pin: bring an older install up
     if (-not ($cr2 -and (Test-Path $cr2)) -and (Test-Path $c)) { $cr2 = $c }
   }
   $new = $null
-  if ($cr2 -and (Test-Path $cr2)) { $new = (& $cr2 --version 2>$null | Select-Object -First 1); if ($LASTEXITCODE -ne 0) { $new = $null } }
+  if ($cr2 -and (Test-Path $cr2)) { $new = ((& $cr2 --version 2>$null) | Select-Object -First 1); if ($LASTEXITCODE -ne 0) { $new = $null } }
   if (-not $new) {  # nothing that runs: take it away, so the hook denies tool calls with the steps and retries
     "$(Get-Date -Format s) the reinstall $(if ($ok) { 'finished, but the program does not run' } else { 'failed' })" | Out-Log
     Remove-Install $route $prefix $uv; Clear-Hold; Remove-Item -Force $Stamp -ErrorAction SilentlyContinue

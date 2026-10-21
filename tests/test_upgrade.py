@@ -415,3 +415,12 @@ def test_unix_first_install_stamps_after_stage_one_runs():
     sh = (SCRIPTS / "bootstrap.sh").read_text()
     main = sh[sh.index('echo "$(date \'+%F %T\') stage 1 of 2'):]
     assert main.index('"$CR" --version') < main.index('echo "$PIN" >"$STAMP"')
+
+
+@pytest.mark.parametrize("script", ["bootstrap.ps1", "hook.ps1"])
+def test_no_native_call_piped_straight_into_select_object(script):
+    """Windows PowerShell 5.1: `& prog | Select-Object -First 1` stops prog early and sets $LASTEXITCODE to -1, so a
+    working program reads as broken. The native call must be parenthesised first: `(& prog) | Select-Object`."""
+    text = (SCRIPTS / script).read_text() + (ROOT / "scripts" / "gen_hooks.py").read_text()
+    bad = re.findall(r"&[^()|\n]*\|\s*Select-Object[^\n]*", text)
+    assert not bad, bad
