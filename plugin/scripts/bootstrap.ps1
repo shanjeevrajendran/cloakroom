@@ -5,9 +5,10 @@
 # msvc-runtime (PyPI) ships the Visual C++ runtime DLLs torch needs, so no admin install of the redistributable is required.
 # Every route ends with cloakroom.exe in %USERPROFILE%\.local\bin and that folder on the User PATH.
 # bootstrap.ps1 -Check exits 0 and installs nothing (the install itself fails and is retried when offline).
-# bootstrap.ps1 -Upgrade: the plugin was updated; same as bootstrap.sh --upgrade (see there). Windows can't replace
-# files in use, so the hooks are held (bootstrap.lock\upgrade), the service is stopped, and the swap waits (up to 60 s)
-# until nothing runs from the environment; the service starts again after it.
+# bootstrap.ps1 -Upgrade: the plugin was updated; same as bootstrap.sh --upgrade (see there), but a clean reinstall:
+# the hooks are held (bootstrap.lock\upgrade), the service is stopped, it waits (up to 60 s) until nothing runs from
+# the environment, uninstalls, installs the pinned release with the same extras, and starts the service again. The
+# stamp is written only once the installed program's --version works.
 param([switch]$Check, [switch]$Upgrade)
 if ($Check) { exit 0 }  # Windows can always try: uv is fetched when no installer exists, and a failed install retries later
 $ErrorActionPreference = "Continue"
@@ -140,6 +141,21 @@ function Remove-Install([string]$Route, [string]$Prefix, [string]$Uv) {  # take 
   }
 }
 
+function Install-Clean([string]$Route, [string]$Spec, [string]$Uv) {  # a fresh install, no --force (nothing to replace)
+  switch ($Route) {
+    "uv"   { & $Uv tool install --python 3.12 --with msvc-runtime $Spec 2>&1 | Out-Log }
+    "pipx" { & pipx install --preinstall msvc-runtime $Spec 2>&1 | Out-Log }
+    "venv" {
+      $py = Find-Py310
+      if (-not $py) { return $false }
+      & $py[0] @($py[1..($py.Length - 1)] | Where-Object { $_ }) -m venv $Venv 2>&1 | Out-Log
+      $env:PIP_DISABLE_PIP_VERSION_CHECK = "1"; & (Join-Path $Venv "Scripts\python.exe") -m pip install -q $Spec msvc-runtime 2>&1 | Out-Log
+    }
+    default { return $false }
+  }
+  return ($LASTEXITCODE -eq 0)
+}
+
 function Invoke-Upgrade {  # the plugin moved to $Pin: bring an older install up to it (see bootstrap.sh --upgrade)
   # returns 0 or 1 when finished, 2 when a broken install was removed and the first install must run
   $cr = (Get-Command cloakroom -ErrorAction SilentlyContinue).Source
@@ -208,28 +224,23 @@ function Invoke-Upgrade {  # the plugin moved to $Pin: bring an older install up
     "$(Get-Date -Format s) upgrade check: $cr does not run ($(if ($ver) { $ver } else { 'no version' })): removing it ($route) and installing again" | Out-Log
     Remove-Install $route $prefix $uv; Clear-Hold; Remove-Item -Force $Stamp -ErrorAction SilentlyContinue; return 2
   }
-  "$(Get-Date -Format s) upgrading $ver -> $Pin ($route`: $spec)" | Out-Log
-  switch ($route) {
-    "uv"   { & $uv tool install --python 3.12 --with msvc-runtime --force $spec 2>&1 | Out-Log }
-    "pipx" { & pipx install --preinstall msvc-runtime --force $spec 2>&1 | Out-Log }
-    "venv" { $env:PIP_DISABLE_PIP_VERSION_CHECK = "1"; & (Join-Path $Venv "Scripts\python.exe") -m pip install -q -U $spec msvc-runtime 2>&1 | Out-Log }
-  }
-  $ok = ($LASTEXITCODE -eq 0)
+  # an in-place `uv tool install --force` on Windows has left environments without the cloakroom package, so the
+  # upgrade is a clean reinstall: remove, then install the pinned release with the same extras
+  "$(Get-Date -Format s) upgrading $ver -> $Pin (clean reinstall on Windows; $route`: $spec)" | Out-Log
+  Remove-Install $route $prefix $uv
+  $ok = Install-Clean $route $spec $uv
   $cr2 = (Get-Command cloakroom -ErrorAction SilentlyContinue).Source
-  if (-not $cr2 -or -not (Test-Path $cr2)) { $cr2 = $cr }
+  foreach ($c in @((Join-Path $LocalBin "cloakroom.exe"), (Join-Path $Venv "Scripts\cloakroom.exe"))) {
+    if (-not ($cr2 -and (Test-Path $cr2)) -and (Test-Path $c)) { $cr2 = $c }
+  }
   $new = $null
-  if (Test-Path $cr2) { $new = (& $cr2 --version 2>$null | Select-Object -First 1); if ($LASTEXITCODE -ne 0) { $new = $null } }
-  if (-not $new) {  # the swap left a program that doesn't run: remove it and install from scratch
-    "$(Get-Date -Format s) upgrade $(if ($ok) { 'installed' } else { 'failed' }), and the program does not run: removing it and installing again" | Out-Log
-    Remove-Install $route $prefix $uv; Clear-Hold; Remove-Item -Force $Stamp -ErrorAction SilentlyContinue; return 2
+  if ($cr2 -and (Test-Path $cr2)) { $new = (& $cr2 --version 2>$null | Select-Object -First 1); if ($LASTEXITCODE -ne 0) { $new = $null } }
+  if (-not $new) {  # nothing that runs: take it away, so the hook denies tool calls with the steps and retries
+    "$(Get-Date -Format s) the reinstall $(if ($ok) { 'finished, but the program does not run' } else { 'failed' })" | Out-Log
+    Remove-Install $route $prefix $uv; Clear-Hold; Remove-Item -Force $Stamp -ErrorAction SilentlyContinue
+    Stop-Failed "failed" "upgrade to $Pin failed: Cloakroom is not installed now; it tries again in 10 minutes"
   }
   Clear-Hold
-  if (-not $ok) {
-    Write-Plain $Stamp "failed:$Pin"
-    "$(Get-Date -Format s) upgrade failed: the installed version stays in use; it tries again in 10 minutes" | Out-Log
-    if ($was -gt 0) { Start-Process $cr2 -ArgumentList "serve" -WindowStyle Hidden | Out-Null }
-    return 1
-  }
   if ($was -gt 0) {
     Start-Process $cr2 -ArgumentList "serve" -WindowStyle Hidden | Out-Null
     "$(Get-Date -Format s) service restarted on the new version" | Out-Log
@@ -336,7 +347,6 @@ try {
     Remove-Install $Who "" $uv1
     Stop-Failed "failed" "stage 1 installed cloakroom, but the program does not run ($(if ($cr1) { $cr1 } else { 'not found' }))"
   }
-  Write-Plain $Stamp $Pin  # this plugin version's release is in, and runs: no upgrade check on the first hook call
   Set-Content $State "model"
   "$(Get-Date -Format s) stage 2 of 2: installing the model ($Full; about 1 GB on a Mac, up to about 4 GB elsewhere, of which local OCR about 100 MB)" | Out-Log
   $ok = Install-Spec $Full $true
@@ -345,7 +355,24 @@ try {
     $ok = Install-Spec $NoOcr $true
   }
   if ($ok) {
+    # stage 2 replaced the program in place: if that left one that doesn't run, fall back to a clean rules-only
+    # install (held, like an upgrade), so a broken program is never left behind or stamped
     $cr = Find-Cloakroom
+    $runs = $false
+    if ($cr) { & $cr --version *> $null; $runs = ($LASTEXITCODE -eq 0) }
+    if (-not $runs) {
+      "$(Get-Date -Format s) stage 2 left a program that does not run: reinstalling rules-only" | Out-Log
+      Set-Hold
+      [void](Wait-Idle @((Join-Path $LocalBin "cloakroom"), $cr) 60)
+      Remove-Install $Who "" $(if ($Who -eq "uv") { $UvExe } else { $null })
+      $re = Install-Clean $Who $Rules $UvExe
+      Clear-Hold
+      $cr = Find-Cloakroom
+      if ($cr) { & $cr --version *> $null; $re = $re -and ($LASTEXITCODE -eq 0) } else { $re = $false }
+      if (-not $re) { Remove-Install $Who "" $(if ($Who -eq "uv") { $UvExe } else { $null }); Stop-Failed "failed" "the rules-only reinstall failed" }
+      Write-Plain $Stamp $Pin
+      Set-Content $State "model-failed"; "$(Get-Date -Format s) stage 2 failed: staying on rules-only protection" | Out-Log; Write-Steps "model"; exit 1
+    }
     Publish-Cloakroom $cr
     if ($cr) {
       "$(Get-Date -Format s) building the fast CPU model if this machine has no GPU (a few minutes)" | Out-Log
@@ -357,10 +384,15 @@ try {
         else { $modelBroken = $true; "CPU model build failed and the model can't load on this machine (see the doctor lines above)" | Out-Log }
       }
     }
+    Write-Plain $Stamp $Pin  # this plugin version's release is in, and runs: no upgrade check on the next hook call
     if ($modelBroken) { Set-Content $State "model-failed"; "$(Get-Date -Format s) stage 2 failed: staying on rules-only protection" | Out-Log; Write-Steps "model"; exit 1 }
     Remove-Item -Force $State; "$(Get-Date -Format s) done: full protection. Program: $(if ($cr) { $cr } else { Join-Path $LocalBin 'cloakroom.exe' }) (if 'cloakroom' is not found in a terminal, open a new terminal or use that full path)" | Out-Log
     # start the service now, so the user's next prompt doesn't wait for the model's first load
     if ($cr) { Start-Process $cr -ArgumentList "serve" -WindowStyle Hidden | Out-Null; "$(Get-Date -Format s) service starting" | Out-Log }
   }
-  else { Set-Content $State "model-failed"; "$(Get-Date -Format s) stage 2 failed: staying on rules-only protection" | Out-Log; Write-Steps "model" }
+  else {
+    $cr = Find-Cloakroom
+    if ($cr) { & $cr --version *> $null; if ($LASTEXITCODE -eq 0) { Write-Plain $Stamp $Pin } }
+    Set-Content $State "model-failed"; "$(Get-Date -Format s) stage 2 failed: staying on rules-only protection" | Out-Log; Write-Steps "model"
+  }
 } finally { Remove-Item -Recurse -Force $Lock -ErrorAction SilentlyContinue }

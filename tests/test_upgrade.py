@@ -386,3 +386,32 @@ def test_failed_reinstall_ends_failed_with_steps_and_no_stamp(installed, tmp_pat
     r = subprocess.run([shutil.which("bash"), str(SCRIPTS / "hook.sh"), "pre"], env=e, input="{}",
                        capture_output=True, text=True, timeout=30)
     assert "the automatic install failed; it tries again in 10 minutes" in r.stdout and '"deny"' in r.stdout
+
+
+def test_windows_upgrade_is_a_clean_reinstall():
+    """bootstrap.ps1 -Upgrade never replaces an environment in place (on Windows that left environments without the
+    cloakroom package): it uninstalls, then installs without --force, inside the hold."""
+    ps1 = (SCRIPTS / "bootstrap.ps1").read_text()
+    body = ps1[ps1.index("function Install-Clean"):ps1.index("if ($Upgrade) {")]
+    assert not re.search(r"& \S+ (tool )?install[^\n]*--force", body)  # no command replaces in place
+    assert "upgrading $ver -> $Pin (clean reinstall on Windows" in body
+    swap = body[body.index("Set-Hold\n  $was = Stop-CloakroomService"):]
+    order = [swap.index(k) for k in ("Wait-Idle $marks 60", "Remove-Install $route $prefix $uv\n  $ok = Install-Clean",
+                                     "Clear-Hold\n  if ($was -gt 0)", "Write-Plain $Stamp $Pin")]
+    assert order == sorted(order)
+    tail = swap[swap.index("Install-Clean $route $spec $uv"):]
+    assert tail.index("--version") < tail.index("Write-Plain $Stamp $Pin")  # stamped only once the program runs
+
+
+def test_windows_first_install_stamps_after_the_last_stage():
+    ps1 = (SCRIPTS / "bootstrap.ps1").read_text()
+    main = ps1[ps1.index("stage 1 of 2: installing"):]
+    first_stamp = main.index("Write-Plain $Stamp $Pin")
+    assert main.index("stage 2 of 2: installing the model") < first_stamp
+    assert main.index("$cr = Find-Cloakroom") < first_stamp and main.index("--version") < first_stamp
+
+
+def test_unix_first_install_stamps_after_stage_one_runs():
+    sh = (SCRIPTS / "bootstrap.sh").read_text()
+    main = sh[sh.index('echo "$(date \'+%F %T\') stage 1 of 2'):]
+    assert main.index('"$CR" --version') < main.index('echo "$PIN" >"$STAMP"')
