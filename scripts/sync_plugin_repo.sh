@@ -9,11 +9,15 @@ rm -rf "$DEST/.claude-plugin" "$DEST/hooks" "$DEST/scripts"
 cp -R "$SRC/plugin/.claude-plugin" "$SRC/plugin/hooks" "$SRC/plugin/scripts" "$DEST/"
 cp "$SRC/LICENSE" "$SRC/NOTICE" "$DEST/"
 # This repo's README is a pointer to the main repo (so search ranks that one): short header + the install section of
-# plugin/README.md (from "## Get started" up to the next "## ") + the license line.
+# plugin/README.md ("## Get started" and "## Privacy", each up to the next "## ") + the license line. Privacy stays
+# because plugin.json's privacyPolicyUrl points at this README's #privacy anchor.
+section() { awk -v h="## $1" '$0==h{p=1;print;next} p&&/^## /{exit} p' "$SRC/plugin/README.md" | sed -e :a -e '/^\n*$/{$d;N;ba' -e '}'; }
 {
   printf '%s\n\n%s\n\n' '# Cloakroom plugin (install files)' \
     'This repo only hosts the Claude Code install files. Cloakroom itself (docs, benchmarks, issues, and stars ⭐) lives at https://github.com/shanjeevrajendran/cloakroom'
-  awk '/^## Get started/{p=1;print;next} p&&/^## /{exit} p' "$SRC/plugin/README.md" | sed -e :a -e '/^\n*$/{$d;N;ba' -e '}'
+  section 'Get started'
+  printf '\n'
+  section 'Privacy'
   printf '\n'
   grep -m1 '^License:' "$SRC/plugin/README.md"
 } > "$DEST/README.md"
