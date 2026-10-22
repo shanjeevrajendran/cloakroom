@@ -7,7 +7,16 @@ SRC="$(cd "$(dirname "$0")/.." && pwd)"; DEST="${1:-$SRC/../cloakroom-plugin}"
 mkdir -p "$DEST"
 rm -rf "$DEST/.claude-plugin" "$DEST/hooks" "$DEST/scripts"
 cp -R "$SRC/plugin/.claude-plugin" "$SRC/plugin/hooks" "$SRC/plugin/scripts" "$DEST/"
-cp "$SRC/plugin/README.md" "$SRC/LICENSE" "$SRC/NOTICE" "$DEST/"
+cp "$SRC/LICENSE" "$SRC/NOTICE" "$DEST/"
+# This repo's README is a pointer to the main repo (so search ranks that one): short header + the install section of
+# plugin/README.md (from "## Get started" up to the next "## ") + the license line.
+{
+  printf '%s\n\n%s\n\n' '# Cloakroom plugin (install files)' \
+    'This repo only hosts the Claude Code install files. Cloakroom itself (docs, benchmarks, issues, and stars ⭐) lives at https://github.com/shanjeevrajendran/cloakroom'
+  awk '/^## Get started/{p=1;print;next} p&&/^## /{exit} p' "$SRC/plugin/README.md" | sed -e :a -e '/^\n*$/{$d;N;ba' -e '}'
+  printf '\n'
+  grep -m1 '^License:' "$SRC/plugin/README.md"
+} > "$DEST/README.md"
 cat > "$DEST/.claude-plugin/marketplace.json" <<JSON
 {
   "\$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
