@@ -2,6 +2,8 @@
 
 <img src="https://raw.githubusercontent.com/shanjeevrajendran/cloakroom/main/assets/hero.svg" alt="Cloakroom, a privacy layer for Claude Code: names, emails, addresses and API keys are swapped for placeholders before the model sees them." width="880">
 
+**Cloakroom is a free, open-source Claude Code plugin that masks API keys, secrets and personal data (PII) on your machine before the model sees them.**
+
 <p>
   <a href="https://www.youtube.com/shorts/U9lN4emgeE0">▶ 40-second demo</a> ·
   <a href="#get-started">Get started</a> ·

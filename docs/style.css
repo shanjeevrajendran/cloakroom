@@ -296,3 +296,5 @@ pre code { font-size: inherit; }
 @media (forced-colors: active) {
   .bar::after { display: none; }
 }
+.faq h3 { margin: 1.5rem 0 0.25rem; font-size: 1.1875rem; line-height: 1.25; font-weight: 650; }
+.faq p { margin: 0; }

@@ -23,6 +23,9 @@
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Cloakroom","description":"Cloakroom is a free, open-source Claude Code plugin that masks API keys, secrets and personal data on your own machine before the model sees them.","applicationCategory":"SecurityApplication","operatingSystem":"macOS, Windows, Linux","license":"https://opensource.org/licenses/MIT","url":"https://shanjeevrajendran.github.io/cloakroom/","codeRepository":"https://github.com/shanjeevrajendran/cloakroom","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
 </script>
+<script type="application/ld+json">
+{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Does Cloakroom send my data anywhere?", "acceptedAnswer": {"@type": "Answer", "text": "No. It downloads the detection model once from Hugging Face, and everything else runs on your own machine."}}, {"@type": "Question", "name": "What does it mask?", "acceptedAnswer": {"@type": "Answer", "text": "API keys, secrets and personal data such as names, emails and addresses. Scanned pages and photos are read on your machine and masked like any other file."}}, {"@type": "Question", "name": "Does Claude still work normally?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Claude works with placeholders like PII_PERSON_1, and the real values are put back, locally, in the files Claude writes."}}, {"@type": "Question", "name": "What happens when my prompt contains a secret?", "acceptedAnswer": {"@type": "Answer", "text": "A prompt can be blocked but not rewritten, so Cloakroom stops it and tells you what it found. Put the detail in a file and ask Claude to read it instead."}}, {"@type": "Question", "name": "What doesn't it protect?", "acceptedAnswer": {"@type": "Answer", "text": "It stops accidental exposure but isn't a sandbox. A prompt injection set on smuggling data out piece by piece, what you type into a prompt, and Claude Code's own local logs are out of scope."}}]}
+</script>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -36,6 +39,7 @@
     </a>
     <nav aria-label="Page">
       <a href="#install">Install</a>
+      <a href="#faq">FAQ</a>
       <a href="#writeup">Write-up</a>
       <a href="https://github.com/shanjeevrajendran/cloakroom">GitHub</a>
     </nav>
@@ -102,6 +106,20 @@ cloakroom doctor
 <span class="c"># opens your alerts in the browser</span>
 cloakroom dashboard</code></pre>
   <p class="small"><a href="https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-SETUP.md">Setup details</a> · <a href="https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-LIMITS.md">Known limits</a></p>
+</section>
+
+<section class="install faq" id="faq" aria-labelledby="faq-title">
+  <h2 id="faq-title" class="section-title">FAQ</h2>
+  <h3>Does Cloakroom send my data anywhere?</h3>
+  <p>No. It downloads the detection model once from Hugging Face, and everything else runs on your own machine.</p>
+  <h3>What does it mask?</h3>
+  <p>API keys, secrets and personal data such as names, emails and addresses. Scanned pages and photos are read on your machine and masked like any other file.</p>
+  <h3>Does Claude still work normally?</h3>
+  <p>Yes. Claude works with placeholders like PII_PERSON_1, and the real values are put back, locally, in the files Claude writes.</p>
+  <h3>What happens when my prompt contains a secret?</h3>
+  <p>A prompt can be blocked but not rewritten, so Cloakroom stops it and tells you what it found. Put the detail in a file and ask Claude to read it instead.</p>
+  <h3>What doesn't it protect?</h3>
+  <p>It stops accidental exposure but isn't a sandbox. A prompt injection set on smuggling data out piece by piece, what you type into a prompt, and Claude Code's own local logs are out of scope.</p>
 </section>
 
 <article class="writeup" id="writeup" aria-labelledby="writeup-title">
