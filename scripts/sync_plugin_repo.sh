@@ -21,6 +21,15 @@ section() { awk -v h="## $1" '$0==h{p=1;print;next} p&&/^## /{exit} p' "$SRC/plu
   printf '\n'
   grep -m1 '^License:' "$SRC/plugin/README.md"
 } > "$DEST/README.md"
+# docs/INSTALL.md: registries (HOL) link here as the install guide.
+mkdir -p "$DEST/docs"
+{
+  printf '%s\n\n%s\n\n' '# Install Cloakroom' \
+    'Full docs, issues and stars ⭐: https://github.com/shanjeevrajendran/cloakroom'
+  section 'Get started'
+  printf '\n'
+  grep -m1 '^License:' "$SRC/plugin/README.md"
+} > "$DEST/docs/INSTALL.md"
 cat > "$DEST/.claude-plugin/marketplace.json" <<JSON
 {
   "\$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
