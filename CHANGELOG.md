@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.5.2 (2026-10-23)
+- A key or password is no longer written into a file git would commit. When Write, Edit, MultiEdit, NotebookEdit or a
+  local shell redirect (`>`, `>>`, `tee`) would put one into a file that is in a git repo and not git-ignored, the
+  call is denied and Claude is told to put the value in `.env` and read it from the environment. This covers values
+  Cloakroom would restore from a placeholder and keys Claude types itself. Files outside a repo, ignored files and
+  `.env*`, `.envrc`, `*.pem`, `*.key`, `*.p12`, `credentials*` files are written as before; personal data (names,
+  emails, phone numbers) is not checked. Fixtures and docs with sample keys: list them in `"allow_secret_paths"`.
+  If git can't answer within a second, the write goes through as before.
+
 ## 0.5.1 (2026-10-21)
 - Fix: a hex `CLOAKROOM_VAULT_KEY` (`openssl rand -hex 32`) is now accepted and a wrong-length key gets a clear error,
   instead of a vault write failing with ValueError. When an MCP result can't be checked, each image becomes a text

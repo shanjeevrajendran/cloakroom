@@ -272,7 +272,9 @@ rest are mostly names and addresses Gretel leaves unlabelled.
 - **Dry run** (`CLOAKROOM_DRY_RUN=1`): lets everything through and logs what it would have done.
 - **Settings** in `~/.cloakroom/config.json`: `"allow"` for your own exceptions, `"mask_all_dates": true` to mask
   every date (by default only birth dates and dates in someone's record), `"mask_own_username": true` to mask your
-  own login name in paths too, `"allow_images": true` to let pictures through unchecked (with a warning).
+  own login name in paths too, `"allow_images": true` to let pictures through unchecked (with a warning),
+  `"allow_secret_paths": ["tests/fixtures/*"]` (globs, relative to the project folder) for files where sample keys
+  may be written even though git would commit them.
 
 Exceptions, backends, CI and troubleshooting: [the handbook](https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-HANDBOOK.md).
 
@@ -292,7 +294,9 @@ suggests a rule, or add exceptions to `allow` in `~/.cloakroom/config.json`. `cl
 
 **What doesn't it protect?** It stops accidental exposure; it isn't a sandbox. Out of scope: a prompt injection
 (text in a file that steers Claude) set on smuggling data out piece by piece, what you type into a prompt (a prompt
-can be blocked but not rewritten, and names alone go through), and Claude Code's own local logs. Details:
+can be blocked but not rewritten, and names alone go through), and Claude Code's own local logs. Keys are kept
+out of files git would commit when Claude writes them with Write or Edit, but a file a shell command writes some other
+way (a script, `cp`, `sed -i`) is not checked yet, so a commit made from it can still carry a key. Details:
 [docs-LIMITS.md](https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-LIMITS.md).
 
 **What about PDFs, scans and photos?** Cloakroom pulls the text out on your machine and masks it like any file;

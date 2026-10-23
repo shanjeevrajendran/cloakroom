@@ -391,6 +391,88 @@ def _touches_home(tool: str, args: dict) -> bool:
     return False
 
 
+COMMIT_KINDS = {"SECRET", "PASSWORD"}  # kinds kept out of files git would commit; personal data is not checked
+SECRET_FILES = (".env*", ".envrc", "*.pem", "*.key", "credentials*", "*.p12")  # where a key belongs
+_DRY_DENY = {"dry-run": "would deny"}  # _commit_check in dry run: log only, and skip the restore's own dry line
+_REDIRECT = re.compile(r"(?:\d?>>?|\|\s*tee(?:\s+-a)?)\s*([^\s|;&<>]+)")  # > f, >> f, 2> f, | tee [-a] f
+
+
+def _written_text(tool: str, args: dict) -> str:
+    if tool == "Write":
+        return str(args.get("content", ""))
+    if tool == "Edit":
+        return str(args.get("new_string", ""))
+    if tool == "MultiEdit":
+        return "\n".join(str(e.get("new_string", "")) for e in args.get("edits") or [] if isinstance(e, dict))
+    if tool == "NotebookEdit":
+        src = args.get("new_source", "")
+        return "".join(src) if isinstance(src, list) else str(src)
+    return ""
+
+
+def _git_would_commit(path: str) -> bool:
+    """The file is in a git repo and not ignored. Any doubt (no git, not a repo, slow) answers False: restore as before."""
+    import subprocess
+    d = os.path.dirname(path)
+    while d and not os.path.isdir(d):
+        d = os.path.dirname(d) if os.path.dirname(d) != d else ""
+    if not d:
+        return False
+    try:
+        r = subprocess.run(["git", "-C", d, "check-ignore", "-q", "--", path], capture_output=True, timeout=1)
+    except Exception:
+        return False
+    return r.returncode == 1  # 0 ignored, 1 not ignored, 128 not a repo or error
+
+
+def _commit_check(tool: str, args: dict, original: dict, cwd: str, vault: Vault) -> dict | None:
+    """Deny a local write that would put a key or password into a file git would commit (restored from a
+    placeholder, or typed by the model). Writes outside a repo, to ignored files, to .env-style files or to
+    allow_secret_paths go through. The reason names the placeholder or kind, never the value."""
+    from fnmatch import fnmatch
+    cfg = config.load()
+    if tool in SHELL_TOOLS:
+        cmd = str(original.get("command", ""))
+        targets = [t.strip("\"'") for t in _REDIRECT.findall(cmd)]
+        found = [(ph, ph.split("_")[1]) for ph in PLACEHOLDER.findall(cmd)
+                 if ph.split("_")[1] in COMMIT_KINDS and ph in vault.by_placeholder]
+    else:
+        targets = [str(args.get("file_path") or args.get("notebook_path") or "")]
+        found = [(ph, ph.split("_")[1]) for ph in PLACEHOLDER.findall(_written_text(tool, original))
+                 if ph.split("_")[1] in COMMIT_KINDS and ph in vault.by_placeholder]
+        # the text as it will be written: rules, your always-mask entries and known secrets (plain or encoded)
+        text = _written_text(tool, args)
+        known = {v: k for v, k in engine.known_values(vault, cfg["always"]).items() if k in COMMIT_KINDS}
+        always = [(e, k) for e, k in cfg["always"] if k in COMMIT_KINDS]
+        hits, _ = engine.detect(text, "rules", cfg["allow"], always, known=known)
+        for f in hits:
+            ph = vault.by_value.get(f.value(text), "")
+            if f.kind in COMMIT_KINDS and not (ph and any(ph == p for p, _ in found)):
+                found.append((ph, f.kind))
+    if not found:
+        return None
+    for target in targets:
+        if not target:
+            continue
+        path = os.path.normpath(os.path.join(cwd, os.path.expanduser(target)))
+        rel = os.path.relpath(path, cwd)
+        rel = path if rel.startswith("..") else rel
+        name = os.path.basename(path)
+        if any(fnmatch(name, p) for p in SECRET_FILES):
+            continue
+        if any(fnmatch(rel, g) or fnmatch(path, g) for g in cfg.get("allow_secret_paths") or []):
+            continue
+        if not _git_would_commit(path):
+            continue
+        _FOUND.extend((ph, k) for ph, k in found)
+        what = ", ".join(dict.fromkeys(ph or k for ph, k in found))
+        if _dry("pre", f"{tool}: would deny a commit-bound write ({_summary([k for _, k in found])})"):
+            return _DRY_DENY
+        return _deny(f"Cloakroom: this would write {what} into {rel}, which git would commit. Put the value in "
+                     ".env (git-ignored) and read it from the environment.")
+    return None
+
+
 def on_pre(data: dict) -> dict | None:
     tool, args, session = data.get("tool_name", ""), data.get("tool_input") or {}, data.get("session_id", "default")
     if _touches_home(tool, args):
@@ -399,15 +481,17 @@ def on_pre(data: dict) -> dict | None:
     blob = json.dumps(args)
     has_ph = bool(PLACEHOLDER.search(blob))
     vault = Vault(config.vault_path(session))
+    cwd = data.get("cwd") or os.getcwd()
 
     if tool in SHELL_TOOLS:
         held = _egress_hold(args.get("command", ""), session, vault, tool == "PowerShell")
         if held:
             return held
-        _prime(args.get("command", ""), data.get("cwd") or os.getcwd(), session, powershell=tool == "PowerShell")
+        _prime(args.get("command", ""), cwd, session, powershell=tool == "PowerShell")
     if tool in LOCAL_FILE_TOOLS or tool in SHELL_TOOLS:
-        if not has_ph:
-            return None
+        if not has_ph:  # nothing to restore; a key the model typed into a file is still checked
+            denied = _commit_check(tool, args, args, cwd, vault) if tool in WRITE_TOOLS else None
+            return None if denied is _DRY_DENY else denied
         if tool in SHELL_TOOLS:
             ps = tool == "PowerShell"
             cmd = args.get("command", "")
@@ -418,6 +502,9 @@ def on_pre(data: dict) -> dict | None:
                                                    "placeholders were left in place. Approve only if that's what you want."}}
                 return None if _dry("pre", "Bash network: would ask") else out
             restored, unknown = shell.restore(cmd, vault.by_placeholder.get, powershell=ps)
+            denied = _commit_check(tool, args, args, cwd, vault)
+            if denied:
+                return None if denied is _DRY_DENY else denied
             if _dry("pre", f"Bash {kind}: would restore"):
                 return None
             out = {"hookEventName": "PreToolUse", "updatedInput": {**args, "command": restored}}
@@ -437,6 +524,10 @@ def on_pre(data: dict) -> dict | None:
             new, changed = _strings(value, fn)
             if changed:
                 changed_fields[key] = new
+        if tool in WRITE_TOOLS:
+            denied = _commit_check(tool, {**args, **changed_fields}, args, cwd, vault)
+            if denied:
+                return None if denied is _DRY_DENY else denied
         if not changed_fields or _dry("pre", f"{tool}: would restore {list(changed_fields)}"):
             return None
         # updatedInput replaces the whole input in practice (a partial one dropped Write's file_path): send it all

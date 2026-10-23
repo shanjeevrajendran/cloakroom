@@ -21,7 +21,7 @@ $ReasonFile = Join-Path $H "bootstrap.reason"
 $Utf8 = New-Object System.Text.UTF8Encoding $false
 try { [Console]::OutputEncoding = $Utf8 } catch { }
 function Out-Log { process { [IO.File]::AppendAllText($Log, "$_`r`n", $Utf8) } }
-$Pin = "0.5.1"  # the release this plugin version installs (scripts/gen_hooks.py bakes the same into the hooks)
+$Pin = "0.5.2"  # the release this plugin version installs (scripts/gen_hooks.py bakes the same into the hooks)
 $Stamp = Join-Path $H "upgrade.stamp"; $Notice = Join-Path $H "upgrade.notice"; $Probe = Join-Path $PSScriptRoot "upgrade_probe.py"
 $UvVersion = "0.13.1"
 $UvPs1Url = "https://astral.sh/uv/$UvVersion/install.ps1"
@@ -191,13 +191,13 @@ function Invoke-Upgrade {  # the plugin moved to $Pin: bring an older install up
     "$(Get-Date -Format s) upgrade check: cloakroom $ver ($kind) left as is for plugin $Pin" | Out-Log; return 0
   }
   if ($ext -eq "-") { $ext = "" }
-  $spec = if ($env:CLOAKROOM_SPEC_UPGRADE) { $env:CLOAKROOM_SPEC_UPGRADE } elseif ($ext) { "cloakroom[$ext]==0.5.1" } else { "cloakroom==0.5.1" }
+  $spec = if ($env:CLOAKROOM_SPEC_UPGRADE) { $env:CLOAKROOM_SPEC_UPGRADE } elseif ($ext) { "cloakroom[$ext]==0.5.2" } else { "cloakroom==0.5.2" }
   $route = "unknown"
   if ($prefix) { foreach ($e in $envs) { if ($prefix.TrimEnd('\').ToLower() -eq $e[1].TrimEnd('\').ToLower()) { $route = $e[0]; break } } }
   $marks = @($prefix, $cr, (Join-Path $LocalBin "cloakroom"))
   if ($kind -eq "broken" -and $route -eq "unknown") {  # not ours to remove: the user reinstalls it
     Write-Plain $Stamp "failed:$Pin"
-    $msg = "cloakroom: the installed program ($cr) does not run, and it wasn't installed by uv, pipx or the plugin, so it can't repair itself. To finish: 1. Run: uv tool install --force --python 3.12 `"cloakroom==0.5.1`" (or reinstall it the way you installed it). 2. Then restart Claude Code (/exit, then claude)."
+    $msg = "cloakroom: the installed program ($cr) does not run, and it wasn't installed by uv, pipx or the plugin, so it can't repair itself. To finish: 1. Run: uv tool install --force --python 3.12 `"cloakroom==0.5.2`" (or reinstall it the way you installed it). 2. Then restart Claude Code (/exit, then claude)."
     Write-Plain $Notice ((@{ systemMessage = $msg } | ConvertTo-Json -Compress) + "`n")
     "$(Get-Date -Format s) upgrade check: $cr does not run and was not installed by uv, pipx or this script" | Out-Log
     $msg | Out-Log; return 1
@@ -327,10 +327,10 @@ function Publish-Cloakroom([string]$Exe) {  # exe in ~\.local\bin and that folde
 $modelBroken = $false
 Remove-Item -Force $ReasonFile -ErrorAction SilentlyContinue
 try {
-  $Rules = if ($env:CLOAKROOM_SPEC_RULES) { $env:CLOAKROOM_SPEC_RULES } else { "cloakroom==0.5.1" }
-  $Full = if ($env:CLOAKROOM_SPEC_FULL) { $env:CLOAKROOM_SPEC_FULL } else { "cloakroom[model,torch,ocr]==0.5.1" }
+  $Rules = if ($env:CLOAKROOM_SPEC_RULES) { $env:CLOAKROOM_SPEC_RULES } else { "cloakroom==0.5.2" }
+  $Full = if ($env:CLOAKROOM_SPEC_FULL) { $env:CLOAKROOM_SPEC_FULL } else { "cloakroom[model,torch,ocr]==0.5.2" }
   # stage 2 again without local OCR if its wheels fail, so a broken OCR wheel never blocks the model
-  $NoOcr = if ($env:CLOAKROOM_SPEC_NO_OCR) { $env:CLOAKROOM_SPEC_NO_OCR } else { "cloakroom[model,torch]==0.5.1" }
+  $NoOcr = if ($env:CLOAKROOM_SPEC_NO_OCR) { $env:CLOAKROOM_SPEC_NO_OCR } else { "cloakroom[model,torch]==0.5.2" }
   "$(Get-Date -Format s) installer: $Who" | Out-Log
   if ($Who -eq "none") {
     $why = if ($script:Reason) { $script:Reason } else { "failed" }
