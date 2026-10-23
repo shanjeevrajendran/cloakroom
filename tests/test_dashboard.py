@@ -78,3 +78,19 @@ def test_summary_values_and_labels(server, monkeypatch, capsys):
     assert call(server, "POST", "/api/label", {"id": "nope", "label": "correct"}, {**cookie, "X-Cloakroom": "1"})[0] == 400
     assert call(server, "POST", "/api/label", {"id": ev["id"], "label": "none"}, {**cookie, "X-Cloakroom": "1"})[0] == 200
     assert labels.load() == {}
+
+
+def test_export_downloads_the_report(server):
+    from cloakroom import events
+    events.record("post", {"tool_name": "Read", "session_id": "x"}, "masked", [("PII_SECRET_1", "SECRET")], 1.0,
+                  "/srv/app/config.py")
+    assert call(server, "GET", "/api/report?format=csv")[0] == 403  # signed out
+    cookie, _ = sign_in(server)
+    status, headers, body = call(server, "GET", "/api/report?format=csv", headers=cookie)
+    text = body.decode()
+    assert status == 200 and headers["Content-Type"].startswith("text/csv")
+    assert 'filename="cloakroom-report.csv"' in headers["Content-Disposition"]
+    assert text.startswith("# Cloakroom report:") and ",SECRET,masked,.py in srv,1" in text
+    assert "PII_" not in text and "/srv/app" not in text
+    status, _, body = call(server, "GET", "/api/report?format=json", headers=cookie)
+    assert status == 200 and json.loads(body)["rows"][0]["kind"] == "SECRET"

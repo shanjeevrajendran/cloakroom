@@ -95,6 +95,14 @@ def test_commit_all_and_add_in_same_command(repo, monkeypatch, capsys):
     assert decision(bash(f"git -C {repo} add . ; git -C {repo} commit -m new", "/", monkeypatch, capsys)) == "deny"
 
 
+def test_powershell_commit_held(repo, monkeypatch, capsys):
+    (repo / "app.py").write_text(f"TOKEN = '{KEY}'\n")
+    out = run_hook("pre", {"session_id": "g", "tool_name": "PowerShell", "cwd": str(repo.parent),
+                           "tool_input": {"command": f"Set-Location {repo}; git add -A; git commit -m 'add app'"}},
+                   monkeypatch, capsys)
+    assert decision(out) == "deny" and "held this git commit" in out["hookSpecificOutput"]["permissionDecisionReason"]
+
+
 def test_ignored_and_allowed_paths_pass(repo, monkeypatch, capsys):
     from cloakroom import config
     config.private_dir()
