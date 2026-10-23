@@ -97,6 +97,18 @@
   precision is 0.81 on TAB court rulings and 0.52 on Gretel finance documents, mostly number strings read as account
   or reference numbers. Masking safe text costs readability, never privacy. Measured and rejected fixes (a higher
   model-confidence bar, a context gate) both leaked real values, so they were not shipped.
+- Commit and push check: it reads the staged change (for `git push`, the commits no remote has yet) and lets the
+  command run unchecked when the added text is over 4 MB or the check takes over 2 s. A push to a remote with no
+  remote-tracking refs scans all history, and runs unchecked if that is slow. Commits made outside Claude Code
+  (your own terminal, an editor, another agent) aren't checked.
+- Write-time check: a key split into pieces, or one with no known pattern and not seen earlier in the session, isn't
+  caught when a file is written. Repos that commit sample keys (fixtures, docs) need `"allow_secret_paths"`, or
+  those writes and commits are refused or held.
+- Activity log: tamper-evident, not tamper-proof. Someone who rewrites every later line can rebuild the chain, so
+  keep the head hash from `cloakroom report --verify` somewhere else. A miss leaves no line, and other agents,
+  machines without Cloakroom and prompts sent with `cr!` are not in it.
+- `cloakroom clean-history` skips files changed in the last 10 minutes (an open session). It replaces sample keys
+  too, not only real ones; the backup folder keeps the originals, and holds the values until you delete it.
 - The dashboard (`cloakroom dashboard`) is reachable only on 127.0.0.1, with a one-time sign-in link; restarting the
   service signs the browser out. The activity log keeps no values or text, but it does keep file paths (masked like
   any output) and the program name of shell commands.
