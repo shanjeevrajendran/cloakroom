@@ -118,15 +118,28 @@ the detection model and OCR), then add the plugin as above.
   reply.md on your disk: "Hi Nadia Petrov,"
 ```
 
+Details: [docs-HOW-IT-WORKS.md](https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-HOW-IT-WORKS.md).
+
+## Extra protections
+
+Masking is the core. These come with it, on by default:
+
 - **Secrets don't leave through a command:** a command that would send a known secret off your machine (curl,
   wget, ssh, scp, rsync, nc, git push with credentials, a literal token in an `Authorization` header) is held, and
   the message names what it found by placeholder only. If you meant it, type `cr: allow`, then ask Claude to run
   the same command again: it passes once.
 - **Encoded copies count:** a secret Cloakroom has seen is also caught base64-encoded, URL-encoded or JSON-escaped.
+- **Web, MCP and subagent calls carry placeholders only:** a web fetch, an MCP tool call or a prompt to a subagent
+  that holds a real value is stopped before it runs.
+- **No key lands in a file git would commit:** when Claude writes a file with Write or Edit, a key or password that
+  would end up in a tracked file is refused, and Claude is told to use `.env` instead. Ignored files and `.env`
+  work as before.
 - **MCP images are read locally:** a screenshot or image returned by an MCP tool is read by local OCR and Claude
   gets the masked text instead of the picture; without OCR the image is held back, with a one-line reason.
-
-Details: [docs-HOW-IT-WORKS.md](https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-HOW-IT-WORKS.md).
+- **PDFs, scans and photos become masked text:** Cloakroom pulls the text out on your machine and Claude never gets
+  the file or the picture.
+- **Claude can't turn Cloakroom off:** its settings change only from the dashboard or when you type `cr: pause` or
+  `cr: resume`.
 
 ## Dashboard
 
