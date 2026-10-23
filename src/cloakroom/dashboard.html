@@ -135,6 +135,7 @@ header.top { position: sticky; top: 0; z-index: 5; background: var(--bg); paddin
     <span class="spacer"></span>
     <span class="chip" id="statusChip"><span class="dot"></span><span id="statusText">connecting</span></span>
     <span class="dim mono" style="font-size:12px">updated <span id="updated">-</span></span>
+    <a class="iconbtn" href="/api/report?format=csv" download="cloakroom-report.csv" style="color:inherit;text-decoration:none" title="Counts per day and session, no values">Export</a>
     <button class="iconbtn" id="themeBtn" type="button" aria-label="Switch light or dark">Theme</button>
   </header>
 
@@ -202,7 +203,7 @@ header.top { position: sticky; top: 0; z-index: 5; background: var(--bg); paddin
   const sev = k => CRIT.includes(k) ? "crit" : PERS.includes(k) ? "pers" : "low";
   const UNLOCK = 10;
   const STATUS = { review: "To review", correct: "Correct", false_alarm: "False alarm", missed: "Missed something" };
-  const ACTION = { masked: "masked", withheld: "withheld", deny: "denied", block: "blocked", ask: "asked", restored: "restored", pass: "checked" };
+  const ACTION = { masked: "masked", withheld: "withheld", deny: "denied", block: "blocked", ask: "asked", restored: "restored", pass: "checked", held: "held", "allowed once": "allowed once", "fail-closed": "stopped (couldn't check)", "dry-run": "dry run", pruned: "old month deleted", "pause on": "checks paused", "pause off": "checks resumed", "allow armed": "allow armed", "sent anyway": "sent anyway", "session-start": "session start" };
 
   let data = null, lastRaw = "", range = "session", filter = "all", openId = null, panel = null;
   const revealed = {};  // event id -> values, only after Reveal; kept in memory, gone on reload
@@ -319,9 +320,9 @@ header.top { position: sticky; top: 0; z-index: 5; background: var(--bg); paddin
     renderBars($("#kinds"), Object.entries(kinds).sort((a, b) => b[1] - a[1]).slice(0, 8).map(([k, n]) => [k, n, sev(k)]));
     renderBars($("#hot"), Object.entries(hot).sort((a, b) => b[1][0] - a[1][0]).slice(0, 6).map(([k, v]) => [k, v[0], v[1]]));
     renderBars($("#tools"), Object.entries(tools).sort((a, b) => b[1] - a[1]).slice(0, 6).map(([k, n]) => [k, n, "low"]));
-    const ms = evs.filter(e => e.event !== "start").map(e => e.ms).sort((a, b) => a - b), q = p => ms.length ? ms[Math.min(ms.length - 1, Math.floor(p * ms.length))] : null;
+    const ms = evs.filter(e => e.event !== "start" && e.event !== "log").map(e => e.ms).sort((a, b) => a - b), q = p => ms.length ? ms[Math.min(ms.length - 1, Math.floor(p * ms.length))] : null;
     $("#p50").textContent = ms.length ? Math.round(q(.5)) + " ms" : "-"; $("#p95").textContent = ms.length ? Math.round(q(.95)) + " ms" : "-";
-    const pts = evs.filter(e => e.event !== "start").slice(0, 40).reverse().map(e => e.ms), W = 300, H = 54, max = Math.max(10, ...pts);
+    const pts = evs.filter(e => e.event !== "start" && e.event !== "log").slice(0, 40).reverse().map(e => e.ms), W = 300, H = 54, max = Math.max(10, ...pts);
     if (pts.length > 1) {
       const xy = pts.map((v, i) => [4 + i * (W - 8) / (pts.length - 1), H - 6 - v / max * (H - 12)]);
       const line = xy.map((p, i) => (i ? "L" : "M") + p[0].toFixed(1) + " " + p[1].toFixed(1)).join(" "), last = xy[xy.length - 1];

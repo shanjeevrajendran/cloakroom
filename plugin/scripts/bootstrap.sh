@@ -28,7 +28,7 @@
 # (e.g. "cloakroom @ file:///path/to.whl"), CLOAKROOM_INSTALLER picks one, CLOAKROOM_PLATFORM fakes `uname -s`-`uname -m`,
 # CLOAKROOM_SPEC_UPGRADE replaces what --upgrade installs.
 set -u
-PIN=0.5.2  # the release this plugin version installs (scripts/gen_hooks.py bakes the same into the hooks)
+PIN=0.6.0  # the release this plugin version installs (scripts/gen_hooks.py bakes the same into the hooks)
 UV_VERSION=0.13.1
 UV_SH_URL="https://astral.sh/uv/$UV_VERSION/install.sh"
 # SHA-256 of that script: the digest GitHub lists for uv-installer.sh in the uv 0.13.1 release
@@ -84,9 +84,9 @@ if ! mkdir "$LOCK" 2>/dev/null; then
   rm -rf "$LOCK" && mkdir "$LOCK" || exit 0
 fi
 trap 'rm -rf "$LOCK"' EXIT
-RULES="${CLOAKROOM_SPEC_RULES:-cloakroom==0.5.2}"  # pinned: each plugin version installs its own release
-FULL="${CLOAKROOM_SPEC_FULL:-cloakroom[model,torch,ocr]==0.5.2}"
-NO_OCR="${CLOAKROOM_SPEC_NO_OCR:-cloakroom[model,torch]==0.5.2}"  # stage 2 again without OCR if its wheels fail
+RULES="${CLOAKROOM_SPEC_RULES:-cloakroom==0.6.0}"  # pinned: each plugin version installs its own release
+FULL="${CLOAKROOM_SPEC_FULL:-cloakroom[model,torch,ocr]==0.6.0}"
+NO_OCR="${CLOAKROOM_SPEC_NO_OCR:-cloakroom[model,torch]==0.6.0}"  # stage 2 again without OCR if its wheels fail
 TESTSPEC="${CLOAKROOM_SPEC_RULES:-}${CLOAKROOM_SPEC_FULL:-}${CLOAKROOM_SPEC_NO_OCR:-}"
 # Intel Mac: newer cryptography releases ship no Intel Mac wheel and would need a Rust build, so only prebuilt wheels
 # are used there (the resolver then picks the last release that has one); the model's runtimes have none at all
@@ -139,16 +139,16 @@ install() {  # install SPEC STAGE(0 rules | 1 model and OCR | 2 model only)
     uv)   if [ -n "$TESTSPEC" ]; then
             if [ "$2" = 0 ]; then "$UV" tool install --python 3.12 $NB "$1"; else "$UV" tool install --python 3.12 $NB --force "$1"; fi
           else case "$2" in
-            1) "$UV" tool install --python 3.12 $NB --force "cloakroom[model,torch,ocr]==0.5.2" ;;
-            2) "$UV" tool install --python 3.12 $NB --force "cloakroom[model,torch]==0.5.2" ;;
-            *) "$UV" tool install --python 3.12 $NB "cloakroom==0.5.2" ;;
+            1) "$UV" tool install --python 3.12 $NB --force "cloakroom[model,torch,ocr]==0.6.0" ;;
+            2) "$UV" tool install --python 3.12 $NB --force "cloakroom[model,torch]==0.6.0" ;;
+            *) "$UV" tool install --python 3.12 $NB "cloakroom==0.6.0" ;;
           esac; fi ;;
     pipx) if [ -n "$TESTSPEC" ]; then
             if [ "$2" = 0 ]; then pipx install "$1"; else pipx install --force "$1"; fi
           else case "$2" in
-            1) pipx install --force "cloakroom[model,torch,ocr]==0.5.2" ;;
-            2) pipx install --force "cloakroom[model,torch]==0.5.2" ;;
-            *) pipx install "cloakroom==0.5.2" ;;
+            1) pipx install --force "cloakroom[model,torch,ocr]==0.6.0" ;;
+            2) pipx install --force "cloakroom[model,torch]==0.6.0" ;;
+            *) pipx install "cloakroom==0.6.0" ;;
           esac; fi ;;
     venv) { [ -x "$H/venv/bin/python" ] || "$(py310)" -m venv "$H/venv"; } && PIP_DISABLE_PIP_VERSION_CHECK=1 "$H/venv/bin/python" -m pip install -q -U "$1" ;;
     *)    return 1 ;;
@@ -268,7 +268,7 @@ EOF
       echo "$(date '+%F %T') upgrade check: cloakroom $VER ($KIND) left as is for plugin $PIN"; return 0 ;;
   esac
   [ "$EXT" = - ] && EXT=""
-  SPEC="${CLOAKROOM_SPEC_UPGRADE:-cloakroom${EXT:+[$EXT]}==0.5.2}"
+  SPEC="${CLOAKROOM_SPEC_UPGRADE:-cloakroom${EXT:+[$EXT]}==0.6.0}"
   P="$(canon "$PREFIX")"
   [ -n "$UV" ] && UVDIR="$(canon "$("$UV" tool dir 2>/dev/null)")"
   command -v pipx >/dev/null 2>&1 && PIPXDIR="$(canon "$(pipx environment --value PIPX_LOCAL_VENVS 2>/dev/null)")"
@@ -279,7 +279,7 @@ EOF
   if [ "$KIND" = broken ]; then
     if [ -z "$WHO" ]; then  # not ours to remove: the user reinstalls it, with steps at the next session start
       echo "failed:$PIN" >"$STAMP"
-      MSG="cloakroom: the installed program ($CR) does not run, and it wasn't installed by uv, pipx or the plugin, so it can't repair itself. To finish: 1. Run: uv tool install --force --python 3.12 \"cloakroom==0.5.2\" (or reinstall it the way you installed it). 2. Then restart Claude Code (/exit, then claude)."
+      MSG="cloakroom: the installed program ($CR) does not run, and it wasn't installed by uv, pipx or the plugin, so it can't repair itself. To finish: 1. Run: uv tool install --force --python 3.12 \"cloakroom==0.6.0\" (or reinstall it the way you installed it). 2. Then restart Claude Code (/exit, then claude)."
       printf '{"systemMessage": "%s"}\n' "$(json_text "$MSG")" >"$NOTICE"
       echo "$(date '+%F %T') upgrade check: $CR does not run and was not installed by uv, pipx or this script"; echo "$MSG"
       return 1

@@ -1,5 +1,33 @@
 # Changelog
 
+## 0.6.0 (2026-10-23)
+- Commit and push check: before `git commit` or `git push` runs from Claude, Cloakroom reads the staged change
+  (with `-a`, paths or a `git add` in the same command, the working tree and new files too) or the commits no remote
+  has yet. A key or password there (known values, your always-mask entries, encoded forms, the key rules; sample
+  keys and `allow_secret_paths` excepted) holds the command like the egress hold: one line names the file and the
+  placeholder or kind, and `cr: allow` lets it run once. Git errors, a change set over 4 MB or a check over two
+  seconds let the command run as before.
+- Interpreter one-liners that can open a connection are network commands: `python -c`, `node -e`/`-p`, `ruby -e`,
+  `perl -e`, `php -r` and `deno eval` when the code mentions a socket, http, urllib, requests, fetch, net or a URL,
+  and `bash -c`/`sh -c` around a network command. Real values are not restored into them and known secrets in them
+  are held.
+- Agent config files: a live token written into `.mcp.json`, `.claude/settings.json`, `.cursor/mcp.json` or
+  `claude_desktop_config.json` inside a repo (and not git-ignored) is denied, with a note to use an environment
+  reference such as `${GITHUB_TOKEN}`.
+- Fewer false denies from 0.5.2: `->`, `=>` and `>=` in a shell command are no longer read as a redirect, and an edit
+  that keeps a key the file already holds is allowed (only a newly added key is denied).
+- Tamper-evident log: each line of the event log carries the SHA-256 of the line before it. New lines for
+  `cr: pause` / `cr: resume`, `cr: allow`, `cr!`, fail-closed calls, dry runs and session start (version, mode,
+  hooks). One file per month, kept `"log_months"` months (default 12), with a line when a month is deleted. Files
+  from earlier versions are still read and never rewritten; the chain starts with the first new line.
+- `cloakroom report [--since DATE] [--format csv|json] [--verify]`: counts per day and session by data kind and
+  action, no values, no placeholder ids, paths reduced to extension and top folder, with a plain statement of what it
+  covers and what it doesn't. `--verify` checks the chain and prints the head hash. The dashboard has an Export
+  button for the same CSV.
+- `cloakroom clean-history [--dry-run]`: finds keys and passwords in old Claude Code transcripts and the prompt
+  history, counts them per project, and on your yes replaces them, keeping a backup you delete. The first run is
+  always a dry run; files changed in the last 10 minutes (an open session) are skipped.
+
 ## 0.5.2 (2026-10-23)
 - A key or password is no longer written into a file git would commit. When Write, Edit, MultiEdit, NotebookEdit or a
   local shell redirect (`>`, `>>`, `tee`) would put one into a file that is in a git repo and not git-ignored, the

@@ -13,7 +13,7 @@ def test_events_are_value_free(monkeypatch, capsys):
                       "tool_response": {"file": {"content": f"DB_PASSWORD={SECRET}"}}}, monkeypatch, capsys)
     run_hook("pre", {"session_id": "t", "tool_name": "Bash", "tool_input": {"command": f"echo {SECRET} | wc -c"}},
              monkeypatch, capsys)
-    raw = (config.HOME / "events.jsonl").read_text()
+    raw = "".join(p.read_text() for p in events.months())
     assert SECRET not in raw and "echo " not in raw
     newest, first = events.read()
     assert first["tool"] == "Read" and first["target"] == "/x/.env" and first["action"] == "masked"
@@ -31,13 +31,15 @@ def test_event_target_is_masked(monkeypatch, capsys):
     assert events.target("Bash", {"command": "/usr/bin/grep -rn secret ."}) == "grep"
 
 
-def test_events_rotate(monkeypatch):
+def test_events_monthly_files_and_legacy_still_read():
     from cloakroom import config, events
-    monkeypatch.setattr(events, "MAX_BYTES", 200)
-    ids = [events.record("post", {"tool_name": "Read"}, "pass", [], 1.0)["id"] for _ in range(5)]
-    assert (config.HOME / "events.1.jsonl").exists()  # two files at most, so the oldest lines go
-    got = [e["id"] for e in events.read()]
-    assert got == ids[::-1][:len(got)] and len(got) >= 2 and len(events.read(limit=1)) == 1
+    config.private_dir()
+    (config.HOME / "events.1.jsonl").write_text(json.dumps({"id": "old1", "ts": "2026-01-01T00:00:00"}) + "\n")
+    (config.HOME / "events.jsonl").write_text(json.dumps({"id": "old2", "ts": "2026-02-01T00:00:00"}) + "\n")
+    ids = [events.record("post", {"tool_name": "Read"}, "pass", [], 1.0)["id"] for _ in range(3)]
+    assert [e["id"] for e in events.read()] == ids[::-1] + ["old2", "old1"]
+    assert len(events.months()) == 1 and events.verify()["ok"] and events.verify()["lines"] == 3
+    assert json.loads((config.HOME / "events.jsonl").read_text())["id"] == "old2"  # never rewritten
 
 
 def test_labels_encrypted_roundtrip():

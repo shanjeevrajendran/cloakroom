@@ -6,6 +6,8 @@
   cloakroom serve                                run the local service (keeps the model loaded)
   cloakroom status                               mode, service health, vault sessions
   cloakroom dashboard                            open the local dashboard in your browser, signed in
+  cloakroom report [--since DATE] [--format csv|json] [--verify]   counts from the event log, no values
+  cloakroom clean-history [--dry-run]            find and replace keys in old Claude Code transcripts
 """
 from __future__ import annotations
 
@@ -50,7 +52,26 @@ def main(argv=None):
     sub.add_parser("status")
     d = sub.add_parser("dashboard", help="open the local dashboard in your browser (alerts, labels)")
     d.add_argument("--print", action="store_true", help="print the one-time link instead of opening a browser")
+    r = sub.add_parser("report", help="counts per day and session from the event log (no values); --verify checks it")
+    r.add_argument("--since", default="", help="first day, YYYY-MM-DD")
+    r.add_argument("--format", choices=["csv", "json"], default="csv")
+    r.add_argument("--verify", action="store_true", help="check the log's hash chain and print the head hash")
+    c = sub.add_parser("clean-history", help="find keys and passwords in old Claude Code transcripts and replace them")
+    c.add_argument("--dry-run", action="store_true", help="count only, change nothing (always so on the first run)")
+    c.add_argument("--yes", action="store_true", help="don't ask before replacing")
     a = p.parse_args(argv)
+
+    if a.cmd == "report":
+        from . import report
+        if a.verify:
+            print(report.verify_text())
+            from . import events
+            return 0 if events.verify()["ok"] else 1
+        sys.stdout.write(report.export(a.format, a.since))
+        return 0
+    if a.cmd == "clean-history":
+        from . import history
+        return history.run(dry_run=a.dry_run, yes=a.yes)
 
     if a.cmd == "hook":
         from . import hookentry

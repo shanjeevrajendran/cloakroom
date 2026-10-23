@@ -30,6 +30,7 @@ PRIME_MAX_BYTES = 512 * 1024
 _ACTION = [""]  # set when a prompt passes by your own choice (sent anyway, paused), for the event log
 _NOTE = [""]  # extra detail for the hook.log line (OCR pages and time), never values
 _FOUND: list[tuple[str, str]] = []  # (placeholder, kind) found during the current hook call, for the event log
+_EXTRA: dict = {}  # extra event-log fields for this hook call (session start: version, mode, hooks)
 TIP = ("Cloakroom can't rewrite a prompt, only block it. Put the detail in a file and ask Claude to read it: "
        "it will be masked on the way in and restored for local edits. Send it anyway: add cr! at the start. "
        "Pause prompt checks: type cr: pause 10m (tool output stays masked). Resume: cr: resume.")
@@ -72,6 +73,7 @@ def _summary(kinds: list[str]) -> str:
 def _dry(event: str, note: str) -> bool:
     if not os.environ.get("CLOAKROOM_DRY_RUN"):
         return False
+    _ACTION[0] = "dry-run"
     with open(config.private_dir() / "dry-run.log", "a") as f:
         f.write(f"{time.strftime('%Y-%m-%dT%H:%M:%S')} {event} {note}\n")
     return True
@@ -97,14 +99,17 @@ def _control(prompt: str) -> dict | None:
     """Your own controls, typed as a prompt. They are answered here and never reach Claude (a block is the only way
     a prompt hook can stop a prompt), so only you can pause: Claude never sees or sends these."""
     if _ALLOW_CMD.match(prompt):
+        _ACTION[0] = "allow armed"
         return {"decision": "block", "reason": _arm_held()}
     m = _PAUSE_CMD.match(prompt)
     if not m:
         return None
     if m.group(1).lower() == "resume":
+        _ACTION[0] = "pause off"
         _pause_file().unlink(missing_ok=True)
         return {"decision": "block", "reason": "Cloakroom: prompt checks are back on."}
     minutes = min(int(m.group(2) or 10), 240)
+    _ACTION[0] = "pause on"
     fd = os.open(_pause_file(), os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
     with os.fdopen(fd, "w") as f:
         json.dump({"until": time.time() + 60 * minutes}, f)
@@ -214,7 +219,6 @@ def _on_prompt(data: dict) -> dict | None:
     prompt = data.get("prompt", "")
     control = _control(prompt)
     if control:
-        _ACTION[0] = "control"
         return control
     if prompt.lstrip().lower().startswith("cr!"):  # you chose to send this one prompt as it is
         _ACTION[0] = "sent anyway"
@@ -394,7 +398,41 @@ def _touches_home(tool: str, args: dict) -> bool:
 COMMIT_KINDS = {"SECRET", "PASSWORD"}  # kinds kept out of files git would commit; personal data is not checked
 SECRET_FILES = (".env*", ".envrc", "*.pem", "*.key", "credentials*", "*.p12")  # where a key belongs
 _DRY_DENY = {"dry-run": "would deny"}  # _commit_check in dry run: log only, and skip the restore's own dry line
-_REDIRECT = re.compile(r"(?:\d?>>?|\|\s*tee(?:\s+-a)?)\s*([^\s|;&<>]+)")  # > f, >> f, 2> f, | tee [-a] f
+# > f, >> f, 2> f, | tee [-a] f; not the arrows in -> and =>, nor >=
+_REDIRECT = re.compile(r"(?:(?<![-=>\d])\d?>>?(?!=)|\|\s*tee(?:\s+-a)?)\s*([^\s|;&<>=][^\s|;&<>]*)")
+# MCP and agent config files a repo may commit: a token there belongs in an environment reference
+AGENT_CONFIGS = (".mcp.json", ".claude/settings.json", ".claude/settings.local.json", ".cursor/mcp.json",
+                 "claude_desktop_config.json")
+_CONFIG_SECRET = re.compile(r'(?i)"(?P<key>[^"\n]*(?:token|key|secret|passw|auth|credential|bearer)[^"\n]*)"\s*:\s*'
+                            r'"(?:bearer\s+|token\s+|basic\s+)?(?P<value>[^"\s]*)"')
+
+
+def _agent_config(path: str) -> bool:
+    p = path.replace("\\", "/")
+    return any(p == c or p.endswith("/" + c) for c in AGENT_CONFIGS)
+
+
+def _config_literals(text: str) -> list[str]:
+    """Literal tokens under key-, token- or secret-like names in a JSON config (not ${VAR} or env: references)."""
+    out = []
+    for m in _CONFIG_SECRET.finditer(text):
+        v = m.group("value")
+        if len(v) < shell.LITERAL_MIN or "$" in v or v.startswith(("/", "~", ".", "env:")) or PLACEHOLDER.search(v) \
+                or not re.fullmatch(r"[A-Za-z0-9_\-.=+/]+", v) or not (re.search(r"\d", v) and re.search(r"[A-Za-z]", v)):
+            continue
+        out.append(v)
+    return out
+
+
+def _existing(path: str) -> str:
+    """The file as it is now, so a key it already holds isn't counted as newly written. "" when absent or large."""
+    try:
+        if os.path.getsize(path) <= 4 * PRIME_MAX_BYTES:
+            with open(path, encoding="utf-8", errors="replace") as f:
+                return f.read()
+    except OSError:
+        pass
+    return ""
 
 
 def _written_text(tool: str, args: dict) -> str:
@@ -431,14 +469,15 @@ def _commit_check(tool: str, args: dict, original: dict, cwd: str, vault: Vault)
     allow_secret_paths go through. The reason names the placeholder or kind, never the value."""
     from fnmatch import fnmatch
     cfg = config.load()
+    text = ""
     if tool in SHELL_TOOLS:
         cmd = str(original.get("command", ""))
         targets = [t.strip("\"'") for t in _REDIRECT.findall(cmd)]
-        found = [(ph, ph.split("_")[1]) for ph in PLACEHOLDER.findall(cmd)
+        found = [(ph, ph.split("_")[1], vault.by_placeholder[ph]) for ph in PLACEHOLDER.findall(cmd)
                  if ph.split("_")[1] in COMMIT_KINDS and ph in vault.by_placeholder]
     else:
         targets = [str(args.get("file_path") or args.get("notebook_path") or "")]
-        found = [(ph, ph.split("_")[1]) for ph in PLACEHOLDER.findall(_written_text(tool, original))
+        found = [(ph, ph.split("_")[1], vault.by_placeholder[ph]) for ph in PLACEHOLDER.findall(_written_text(tool, original))
                  if ph.split("_")[1] in COMMIT_KINDS and ph in vault.by_placeholder]
         # the text as it will be written: rules, your always-mask entries and known secrets (plain or encoded)
         text = _written_text(tool, args)
@@ -447,16 +486,21 @@ def _commit_check(tool: str, args: dict, original: dict, cwd: str, vault: Vault)
         hits, _ = engine.detect(text, "rules", cfg["allow"], always, known=known)
         for f in hits:
             ph = vault.by_value.get(f.value(text), "")
-            if f.kind in COMMIT_KINDS and not (ph and any(ph == p for p, _ in found)):
-                found.append((ph, f.kind))
-    if not found:
-        return None
+            if f.kind in COMMIT_KINDS and not (ph and any(ph == p for p, _, _ in found)):
+                found.append((ph, f.kind, f.value(text)))
     for target in targets:
         if not target:
             continue
         path = os.path.normpath(os.path.join(cwd, os.path.expanduser(target)))
         rel = os.path.relpath(path, cwd)
         rel = path if rel.startswith("..") else rel
+        agent = _agent_config(path)
+        here = list(found)
+        if agent:  # a token under a key-like name, even one the rules don't know
+            here += [(vault.by_value.get(v, ""), "SECRET", v) for v in _config_literals(text)
+                     if not any(v == x or v in x or x in v for _, _, x in here)]
+        if not here:
+            continue
         name = os.path.basename(path)
         if any(fnmatch(name, p) for p in SECRET_FILES):
             continue
@@ -464,13 +508,216 @@ def _commit_check(tool: str, args: dict, original: dict, cwd: str, vault: Vault)
             continue
         if not _git_would_commit(path):
             continue
-        _FOUND.extend((ph, k) for ph, k in found)
-        what = ", ".join(dict.fromkeys(ph or k for ph, k in found))
-        if _dry("pre", f"{tool}: would deny a commit-bound write ({_summary([k for _, k in found])})"):
+        old = _existing(path)  # a key the file already holds is kept, not added: only new ones deny
+        here = [x for x in here if not (old and x[2] and x[2] in old)]
+        if not here:
+            continue
+        _FOUND.extend((ph, k) for ph, k, _ in here)
+        what = ", ".join(dict.fromkeys(ph or k for ph, k, _ in here))
+        if _dry("pre", f"{tool}: would deny a commit-bound write ({_summary([k for _, k, _ in here])})"):
             return _DRY_DENY
+        if agent:
+            return _deny(f"Cloakroom: this would write {what} into {rel}, an agent config file git would commit. Use "
+                         "an environment reference instead (for example \"${GITHUB_TOKEN}\"; Cursor: "
+                         "\"${env:GITHUB_TOKEN}\") and set the value in your shell or a git-ignored .env.")
         return _deny(f"Cloakroom: this would write {what} into {rel}, which git would commit. Put the value in "
                      ".env (git-ignored) and read it from the environment.")
     return None
+
+
+GIT_SECONDS = 2.0  # the commit and push check gives up (lets the command run) after this long
+GIT_MAX_TEXT = 4 * 1024 * 1024  # added lines scanned at most; a bigger change set fails open
+_COMMIT_VALUE_OPTS = {"-m", "--message", "-F", "--file", "-c", "-C", "--reuse-message", "--reedit-message",
+                      "--author", "--date", "-t", "--template", "--fixup", "--squash", "--cleanup", "--trailer"}
+_PUSH_VALUE_OPTS = {"-o", "--push-option", "--repo", "--receive-pack", "--exec", "--signed"}
+
+
+def _git_steps(command: str, cwd: str, powershell: bool) -> list[tuple[str, str, list[str], bool]]:
+    """(commit|push, repo folder, its arguments, a git add ran before it) for each git commit or push in the
+    command, following cd and git -C."""
+    import shlex
+    out, here, added = [], cwd, False
+    for seg in (shell._PS_SEGMENT_SPLIT if powershell else shell._SEGMENT_SPLIT).split(command):
+        try:
+            words = shlex.split(seg, posix=not powershell)
+        except ValueError:
+            words = seg.split()
+        words = [w.strip("\"'") for w in words]
+        while words and (re.fullmatch(r"\w+=.*", words[0]) or words[0] in ("sudo", "env", "command", "exec")):
+            words = words[1:]
+        if not words:
+            continue
+        if words[0].lower() in ("cd", "pushd", "set-location", "sl") and len(words) > 1:
+            here = os.path.join(here, os.path.expanduser(words[-1]))
+            continue
+        if re.split(r"[\\/]", words[0])[-1].lower() not in ("git", "git.exe"):
+            continue
+        i, repo = 1, here
+        while i < len(words) and words[i].startswith("-"):
+            if words[i] == "-C" and i + 1 < len(words):
+                repo = os.path.join(repo, os.path.expanduser(words[i + 1]))
+                i += 1
+            elif words[i] == "-c":
+                i += 1
+            i += 1
+        sub = words[i] if i < len(words) else ""
+        if sub == "add":
+            added = True
+        elif sub in ("commit", "push"):
+            out.append((sub, repo, words[i + 1:], added))
+    return out
+
+
+def _commit_diffs(args: list[str], added: bool) -> list[list[str]]:
+    """git commands whose output is what a commit with these arguments would record (a superset is fine)."""
+    widen, i = added, 0
+    while i < len(args):
+        a = args[i]
+        if a in _COMMIT_VALUE_OPTS:
+            i += 1
+        elif a in ("-a", "--all", "--include", "-i", "--only", "-o"):
+            widen = True
+        elif a.startswith("-") and not a.startswith("--"):
+            for j, c in enumerate(a[1:]):
+                if c == "a":
+                    widen = True
+                if c in "mFcCt":  # the rest of the cluster (or the next word) is that option's value
+                    if j == len(a) - 2:
+                        i += 1
+                    break
+        elif a == "--":
+            widen = widen or i + 1 < len(args)
+            break
+        elif not a.startswith("-"):
+            widen = True  # git commit <paths>
+        i += 1
+    cmds = [["diff", "--cached"]]
+    if widen:
+        cmds.append(["diff", "HEAD"])
+    if added:
+        cmds.append(["untracked"])
+    return cmds
+
+
+def _push_logs(args: list[str]) -> list[list[str]]:
+    srcs, positional, everything, i = [], [], False, 0
+    while i < len(args):
+        a = args[i]
+        if a in _PUSH_VALUE_OPTS:
+            i += 1
+        elif a in ("--all", "--mirror", "--branches"):
+            everything = True
+        elif not a.startswith("-"):
+            positional.append(a)
+        i += 1
+    for ref in positional[1:]:
+        src = ref.lstrip("+").split(":")[0]
+        if src:
+            srcs.append(src)
+    srcs = ["--branches"] if everything else srcs or ["HEAD"]
+    return [["log", "-p", "--format=", *srcs, "--not", "--remotes"]]
+
+
+def _added_lines(diff: str) -> dict[str, list[str]]:
+    """{file: added lines} from git diff or git log -p output."""
+    out: dict[str, list[str]] = {}
+    current, header = "", False
+    for line in diff.splitlines():
+        if line.startswith("diff --git "):
+            header, current = True, ""
+            continue
+        if header:
+            if line.startswith("+++ "):
+                p = line[4:].strip().strip('"')
+                current = p[2:] if p.startswith("b/") else ("" if p == "/dev/null" else p)
+            elif line.startswith("@@"):
+                header = False
+            continue
+        if current and line.startswith("+"):
+            out.setdefault(current, []).append(line[1:])
+    return out
+
+
+def _git_hold(command: str, cwd: str, vault: Vault, powershell: bool) -> dict | None:
+    """Hold a git commit or push whose changes carry a known secret or a key the rules recognise, like the egress
+    hold (cr: allow lets it run once). Names the file and placeholder or kind, never the value. Fails open on any
+    git error, on a change set too large to scan, or after GIT_SECONDS."""
+    import subprocess
+    from fnmatch import fnmatch
+    steps = _git_steps(command, cwd, powershell)
+    if not steps:
+        return None
+    deadline = time.monotonic() + GIT_SECONDS
+    cfg = config.load()
+    known = {v: k for v, k in engine.known_values(vault, cfg["always"]).items() if k in COMMIT_KINDS}
+    always = [(e, k) for e, k in cfg["always"] if k in COMMIT_KINDS]
+    globs = cfg.get("allow_secret_paths") or []
+
+    def git(repo, *argv) -> str:
+        left = deadline - time.monotonic()
+        if left <= 0:
+            raise TimeoutError
+        r = subprocess.run(["git", "-C", repo, "-c", "core.quotePath=false", *argv], capture_output=True,
+                           timeout=left)
+        if r.returncode != 0:
+            raise RuntimeError("git")
+        return r.stdout.decode("utf-8", "replace")
+
+    found, verb = [], ""
+    try:
+        for sub, repo, args, added in steps:
+            files: dict[str, list[str]] = {}
+            for argv in (_commit_diffs(args, added) if sub == "commit" else _push_logs(args)):
+                if argv == ["untracked"]:
+                    root = git(repo, "rev-parse", "--show-toplevel").strip()
+                    for name in git(repo, "ls-files", "--full-name", "--others", "--exclude-standard", "-z", ":/").split("\0"):
+                        path = os.path.join(root, name)
+                        if name and os.path.isfile(path) and os.path.getsize(path) <= 4 * PRIME_MAX_BYTES:
+                            with open(path, encoding="utf-8", errors="replace") as f:
+                                files.setdefault(name, []).extend(f.read().splitlines())
+                    continue
+                if argv[:2] == ["diff", "HEAD"]:
+                    try:
+                        out = git(repo, *argv, "--no-color", "--no-ext-diff", "-U0")
+                    except RuntimeError:  # no commit yet: the staged diff covers it
+                        continue
+                else:
+                    out = git(repo, *argv, "--no-color", "--no-ext-diff", "-U0")
+                for name, lines in _added_lines(out).items():
+                    files.setdefault(name, []).extend(lines)
+            if sum(len(x) for lines in files.values() for x in lines) > GIT_MAX_TEXT:
+                return None
+            for name, lines in files.items():
+                if time.monotonic() > deadline:
+                    return None
+                if any(fnmatch(name, g) or fnmatch(os.path.basename(name), g) for g in globs):
+                    continue
+                text = "\n".join(lines)
+                hits, _ = engine.detect(text, "rules", cfg["allow"], always, known=known)
+                for f in hits:
+                    if f.kind in COMMIT_KINDS:
+                        found.append((name, vault.by_value.get(f.value(text), ""), f.kind))
+            if found:
+                verb = sub
+                break
+    except Exception:  # git missing or failing, slow, not a repo: the command runs as before
+        return None
+    if not found:
+        return None
+    _FOUND.extend((ph, k) for _, ph, k in found)
+    if _allowed_once(command):
+        _ACTION[0] = "allowed once"
+        return None
+    pairs = list(dict.fromkeys(f"{ph or 'a ' + k} in {name}" for name, ph, k in found))
+    what = "; ".join(pairs[:3]) + (f" (and {len(pairs) - 3} more)" if len(pairs) > 3 else "")
+    if _dry("pre", f"git {verb}: would hold ({_summary([k for _, _, k in found])})"):
+        return None
+    _write_held({"mac": _command_mac(command), "until": time.time() + 60 * HOLD_MINUTES, "armed": False})
+    _ACTION[0] = "held"
+    return _deny(f"Cloakroom held this git {verb}: {what}. A pushed secret can't be called back. Move the value to "
+                 f".env (git-ignored) and unstage it, or, to {verb} anyway, type cr: allow, then ask Claude to run the "
+                 f"same command again: it passes once, within {HOLD_MINUTES} min. Claude: don't change or re-encode the "
+                 "value to get past this; ask the user.")
 
 
 def on_pre(data: dict) -> dict | None:
@@ -485,6 +732,9 @@ def on_pre(data: dict) -> dict | None:
 
     if tool in SHELL_TOOLS:
         held = _egress_hold(args.get("command", ""), session, vault, tool == "PowerShell")
+        if held:
+            return held
+        held = _git_hold(args.get("command", ""), cwd, vault, tool == "PowerShell")
         if held:
             return held
         _prime(args.get("command", ""), cwd, session, powershell=tool == "PowerShell")
@@ -583,8 +833,11 @@ def _install_note_once(session: str) -> str | None:
 
 
 def on_start(data: dict) -> dict | None:
-    """Session start: warm the service so the first tool call isn't blocked while the model loads."""
+    """Session start: a log line (version, mode, hooks installed), then warm the service so the first tool call
+    isn't blocked while the model loads."""
     cfg = config.load()
+    _ACTION[0] = "session-start"
+    _EXTRA.update(version=_version(), mode=cfg["mode"], hooks=_hooks_installed())
     note = _install_note(cfg)
     if note:
         return {"systemMessage": note}
@@ -599,10 +852,26 @@ def on_start(data: dict) -> dict | None:
     return None
 
 
+def _version() -> str:
+    from . import __version__
+    return __version__
+
+
+def _hooks_installed() -> list[str]:
+    """The hook events the plugin registers (its hooks.json), [] when not run from the plugin."""
+    try:
+        root = os.environ.get("CLAUDE_PLUGIN_ROOT", "")
+        with open(os.path.join(root, "hooks", "hooks.json"), encoding="utf-8") as f:
+            return sorted(json.load(f)["hooks"])
+    except Exception:
+        return []
+
+
 HANDLERS = {"prompt": on_prompt, "post": on_post, "pre": on_pre, "start": on_start}
 
 
 def fail_closed(event: str, why: str, data=None) -> dict:
+    _ACTION[0] = "fail-closed"
     return closed(event, why, data)
 
 
@@ -623,11 +892,13 @@ def _prompt_rules_only(data: dict, why: str) -> dict:
 
 def handle(event: str, data: dict) -> dict | None:
     _FOUND.clear()
+    _EXTRA.clear()
     _ACTION[0] = _NOTE[0] = ""
     t0 = time.perf_counter()
     try:
         out = HANDLERS[event](data)
     except (client.Unavailable, engine.ModelUnavailable) as e:
+        _ACTION[0] = ""
         out = _prompt_rules_only(data, str(e)) if event == "prompt" else fail_closed(event, str(e), data)
     except Exception as e:
         out = fail_closed(event, type(e).__name__, data)
@@ -667,6 +938,6 @@ def _log(event: str, data, out, ms: float = 0.0):
                 target = client.mask(target, data.get("session_id", "default"))["text"]
             except Exception:
                 target = "[path not checked]"
-        events.record(event, data, decision, _FOUND, ms, target)
+        events.record(event, data, decision, _FOUND, ms, target, dict(_EXTRA))
     except Exception:
         pass

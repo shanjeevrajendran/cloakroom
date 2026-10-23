@@ -290,7 +290,7 @@ def test_pause_and_send_anyway(monkeypatch, capsys):
     assert hook.paused_minutes() == 0
     assert run_hook("prompt", {"session_id": "t", "prompt": "mail sarah.klein@quillfeather.net"}, monkeypatch, capsys)["decision"] == "block"
     from cloakroom import events
-    assert [e["action"] for e in events.read()[1:4]] == ["control", "paused", "control"]
+    assert [e["action"] for e in events.read()[1:4]] == ["pause off", "paused", "pause on"]
 
 
 def test_claude_cannot_change_cloakroom_files(monkeypatch, capsys):

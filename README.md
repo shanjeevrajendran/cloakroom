@@ -134,6 +134,20 @@ Masking is the core. These come with it, on by default:
 - **No key lands in a file git would commit:** when Claude writes a file with Write or Edit, a key or password that
   would end up in a tracked file is refused, and Claude is told to use `.env` instead. Ignored files and `.env`
   work as before.
+- **Commits and pushes are checked:** before Claude runs `git commit` or `git push`, Cloakroom reads what would be
+  committed or pushed. A key or password there holds the command, with the file and placeholder named; `cr: allow`
+  lets it run once. If git is slow or fails, the command runs as before.
+- **Agent config files keep references, not tokens:** a live token written into `.mcp.json`,
+  `.claude/settings.json`, `.cursor/mcp.json` or a copy of `claude_desktop_config.json` in a repo is refused, and
+  Claude is told to use an environment reference such as `${GITHUB_TOKEN}`.
+- **Network one-liners count as network:** `python -c`, `node -e`, `ruby -e`, `perl -e`, `php -r`, `deno eval` and
+  `bash -c` that can open a connection are treated like curl: real values stay out of them.
+- **Old transcripts can be cleaned:** `cloakroom clean-history` finds keys and passwords already sitting in old
+  Claude Code transcripts and your prompt history, and replaces them on your yes, with a backup you delete. The
+  first run only counts; files in use are skipped.
+- **A log you can check and export:** each line of the activity log carries the hash of the line before it, so an
+  edited or removed line shows up in `cloakroom report --verify`. `cloakroom report` (or Export on the dashboard)
+  gives counts per day and session, without values.
 - **MCP images are read locally:** a screenshot or image returned by an MCP tool is read by local OCR and Claude
   gets the masked text instead of the picture; without OCR the image is held back, with a one-line reason.
 - **PDFs, scans and photos become masked text:** Cloakroom pulls the text out on your machine and Claude never gets
@@ -287,7 +301,15 @@ rest are mostly names and addresses Gretel leaves unlabelled.
   every date (by default only birth dates and dates in someone's record), `"mask_own_username": true` to mask your
   own login name in paths too, `"allow_images": true` to let pictures through unchecked (with a warning),
   `"allow_secret_paths": ["tests/fixtures/*"]` (globs, relative to the project folder) for files where sample keys
-  may be written even though git would commit them.
+  may be written (or committed) even though git would commit them, `"log_months"` for how many months of the
+  activity log to keep (default 12).
+- **Report:** `cloakroom report [--since 2026-10-01] [--format csv|json]` prints counts per day and session by data
+  kind and action (masked, withheld, held, allowed once, denied), with paths reduced to their extension and top
+  folder. It starts with what it covers and what it can't: a miss leaves no line, and other agents, machines
+  without Cloakroom and prompts sent with `cr!` are not in it. `--verify` checks the log's hash chain and prints the
+  head hash: keep that somewhere else, since anyone who rewrites every later line can rebuild the chain.
+- **Commit and push check limits:** it reads the staged change (or, for `git push`, the commits no remote has yet)
+  within two seconds; a larger or slower one runs unchecked. Repos that commit sample keys need `allow_secret_paths`.
 
 Exceptions, backends, CI and troubleshooting: [the handbook](https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-HANDBOOK.md).
 

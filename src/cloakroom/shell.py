@@ -39,6 +39,46 @@ PS_LOCAL = {"get-content", "gc", "cat", "type", "select-string", "sls", "get-chi
 _PS_SEGMENT_SPLIT = re.compile(r"\|\||&&|[|;\n]|\$\(")
 
 
+# Interpreter one-liners (python -c, node -e...): network when the code mentions a socket, http, a URL... Shells
+# (bash -c "...") are network when the command they wrap is.
+_ONE_LINER = re.compile(r"(?i)(?<![\w.-])(?:[\w.~-]*[\\/])?(?P<prog>python[\d.]*|py|node|nodejs|ruby|perl|php|deno|"
+                        r"bash|sh|zsh|dash|ksh)(?:\.exe)?(?P<opts>(?:\s+-[\w-]+)*?)\s+(?P<flag>-[a-z]*c|-e|-E|--eval|"
+                        r"-p|--print|-r|eval)(?=\s)")
+_ONE_LINER_FLAGS = {"python": ("-c",), "py": ("-c",), "node": ("-e", "--eval", "-p", "--print"),
+                    "nodejs": ("-e", "--eval", "-p", "--print"), "ruby": ("-e",), "perl": ("-e", "-E"),
+                    "php": ("-r",), "deno": ("eval",)}
+_SHELLS = {"bash", "sh", "zsh", "dash", "ksh"}
+_NETWORK_CODE = re.compile(r"(?i)sock|http|urllib|request|fetch|\bnet\b|://|curl|smtp|ftp")
+
+
+def _code_arg(s: str, i: int) -> str:
+    """The argument starting at s[i]: a quoted string's inside, else the next word."""
+    while i < len(s) and s[i].isspace():
+        i += 1
+    if i < len(s) and s[i] in "'\"":
+        q, j = s[i], i + 1
+        while j < len(s) and s[j] != q:
+            j += 2 if q == '"' and s[j] == "\\" else 1
+        return s[i + 1:j]
+    m = re.match(r"\S+", s[i:])
+    return m.group() if m else ""
+
+
+def _one_liner(command: str, powershell: bool = False) -> str:
+    """'python -c', 'bash -c'... when an interpreter one-liner in the command can open a connection, else ""."""
+    for m in _ONE_LINER.finditer(command):
+        prog, flag = m.group("prog").lower(), m.group("flag")
+        prog = "python" if prog.startswith("python") else prog
+        code = _code_arg(command, m.end())
+        if prog in _SHELLS:
+            if flag.startswith("-") and not flag.startswith("--") and flag.endswith("c") and \
+                    _scan(code, powershell)[0] == "network":
+                return f"{prog} -c"
+        elif flag in _ONE_LINER_FLAGS.get(prog, ()) and _NETWORK_CODE.search(code):
+            return f"{prog} {flag}"
+    return ""
+
+
 def _first_words(segment: str, powershell: bool = False) -> tuple[str, str]:
     try:
         words = segment.split() if powershell else shlex.split(segment, comments=True)
@@ -62,6 +102,9 @@ def _scan(command: str, powershell: bool = False) -> tuple[str, str]:
         return "network", "/dev/tcp"
     if powershell and PS_NETWORK_CODE.search(command):
         return "network", "a .NET network call"
+    via = _one_liner(command, powershell)
+    if via:
+        return "network", via
     network, local = (PS_NETWORK, PS_LOCAL | LOCAL) if powershell else (NETWORK, LOCAL)
     verdict = "local"
     for seg in (_PS_SEGMENT_SPLIT if powershell else _SEGMENT_SPLIT).split(command):

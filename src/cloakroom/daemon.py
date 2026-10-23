@@ -5,7 +5,7 @@ POST /mask     {"text", "session", "mode"?, "ocr"?} -> {"text", "mode", "masked"
 POST /restore  {"text", "session"}          -> {"text", "unknown": [placeholders not in the vault]}
 GET  /health                                 -> {"ok": true, "service": "cloakroom", "model": bool}
 POST /dashboard/code                         -> {"code"}: one-time sign-in code for `cloakroom dashboard`
-GET  /dashboard, /api/summary, /api/values?id=, POST /api/label, /api/rule, /api/learning: the local dashboard (dashboard.py), cookie-gated
+GET  /dashboard, /api/summary, /api/values?id=, /api/report?format=csv|json, POST /api/label, /api/rule, /api/learning: the local dashboard (dashboard.py), cookie-gated
 """
 from __future__ import annotations
 
@@ -71,6 +71,12 @@ class Handler(BaseHTTPRequestHandler):
                 return self._send(403, {"error": "forbidden"})
             if url.path == "/api/summary":
                 return self._send(200, dashboard.summary())
+            if url.path == "/api/report":
+                from . import report
+                fmt = parse_qs(url.query).get("format", ["csv"])[0]
+                fmt = fmt if fmt in ("csv", "json") else "csv"
+                return self._send(200, report.export(fmt).encode(), "text/csv; charset=utf-8" if fmt == "csv" else
+                                  "application/json", [("Content-Disposition", f'attachment; filename="cloakroom-report.{fmt}"')])
             if url.path == "/api/values":
                 return self._send(200, {"values": dashboard.values(parse_qs(url.query).get("id", [""])[0])})
         self._send(404, {"error": "not found"})
