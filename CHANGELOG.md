@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.6.6 (2026-10-24)
 - Disguised copies of known values: a secret Cloakroom has seen is also caught as an MD5, SHA-1 or SHA-256 hash, as
   hex (plain, `0x`, spaced, colon or `\x` escapes, also hex of `user:secret`), and reversed (keys and passwords of
   12+ characters). A known email is caught as its hash; a known card or account number's last 4 digits after
