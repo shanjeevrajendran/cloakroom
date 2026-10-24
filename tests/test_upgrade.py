@@ -253,6 +253,16 @@ def test_upgrade_on_the_route_it_came_from_with_its_extras(installed, route, wan
 
 
 @needs_bash
+@pytest.mark.parametrize("platform,mac", [("Linux-x86_64", False), ("Darwin-arm64", True)])
+def test_keychain_line_only_on_a_mac_and_never_sets_the_exit_status(installed, platform, mac):
+    """The Darwin-only Keychain line is the last one of a successful upgrade: on Linux it must not end it with 1."""
+    make, run, h, _, _ = installed
+    make("uv")
+    assert run({"CLOAKROOM_PLATFORM": platform}).returncode == 0, boot_log(h)
+    assert ("click Always Allow" in boot_log(h).replace("Click", "click")) == mac
+
+
+@needs_bash
 @pytest.mark.parametrize("answer", ["newer 0.9.0 -", "dev 0.4.2 model", "same 0.5.0 -"])
 def test_newer_dev_and_current_installs_are_left_alone(installed, answer):
     make, run, h, log, _ = installed
