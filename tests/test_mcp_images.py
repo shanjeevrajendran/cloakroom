@@ -164,10 +164,22 @@ def full_mode_in_process(monkeypatch):
                 for m in __import__("re").finditer(r"Henrik\s+Dahl", text)]
     monkeypatch.setattr(engine, "model_findings", model_findings)
 
-    def mask(text, session, ocr=False):
-        r = engine.mask(text, Vault(config.vault_path(session)), "full", ocr=ocr)
+    def mask(text, session, ocr=False, roots=None, read=""):  # client.mask's signature, in process
+        from cloakroom import filelog
+        files = filelog.known(roots, read) if roots else None
+        r = engine.mask(text, Vault(config.vault_path(session)), "full", ocr=ocr, files=files)
         return {"text": r.text, "mode": "full", "masked": r.masked, "skipped": r.skipped}
     monkeypatch.setattr(client, "mask", mask)
+
+
+def test_in_process_mask_keeps_client_signature(monkeypatch):
+    """The stand-in above must take what the hooks pass to client.mask (it once lagged roots/read, a TypeError the
+    OCR tests only showed with the ocr extra installed). Runs without OCR."""
+    import inspect
+    from cloakroom import client
+    real = list(inspect.signature(client.mask).parameters)
+    full_mode_in_process(monkeypatch)
+    assert list(inspect.signature(client.mask).parameters) == real
 
 
 @needs_ocr

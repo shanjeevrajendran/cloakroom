@@ -166,3 +166,25 @@ def test_windows_path_forms_fold_to_one(given):
 def test_unc_path_form():
     from cloakroom import filelog
     assert filelog.norm(r"\\?\UNC\server\share\a.md", windows=True) == "//server/share/a.md"
+
+
+def test_full_mode_through_the_service(tmp_path, monkeypatch, capsys):
+    """The hooks' real client -> service path in full mode (no OCR, no model weights): the roots reach the service
+    and the file log masks a name the (fake, empty) model misses, in a new session."""
+    import threading
+    from http.server import ThreadingHTTPServer
+    from cloakroom import daemon, engine
+    monkeypatch.setattr(engine, "model_findings", lambda text: [])
+    srv = ThreadingHTTPServer(("127.0.0.1", 0), daemon.Handler)
+    srv.mode = "full"
+    threading.Thread(target=srv.serve_forever, daemon=True).start()
+    try:
+        monkeypatch.setenv("CLOAKROOM_MODE", "full")
+        monkeypatch.setenv("CLOAKROOM_PORT", str(srv.server_address[1]))
+        ph = _vault("a").placeholder(NAME, "PERSON")
+        path = tmp_path / "owners.md"
+        assert _write_via_hooks(path, f"{ph}\n", monkeypatch, capsys) == f"{NAME}\n"
+        out = _read(path, monkeypatch, capsys, "b")
+        assert NAME not in out and "PII_PERSON_1_" in out
+    finally:
+        srv.shutdown()
