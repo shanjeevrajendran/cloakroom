@@ -33,9 +33,9 @@ STORE = "macOS Keychain" if sys.platform == "darwin" else "system key store"
 PREWARN = ("macOS may ask whether 'python' can use the 'cloakroom' item in your Keychain. Click Always Allow: it "
            "only lets Cloakroom read its own key. If you deny, your own rules turn off; built-in checks keep running.")
 RETRY = "cloakroom doctor --retry-key"
-DENIED = (f"Cloakroom can't read its key from the {STORE} (access was denied, or the {STORE} is locked, for example "
+DENIED = (f"Cloakroom can't read its key from the {STORE} (access was denied, or it is locked, for example "
           "over SSH), so your own rules are off. Built-in checks still run. To turn them back on: unlock it or click "
-          f"Always Allow, then run: {RETRY}")
+          f"Always Allow, then run: {RETRY} (or set CLOAKROOM_VAULT_KEY)")
 
 
 class KeyUnavailable(RuntimeError):
@@ -106,8 +106,7 @@ def key() -> bytes:
             return _KEY
         except Exception as e:
             _write_marker({"at": time.time(), "notified": False})
-            raise KeyUnavailable(f"can't read the vault key from the OS secure store ({type(e).__name__}); "
-                                 "unlock it (macOS over SSH: security unlock-keychain) or set CLOAKROOM_VAULT_KEY") from e
+            raise KeyUnavailable(DENIED) from e
     path = config.private_dir() / "vault.key"
     if not path.exists():
         fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)

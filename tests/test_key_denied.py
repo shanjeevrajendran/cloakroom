@@ -57,3 +57,16 @@ def test_allowed_first_time_one_call_no_message(store):
     store.deny = False
     crypto.key()
     assert store.gets == 1 and crypto.denial_notice() is None and not crypto.denied()
+
+
+def test_doctor_retry_key_clears_and_retries(store, capsys):
+    from cloakroom import cli
+    with pytest.raises(crypto.KeyUnavailable):
+        crypto.key()
+    assert crypto.denied() and store.gets == 1
+    cli.main(["doctor", "--retry-key"])  # still denied: asked once more, marker back, the command is named
+    out = capsys.readouterr().out
+    assert store.gets == 2 and crypto.denied() and "cloakroom doctor --retry-key" in out
+    store.deny, store.value = False, None  # the user clicked Always Allow
+    cli.main(["doctor", "--retry-key"])
+    assert store.gets == 3 and not crypto.denied() and "vault key: OS secure store" in capsys.readouterr().out
