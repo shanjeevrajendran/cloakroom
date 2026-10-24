@@ -443,3 +443,22 @@ The README keeps one or two sentences under each results table; these details mo
   is a date of birth in a dating-profile export, missed since plain dates stopped being masked to cut false alarms.
 - CredData: test vectors look like `Key = 085a74…`. A missed secret reaches the model. redact-hook's default masks
   the fewest look-alikes but also catches the fewest secrets.
+
+## Cloakroom 0.6.2 false-alarm levers (2026-10-24)
+
+Six detection filters, one measured at a time on the CredData tune half (`bench/false-alarms-0.6.2/levers.md`):
+package versions and code constants, UI strings under label or message keys, variable references under password
+keys, AWS documentation ids, XAML resource names, ChangeLog file entries. Run once each on the committed code, full mode:
+
+| Set | 0.6.1 | 0.6.2 |
+|---|---|---|
+| All CredData: caught / missed / false alarms | 9,353 / 5,118 / 3,903 | 9,353 / 5,118 / 3,457 |
+| All CredData: P / R / F1 | 0.71 / 0.65 / 0.68 | 0.73 / 0.65 / 0.69 |
+| Without 2ba83c6a: caught / missed / false alarms | 7,377 / 2,729 / 2,982 | 7,377 / 2,729 / 2,536 |
+| Without 2ba83c6a: P / R / F1 | 0.71 / 0.73 / 0.72 | 0.74 / 0.73 / 0.74 |
+| Holdouts v2-v6 leaked (critical / high / low, of 334 / 1005 / 221) and false alarms (of 200) | unchanged | unchanged, 20 false alarms |
+| v7 leaked (of 77) / false alarms (of 15) | 0 / 2 | 0 / 2 |
+| Gretel, ai4privacy, TAB | 0.520 / 0.846, 0.911 / 0.914, 0.813 / 0.951 | the same |
+
+The README's safe-sample counts (23 of 200, 3 of 15) came from an earlier run; the 0.6.1 rerun before these levers
+already gives 20 and 2, the same as 0.6.2, and the README now shows those. Other tools' rows are unchanged.

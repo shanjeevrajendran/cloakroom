@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased
+- Fewer false alarms: Cloakroom now leaves alone harmless text it used to mask in code and config. That covers package
+  versions (`minipass-flush: ^1.0.5`), short numbers on code constants whose name has no secret word in it
+  (`SYS_FUTEX_WAIT = 5323`), GPG key ids, translation and UI strings under message or label keys
+  (`"incorrectPassword": "Wrong user name or password"`), variable names under a password key
+  (`password: req.body.password`), AWS's documentation account and key ids, XAML resource names and ChangeLog file
+  entries. On the CredData public-code set false alarms drop from 3,903 to 3,457 with the same 9,353 real secrets
+  caught; holdout leaks, the 200 safe samples (20 false alarms) and the public datasets are unchanged.
+  Levers and numbers: `bench/false-alarms-0.6.2/levers.md`.
+- `cloakroom report` keeps the folder class when your home folder's name is masked.
+
 ## 0.6.1 (2026-10-23)
 - Signed placeholders: each placeholder now ends in a short tag only your machine can make (`PII_EMAIL_1_k7q2ab`).
   Cloakroom restores a real value only for a placeholder it issued in this session. A guessed number, a wrong tag

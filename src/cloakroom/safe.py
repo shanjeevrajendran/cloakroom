@@ -9,6 +9,23 @@ import ipaddress
 import re
 
 EXAMPLE_MARKERS = re.compile(r"(?i)example|dummy|placeholder|changeme|your[-_ ]|xxxx|<[^>]+>|\{\{|\$\{|\*\*\*\*|^test[-_]|^fake")
+# AWS's documentation account ids and sample key ids (KMS, ACM, IAM examples), and a UUID that is one hex digit
+# repeated per group (11111111-1111-1111-1111-111111111111). Whole values only: a real key id inside an ARN with the
+# documentation account (arn:aws:kms:...:111122223333:key/4e32...) stays masked.
+AWS_DOC_ID = re.compile(r"111122223333|444455556666|123456789012|1234abcd-12ab-34cd-56ef-1234567890ab|"
+                        r"0987dcba-09fe-87dc-65ba-ab0987654321|12345678-1234-1234-1234-123456789012|"
+                        r"(?i:([0-9a-f])\1{7}-\1{4}-\1{4}-\1{4}-\1{12})")
+AWS_ARN = re.compile(r"arn:aws[\w-]*:[\w-]*:[\w-]*:(\d{12})?:(?:[\w-]+[/:])*([^/:\s]+)")
+
+
+def _aws_doc_example(v: str) -> bool:
+    m = AWS_ARN.fullmatch(v)
+    if m:  # the resource id decides: a documented sample, or a plain name under the documentation account
+        return AWS_DOC_ID.fullmatch(m.group(2)) is not None or (
+            m.group(1) is not None and AWS_DOC_ID.fullmatch(m.group(1)) is not None and not re.search(r"\d", m.group(2)))
+    return AWS_DOC_ID.fullmatch(v) is not None
+
+
 ENV_REFERENCE = re.compile(r"(?:os\.environ|os\.getenv|process\.env|ENV\[|getenv\(|settings\.|config\.)"
                            r"|^\$\{?[A-Za-z_][A-Za-z0-9_]*\}?$|^%[A-Za-z_][A-Za-z0-9_]*%$")
 # a template, not a literal: $t(key) ..., ${var}..., {{var}}, %(name)s, {0}
@@ -65,6 +82,9 @@ BOT_NAME = re.compile(r"(?i)\[bot\]|bot$")
 DEFAULT_DATE = re.compile(r"^(?:(?:19(?:70|00))[-/.]0?1[-/.]0?1|0?1[-/.]0?1[-/.](?:19(?:70|00))|0?1 jan(?:uary)? (?:1970|1900)|"
                           r"jan(?:uary)? 0?1,? (?:1970|1900))$", re.I)
 ELLIPSIS = re.compile(r"\.{3}|…")
+# a package version or range (^1.0.5, ~2.3.0, 0.76.8): parts of 1-3 digits, so a date (12.05.1984) never matches
+VERSION_RANGE = re.compile(r"^[\^~]\d{1,3}(?:\.\d{1,3}){1,2}(?:-[\w.]+)?$")
+VERSION = re.compile(r"^v?\d{1,3}\.\d{1,3}\.\d{1,3}(?:-[\w.]+)?$")
 CODE_LOCATION = re.compile(r"^(?=[\w.-]*[A-Za-z])[\w.-]+:\d+(?::\d+)?$")  # node:net:1555:16, file.py:42 (not IP:port)
 
 
@@ -136,6 +156,8 @@ def reason(value: str, kind: str, keyed: bool) -> str | None:
     v = value.strip().strip("\"'.,;()[]")
     if EXAMPLE_MARKERS.search(v):
         return "example value"
+    if _aws_doc_example(v):
+        return "AWS documentation example id"
     if ENV_REFERENCE.search(v) or TEMPLATE_START.match(v):
         return "reference to a variable, not a value"
     if TEST_KEY.match(v):
@@ -146,8 +168,12 @@ def reason(value: str, kind: str, keyed: bool) -> str | None:
         return "jwt.io documentation example"
     if kind == "DATE" and DEFAULT_DATE.match(v):
         return "default placeholder date"
+    if kind in ("SECRET", "ACCOUNT") and VERSION_RANGE.match(v):
+        return "package version range"  # (minipass-flush: ^1.0.5 is a lockfile line, not a password)
     if keyed:  # a value named by a secret label: only explicit example markers above can clear it
         return None
+    if kind in ("SECRET", "ACCOUNT") and VERSION.match(v):
+        return "version number"
     if _doc_ips_only(v):
         return "documentation IP range"
     if kind == "SECRET" and KEY_PREFIX_ONLY.match(v.lstrip("=:\"' ")):

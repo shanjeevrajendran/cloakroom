@@ -178,6 +178,16 @@ def _names_a_variable(text: str, start: int, end: int) -> bool:
     return bool(segs) and segs[-1].lower() in _SECRET_WORDS  # ends in the word: user.password, opts.AccessToken
 
 
+# a ChangeLog file entry: "* fast/forms/password-placeholder.png: Added." (WebKit and GNU style); the key is a file name
+_CHANGELOG_ENTRY = re.compile(r"(?m)^[ \t]*\*[ \t]+[\w./+-]+:[ \t]+(?:Added|Removed|Modified|Copied|Renamed|Moved|Updated|"
+                              r"Deleted|Replaced|Ditto)\b")
+
+
+def _changelog_line(text: str, start: int) -> bool:
+    m = _CHANGELOG_ENTRY.match(text, text.rfind("\n", 0, start) + 1)
+    return m is not None and m.end() >= start
+
+
 def scan(text: str) -> list[Finding]:
     out = []
     for rule_id, kind, rx, group, validate in _COMPILED:
@@ -187,9 +197,13 @@ def scan(text: str) -> list[Finding]:
                 continue
             if rule_id == "keyed-secret" and _names_a_variable(text, start, end):
                 continue
+            if rule_id in ("keyed-secret", "keyed-password") and _changelog_line(text, start):
+                continue
             if rule_id == "keyed-password":  # the value sits in whichever group matched (quoted or bare)
                 g = next(i for i in (1, 2, 3) if m.group(i) is not None)
                 start, end = m.span(g)
+                if g == 3 and _names_a_variable(text, start, end):  # unquoted only: password: req.body.password
+                    continue
             out.append(Finding(start, end, kind, rule_id,
                                keyed=rule_id in _KEYED))
     return out + _csv_cells(text)

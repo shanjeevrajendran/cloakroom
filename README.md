@@ -251,10 +251,11 @@ in a log looks like ordinary text to them.
 - **What a false alarm costs:** Claude sees a placeholder where it needed the real text. Nothing leaks.
 
 Every number comes from a set run once before any tuning on it unless it says otherwise. All tools at default
-settings, offline, tested 12 to 14 October 2026. maisecrets' maintainers reproduced our numbers and pointed out
-where the older sets were unfair to them (keys in formats vendors don't issue, and the `regions` setting); the
-key-format set and the setting below are the fix. The maintainers of the compared tools were contacted before
-publishing. Method, versions and every run: [bench/RESULTS.md](https://github.com/shanjeevrajendran/cloakroom/blob/main/bench/RESULTS.md).
+settings, offline, tested 12 to 14 October 2026 (Cloakroom's rows rerun 24 October for 0.6.2). maisecrets'
+maintainers reproduced our numbers and pointed out where the older sets were unfair to them (keys in formats vendors
+don't issue, and the `regions` setting); the key-format set and the setting below are the fix. The maintainers of
+the compared tools were contacted before publishing. Method, versions and every run:
+[bench/RESULTS.md](https://github.com/shanjeevrajendran/cloakroom/blob/main/bench/RESULTS.md).
 
 **Made-up agent traffic** (five sets written by a different model: chats, logs, config files, spreadsheets, support
 tickets): 1,339 key and personal values (the rest are in RESULTS.md) and 200 safe look-alikes. Fewer is better.
@@ -264,7 +265,7 @@ any tuning on them.
 | Tool | Personal data leaked (of 1,005) | Keys, passwords, cards, IDs leaked (of 334) | False alarms (of 200 safe samples) |
 |---|---|---|---|
 | **Cloakroom, first run** | **0** | 4 | 60 |
-| Cloakroom today (has seen these sets, so not a fair score) | 1 | **2** | 23 |
+| Cloakroom today (has seen these sets, so not a fair score) | 1 | **2** | 20 |
 | sensitive-canary (blocks the call instead of masking) | 119 | 40 | 16 |
 | maisecrets (`"regions": ["us", "uk", "in"]`) | 547 | 54 | 6 |
 | claude-code-redact, PII on | 607 | 101 | 31 |
@@ -279,7 +280,7 @@ passwords with no fixed shape, encoded emails; 77 values, 15 look-alikes):
 
 | Tool | Leaked (of 77) | False alarms (of 15) |
 |---|---|---|
-| **Cloakroom** | **0** | 3 |
+| **Cloakroom** | **0** | 2 |
 | maisecrets | 3 | **1** |
 | sensitive-canary | 14 | 3 |
 | redact-hook (default / aggressive) | 15 | 5 |
@@ -292,7 +293,7 @@ rule is built to catch: first number without it, in brackets the whole set.
 
 | Tool | Real secrets caught (of every 100), higher is better | False alarms (of every 100 harmless look-alikes), lower is better |
 |---|---|---|
-| **Cloakroom** | **73** (65) | 22 (25) |
+| **Cloakroom** | **73** (65) | 19 (22) |
 | maisecrets | 58 (**68**) | 7 (6) |
 | claude-code-redact | 36 (31) | 8 (7) |
 | sensitive-canary (blocks the call instead of masking) | 30 (27) | 21 (18) |
@@ -300,9 +301,9 @@ rule is built to catch: first number without it, in brackets the whole set.
 | redact-hook, aggressive | 36 (26) | 12 (20) |
 
 Without the test-vector repository, Cloakroom catches the most; with it, maisecrets does, and maisecrets is the most
-precise either way (of what it masks, 86 to 91 in 100 are real secrets, against Cloakroom's 71). Cloakroom masks far
-more harmless look-alikes (3,903 against maisecrets' 997 on the whole set): false alarms are Cloakroom's main open
-problem ([precision, recall and F1 for every tool](https://github.com/shanjeevrajendran/cloakroom/blob/main/bench/RESULTS.md)).
+precise either way (of what it masks, 86 to 91 in 100 are real secrets, against Cloakroom's 73 to 74). Cloakroom
+masks far more harmless look-alikes (3,457 against maisecrets' 997 on the whole set, down from 3,903 before 0.6.2):
+false alarms are Cloakroom's main open problem ([precision, recall and F1 for every tool](https://github.com/shanjeevrajendran/cloakroom/blob/main/bench/RESULTS.md)).
 
 **On public datasets we didn't write** (run once; details in
 [bench/public/RESULTS.md](https://github.com/shanjeevrajendran/cloakroom/blob/main/bench/public/RESULTS.md)):

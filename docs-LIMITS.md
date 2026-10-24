@@ -90,13 +90,19 @@
   toll-free and Twilio test numbers, published test cards and sandbox IDs, documentation example keys and tokens,
   reserved domains (example.com, .test), role and no-reply mailboxes, loopback/private/documentation IP ranges,
   UUIDs and hashes, `$VAR` references, redaction markers, dates over 110 years old and a short list of historical
-  figures. A real value that happens to look like one of these is not masked; add exceptions with `allow`, or
-  report the case.
-- False alarms: on fresh test data Cloakroom still masks some safe text (4-6 of 40 tricky negatives in the last
-  two one-shot holdouts: landmark addresses, public figures not on the list, office names). On public data,
-  precision is 0.81 on TAB court rulings and 0.52 on Gretel finance documents, mostly number strings read as account
-  or reference numbers. Masking safe text costs readability, never privacy. Measured and rejected fixes (a higher
-  model-confidence bar, a context gate) both leaked real values, so they were not shipped.
+  figures. Since 0.6.2 also: package versions (`^1.0.5`, `0.76.8`), numbers of up to 6 digits on an UPPER_SNAKE
+  constant whose name has no secret word in it (KEY, TOKEN, SECRET, PASS, PWD, AUTH, PIN...), GPG key ids, AWS's
+  documentation account and key ids, variable names under a password key (`password: user.password`), XAML resource
+  names and ChangeLog file entries. UI text under a key that is a label or a message id (`"incorrectPassword":
+  "Wrong user name or password"`) is left as is when it is two or more words with no digits; a password made of
+  words under such a key (`"passwordHint": "Lantern Copper Field"`) is not masked either. A real value that happens
+  to look like one of these is not masked; add exceptions with `allow`, or report the case.
+- False alarms: on fresh test data Cloakroom still masks some safe text (4-6 of 40 tricky negatives in the last two
+  one-shot holdouts: landmark addresses, public figures not on the list, office names). On public data, precision is
+  0.81 on TAB court rulings and 0.52 on Gretel finance documents, mostly number strings read as account or reference
+  numbers. On the CredData public-code set it masks 3,457 harmless look-alikes (22 in 100, down from 3,903 before
+  0.6.2), against maisecrets' 997. Masking safe text costs readability, never privacy. Measured and rejected fixes
+  (a higher model-confidence bar, a context gate) both leaked real values, so they were not shipped.
 - Commit and push check: it reads the staged change (for `git push`, the commits no remote has yet) and lets the
   command run unchecked when the added text is over 4 MB or the check takes over 2 s. A push to a remote with no
   remote-tracking refs scans all history, and runs unchecked if that is slow. Commits made outside Claude Code

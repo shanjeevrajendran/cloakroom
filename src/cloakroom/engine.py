@@ -119,6 +119,38 @@ _FIELD_TAG = re.compile(r":?\d{2,3}[A-Z]?:|\d{1,3}=")  # SWIFT MT ":35E:" / FIX 
 _STANDARD = re.compile(r"\b(?:RFC|ISO(?:/IEC)?|IEC|IEEE|ICAO|ECMA|PEP)[ -]?(?:Doc\.? )?$")
 
 
+# a code constant right before a short number: SYS_FUTEX_WAIT = 5323. Its name must not contain a secret word anywhere
+# (ADMIN_PIN = 4821, DB_APIKEY = 482193 stay masked), at the cost of constants like SYS_PKEY_FREE.
+_CONSTANT = re.compile(r"\b([A-Z][A-Z0-9]*(?:_[A-Z0-9]+)+)[ \t]*[:=][ \t]*$")
+_SECRET_IN_NAME = re.compile(r"KEY|TOKEN|SECRET|PASS|PWD|AUTH|PIN|OTP|CODE|CRED|SALT|SEED|PRIVATE")
+# a GPG key id under a name that says so: GPG_KEY_ID = 'C105B9DE', "64bit key id" => '1054B7A24BD6EC30'
+_GPG_ID = re.compile(r"(?i)(?:gpg|pgp)[\w ]*key[_ ]?id|\bkey[_ ]id\b|\bkeyid\b")
+
+
+# A UI string under a key that names a message or a label, not a secret: "incorrectPassword": "Wrong user name or
+# password", 'Reset Password' => 'Ailosod Cyfrinair'. The key must be a quoted label (a space, a final period or a
+# capital first letter) or a message key around the secret word, and the value two or more words with no digits, so
+# password: "correct horse battery staple" and ADMIN_PASSWORD=Summer Rain 2026 stay masked.
+_MSG_WORDS = r"(?:Required|Failed|Title|Message|Error|Label|Placeholder|Hint|Text|Prompt|Description|Help|Tooltip|NotSupported)"
+_SECRET_WORD = r"(?:[Pp]ass(?:word|phrase)?|[Tt]oken|[Aa]uth|[Ss]ecret|[Kk]ey|[Pp]in)"
+_UI_KEY = (r"[A-Z][a-z]+(?: [\w-]+)*\.?|[a-z][\w-]*(?: [\w-]+)+\.?|[a-z]+\.|"  # 'Reset Password', 'Invalid key.'
+           r"\w*" + _SECRET_WORD + r"\w*" + _MSG_WORDS + r"\w*|"  # passwordRequired, tokenAuthFailedTitle
+           r"(?:incorrect|invalid|wrong|enter|forgot|join)\w*" + _SECRET_WORD + r"\w*")  # incorrectPassword
+_UI_PAIR = re.compile(r"""(["'])(""" + _UI_KEY + r""")\1\s*(?:=>|:)\s*(["'])((?:(?!\3)[^\n\d])+)\3""")
+
+
+def _ui_strings(text: str) -> list[tuple[int, int]]:
+    out = []
+    for m in _UI_PAIR.finditer(text):
+        key, value = m.group(2), m.group(4)
+        if re.search(_SECRET_WORD, key, re.I) and len(value.split()) >= 2:
+            out.append(m.span(4))
+    return out
+
+
+_XAML_NAME = re.compile(r"\bx:(?:Key|Name|Uid)=[\"']$")  # <Color x:Key="CoolBlue">: a resource name, not a person
+
+
 def _not_account(value: str) -> bool:
     """A short account match with no digits ('DDA', ':CRED') or a bare field tag ('77S', '62F'). A longer one with no
     digits (a member ID like MBR-ALPLCBLKIW) stays masked."""
@@ -359,6 +391,7 @@ def detect(text: str, mode: str = "full", allow=(), always=(), ocr: bool = False
         found += model_findings(text)
     own = [m.span() for m in rules.OWN_PLACEHOLDER.finditer(text)]
     keep, skipped = [], []
+    ui = _ui_strings(text)
     rule_verdict: dict = {}  # (start, end) -> (rule kind, skip reason or None); rules come before the model in found
     for f in _logged(text, files or {}) + found + _always(text, always) + _known(text, known or {}):
         if any(s <= f.start and f.end <= e for s, e in own):
@@ -388,6 +421,18 @@ def detect(text: str, mode: str = "full", allow=(), always=(), ocr: bool = False
         if not why and f.kind == "ACCOUNT" and _STANDARD.search(text, max(0, f.start - 12), f.start) \
                 and re.fullmatch(r"\d{1,5}(?:[-:]\d{1,4})?", f.value(text).strip()):
             why = "standard or spec number (RFC 5737, ISO 27001)"
+        if not why and f.kind == "PERSON" and _XAML_NAME.search(text, max(0, f.start - 8), f.start):
+            why = "XAML resource name"
+        if not why and f.kind in ("SECRET", "PERSON") and any(s <= f.start and f.end <= e for s, e in ui):
+            why = "UI text under a message or label key"
+        if not why and f.kind in ("ACCOUNT", "SECRET") and not f.keyed and re.fullmatch(r"\d{1,6}", f.value(text)):
+            c = _CONSTANT.search(text, max(0, f.start - 80), f.start)
+            if c and not _SECRET_IN_NAME.search(c.group(1)):
+                why = "number given to a code constant"
+        if not why and f.kind in ("ACCOUNT", "SECRET") and not f.keyed \
+                and re.fullmatch(r"[0-9A-Fa-f]{8}|[0-9A-Fa-f]{16}", f.value(text)) \
+                and _GPG_ID.search(text, max(0, f.start - 40), f.start):
+            why = "GPG key id (public)"
         if not why and f.kind in ("CARD", "ACCOUNT") and _digit_run(text, f) in safe.TEST_CARDS:
             why = "published test card"
         if not why and f.kind == "PERSON":
