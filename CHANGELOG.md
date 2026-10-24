@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.6.5 (2026-10-24)
 - Bank numbers: US routing numbers (ABA checksum and a routing word or field) and bank account numbers (an account
   word or field, a CSV column of that name, a NACHA entry line, or a routing number in the same record) are masked
   as a new kind, `PII_BANK_n`. Bare digits are never matched. Known bank numbers are also looked for encoded, like
