@@ -41,6 +41,8 @@ expect rough edges.
   the drafts saved on your disk have the real names.
 - **Medical or HR records:** names, birth dates, addresses and ID numbers are masked, so Claude can summarise or tidy a record without knowing whose it is.
 - **`.env` files and logs:** Claude fixes the config without ever seeing the password or API key.
+- **Disguised copies:** a key or email that a command hashed, hex-encoded or reversed is still masked
+  ([what's covered](#disguised-copies)).
 - **Finance work:** bank and card numbers are masked, calls that move money wait for your OK, and `cloakroom report`
   with the tamper-evident log is your audit trail ([for finance teams](#for-finance-teams)).
 - **Scans and photos of documents:** read on your machine (no upload) and masked like any other file.
@@ -137,11 +139,24 @@ Masking is the core. These come with it, on by default, and need nothing from yo
 - **Network one-liners count too:** `python -c`, `node -e`, `ruby -e`, `perl -e`, `php -r`, `deno eval` and
   `bash -c` that can open a connection are treated like curl.
 - **Encoded copies count:** a secret Cloakroom has seen is also caught base64-encoded, URL-encoded or JSON-escaped.
+- **Disguised copies count:** that secret is also caught hashed, as hex or reversed ([details](#disguised-copies)).
 - **Web, MCP and subagent calls carry placeholders only:** a web fetch, an MCP tool call or a prompt to a subagent
   that holds a real value is stopped before it runs.
 - **Pictures and PDFs become masked text:** PDFs, scans, photos and images returned by MCP tools are read on your
   machine and Claude gets masked text, never the file or the picture. Without OCR an image is held back, with a
   one-line reason.
+
+<a id="disguised-copies"></a>**Disguised copies**
+
+Once Cloakroom has seen a key, password, card or account number, or an email, it also looks for copies a command
+changed on the way. Each copy gets its own placeholder, and the exact copy is put back in files Claude writes.
+
+- **Covered:** MD5, SHA-1 and SHA-256 hashes of a key or an email; hex (`6b39...`, `0x...`, `6b 39 ...`,
+  `\x6b...`); a key or password of 12+ characters written backwards; pairs like `user:password` or
+  `DB_PASSWORD=...` in hex or URL encoding; a card or account number's last 4 digits right after "ending in",
+  "last 4" or `****`; an email's username on its own when it can't be an ordinary word (`r.okafor77`, not `admin`).
+- **Not covered:** salted or keyed hashes (bcrypt, HMAC), other hashes, a name in different capitals, initials,
+  a last 4 with no word pointing at it, and anything Cloakroom hasn't seen in plain form first.
 
 **Keys stay out of git**
 

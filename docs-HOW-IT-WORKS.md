@@ -38,6 +38,18 @@
   without padding, also inside a longer encoded string such as `user:secret`), URL-encoded and JSON-escaped. These
   are made from the known values, not guessed from the text, so ordinary text can't trip them. Prompts, tool inputs
   and tool output all get this check; an encoded copy gets its own placeholder, so restoring puts it back as it was.
+- **Disguised secrets (0.6.6):** the same known values are also looked for as an MD5, SHA-1 or SHA-256 hash (hex,
+  lower or upper case), as hex of their bytes (`6b39...`, `0x...`, `6b 39 ...`, `6b:39:...`, `\x6b\x39...`, also
+  inside a longer hex run such as hex of `user:secret`), and keys and passwords of 12+ characters reversed. A
+  known email is matched only as a hash (of the email as typed and trimmed and lowercased), since the email rule
+  already finds it in any case. Two parts count, only where the text points at them: a known card or account
+  number's last 4 digits right after "ending in", "last 4", `****`, `xxxx` or `••••`, and a known email's local
+  part as a word of its own when it can't be an ordinary word (6+ characters, not a role name like `support`,
+  with a digit or `. _ -` unless 8+ long, never this machine's own account name). A hash counts only as a whole,
+  not inside a longer hex run. Each copy keeps its source's kind (an email's hash is `PII_EMAIL_n`) with its own
+  placeholder, so restore puts back the exact hash, hex or part. Copies are never used as seeds for further
+  copies, so the list of forms stays the same size turn after turn. The egress hold looks for the same known
+  values as before; an email's hash in a URL doesn't hold a command.
 - **Egress hold:** before a shell command runs, Cloakroom checks whether it can send data off the machine (curl,
   wget, httpie, nc, telnet, ssh, scp, sftp, rsync, ftp, mail, cloud and database clients, `git push`/`fetch`/`clone`/
   `remote`, `npm publish`, `docker push`/`login`, `/dev/tcp`, PowerShell web calls) or carries a credential header

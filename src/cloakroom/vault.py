@@ -40,6 +40,7 @@ class Vault:
         self.by_value: dict[str, str] = {}
         self.by_placeholder: dict[str, str] = {}
         self.counts: dict[str, int] = {}
+        self.derived: set[str] = set()  # placeholders of copies derived from a known value: never seeds themselves
         self.refused: list[tuple[str, str]] = []  # (placeholder, reason) refused by this instance
         self.id = secrets.token_hex(16)
         self._key = None if self.path else secrets.token_bytes(32)  # no file: tags only need to hold for this object
@@ -54,6 +55,7 @@ class Vault:
             self.by_placeholder = {(ph if PLACEHOLDER.fullmatch(ph) else self._sign(ph)): v
                                    for ph, v in data["map"].items()}
             self.by_value = {v: k for k, v in self.by_placeholder.items()}
+            self.derived = set(data.get("derived", []))  # 0.6.6+; derived copies are always signed
 
     def _tag(self, name: str) -> str:
         if self._key is None:
@@ -65,12 +67,15 @@ class Vault:
     def _sign(self, name: str) -> str:
         return f"{name}_{self._tag(name)}"
 
-    def placeholder(self, value: str, kind: str) -> str:
+    def placeholder(self, value: str, kind: str, derived: bool = False) -> str:
+        """derived: value is a hash, encoding or part of a known value (decode.find_known), kept out of the seeds."""
         if value in self.by_value:
             return self.by_value[value]
         self.counts[kind] = self.counts.get(kind, 0) + 1
         ph = self._sign(f"PII_{kind}_{self.counts[kind]}")
         self.by_value[value], self.by_placeholder[ph] = ph, value
+        if derived:
+            self.derived.add(ph)
         self._save()
         return ph
 
@@ -103,7 +108,8 @@ class Vault:
             return
         self.path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
         from . import crypto
-        blob = crypto.encrypt(json.dumps({"id": self.id, "map": self.by_placeholder, "counts": self.counts}).encode())
+        blob = crypto.encrypt(json.dumps({"id": self.id, "map": self.by_placeholder, "counts": self.counts,
+                                       "derived": sorted(self.derived)}).encode())
         tmp = self.path.with_suffix(".tmp")
         fd = os.open(tmp, os.O_WRONLY | os.O_CREAT | os.O_TRUNC | getattr(os, "O_BINARY", 0), 0o600)
         with os.fdopen(fd, "wb") as f:

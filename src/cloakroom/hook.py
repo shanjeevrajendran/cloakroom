@@ -173,7 +173,8 @@ def _egress_hold(command: str, session: str, vault: Vault, powershell: bool, mon
     cfg = config.load()
     found, spans = [], []
     by_value = vault.by_value
-    for a, b, value, how in decode.find_known(command, engine.known_values(vault, cfg["always"])):
+    known = {v: k for v, k in engine.known_values(vault, cfg["always"]).items() if k in engine.KNOWN_KINDS}
+    for a, b, value, how in decode.find_known(command, known):
         ph = by_value.get(value)
         label = ph or "one of your always-mask values"
         found.append(label if how == "plain" else f"{label} ({how})")

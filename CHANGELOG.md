@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased
+- Disguised copies of known values: a secret Cloakroom has seen is also caught as an MD5, SHA-1 or SHA-256 hash, as
+  hex (plain, `0x`, spaced, colon or `\x` escapes, also hex of `user:secret`), and reversed (keys and passwords of
+  12+ characters). A known email is caught as its hash; a known card or account number's last 4 digits after
+  "ending in", "last 4" or `****`; a known email's distinctive local part on its own. Each copy keeps its source's
+  kind with its own placeholder, so restore returns the exact form, and copies never seed further copies.
+- Fix: an encoded copy glued to a letter or digit (`0x...`, `%3D...`) is masked with the word around it, so restore
+  finds its placeholder.
+
 ## 0.6.5 (2026-10-24)
 - Bank numbers: US routing numbers (ABA checksum and a routing word or field) and bank account numbers (an account
   word or field, a CSV column of that name, a NACHA entry line, or a routing number in the same record) are masked

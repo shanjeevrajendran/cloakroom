@@ -340,18 +340,20 @@ def _always(text: str, always) -> list[rules.Finding]:
 OCR_DIGITS = re.compile(r"(?<![\d.,])\d(?:[ -]?\d){9,}(?!\d)")
 
 
-# Kinds whose stored values are looked for again in every later text, plain and encoded (decode.find_known)
+# Kinds whose stored values are looked for again in every later text, plain and encoded (decode.find_known);
+# emails only as hashes and as a distinctive local part (decode.find_parts)
 KNOWN_KINDS = {"SECRET", "PASSWORD", "CARD", "SSN", "IBAN", "ACCOUNT", "BANK"}
+SEED_KINDS = KNOWN_KINDS | decode.HASH_ONLY
 
 
 def known_values(vault: Vault | None, always=()) -> dict[str, str]:
-    """{value: kind} for the session's known secrets (vault values of the kinds above) and your exact always-mask
-    values. Never logged."""
+    """{value: kind} for the session's known secrets (vault values of the kinds above, not copies derived from one)
+    and your exact always-mask values. Never logged."""
     out = {}
     if vault is not None:
         for ph, v in vault.by_placeholder.items():
             kind = ph.split("_")[1]
-            if kind in KNOWN_KINDS and len(v) >= decode.KNOWN_MIN:
+            if kind in SEED_KINDS and len(v) >= decode.KNOWN_MIN and ph not in vault.derived:
                 out[v] = kind
     for entry, kind in always:
         if not entry.startswith("re:") and len(entry) >= decode.KNOWN_MIN:
@@ -360,11 +362,12 @@ def known_values(vault: Vault | None, always=()) -> dict[str, str]:
 
 
 def _known(text: str, known: dict) -> list[rules.Finding]:
-    """A known secret seen again: plain keeps its kind (and its placeholder); an encoded form is a SECRET of its own,
-    so restoring it puts the encoded text back as it was. Keyed, so they win overlaps."""
-    return [rules.Finding(a, b, known[v] if how == "plain" else "SECRET",
-                          "known" if how == "plain" else "known-" + how.split("-")[0].lower(), keyed=True)
-            for a, b, v, how in decode.find_known(text, known)]
+    """A known secret seen again: plain keeps its placeholder; an encoded, hashed or partial copy keeps the kind but
+    gets a placeholder of its own (source known-<how>), so restoring it puts that exact text back. Keyed, so they win
+    overlaps."""
+    return [rules.Finding(a, b, known[v], "known" if how == "plain" else "known-" + how.split("-")[0].lower(),
+                          keyed=True)
+            for a, b, v, how in decode.find_known(text, known) + decode.find_parts(text, known, _own_username)]
 
 
 def _logged(text: str, files: dict) -> list[rules.Finding]:
@@ -505,7 +508,7 @@ def mask(text: str, vault: Vault | None = None, mode: str = "full", allow=(), al
     findings, skipped = detect(text, mode, allow, always, ocr, known_values(vault, always), files)
     out, last, masked = [], 0, []
     for f in findings:
-        ph = vault.placeholder(f.value(text), f.kind)
+        ph = vault.placeholder(f.value(text), f.kind, derived=f.source.startswith("known-"))
         out += [text[last:f.start], ph]
         last = f.end
         masked.append((ph, f.kind, f.source))

@@ -31,6 +31,11 @@
   session's known values (10-character fragments) and the detectors; any hit withholds the whole output. Files a
   Bash command names are scanned first (up to 512 KB). Arbitrary transformations (ROT13, custom ciphers, values
   computed piece by piece) are out of scope: Cloakroom stops accidental leaks, not a model determined to leak.
+- Disguised copies (0.6.6) are computed from values Cloakroom already knows, so a secret it has never seen isn't
+  caught in any form. Not covered: salted or keyed hashes (HMAC, bcrypt, scrypt), other hashes (SHA-512, CRC),
+  base32, hex grouped in fours (`xxd` without `-p`), upper/lower case changes of a key, a name's case changes or
+  initials, a card's last 4 without a cue word, an email's local part under the limit above (`jsmith`), parts of
+  a key, and values shorter than 8 characters. Reversed only for keys and passwords of 12+ characters.
 - PDFs (live test 2026-10-14): Claude Code sends a PDF read to the model as a document (or as page pictures with
   `pages`), which a hook can't mask in place. Cloakroom extracts the text layer locally (pypdf), masks it and gives
   Claude that text instead, so layout, pictures and charts in the PDF are not seen. Pages without a text layer are
