@@ -206,4 +206,54 @@ def scan(text: str) -> list[Finding]:
                     continue
             out.append(Finding(start, end, kind, rule_id,
                                keyed=rule_id in _KEYED))
-    return out + _csv_cells(text)
+    return out + _csv_cells(text) + _finance(text)
+
+
+# US bank numbers (kind BANK). Digits alone say nothing, so a value counts only next to a word or field that names
+# it: a routing number must also pass the ABA checksum; a plain "account" key counts only beside a routing number.
+# A key glued to the digits by - or _ is an id prefix (ACCT-482913), not a label.
+_GAP = r"[^\w\n$\u20ac\u00a3]{0,6}(?:(?i:number|num|no|is)\b[^\w\n$\u20ac\u00a3]{0,4})?"
+_ROUTING = re.compile(r"(?<![A-Za-z])(?:[Rr]outing|ROUTING|ABA|[Aa]ba|RTN|[Rr]tn|[Tt]ransit|TRANSIT|[Bb]ank|BANK)"
+                      r"(?:[ _-]?(?:[Nn]umber|NUMBER|[Nn]um|NUM|[Nn]o|NO|[Cc]ode|CODE|#))?(?![a-z])(?![-_]\d)" + _GAP
+                      + r"(\d{9})(?![\d-]|[.,]\d)")
+_ACCOUNT = re.compile(r"(?i:(?<![a-z])(?:account[ _-]?(?:number|num|no|nbr|#)|acct(?:[ _-]?(?:number|num|no|nbr|#))?|"
+                      r"(?:checking|savings|bank|beneficiary|deposit)[ _-]?(?:account|acct)(?:[ _-]?(?:number|num|no|#))?|"
+                      r"dda(?:[ _-]?(?:number|num|no|#))?))(?![a-z])(?![-_]\d)" + _GAP
+                      + r"(\d{2,}(?:[ -]\d{2,})*)(?![\d-]|[.,]\d)")
+# a plain account key in the same record as a routing number: {"routing": ..., "account": "..."}
+_PAIRED = re.compile(r"(?i:(?<![a-z])(?:account|acct)(?:[ _-]?(?:id|num|number|no))?)(?![a-z])" + _KEY_SEP_REQ
+                     + r"(\d(?:-?\d){3,16})(?![\d-]|[.,]\d)")
+# NACHA (ACH file) entry detail record: 94 characters, "6", a transaction code, the RDFI routing number, the account
+_NACHA = re.compile(r"(?m)^6(?:2[2-9]|3[2-9]|4[1-9]|5[1-5])(\d{9})([0-9A-Za-z -]{17})\d{10}.{55}$")
+_CSV_COLUMNS.update({c: "BANK" for c in (
+    "routing_number", "routing_no", "aba", "aba_number", "aba_routing", "rtn", "account_number", "account_no",
+    "acct_number", "acct_no", "bank_account", "bank_account_number", "checking_account", "savings_account", "dda")})
+
+
+def _aba_ok(d: str) -> bool:
+    """ABA checksum (weights 3-7-1) and a Federal Reserve prefix: 00-12, 21-32, 61-72, 80."""
+    p = int(d[:2])
+    return (p <= 12 or 21 <= p <= 32 or 61 <= p <= 72 or p == 80) and len(set(d)) > 1 \
+        and sum(int(c) * w for c, w in zip(d, (3, 7, 1) * 3)) % 10 == 0
+
+
+def _finance(text: str) -> list[Finding]:
+    routing = [Finding(*m.span(1), "BANK", "routing-number") for m in _ROUTING.finditer(text) if _aba_ok(m.group(1))]
+    out = list(routing)
+    for m in _NACHA.finditer(text):
+        if _aba_ok(m.group(1)) and len(m.group()) == 94:
+            acct = m.group(2).strip()
+            a = m.start(2) + m.group(2).index(acct) if acct else 0
+            out += [Finding(*m.span(1), "BANK", "nacha-entry")] + ([Finding(a, a + len(acct), "BANK", "nacha-entry")]
+                                                                   if acct else [])
+    for rx, rule_id in ((_ACCOUNT, "bank-account"), (_PAIRED, "bank-account-paired")):
+        for m in rx.finditer(text):
+            a, b = m.span(1)
+            digits = re.sub(r"\D", "", m.group(1))
+            if not 4 <= len(digits) <= 17 or len(set(digits)) == 1 or any(r.start == a for r in routing):
+                continue
+            if rule_id == "bank-account-paired" and not any(  # same record: within 300 chars, no blank line between
+                    abs(r.start - a) <= 300 and "\n\n" not in text[min(r.start, a):max(r.end, b)] for r in routing):
+                continue
+            out.append(Finding(a, b, "BANK", rule_id))
+    return out

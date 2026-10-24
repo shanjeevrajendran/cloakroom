@@ -1,5 +1,18 @@
 # Changelog
 
+## Unreleased
+- Bank numbers: US routing numbers (ABA checksum and a routing word or field) and bank account numbers (an account
+  word or field, a CSV column of that name, a NACHA entry line, or a routing number in the same record) are masked
+  as a new kind, `PII_BANK_n`. Bare digits are never matched. Known bank numbers are also looked for encoded, like
+  cards and IBANs.
+- Money-movement hold: a tool call that would move money (a write to a listed payment, payout or transfer API from
+  a shell command or payment CLI, or an MCP tool named for it) is held with one line naming the endpoint or tool;
+  `cr: allow` lets it run once and the log records both. On by default; `"money_hold": false` turns it off, and
+  `"money_hosts"` / `"money_tools"` in `~/.cloakroom/config.json` extend the lists. A call that trips both this and
+  the egress hold shows one hold and needs one `cr: allow`.
+
+## 0.6.3 (2026-10-24)
+
 ## 0.6.4 (2026-10-24)
 - 0.6.3 was tagged but never released (an install message set a failing exit status on Linux); its changes ship here.
 - Keychain: a refused read of the vault key (you clicked Deny, or the Keychain is locked, as over SSH) is now

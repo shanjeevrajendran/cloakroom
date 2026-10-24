@@ -15,7 +15,7 @@ import re
 import sys
 import time
 
-from . import client, config, crypto, decode, engine, events, filelog, media, shell
+from . import client, config, crypto, decode, engine, events, filelog, media, money, shell
 from .hookentry import STRUCTURAL, _withhold, closed
 from .vault import ANY_PLACEHOLDER, OLD_FORMAT, PLACEHOLDER, Vault
 
@@ -163,12 +163,13 @@ def _allowed_once(command: str) -> bool:
     return True
 
 
-def _egress_hold(command: str, session: str, vault: Vault, powershell: bool) -> dict | None:
+def _egress_hold(command: str, session: str, vault: Vault, powershell: bool, money_why: str = "") -> dict | None:
     """Hold a command that would send a known secret off this machine: a value already in the session vault (plain
-    or encoded), a key the rules recognise, or a literal token in a credential header. Labels only in the reason."""
+    or encoded), a key the rules recognise, or a literal token in a credential header. Labels only in the reason.
+    money_why: the command would also move money (money.reason): one hold names both, one cr: allow covers it."""
     via = shell.egress(command, powershell)
     if not via:
-        return None
+        return _money_hold(command, money_why) if money_why else None
     cfg = config.load()
     found, spans = [], []
     by_value = vault.by_value
@@ -192,7 +193,9 @@ def _egress_hold(command: str, session: str, vault: Vault, powershell: bool) -> 
         found.append(f"a {f.kind} ({f.source})")
         _FOUND.append(("", f.kind))
     if not found:
-        return None
+        return _money_hold(command, money_why) if money_why else None
+    if money_why:
+        _NOTE[0], _EXTRA["money"] = f"money: {money_why}", money_why
     if _allowed_once(command):
         _ACTION[0] = "allowed once"
         return None
@@ -201,10 +204,27 @@ def _egress_hold(command: str, session: str, vault: Vault, powershell: bool) -> 
         return None
     _write_held({"mac": _command_mac(command), "until": time.time() + 60 * HOLD_MINUTES, "armed": False})
     _ACTION[0] = "held"
-    return _deny(f"Cloakroom held this command: it would send {what} off this machine (via {via}). A secret that "
+    also = f" and it would move money ({money_why})" if money_why else ""
+    return _deny(f"Cloakroom held this command: it would send {what} off this machine (via {via}){also}. A secret that "
                  f"has left can't be called back. To send it anyway, type cr: allow, then ask Claude to run the same "
                  f"command again: it passes once, within {HOLD_MINUTES} min. Claude: don't change or re-encode the "
                  f"value to get past this; use an environment variable the user sets, or ask the user.")
+
+
+def _money_hold(key: str, why: str) -> dict | None:
+    """Hold a call that would move money (money.py) until you type cr: allow; key is the command, or the tool name and
+    its input, so only the same call passes once."""
+    _NOTE[0], _EXTRA["money"] = f"money: {why}", why
+    if _allowed_once(key):
+        _ACTION[0] = "allowed once"
+        return None
+    if _dry("pre", f"money ({why}): would hold"):
+        return None
+    _write_held({"mac": _command_mac(key), "until": time.time() + 60 * HOLD_MINUTES, "armed": False})
+    _ACTION[0] = "held"
+    return _deny(f"Cloakroom held this call: it would move money ({why}). To run it, type cr: allow, then ask Claude "
+                 f"to run the same call again: it passes once, within {HOLD_MINUTES} min. Claude: don't change the "
+                 f"call to get past this; ask the user.")
 
 
 def on_prompt(data: dict) -> dict | None:
@@ -795,14 +815,19 @@ def on_pre(data: dict) -> dict | None:
     vault = Vault(config.vault_path(session))
     cwd = data.get("cwd") or os.getcwd()
 
+    money_why = money.reason(tool, args, SHELL_TOOLS, config.load())
     if tool in SHELL_TOOLS:
-        held = _egress_hold(args.get("command", ""), session, vault, tool == "PowerShell")
+        held = _egress_hold(args.get("command", ""), session, vault, tool == "PowerShell", money_why)
         if held:
             return held
         held = _git_hold(args.get("command", ""), cwd, vault, tool == "PowerShell")
         if held:
             return held
         _prime(args.get("command", ""), cwd, session, powershell=tool == "PowerShell")
+    elif money_why:
+        held = _money_hold(tool + "\0" + json.dumps(args, sort_keys=True), money_why)
+        if held:
+            return held
     if tool in LOCAL_FILE_TOOLS or tool in SHELL_TOOLS:
         if not has_ph:  # nothing to restore; a key the model typed into a file is still checked
             denied = _commit_check(tool, args, args, cwd, vault) if tool in WRITE_TOOLS else None

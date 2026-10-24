@@ -341,7 +341,7 @@ OCR_DIGITS = re.compile(r"(?<![\d.,])\d(?:[ -]?\d){9,}(?!\d)")
 
 
 # Kinds whose stored values are looked for again in every later text, plain and encoded (decode.find_known)
-KNOWN_KINDS = {"SECRET", "PASSWORD", "CARD", "SSN", "IBAN", "ACCOUNT"}
+KNOWN_KINDS = {"SECRET", "PASSWORD", "CARD", "SSN", "IBAN", "ACCOUNT", "BANK"}
 
 
 def known_values(vault: Vault | None, always=()) -> dict[str, str]:

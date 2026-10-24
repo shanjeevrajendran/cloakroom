@@ -166,6 +166,21 @@ Masking is the core. These come with it, on by default, and need nothing from yo
 - **Old transcripts can be cleaned:** `cloakroom clean-history` finds keys and passwords already sitting in old
   Claude Code transcripts and your prompt history, and replaces them on your yes, with a backup you delete.
 
+**For finance teams**
+
+- **Bank numbers are masked:** US routing numbers (the ABA checksum plus a word or field like "routing" or "ABA")
+  and bank account numbers (next to "account number", "acct", "checking account", "DDA", in a CSV column of that
+  name, a NACHA entry line, or beside a routing number in the same record) become `PII_BANK_1_k7q2ab`. Digits with
+  no such word stay as they are, so order numbers, phone numbers and ZIP+4 codes are left alone.
+- **Calls that move money are held:** a write to a payment, payout or transfer API (Stripe, Plaid, Dwolla, Wise,
+  Adyen, PayPal, Square, Increase, Modern Treasury, Column) from curl, PowerShell or a payment CLI, or an MCP tool
+  named for it (`send_money`, `create_payout`, `initiate_transfer`), waits until you type `cr: allow`; then it runs
+  once. Reads such as a balance check pass. Add your own hosts and tools in `~/.cloakroom/config.json` with
+  `"money_hosts": ["payments.example.com/api/wires"]` and `"money_tools": ["disburse"]`; turn the hold off with
+  `"money_hold": false`.
+- **The audit trail:** every hold and every `cr: allow` lands in the tamper-evident activity log, and
+  `cloakroom report` turns it into counts per day and session, without values.
+
 <details>
 <summary><b>Commands and limits</b></summary>
 

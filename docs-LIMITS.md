@@ -126,3 +126,11 @@
 - The dashboard (`cloakroom dashboard`) is reachable only on 127.0.0.1, with a one-time sign-in link; restarting the
   service signs the browser out. The activity log keeps no values or text, but it does keep file paths (masked like
   any output) and the program name of shell commands.
+- Bank numbers: a routing number needs a routing word or field within a few characters and a valid ABA checksum; an
+  account number needs an account word, a CSV column of that name, a NACHA entry line, or a routing number in the
+  same record. Bare digits, numbers split across lines, non-US account formats other than IBAN, and words in other
+  languages aren't caught. A routing number with the right checksum in a field Cloakroom doesn't know stays visible.
+- Money-movement hold: it sees the command or tool call, not what a program does once it runs. A script or app
+  (`python pay.py`, a test suite, a server Claude starts) that calls a payment API isn't held, nor is a host or MCP
+  tool name not on the lists (add them with `"money_hosts"` / `"money_tools"`), a GraphQL payment API, or a URL built
+  from variables. A tool call is matched by its name, so a payment tool with a plain name (`run`, `execute`) passes.

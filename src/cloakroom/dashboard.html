@@ -199,7 +199,7 @@ header.top { position: sticky; top: 0; z-index: 5; background: var(--bg); paddin
 (function () {
   const $ = s => document.querySelector(s);
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-  const CRIT = ["SECRET", "CARD", "SSN", "IBAN", "ACCOUNT", "PASSWORD"], PERS = ["PERSON", "EMAIL", "PHONE", "ADDRESS", "DATE"];
+  const CRIT = ["SECRET", "CARD", "SSN", "IBAN", "BANK", "ACCOUNT", "PASSWORD"], PERS = ["PERSON", "EMAIL", "PHONE", "ADDRESS", "DATE"];
   const sev = k => CRIT.includes(k) ? "crit" : PERS.includes(k) ? "pers" : "low";
   const UNLOCK = 10;
   const STATUS = { review: "To review", correct: "Correct", false_alarm: "False alarm", missed: "Missed something" };

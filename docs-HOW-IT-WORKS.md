@@ -3,7 +3,8 @@
 - **Hide:** hooks on every tool input and tool output run the detectors (a prompt with sensitive data is
   blocked instead, since prompts can't be rewritten): pattern rules for secrets with
   known shapes (AWS, GitHub, Stripe, Slack, OpenAI, Google, JWTs, private keys, keyed passwords), checksummed PII
-  (cards, IBANs, SSNs), context rules (names next to emails, addresses, birth dates, home-directory usernames),
+  (cards, IBANs, SSNs, US routing numbers next to a routing word), context rules (names next to emails, addresses,
+  birth dates, home-directory usernames, bank account numbers next to an account word or a routing number),
   and the PII-Tracer model for names, addresses and other free-text personal data. A value found once is masked
   everywhere it repeats.
 - **Filter:** a known-safe filter leaves documented examples alone: published test cards and keys, sandbox IDs,
@@ -46,6 +47,17 @@
   To send it anyway, type `cr: allow` as your prompt (Claude never sees it), then ask Claude to run the same command
   again: it passes once, within 10 minutes. A changed command is held again. Only a keyed hash of the held command
   is stored (`~/.cloakroom/held.json`).
+- **Money-movement hold:** before any tool call runs, Cloakroom checks whether it would move money: a shell command
+  that writes (`-X POST`/`PUT`/`PATCH`, `-d`, `--json`, `-F`, PowerShell `-Method Post` or `-Body`) to a listed
+  payment endpoint (Stripe payouts, transfers, charges, payment intents and refunds; Plaid transfer and payment
+  initiation; Dwolla, Wise, Adyen, PayPal, Square, Increase, Modern Treasury and Column payment or transfer paths),
+  a payment CLI command (`stripe payouts create`), an MCP tool whose name carries a money verb (`send_money`,
+  `create_payout`, `initiate_transfer`, `pay_invoice`), or a tool call with a POST, PUT or PATCH `method` to a
+  listed endpoint. Such a call is held with one line naming the endpoint or tool; `cr: allow` lets the same call run
+  once, as with the egress hold, and a call that trips both holds shows one message and needs one `cr: allow`. The
+  lists live in `src/cloakroom/money.py`; `"money_hosts"` and `"money_tools"` in `~/.cloakroom/config.json` add to
+  them, and `"money_hold": false` turns the hold off. Holds and allows are logged with the endpoint or tool name,
+  never the request body.
 - **Write-time check:** when Claude writes a file (Write, Edit, MultiEdit, NotebookEdit, or a shell `>`, `>>` or
   `tee`) and a key or password would land in a file that is in a git repo and not git-ignored, the call is denied
   and Claude is told to put the value in `.env` and read it from the environment. `.env*`, `.envrc`, `*.pem`,

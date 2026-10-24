@@ -83,7 +83,7 @@ def hook_log():
 def assert_masked(text):
     assert "Harbor Point Bank" in text and "local OCR" in text
     assert "fernhill" not in text and "PII_EMAIL_1" in text
-    assert "4417" not in text and "3306" not in text and "PII_ACCOUNT_1" in text
+    assert "4417" not in text and "3306" not in text and "PII_BANK_1" in text  # "Account number:" label: BANK (0.6.4)
 
 
 # --- the digit fallback: works without the extra -------------------------------------------------------------------
@@ -98,7 +98,7 @@ def test_ocr_text_masks_account_numbers_in_any_grouping(number):
 
 
 def test_digit_fallback_only_for_ocr_text():
-    text = "Account number: 4417 2290 1185 3306"
+    text = "Statement ref: 4417 2290 1185 3306"  # (an "account number" label is a bank number now: 0.6.4)
     assert not engine.detect(text, "rules")[0] and engine.detect(text, "rules", ocr=True)[0]
 
 

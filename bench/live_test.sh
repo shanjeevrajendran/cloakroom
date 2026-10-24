@@ -109,7 +109,7 @@ if tx:
     ocr = raw[raw.find("local OCR"):][:800] if "local OCR" in raw else ""
     logged = re.search(r"post Read \S+ ocr pages=1 ms=\d+", open(log).read()) if os.path.exists(log) else None
     check("scanned PDF read by OCR as masked text",
-          bool(logged) and all(f"PII_{k}_" in ocr for k in ("PERSON", "ACCOUNT", "EMAIL")),
+          bool(logged) and all(f"PII_{k}_" in ocr for k in ("PERSON", "BANK", "EMAIL")),
           "no OCR in hook.log (is the ocr extra in .venv?)" if not logged else "")
     n = 0
     for line in open(tx[0]):
