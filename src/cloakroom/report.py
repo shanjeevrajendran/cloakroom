@@ -30,7 +30,7 @@ def path_class(target: str, tool: str = "") -> str:
     if tool in ("Bash", "PowerShell"):
         return t.rsplit("/", 1)[-1]  # the program name, never its arguments
     home = os.path.expanduser("~").replace("\\", "/").rstrip("/")
-    rel = t[len(home) + 1:] if t.startswith(home + "/") else t.lstrip("/")
+    rel = t[len(home) + 1:] if t.startswith(home + "/") else t[2:] if t.startswith("~/") else t.lstrip("/")
     rel = re.sub(r"^[A-Za-z]:/", "", rel)
     parts = [p for p in rel.split("/") if p]
     name = parts[-1] if parts else ""

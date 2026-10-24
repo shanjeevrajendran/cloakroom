@@ -1003,6 +1003,9 @@ def _log(event: str, data, out, ms: float = 0.0):
             f.write(f"{time.strftime('%Y-%m-%dT%H:%M:%S')} {event} {tool} {decision}{note}\n")
         target = events.target(tool, data.get("tool_input")) if isinstance(data, dict) and _FOUND else ""
         if target:  # a file name can hold a name or an email too: log it masked, like the output
+            home = os.path.expanduser("~").rstrip("/\\")
+            if home and target.startswith(home + os.sep):
+                target = "~" + target[len(home):]  # the home folder's name is not logged, so the report's path class survives masking
             try:
                 target = client.mask(target, data.get("session_id", "default"))["text"]
             except Exception:

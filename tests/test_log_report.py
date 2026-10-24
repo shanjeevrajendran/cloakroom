@@ -145,6 +145,14 @@ def test_report_counts_without_values(monkeypatch, capsys):
     assert data["chain"]["ok"] and data["rows"] and "about" in data and "PII_" not in json.dumps(data)
 
 
+def test_report_path_class_survives_masked_home_name(monkeypatch, capsys):
+    from cloakroom import report
+    monkeypatch.setenv("HOME", "/home/jane.smith")  # a home name that differs from the login user is masked in a path
+    monkeypatch.setenv("USERPROFILE", "/home/jane.smith")
+    _some_events(monkeypatch, capsys)
+    assert {r["path_class"] for r in report.rows()} >= {".env in code"}
+
+
 def test_report_since_and_path_class():
     from cloakroom import events, report
     events.record("post", {"tool_name": "Read", "session_id": "x"}, "masked", [("", "SECRET")], 1.0, "/tmp/a/b.py")
