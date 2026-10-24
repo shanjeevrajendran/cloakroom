@@ -211,17 +211,18 @@ def scan(text: str) -> list[Finding]:
 
 # US bank numbers (kind BANK). Digits alone say nothing, so a value counts only next to a word or field that names
 # it: a routing number must also pass the ABA checksum; a plain "account" key counts only beside a routing number.
-# A key glued to the digits by - or _ is an id prefix (ACCT-482913), not a label.
+# A key glued to the digits (ACCT482913, ACCT-482913) is an id prefix, not a label, and a label word must stand alone
+# (no letter or digit on either side), so "dda" or "aba" inside a git SHA or a hex key is not one.
 _GAP = r"[^\w\n$\u20ac\u00a3]{0,6}(?:(?i:number|num|no|is)\b[^\w\n$\u20ac\u00a3]{0,4})?"
-_ROUTING = re.compile(r"(?<![A-Za-z])(?:[Rr]outing|ROUTING|ABA|[Aa]ba|RTN|[Rr]tn|[Tt]ransit|TRANSIT|[Bb]ank|BANK)"
-                      r"(?:[ _-]?(?:[Nn]umber|NUMBER|[Nn]um|NUM|[Nn]o|NO|[Cc]ode|CODE|#))?(?![a-z])(?![-_]\d)" + _GAP
+_ROUTING = re.compile(r"(?<![A-Za-z0-9])(?:[Rr]outing|ROUTING|ABA|[Aa]ba|RTN|[Rr]tn|[Tt]ransit|TRANSIT|[Bb]ank|BANK)"
+                      r"(?:[ _-]?(?:[Nn]umber|NUMBER|[Nn]um|NUM|[Nn]o|NO|[Cc]ode|CODE|#))?(?![A-Za-z0-9])(?![-_]\d)" + _GAP
                       + r"(\d{9})(?![\d-]|[.,]\d)")
-_ACCOUNT = re.compile(r"(?i:(?<![a-z])(?:account[ _-]?(?:number|num|no|nbr|#)|acct(?:[ _-]?(?:number|num|no|nbr|#))?|"
+_ACCOUNT = re.compile(r"(?i:(?<![a-z0-9])(?:account[ _-]?(?:number|num|no|nbr|#)|acct(?:[ _-]?(?:number|num|no|nbr|#))?|"
                       r"(?:checking|savings|bank|beneficiary|deposit)[ _-]?(?:account|acct)(?:[ _-]?(?:number|num|no|#))?|"
-                      r"dda(?:[ _-]?(?:number|num|no|#))?))(?![a-z])(?![-_]\d)" + _GAP
+                      r"dda(?:[ _-]?(?:number|num|no|#))?))(?![a-z0-9])(?![-_]\d)" + _GAP
                       + r"(\d{2,}(?:[ -]\d{2,})*)(?![\d-]|[.,]\d)")
 # a plain account key in the same record as a routing number: {"routing": ..., "account": "..."}
-_PAIRED = re.compile(r"(?i:(?<![a-z])(?:account|acct)(?:[ _-]?(?:id|num|number|no))?)(?![a-z])" + _KEY_SEP_REQ
+_PAIRED = re.compile(r"(?i:(?<![a-z0-9])(?:account|acct)(?:[ _-]?(?:id|num|number|no))?)(?![a-z0-9])" + _KEY_SEP_REQ
                      + r"(\d(?:-?\d){3,16})(?![\d-]|[.,]\d)")
 # NACHA (ACH file) entry detail record: 94 characters, "6", a transaction code, the RDFI routing number, the account
 _NACHA = re.compile(r"(?m)^6(?:2[2-9]|3[2-9]|4[1-9]|5[1-5])(\d{9})([0-9A-Za-z -]{17})\d{10}.{55}$")

@@ -60,6 +60,21 @@ def test_finance_look_alikes_not_bank(text):
     assert banks(text) == []
 
 
+@pytest.mark.parametrize("text", [
+    "dcf54dda262dda2019051dae0562c015d049a05d",  # a git SHA: "dda" then digits inside hex
+    "commit 7e1f0c2dda48210937715ab09c3e5d1f2a4b6c8d", f'"encryptedKey": "02bb8d5c39dda{ACCT}af96c82fad"',
+    f"key 3aba{R}f0e1", f"0x7fbank{R}c3", f"acct{ACCT}", f"RTN{R}",  # a label glued to letters or digits
+])
+def test_label_words_inside_hex_or_ids_not_bank(text):
+    assert banks(text) == []
+
+
+@pytest.mark.parametrize("text,value", [("DDA 123456789", "123456789"), (f"dda: {ACCT}", ACCT),
+                                        (f"Routing ABA {R}", R), (f"(acct# {ACCT})", ACCT)])
+def test_standalone_labels_still_bank(text, value):
+    assert banks(text) == [value]
+
+
 def test_paired_needs_same_record():
     assert banks(f"routing: {R}\n\naccount: {ACCT}") == [R]  # a blank line ends the record
 
