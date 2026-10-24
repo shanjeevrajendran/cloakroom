@@ -1,6 +1,7 @@
 """A model span that overlaps the rules' findings must not hide words or flip a safe value to masked. A fake model
 returns the spans PII-Tracer gave on the MacBook Air on 2026-10-15, so these run without weights."""
 from cloakroom import Vault, engine, rules
+from conftest import untag
 
 
 def _fake_model(spans):
@@ -19,7 +20,7 @@ def test_model_span_across_phone_and_ssn_keeps_rule_labels(monkeypatch):
     monkeypatch.setattr(engine, "model_findings", _fake_model([(0, 11, "private_person"), (12, 40, "account_number")]))
     v = Vault()
     r = engine.mask(text, vault=v, mode="full")
-    assert r.text == "PII_PERSON_1 PII_PHONE_1 SSN PII_SSN_1\n"
+    assert untag(r.text) == "PII_PERSON_1 PII_PHONE_1 SSN PII_SSN_1\n"
     assert v.restore(r.text)[0] == text
 
 

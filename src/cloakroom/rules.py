@@ -125,7 +125,7 @@ CONTEXT_RULES = [
 # found under a key that says what the value is: shape-based "looks like a placeholder / a public place" checks don't apply
 _KEYED = {"keyed-secret", "keyed-password", "url-password", "address-field"}  # (birth dates keep the "historical date" check)
 _COMPILED = [(i, k, re.compile(rx), g, v) for i, k, rx, g, v in SECRET_RULES + PII_RULES + CONTEXT_RULES + PATH_RULES]
-OWN_PLACEHOLDER = re.compile(r"\bPII_[A-Z]+_\d+\b")
+OWN_PLACEHOLDER = re.compile(r"\bPII_[A-Z]+_\d+(?:_[a-z2-7]{6})?\b")  # issued (signed) or from before 0.6.1
 
 # CSV columns whose every cell is personal data
 _CSV_COLUMNS = {"name": "PERSON", "full_name": "PERSON", "first_name": "PERSON", "last_name": "PERSON",

@@ -15,7 +15,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from threading import Lock
 from urllib.parse import parse_qs, urlsplit
 
-from . import __version__, config, dashboard, engine
+from . import __version__, config, dashboard, engine, filelog
 from .vault import Vault
 
 LOCK = Lock()  # one model instance; calls are serialized
@@ -102,8 +102,9 @@ class Handler(BaseHTTPRequestHandler):
             with LOCK:
                 if self.path == "/mask":
                     cfg = config.load()
+                    files = filelog.known(req.get("roots") or [], req.get("read") or "") if req.get("roots") else None
                     r = engine.mask(req["text"], vault, req.get("mode") or self.server.mode, cfg["allow"], cfg["always"],
-                                    bool(req.get("ocr")))
+                                    bool(req.get("ocr")), files)
                     return self._send(200, {"text": r.text, "mode": r.mode, "masked": r.masked, "skipped": r.skipped})
                 if self.path == "/restore":
                     text, unknown = vault.restore(req["text"])

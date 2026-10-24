@@ -4,7 +4,7 @@ from __future__ import annotations
 import re
 import shlex
 
-from .vault import PLACEHOLDER
+from .vault import ANY_PLACEHOLDER
 
 # Commands that can send data off this machine. Placeholders stay; the user is asked.
 NETWORK = {"curl", "wget", "http", "https", "httpie", "nc", "ncat", "netcat", "telnet", "ssh", "scp", "sftp", "rsync",
@@ -147,7 +147,7 @@ def literal_tokens(command: str) -> list[str]:
     placeholder). Never the value."""
     out = []
     for name, value in auth_headers(command):
-        if len(value) < LITERAL_MIN or "$" in value or "%" in value and re.search(r"%\w+%", value) or PLACEHOLDER.search(value):
+        if len(value) < LITERAL_MIN or "$" in value or "%" in value and re.search(r"%\w+%", value) or ANY_PLACEHOLDER.search(value):
             continue
         out.append(name)
     return out
@@ -191,7 +191,7 @@ def restore(command: str, lookup, powershell: bool = False) -> tuple[str, list[s
             out.append(c)
             i += 1
             continue
-        m = PLACEHOLDER.match(command, i)
+        m = ANY_PLACEHOLDER.match(command, i)
         if m and (i == 0 or not (command[i - 1].isalnum() or command[i - 1] == "_")):
             value = lookup(m.group())
             if value is None:

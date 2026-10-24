@@ -1,13 +1,14 @@
 import re
 """Fast tests in rules mode (no model needed)."""
 from cloakroom import Vault, mask
+from conftest import untag
 
 
 def test_same_value_same_placeholder():
     v = Vault()
     a = mask("mail jo.smith@fernhill.co", v, mode="rules").text
     b = mask("again jo.smith@fernhill.co", v, mode="rules").text
-    assert a.split()[-1] == b.split()[-1] == "PII_EMAIL_1"
+    assert a.split()[-1] == b.split()[-1] and untag(a.split()[-1]) == "PII_EMAIL_1"
 
 
 def test_restore_round_trip_and_unknown():

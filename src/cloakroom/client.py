@@ -8,7 +8,7 @@ import sys
 import urllib.error
 import urllib.request
 
-from . import config, engine
+from . import config, engine, filelog
 from .vault import Vault
 
 
@@ -102,13 +102,16 @@ def start_background():
                          stdin=subprocess.DEVNULL, env=os.environ.copy(), **detach)
 
 
-def mask(text: str, session: str, ocr: bool = False) -> dict:
-    """ocr: the text came from OCR (engine.OCR_DIGITS also applies)."""
+def mask(text: str, session: str, ocr: bool = False, roots: list[str] | None = None, read: str = "") -> dict:
+    """ocr: the text came from OCR (engine.OCR_DIGITS also applies). roots: the working folder(s), and read: the file
+    being read, whose file-log entries apply (filelog.py)."""
     cfg = config.load()
     if cfg["mode"] == "rules":
-        r = engine.mask(text, Vault(config.vault_path(session)), "rules", cfg["allow"], cfg["always"], ocr)
+        files = filelog.known(roots, read) if roots else None
+        r = engine.mask(text, Vault(config.vault_path(session)), "rules", cfg["allow"], cfg["always"], ocr, files)
         return {"text": r.text, "mode": "rules", "masked": r.masked, "skipped": r.skipped}
-    return _post("/mask", {"text": text, "session": session, **({"ocr": True} if ocr else {})})
+    return _post("/mask", {"text": text, "session": session, **({"ocr": True} if ocr else {}),
+                           **({"roots": roots, "read": read} if roots else {})})
 
 
 def restore(text: str, session: str) -> dict:

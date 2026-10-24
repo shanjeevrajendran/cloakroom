@@ -77,9 +77,10 @@ def head() -> str:
 
 
 @contextlib.contextmanager
-def _locked():
-    """One writer at a time: parallel hooks would otherwise read the same head and fork the chain."""
-    fd = os.open(config.private_dir() / "events.lock", os.O_RDWR | os.O_CREAT, 0o600)
+def _locked(name: str = "events.lock"):
+    """One writer at a time: parallel hooks would otherwise read the same head and fork the chain (also used by
+    filelog.py, with its own lock file)."""
+    fd = os.open(config.private_dir() / name, os.O_RDWR | os.O_CREAT, 0o600)
     try:
         if os.name == "nt":
             import msvcrt

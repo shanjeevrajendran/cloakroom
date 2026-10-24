@@ -50,7 +50,7 @@ def test_dashboard_label_suggests_and_approve_applies(server, monkeypatch, capsy
     cookie, _ = sign_in(server)
     w = {**cookie, "X-Cloakroom": "1"}
     ev = json.loads(call(server, "GET", "/api/summary", headers=cookie)[2])["events"][0]
-    _, _, raw = call(server, "POST", "/api/label", {"id": ev["id"], "label": "false_alarm", "placeholders": ["PII_SECRET_1"]}, w)
+    _, _, raw = call(server, "POST", "/api/label", {"id": ev["id"], "label": "false_alarm", "placeholders": ev["placeholders"]}, w)
     assert json.loads(raw)["suggested"] == 1
     summary = json.loads(call(server, "GET", "/api/summary", headers=cookie)[2])
     [rule] = summary["rules"]

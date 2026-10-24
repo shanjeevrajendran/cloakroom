@@ -5,6 +5,7 @@ import subprocess
 import sys
 
 import pytest
+from conftest import tag, untag
 
 KEY = "ghp_" + "Q7aZ0kLm3Np9Rt2Vw5Xy8Bc1Df4Gh6Jk0LmPq"  # a GitHub-token shape, not a real one
 KEY2 = "ghp_" + "Z9yX8wV7uT6sR5qP4oN3mL2kJ1iH0gF9eD8c"
@@ -65,7 +66,7 @@ def test_known_value_named_by_placeholder(repo, monkeypatch, capsys):
     (repo / "notes.txt").write_text(f"{KEY}\n")
     git(repo, "add", "notes.txt")
     reason = bash("git commit -m x", repo, monkeypatch, capsys)["hookSpecificOutput"]["permissionDecisionReason"]
-    assert "PII_SECRET_1 in notes.txt" in reason
+    assert "PII_SECRET_1 in notes.txt" in untag(reason)
 
 
 def test_clean_commit_passes_and_example_key_passes(repo, monkeypatch, capsys):
@@ -250,7 +251,7 @@ def test_agent_config_env_reference_allowed(repo, monkeypatch, capsys):
 
 def test_agent_config_known_key_names_placeholder(repo, monkeypatch, capsys):
     _learn(monkeypatch, capsys)
-    content = '{"mcpServers": {"gh": {"env": {"GITHUB_TOKEN": "PII_SECRET_1"}}}}'
+    content = tag('{"mcpServers": {"gh": {"env": {"GITHUB_TOKEN": "PII_SECRET_1"}}}}', "g")
     out = run_hook("pre", {"session_id": "g", "tool_name": "Write", "cwd": str(repo),
                            "tool_input": {"file_path": str(repo / ".mcp.json"), "content": content}}, monkeypatch, capsys)
     reason = out["hookSpecificOutput"]["permissionDecisionReason"]

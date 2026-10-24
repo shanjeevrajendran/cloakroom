@@ -14,6 +14,23 @@
   OCR (the `ocr` extra) and only the masked text goes to Claude. Without OCR they are held back.
 - **Restore:** values go into an encrypted per-session vault (AES-GCM, key in the OS secure store). When Claude
   writes a file or runs a command with a placeholder, the real value is put back locally. The model never sees it.
+- **Signed placeholders:** a placeholder is `PII_<KIND>_<n>_<tag>`. The tag is 6 characters (30 bits) of an HMAC
+  over the vault's random id, the session and `PII_<KIND>_<n>`, keyed by a key derived from the vault key (never
+  stored). A value comes back only when the tag checks out and the placeholder is in this session's vault. Anything
+  else in placeholder shape (a guessed number, a wrong tag, another session's placeholder, the untagged form from
+  before 0.6.1) stays as text; Claude is told which were left, and the activity log records a refused restore with
+  its reason and no values. Three refused guesses in one session show you one line. Detection never masks text that
+  is already a placeholder, in either form.
+- **File log:** when real values are put back into a file (Write, Edit, MultiEdit, NotebookEdit, or files a local
+  shell command names), the hook notes the placeholders and paths before the tool runs, then, once it has run,
+  finds the values in the file and records per file its path (one spelling per file: symlinks resolved; on Windows
+  lower case, forward slashes, no `\\?\` prefix), its SHA-256, size and time, and per value the byte position,
+  the value's SHA-256, kind and placeholder. The log (`~/.cloakroom/filelog.bin`) is encrypted like the vault and
+  holds no values: they are read back from the file when needed. Before detection runs on later output, the entries
+  for files under the session's working folder (and the file being read) give their values as exact matches, so they
+  are masked even where detection would miss them: the same placeholder in the same session, the session's own
+  placeholder in a new one. An entry stays while the file has the same hash or the position still holds the same
+  value; a deleted or changed file drops it, checked on every read and every new entry.
 - **Encoded dumps:** `od`, `xxd`, `base64` and spaced-out output are decoded and checked; a hit withholds the output.
 - **Encoded secrets:** each secret already in the session vault (keys, passwords, card, account and ID numbers) and
   each exact always-mask value is also looked for in its encoded forms: base64 (standard and URL-safe, with or

@@ -6,6 +6,7 @@ from collections import namedtuple
 import pytest
 
 from cloakroom import Vault, engine
+from conftest import untag
 
 Span = namedtuple("Span", "start end label score")
 KEY = "sk_" + "live_51Hx9QaBcDeFgHiJkLmNoPqRsTuVwXyZ012345"  # split so secret scanners leave the fake alone
@@ -39,14 +40,14 @@ def fake_model(monkeypatch):
 def test_key_and_separator_stay_outside_the_mask(fake_model, line, key):
     v = Vault()
     out = engine.mask(line + "\n", v, mode="full").text
-    assert re.fullmatch(re.escape(key) + r"PII_[A-Z]+_\d+\n", out), out
+    assert re.fullmatch(re.escape(key) + r"PII_[A-Z]+_\d+_[a-z2-7]{6}\n", out), out
     assert v.restore(out)[0] == line + "\n"
 
 
 def test_same_value_same_placeholder_with_or_without_spaces(fake_model):
     v = Vault()
     out = engine.mask(f"SUPPORT_CONTACT={EMAIL}\nSUPPORT_CONTACT = {EMAIL}\n", v, mode="full").text
-    assert out == "SUPPORT_CONTACT=PII_EMAIL_1\nSUPPORT_CONTACT = PII_EMAIL_1\n"
+    assert untag(out) == "SUPPORT_CONTACT=PII_EMAIL_1\nSUPPORT_CONTACT = PII_EMAIL_1\n"
 
 
 @pytest.mark.parametrize("span", ["admin:hunter2pass", "https://example.org/x", "dGVzdHZhbHVlMTI=="])

@@ -1,5 +1,23 @@
 # Changelog
 
+## Unreleased
+- Signed placeholders: each placeholder now ends in a short tag only your machine can make (`PII_EMAIL_1_k7q2ab`).
+  Cloakroom restores a real value only for a placeholder it issued in this session. A guessed number, a wrong tag
+  or a placeholder from another session stays as text, Claude is told so, and the activity log counts a refused
+  restore (no values). After three in one session you see one line: "cloakroom: 3 placeholder guesses refused this
+  session". This closes the route where a planted file names `PII_SECRET_1` without ever seeing it.
+- Deliberate change on upgrade: placeholders from before this version (`PII_EMAIL_1`) are no longer restored. In a
+  session you resume after upgrading, Claude is told the old placeholder wasn't restored and to ask you for the value
+  again, and you see "cloakroom: left 1 placeholder from before 0.6.1 as text". The values that session already knew
+  keep their numbers under signed placeholders. Files on disk are not touched.
+- File log: when Cloakroom puts real values into a file Claude writes (Write, Edit, MultiEdit, NotebookEdit or a
+  local shell command), it records where they sit: path, position, a hash of the value and of the file, kind and
+  placeholder, encrypted like the vault and never the value itself. Later output from that file (Read, cat, grep,
+  git diff, a test echoing it) is masked again before detection runs, in the same session (same placeholder) and in
+  new ones (a new placeholder), even where detection alone would miss a name. An entry ends when the file is deleted
+  or no longer holds the value there. The log keeps at most 5,000 positions or 10 MB, oldest files first, and
+  is searched only for files under the session's working folder and the file being read.
+
 ## 0.6.0 (2026-10-23)
 - Commit and push check: before `git commit` or `git push` runs from Claude, Cloakroom reads the staged change
   (with `-a`, paths or a `git add` in the same command, the working tree and new files too) or the commits no remote

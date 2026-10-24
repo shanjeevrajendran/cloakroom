@@ -15,17 +15,18 @@ import re
 import sys
 import time
 
-from . import client, config, decode, engine, events, media, shell
+from . import client, config, decode, engine, events, filelog, media, shell
 from .hookentry import STRUCTURAL, _withhold, closed
-from .vault import PLACEHOLDER, Vault
+from .vault import ANY_PLACEHOLDER, OLD_FORMAT, PLACEHOLDER, Vault
 
 SHELL_TOOLS = {"Bash", "PowerShell"}
 LOCAL_FILE_TOOLS = {"Read", "Write", "Edit", "MultiEdit", "NotebookEdit", "NotebookRead", "Glob", "Grep", "LS"}
-GUIDE = ("Cloakroom note: values like PII_EMAIL_1 are placeholders for real data kept on this machine. Use them "
+GUIDE = ("Cloakroom note: values like PII_EMAIL_1_k7q2ab are placeholders for real data kept on this machine. Use them "
          "verbatim in Write, Grep and local Bash commands, and in Edit's new_string: Cloakroom restores the real "
          "values before the tool runs and masks them again in the output. Edit's old_string must not contain a "
          "placeholder (the file holds the real value, so it won't match): anchor old_string on nearby text without "
-         "placeholders, or rewrite the file with Write. Don't try to recover the real values.")
+         "placeholders, or rewrite the file with Write. Copy placeholders exactly, tag included: Cloakroom restores "
+         "only the ones it issued in this session. Don't try to recover the real values.")
 PRIME_MAX_BYTES = 512 * 1024
 _ACTION = [""]  # set when a prompt passes by your own choice (sent anyway, paused), for the event log
 _NOTE = [""]  # extra detail for the hook.log line (OCR pages and time), never values
@@ -241,11 +242,15 @@ def _on_prompt(data: dict) -> dict | None:
 
 def on_post(data: dict) -> dict | None:
     session, kinds = data.get("session_id", "default"), []
+    if data.get("tool_use_id"):  # a restoring write ran: log where its real values landed (filelog.py)
+        filelog.complete(str(data["tool_use_id"]), Vault(config.vault_path(session)))
+    roots = [data.get("cwd") or os.getcwd()]
+    read = str((data.get("tool_input") or {}).get("file_path") or "") if data.get("tool_name") == "Read" else ""
 
     def fn(s):
         if len(s) < 4:
             return s
-        r = client.mask(s, session, ocr=converted == "ocr")
+        r = client.mask(s, session, ocr=converted == "ocr", roots=roots, read=read)
         kinds.extend(k for _, k, _ in r["masked"])
         _FOUND.extend((p, k) for p, k, _ in r["masked"])
         return r["text"]
@@ -300,7 +305,7 @@ def on_post(data: dict) -> dict | None:
             return t
         hit = decode.known_value_hit(t, known)
         for view in ([] if hit else decode.views(t, reverse=reverse)):
-            if decode.known_value_hit(view, known) or client.mask(view, session)["masked"]:
+            if decode.known_value_hit(view, known) or client.mask(view, session, roots=roots)["masked"]:
                 hit = True
                 break
         if hit:
@@ -417,7 +422,7 @@ def _config_literals(text: str) -> list[str]:
     out = []
     for m in _CONFIG_SECRET.finditer(text):
         v = m.group("value")
-        if len(v) < shell.LITERAL_MIN or "$" in v or v.startswith(("/", "~", ".", "env:")) or PLACEHOLDER.search(v) \
+        if len(v) < shell.LITERAL_MIN or "$" in v or v.startswith(("/", "~", ".", "env:")) or ANY_PLACEHOLDER.search(v) \
                 or not re.fullmatch(r"[A-Za-z0-9_\-.=+/]+", v) or not (re.search(r"\d", v) and re.search(r"[A-Za-z]", v)):
             continue
         out.append(v)
@@ -720,13 +725,73 @@ def _git_hold(command: str, cwd: str, vault: Vault, powershell: bool) -> dict | 
                  "value to get past this; ask the user.")
 
 
+GUESS_NOTICE = 3  # refused placeholders in one session before the user is told
+
+
+def _refusals(vault: Vault, session: str) -> tuple[str, str]:
+    """What to tell Claude and the user about placeholders left as text (vault.refused). Counts the refusals that
+    aren't upgrade leftovers per session; the user hears once, when they reach GUESS_NOTICE. Never values."""
+    if not vault.refused:
+        return "", ""
+    old = sorted({p for p, why in vault.refused if why == OLD_FORMAT})
+    other = sorted({p for p, why in vault.refused if why != OLD_FORMAT})
+    _EXTRA["refused"] = events.counts([why for _, why in vault.refused])
+    context, notice = [], []
+    if old:
+        context.append(f"{', '.join(old)}: from before Cloakroom 0.6.1, so not restored (left as text). Ask the user "
+                       "for the value again; it will get a new placeholder.")
+        notice.append(f"left {len(old)} placeholder{'s' if len(old) > 1 else ''} from before 0.6.1 as text")
+    if other:
+        context.append(f"Placeholders Cloakroom didn't issue in this session (left as text): {', '.join(other)}")
+        counter = config.private_dir("refused") / config.vault_path(session).stem
+        try:
+            before = int(counter.read_text())
+        except (OSError, ValueError):
+            before = 0
+        after = before + len(other)
+        fd = os.open(counter, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+        with os.fdopen(fd, "w") as f:
+            f.write(str(after))
+        if before < GUESS_NOTICE <= after:
+            notice.append(f"{after} placeholder guesses refused this session")
+    return " ".join(context), ("cloakroom: " + "; ".join(notice)) if notice else ""
+
+
+def _with_notes(out: dict, context: str, notice: str) -> dict:
+    if context:
+        out["additionalContext"] = context
+    return {"hookSpecificOutput": out, **({"systemMessage": notice} if notice else {})}
+
+
+def _command_paths(command: str, cwd: str, powershell: bool) -> list[str]:
+    """Paths a shell command names (arguments and redirect targets) that may receive restored values."""
+    import shlex
+    try:
+        words = [w.strip("\"'") for w in shlex.split(command, posix=not (powershell or os.name == "nt"))]
+    except ValueError:
+        words = command.split()
+    words += [t.strip("\"'") for t in _REDIRECT.findall(command)]
+    out = []
+    for w in words:
+        if w and not w.startswith("-") and not ANY_PLACEHOLDER.search(w) and re.search(r"[\w.]", w):
+            out.append(filelog.norm(w, cwd))
+    return list(dict.fromkeys(out))[:50]
+
+
+def _pending(data: dict, paths: list[str], text: str, vault: Vault):
+    """A restoring write is about to run: note its paths and the placeholders it restores, for the file log."""
+    restored = [p for p in PLACEHOLDER.findall(text) if p in vault.by_placeholder]
+    if data.get("tool_use_id") and paths and restored:
+        filelog.pending(str(data["tool_use_id"]), paths, restored)
+
+
 def on_pre(data: dict) -> dict | None:
     tool, args, session = data.get("tool_name", ""), data.get("tool_input") or {}, data.get("session_id", "default")
     if _touches_home(tool, args):
         return _deny("Cloakroom: its own settings (~/.cloakroom) are changed only by you, from the dashboard or "
                      "by typing cr: pause / cr: resume. Claude can't change them.")
     blob = json.dumps(args)
-    has_ph = bool(PLACEHOLDER.search(blob))
+    has_ph = bool(ANY_PLACEHOLDER.search(blob))
     vault = Vault(config.vault_path(session))
     cwd = data.get("cwd") or os.getcwd()
 
@@ -751,26 +816,26 @@ def on_pre(data: dict) -> dict | None:
                        "permissionDecisionReason": "Cloakroom: this command can send data off this machine, so "
                                                    "placeholders were left in place. Approve only if that's what you want."}}
                 return None if _dry("pre", "Bash network: would ask") else out
-            restored, unknown = shell.restore(cmd, vault.by_placeholder.get, powershell=ps)
+            restored, _ = shell.restore(cmd, vault.lookup, powershell=ps)  # refusals: vault.refused
             denied = _commit_check(tool, args, args, cwd, vault)
             if denied:
                 return None if denied is _DRY_DENY else denied
             if _dry("pre", f"Bash {kind}: would restore"):
                 return None
+            context, notice = _refusals(vault, session)
+            if restored == cmd:
+                return _with_notes({"hookEventName": "PreToolUse"}, context, notice) if context else None
+            _pending(data, _command_paths(cmd, cwd, ps), cmd, vault)
             out = {"hookEventName": "PreToolUse", "updatedInput": {**args, "command": restored}}
             if kind == "unknown":
                 out.update(permissionDecision="ask",
                            permissionDecisionReason="Cloakroom restored real values into a command it doesn't know. "
                                                     "Approve only if it stays on this machine.")
-            if unknown:
-                out["additionalContext"] = f"Placeholders not in the vault (left as is): {', '.join(sorted(set(unknown)))}"
-            return {"hookSpecificOutput": out}
-        changed_fields, unknown = {}, []
+            return _with_notes(out, context, notice)
+        changed_fields = {}
         for key, value in args.items():
             def fn(s):
-                text, unk = vault.restore(s)
-                unknown.extend(unk)
-                return text
+                return vault.restore(s)[0]  # refusals: vault.refused
             new, changed = _strings(value, fn)
             if changed:
                 changed_fields[key] = new
@@ -778,16 +843,20 @@ def on_pre(data: dict) -> dict | None:
             denied = _commit_check(tool, {**args, **changed_fields}, args, cwd, vault)
             if denied:
                 return None if denied is _DRY_DENY else denied
-        if not changed_fields or _dry("pre", f"{tool}: would restore {list(changed_fields)}"):
+        if changed_fields and _dry("pre", f"{tool}: would restore {list(changed_fields)}"):
             return None
+        context, notice = _refusals(vault, session)
+        if not changed_fields:
+            return _with_notes({"hookEventName": "PreToolUse"}, context, notice) if context else None
+        if tool in WRITE_TOOLS:
+            path = str(args.get("file_path") or args.get("notebook_path") or "")
+            _pending(data, [filelog.norm(path, cwd)] if path else [], json.dumps(args), vault)
         # updatedInput replaces the whole input in practice (a partial one dropped Write's file_path): send it all
         out = {"hookEventName": "PreToolUse", "updatedInput": {**args, **changed_fields}}
-        if unknown:
-            out["additionalContext"] = f"Placeholders not in the vault (left as is): {', '.join(sorted(set(unknown)))}"
-        return {"hookSpecificOutput": out}
+        return _with_notes(out, context, notice)
 
     # Everything else may leave the machine (web, MCP, subagent prompts): never restore; deny real values.
-    r = client.mask(blob, session)
+    r = client.mask(blob, session, roots=[cwd])
     if r["masked"]:
         _FOUND.extend((p, k) for p, k, _ in r["masked"])
         kinds = _summary([k for _, k, _ in r["masked"]])

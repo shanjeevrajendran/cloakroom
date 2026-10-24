@@ -109,6 +109,14 @@
   machines without Cloakroom and prompts sent with `cr!` are not in it.
 - `cloakroom clean-history` skips files changed in the last 10 minutes (an open session). It replaces sample keys
   too, not only real ones; the backup folder keeps the originals, and holds the values until you delete it.
+- Signed placeholders: placeholders from before 0.6.1 (`PII_EMAIL_1`) are no longer restored, by design. A resumed
+  session's old placeholders stay as text until you give the value again. The tag stops guessing, not a program
+  that already runs as you and can read the vault key.
+- File log: it holds at most 5,000 value positions or 10 MB, and drops the oldest files first; a value in a file
+  dropped that way is left to detection again. It only covers files under the session's working folder and the
+  file being read, files up to 4 MB, and values of 4 characters or more, matched exactly (a changed case, a part of
+  the value or an encoded copy isn't matched). An edit above the value moves it, which ends the entry; values a
+  notebook stores with JSON escaping (quotes, line breaks) aren't found in the file and aren't logged.
 - The dashboard (`cloakroom dashboard`) is reachable only on 127.0.0.1, with a one-time sign-in link; restarting the
   service signs the browser out. The activity log keeps no values or text, but it does keep file paths (masked like
   any output) and the program name of shell commands.

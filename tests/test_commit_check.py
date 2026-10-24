@@ -5,6 +5,7 @@ import subprocess
 import sys
 
 import pytest
+from conftest import tag
 
 KEY = "ghp_" + "Q7aZ0kLm3Np9Rt2Vw5Xy8Bc1Df4Gh6Jk0LmPq"  # a GitHub-token shape, not a real one
 
@@ -33,6 +34,7 @@ def _mask_key(monkeypatch, capsys, session="c"):
 
 
 def _write(path, content, cwd, monkeypatch, capsys, session="c", tool="Write"):
+    content = tag(content, session)
     args = {"file_path": str(path), "content": content}
     if tool == "Edit":
         args = {"file_path": str(path), "old_string": "x", "new_string": content}
@@ -116,10 +118,10 @@ def test_check_ignore_failure_fails_open(repo, monkeypatch, capsys):
 def test_bash_restore_redirect_into_tracked_file_denied(repo, monkeypatch, capsys):
     _mask_key(monkeypatch, capsys)
     deny = run_hook("pre", {"session_id": "c", "tool_name": "Bash", "cwd": str(repo),
-                            "tool_input": {"command": "echo PII_SECRET_1 > token.txt"}}, monkeypatch, capsys)
+                            "tool_input": {"command": tag("echo PII_SECRET_1 > token.txt", "c")}}, monkeypatch, capsys)
     assert deny["hookSpecificOutput"]["permissionDecision"] == "deny"
     ok = run_hook("pre", {"session_id": "c", "tool_name": "Bash", "cwd": str(repo),
-                          "tool_input": {"command": "echo PII_SECRET_1 > .env"}}, monkeypatch, capsys)
+                          "tool_input": {"command": tag("echo PII_SECRET_1 > .env", "c")}}, monkeypatch, capsys)
     assert KEY in ok["hookSpecificOutput"]["updatedInput"]["command"]
 
 

@@ -7,6 +7,7 @@ from http.server import ThreadingHTTPServer
 import pytest
 
 from test_shell_and_hooks import run_hook
+from conftest import untag
 
 
 @pytest.fixture
@@ -62,9 +63,10 @@ def test_summary_values_and_labels(server, monkeypatch, capsys):
     ev = summary["events"][0]
     assert "Xk9vT2pLq8mN3r" not in json.dumps(summary) and ev["kinds"] == {"SECRET": 1} and summary["decisions"] == 0
     vals = json.loads(call(server, "GET", f"/api/values?id={ev['id']}", headers=cookie)[2])["values"]
-    assert vals == [{"placeholder": "PII_SECRET_1", "kind": "SECRET", "value": "Xk9vT2pLq8mN3r"}]
+    assert [{**x, "placeholder": untag(x["placeholder"])} for x in vals] == [
+        {"placeholder": "PII_SECRET_1", "kind": "SECRET", "value": "Xk9vT2pLq8mN3r"}]
 
-    body = {"id": ev["id"], "label": "false_alarm", "placeholders": ["PII_SECRET_1"]}
+    body = {"id": ev["id"], "label": "false_alarm", "placeholders": [vals[0]["placeholder"]]}
     assert call(server, "POST", "/api/label", body, cookie)[0] == 403  # no X-Cloakroom header
     assert call(server, "POST", "/api/label", body, {**cookie, "X-Cloakroom": "1"})[0] == 200
     from cloakroom import labels

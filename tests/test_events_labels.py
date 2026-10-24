@@ -3,6 +3,7 @@ import json
 import pytest
 
 from test_shell_and_hooks import run_hook
+from conftest import untag
 
 SECRET = "Xk9vT2pLq8mN3r"
 
@@ -17,7 +18,7 @@ def test_events_are_value_free(monkeypatch, capsys):
     assert SECRET not in raw and "echo " not in raw
     newest, first = events.read()
     assert first["tool"] == "Read" and first["target"] == "/x/.env" and first["action"] == "masked"
-    assert first["kinds"] == {"SECRET": 1} and first["placeholders"] == ["PII_SECRET_1"]
+    assert first["kinds"] == {"SECRET": 1} and [untag(p) for p in first["placeholders"]] == ["PII_SECRET_1"]
     assert first["ms"] >= 0 and first["session"] == "t"
     assert newest["target"] == "" and newest["event"] == "pre"  # nothing found: no target logged
 
@@ -27,7 +28,7 @@ def test_event_target_is_masked(monkeypatch, capsys):
     run_hook("post", {"session_id": "t", "tool_name": "Read", "tool_input": {"file_path": "/x/jane.doe@marrowgate.io/notes.txt"},
                       "tool_response": {"file": {"content": "mail jane.doe@marrowgate.io"}}}, monkeypatch, capsys)
     ev = events.read()[0]
-    assert "jane.doe" not in ev["target"] and ev["target"] == "/x/PII_EMAIL_1/notes.txt"
+    assert "jane.doe" not in ev["target"] and untag(ev["target"]) == "/x/PII_EMAIL_1/notes.txt"
     assert events.target("Bash", {"command": "/usr/bin/grep -rn secret ."}) == "grep"
 
 

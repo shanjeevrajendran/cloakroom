@@ -9,6 +9,7 @@ import os
 import re
 
 from . import __version__, events
+from .vault import ANY_PLACEHOLDER
 
 ABOUT = [
     "Cloakroom report: what Cloakroom caught on this machine, counted per day and session by data kind and action.",
@@ -25,7 +26,7 @@ def path_class(target: str, tool: str = "") -> str:
     """'.py in code' for a file path, the program name for a shell command, '' for none. Never the full path."""
     if not target:
         return ""
-    t = re.sub(r"PII_[A-Z]+_\d+", "[masked]", target).replace("\\", "/")
+    t = ANY_PLACEHOLDER.sub("[masked]", target).replace("\\", "/")
     if tool in ("Bash", "PowerShell"):
         return t.rsplit("/", 1)[-1]  # the program name, never its arguments
     home = os.path.expanduser("~").replace("\\", "/").rstrip("/")

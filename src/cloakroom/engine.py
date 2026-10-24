@@ -335,10 +335,23 @@ def _known(text: str, known: dict) -> list[rules.Finding]:
             for a, b, v, how in decode.find_known(text, known)]
 
 
+def _logged(text: str, files: dict) -> list[rules.Finding]:
+    """Values the file log says Cloakroom restored into files this output may come from (filelog.known): exact
+    matches, keyed, so they are masked even where detection would miss them."""
+    out = []
+    for v, kind in files.items():
+        i = text.find(v)
+        while i >= 0:
+            out.append(rules.Finding(i, i + len(v), kind, "file-log", keyed=True))
+            i = text.find(v, i + len(v))
+    return out
+
+
 def detect(text: str, mode: str = "full", allow=(), always=(), ocr: bool = False,
-           known: dict | None = None) -> tuple[list[rules.Finding], list[tuple]]:
+           known: dict | None = None, files: dict | None = None) -> tuple[list[rules.Finding], list[tuple]]:
     """Findings to mask, and findings skipped as safe (with the reason). ocr: the text came from OCR.
-    known: {value: kind} of secrets already seen, matched plain and encoded (known_values)."""
+    known: {value: kind} of secrets already seen, matched plain and encoded (known_values).
+    files: {value: kind} from the file log, matched plain."""
     if mode not in ("full", "rules"):
         raise ValueError("mode must be 'full' or 'rules'")
     found = rules.scan(text)
@@ -347,10 +360,10 @@ def detect(text: str, mode: str = "full", allow=(), always=(), ocr: bool = False
     own = [m.span() for m in rules.OWN_PLACEHOLDER.finditer(text)]
     keep, skipped = [], []
     rule_verdict: dict = {}  # (start, end) -> (rule kind, skip reason or None); rules come before the model in found
-    for f in found + _always(text, always) + _known(text, known or {}):
+    for f in _logged(text, files or {}) + found + _always(text, always) + _known(text, known or {}):
         if any(s <= f.start and f.end <= e for s, e in own):
             continue
-        if f.source == "your-rule" or f.source.startswith("known"):  # you said mask it: no safe-value judgement
+        if f.source in ("your-rule", "file-log") or f.source.startswith("known"):  # no safe-value judgement
             keep.append(f)
             continue
         if f.source.startswith("model:") and (f.start, f.end) in rule_verdict:
@@ -441,9 +454,10 @@ def _repeats(text: str, found: list[rules.Finding]) -> list[rules.Finding]:
     return out
 
 
-def mask(text: str, vault: Vault | None = None, mode: str = "full", allow=(), always=(), ocr: bool = False) -> Result:
+def mask(text: str, vault: Vault | None = None, mode: str = "full", allow=(), always=(), ocr: bool = False,
+         files: dict | None = None) -> Result:
     vault = vault if vault is not None else Vault()
-    findings, skipped = detect(text, mode, allow, always, ocr, known_values(vault, always))
+    findings, skipped = detect(text, mode, allow, always, ocr, known_values(vault, always), files)
     out, last, masked = [], 0, []
     for f in findings:
         ph = vault.placeholder(f.value(text), f.kind)

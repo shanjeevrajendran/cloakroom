@@ -157,6 +157,11 @@ Masking is the core. These come with it, on by default, and need nothing from yo
 - **A log you can check and export:** each line of the activity log carries the hash of the line before it, so an
   edited or removed line shows up. `cloakroom report` (or Export on the dashboard) gives counts per day and session,
   without values.
+- **Placeholders can't be guessed:** each one ends in a short tag only your machine can make
+  (`PII_SECRET_1_k7q2ab`), and only placeholders issued in this session get their real value back. A file that
+  names `PII_SECRET_1` to fish for a key gets nothing; after three such tries in a session you see one line.
+- **Files Claude wrote stay masked:** when a real value is put back into a file, Cloakroom remembers where (never the
+  value), so reading that file again later, even in a new session, shows the placeholder.
 - **Old transcripts can be cleaned:** `cloakroom clean-history` finds keys and passwords already sitting in old
   Claude Code transcripts and your prompt history, and replaces them on your yes, with a backup you delete.
 
