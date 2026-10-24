@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.6.2 (2026-10-24)
 - Fewer false alarms: Cloakroom now leaves alone harmless text it used to mask in code and config. That covers package
   versions (`minipass-flush: ^1.0.5`), short numbers on code constants whose name has no secret word in it
   (`SYS_FUTEX_WAIT = 5323`), GPG key ids, translation and UI strings under message or label keys
