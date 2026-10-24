@@ -41,6 +41,8 @@ expect rough edges.
   the drafts saved on your disk have the real names.
 - **Medical or HR records:** names, birth dates, addresses and ID numbers are masked, so Claude can summarise or tidy a record without knowing whose it is.
 - **`.env` files and logs:** Claude fixes the config without ever seeing the password or API key.
+- **Finance work:** bank and card numbers are masked, calls that move money wait for your OK, and `cloakroom report`
+  with the tamper-evident log is your audit trail ([for finance teams](#for-finance-teams)).
 - **Scans and photos of documents:** read on your machine (no upload) and masked like any other file.
 - **Learns from you:** mark a false alarm once in the dashboard and a rule stops it next time.
 
@@ -166,20 +168,20 @@ Masking is the core. These come with it, on by default, and need nothing from yo
 - **Old transcripts can be cleaned:** `cloakroom clean-history` finds keys and passwords already sitting in old
   Claude Code transcripts and your prompt history, and replaces them on your yes, with a backup you delete.
 
-**For finance teams**
+<a id="for-finance-teams"></a>**For finance teams**
 
 - **Bank numbers are masked:** US routing numbers (the ABA checksum plus a word or field like "routing" or "ABA")
   and bank account numbers (next to "account number", "acct", "checking account", "DDA", in a CSV column of that
-  name, a NACHA entry line, or beside a routing number in the same record) become `PII_BANK_1_k7q2ab`. Digits with
-  no such word stay as they are, so order numbers, phone numbers and ZIP+4 codes are left alone.
+  name, a line of an ACH payment file, or beside a routing number in the same record) become `PII_BANK_1_k7q2ab`.
+  Digits with no such word stay as they are, so order numbers, phone numbers and ZIP+4 codes are left alone.
 - **Calls that move money are held:** a write to a payment, payout or transfer API (Stripe, Plaid, Dwolla, Wise,
   Adyen, PayPal, Square, Increase, Modern Treasury, Column) from curl, PowerShell or a payment CLI, or an MCP tool
   named for it (`send_money`, `create_payout`, `initiate_transfer`), waits until you type `cr: allow`; then it runs
   once. Reads such as a balance check pass. Add your own hosts and tools in `~/.cloakroom/config.json` with
   `"money_hosts": ["payments.example.com/api/wires"]` and `"money_tools": ["disburse"]`; turn the hold off with
   `"money_hold": false`.
-- **The audit trail:** every hold and every `cr: allow` lands in the tamper-evident activity log, and
-  `cloakroom report` turns it into counts per day and session, without values.
+- **The audit trail:** every hold and every `cr: allow` lands in the same tamper-evident log (above), so
+  `cloakroom report` shows them per day and session.
 
 <details>
 <summary><b>Commands and limits</b></summary>
