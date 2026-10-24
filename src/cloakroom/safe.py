@@ -193,11 +193,11 @@ def reason(value: str, kind: str, keyed: bool) -> str | None:
     if kind == "PERSON" and all(w in ROLE_WORDS for w in re.findall(r"[a-z]+", v.lower())) and re.search(r"[a-z]", v.lower()):
         return "job title or generic words, not a name"
     digits = re.sub(r"\D", "", v)
-    if kind in ("CARD", "ACCOUNT", "PHONE", "SSN") and len(digits) >= 6 and len(set(digits)) == 1:
+    if kind in ("CARD", "ACCOUNT", "BANK", "PHONE", "SSN") and len(digits) >= 6 and len(set(digits)) == 1:
         return "repeated-digit placeholder"
-    if kind in ("CARD", "ACCOUNT", "PHONE", "SSN") and _sequential(digits):
+    if kind in ("CARD", "ACCOUNT", "BANK", "PHONE", "SSN") and _sequential(digits):
         return "sequential-digit placeholder"
-    if kind in ("CARD", "ACCOUNT", "PHONE", "SSN") and re.fullmatch(r"(?:(\d)\1{2,}){3,}", digits):
+    if kind in ("CARD", "ACCOUNT", "BANK", "PHONE", "SSN") and re.fullmatch(r"(?:(\d)\1{2,}){3,}", digits):
         return "repeated-group placeholder"
     if kind == "ACCOUNT" and re.fullmatch(r"(?i)[0-9a-f]{4,}(?:-[0-9a-f]{2,})+-?", v) and re.search(r"(?i)[a-f]", v):
         return "UUID or hash fragment"

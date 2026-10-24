@@ -462,3 +462,21 @@ keys, AWS documentation ids, XAML resource names, ChangeLog file entries. Run on
 
 The README's safe-sample counts (23 of 200, 3 of 15) came from an earlier run; the 0.6.1 rerun before these levers
 already gives 20 and 2, the same as 0.6.2, and the README now shows those. Other tools' rows are unchanged.
+
+## Cloakroom 0.6.5 bank numbers: benchmark check (2026-10-24)
+
+The new BANK kind (routing and account numbers) was rerun against the 0.6.2 final numbers, full mode. A first run
+moved Gretel: 52 more false alarms (precision 0.520 -> 0.514), from "Account Number: 123456789"-style lines Gretel
+doesn't label. Most were counting placeholders (123456789, 1234567890), which the placeholder check skipped for BANK
+but not for cards and account numbers; BANK now gets the same check. A "dda" label inside git SHAs and hex keys was
+also fixed (no benchmark row moved). Final, on the committed finance code:
+
+| Set | 0.6.2 | 0.6.5 bank numbers |
+|---|---|---|
+| CredData tune half: tp / fp / fn | 2664 / 822 / 642 | 2664 / 822 / 642 |
+| Holdout leaks v2-v7 / false alarms v2-v7 | 0/15/0/1/3/0 / 2/2/4/3/9/2 | the same |
+| Gretel P / R (false alarms of masks) | 0.520 / 0.846 (2,085 of 4,688) | 0.520 / 0.846 (2,085 of 4,688) |
+| ai4privacy, TAB P / R | 0.911 / 0.914, 0.813 / 0.951 | the same (run before the two fixes, which only remove BANK masks) |
+
+The few realistic account numbers Gretel leaves unlabelled were already masked as ACCOUNT by the model; BANK only
+changes their placeholder kind.

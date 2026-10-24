@@ -10,8 +10,9 @@
   `cr: allow` lets it run once and the log records both. On by default; `"money_hold": false` turns it off, and
   `"money_hosts"` / `"money_tools"` in `~/.cloakroom/config.json` extend the lists. A call that trips both this and
   the egress hold shows one hold and needs one `cr: allow`.
-
-## 0.6.3 (2026-10-24)
+- Bank numbers leave the benchmarks where 0.6.2 put them (CredData, the 200 safe samples, Gretel, ai4privacy, TAB):
+  counting placeholders like `Account Number: 123456789` are left alone, as for cards, and a bank word inside a git
+  commit hash or a hex key is not read as a label.
 
 ## 0.6.4 (2026-10-24)
 - 0.6.3 was tagged but never released (an install message set a failing exit status on Linux); its changes ship here.

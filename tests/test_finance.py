@@ -1,4 +1,4 @@
-"""0.6.4 finance: US bank routing and account numbers (kind BANK) and the money-movement hold. All values are made up:
+"""0.6.5 finance: US bank routing and account numbers (kind BANK) and the money-movement hold. All values are made up:
 routing numbers are built to pass the ABA checksum, account numbers are random digits."""
 import io
 import json
@@ -69,9 +69,21 @@ def test_label_words_inside_hex_or_ids_not_bank(text):
     assert banks(text) == []
 
 
-@pytest.mark.parametrize("text,value", [("DDA 123456789", "123456789"), (f"dda: {ACCT}", ACCT),
+@pytest.mark.parametrize("text,value", [("DDA 482109377", "482109377"), (f"dda: {ACCT}", ACCT),
                                         (f"Routing ABA {R}", R), (f"(acct# {ACCT})", ACCT)])
 def test_standalone_labels_still_bank(text, value):
+    assert banks(text) == [value]
+
+
+@pytest.mark.parametrize("text", ["Account Number: 123456789", "Bank Account Number: 1234567890",
+                                  "account no: 12345678", "Account Number: 111111111"])
+def test_counting_placeholders_not_bank(text):
+    assert banks(text) == []
+
+
+@pytest.mark.parametrize("text,value", [("Account Number: 55783492", "55783492"), (f"Account Number: {ACCT}", ACCT),
+                                        ("Account Number: 123456780", "123456780")])  # one digit off the count
+def test_realistic_account_numbers_still_bank(text, value):
     assert banks(text) == [value]
 
 
