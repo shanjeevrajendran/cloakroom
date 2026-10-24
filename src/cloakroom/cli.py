@@ -43,6 +43,9 @@ def main(argv=None):
         s.add_argument("--mode", choices=["full", "rules"])
     h = sub.add_parser("hook", help="Claude Code hook entry point (reads hook JSON on stdin)")
     h.add_argument("event", choices=["start", "prompt", "pre", "post"])
+    h.add_argument("--agent", choices=["claude", "codex"], default="claude", help="whose hook JSON (default: Claude Code)")
+    for name, what in (("install", "add Cloakroom's hooks to"), ("uninstall", "remove Cloakroom's hooks from")):
+        sub.add_parser(name, help=f"{what} another coding agent (Codex)").add_argument("agent", choices=["codex"])
     dr = sub.add_parser("doctor", help="check this machine: Python, vault key store, model, service")
     dr.add_argument("--retry-key", action="store_true", help="forget a refused vault-key read and try the key store again")
     x = sub.add_parser("export-onnx", help="export the model to ONNX for fast CPU inference (needs cloakroom[torch] once)")
@@ -76,7 +79,10 @@ def main(argv=None):
 
     if a.cmd == "hook":
         from . import hookentry
-        return hookentry.run(a.event)
+        return hookentry.run(a.event, a.agent)
+    if a.cmd in ("install", "uninstall"):
+        from . import agents
+        return agents.install(a.agent, remove=a.cmd == "uninstall")
     if a.cmd == "doctor":
         if a.retry_key:
             from . import crypto
@@ -214,6 +220,12 @@ def _doctor() -> int:
         line(False, "service", client.port_taken(cfg["port"]))
     else:
         line(True, "service", f"up on port {cfg['port']}" + (", model loaded" if h.get("model") else ""))
+    import os
+    from . import agents
+    if os.path.isdir(agents.codex_home()):  # Codex is on this machine
+        on = agents.codex_installed()
+        line(on or None, "codex", "Cloakroom's hooks installed; Codex runs them only once you trust them (/hooks in "
+             "Codex)" if on else "not protected; to protect it: cloakroom install codex")
     found = find_program()
     line(found is not None or None, "program", found or "the plugin can't find the cloakroom program, so Claude Code "
          "tool calls are denied: reinstall (uv tool install 'cloakroom[model,torch]', or let the plugin do it by "

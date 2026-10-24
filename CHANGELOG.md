@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+- Codex: Cloakroom also protects OpenAI's Codex CLI (Mac and Linux). `cloakroom install codex` adds its hooks to
+  `~/.codex/hooks.json` (your own hooks stay), `cloakroom uninstall codex` takes them out, and `cloakroom doctor`
+  says whether they are there. Shell output and MCP results are masked, placeholders in shell commands and patches
+  get their real values back, real values are kept out of MCP calls, and a prompt holding a secret is stopped with
+  what to do next. Trust the hooks once in Codex (`/hooks`). Open gap: output of a command still running when Codex
+  stops waiting isn't masked ([limits](docs-LIMITS.md#codex)).
+
 ## 0.6.6 (2026-10-24)
 - Disguised copies of known values: a secret Cloakroom has seen is also caught as an MD5, SHA-1 or SHA-256 hash, as
   hex (plain, `0x`, spaced, colon or `\x` escapes, also hex of `user:secret`), and reversed (keys and passwords of

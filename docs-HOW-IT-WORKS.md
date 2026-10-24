@@ -101,6 +101,16 @@ Useful commands: `cloakroom check FILE` (what would be masked, no values printed
 finding with its rule), `cloakroom status`. Add your own exceptions to `allow` in `~/.cloakroom/config.json`
 (exact values, or `re:<regex>`).
 
+## Other coding agents
+
+The hooks speak Claude Code's JSON. For Codex, `cloakroom hook <event> --agent codex` reads Codex's hook input (the
+same field names) and turns the answer into Codex's: a masked tool result becomes a block whose reason is the
+masked text (Codex shows the model that reason instead of the result), a restored input gets
+`permissionDecision: "allow"`, and an ask becomes a deny. Codex's file edits (`apply_patch`) are restored and checked
+like Write: placeholders in the patch get their real values, and a key the patch would add to a file git would
+commit is denied. `cloakroom install codex` writes the four hooks into `~/.codex/hooks.json`; the tool-call hooks
+end in `|| exit 2` with a reason, so a missing program blocks instead of letting the call through.
+
 ## Threat model
 
 Cloakroom stops **accidental** exposure: secrets and personal data in files, logs and command output an agent

@@ -20,7 +20,8 @@ from .hookentry import STRUCTURAL, _withhold, closed
 from .vault import ANY_PLACEHOLDER, OLD_FORMAT, PLACEHOLDER, Vault
 
 SHELL_TOOLS = {"Bash", "PowerShell"}
-LOCAL_FILE_TOOLS = {"Read", "Write", "Edit", "MultiEdit", "NotebookEdit", "NotebookRead", "Glob", "Grep", "LS"}
+LOCAL_FILE_TOOLS = {"Read", "Write", "Edit", "MultiEdit", "NotebookEdit", "NotebookRead", "Glob", "Grep", "LS",
+                    "apply_patch"}  # apply_patch: Codex's file edits (agents.py)
 GUIDE = ("Cloakroom note: values like PII_EMAIL_1_k7q2ab are placeholders for real data kept on this machine. Use them "
          "verbatim in Write, Grep and local Bash commands, and in Edit's new_string: Cloakroom restores the real "
          "values before the tool runs and masks them again in the output. Edit's old_string must not contain a "
@@ -406,15 +407,23 @@ def _deny(reason: str) -> dict:
                                    "permissionDecisionReason": reason}}
 
 
-WRITE_TOOLS = {"Write", "Edit", "MultiEdit", "NotebookEdit"}
+WRITE_TOOLS = {"Write", "Edit", "MultiEdit", "NotebookEdit", "apply_patch"}
+_PATCH_FILE = re.compile(r"^\*\*\* (?:Add File|Update File|Move to): (.+?)\s*$", re.M)
+
+
+def _write_paths(tool: str, args: dict) -> list[str]:
+    """The files a write tool changes: one for Claude Code's tools, every file a Codex patch names."""
+    if tool == "apply_patch":
+        return _PATCH_FILE.findall(str(args.get("command", "")))
+    return [str(args.get("file_path") or args.get("notebook_path") or "")]
 
 
 def _touches_home(tool: str, args: dict) -> bool:
     """A tool call that would change Cloakroom's own files (~/.cloakroom: pause, rules, vault, token)."""
     home = str(config.HOME)
     if tool in WRITE_TOOLS:
-        path = str(args.get("file_path") or args.get("notebook_path") or "")
-        return os.path.realpath(os.path.expanduser(path)).startswith(os.path.realpath(home))
+        return any(os.path.realpath(os.path.expanduser(p)).startswith(os.path.realpath(home))
+                   for p in _write_paths(tool, args))
     if tool in SHELL_TOOLS:
         cmd = str(args.get("command", ""))
         return ".cloakroom" in cmd or home in cmd
@@ -471,6 +480,8 @@ def _written_text(tool: str, args: dict) -> str:
     if tool == "NotebookEdit":
         src = args.get("new_source", "")
         return "".join(src) if isinstance(src, list) else str(src)
+    if tool == "apply_patch":  # the lines it adds
+        return "\n".join(ln[1:] for ln in str(args.get("command", "")).splitlines() if ln.startswith("+"))
     return ""
 
 
@@ -502,7 +513,7 @@ def _commit_check(tool: str, args: dict, original: dict, cwd: str, vault: Vault)
         found = [(ph, ph.split("_")[1], vault.by_placeholder[ph]) for ph in PLACEHOLDER.findall(cmd)
                  if ph.split("_")[1] in COMMIT_KINDS and ph in vault.by_placeholder]
     else:
-        targets = [str(args.get("file_path") or args.get("notebook_path") or "")]
+        targets = _write_paths(tool, args)
         found = [(ph, ph.split("_")[1], vault.by_placeholder[ph]) for ph in PLACEHOLDER.findall(_written_text(tool, original))
                  if ph.split("_")[1] in COMMIT_KINDS and ph in vault.by_placeholder]
         # the text as it will be written: rules, your always-mask entries and known secrets (plain or encoded)
@@ -875,8 +886,7 @@ def on_pre(data: dict) -> dict | None:
         if not changed_fields:
             return _with_notes({"hookEventName": "PreToolUse"}, context, notice) if context else None
         if tool in WRITE_TOOLS:
-            path = str(args.get("file_path") or args.get("notebook_path") or "")
-            _pending(data, [filelog.norm(path, cwd)] if path else [], json.dumps(args), vault)
+            _pending(data, [filelog.norm(p, cwd) for p in _write_paths(tool, args) if p], json.dumps(args), vault)
         # updatedInput replaces the whole input in practice (a partial one dropped Write's file_path): send it all
         out = {"hookEventName": "PreToolUse", "updatedInput": {**args, **changed_fields}}
         return _with_notes(out, context, notice)
