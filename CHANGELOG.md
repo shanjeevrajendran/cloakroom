@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.6.1 (2026-10-23)
 - Signed placeholders: each placeholder now ends in a short tag only your machine can make (`PII_EMAIL_1_k7q2ab`).
   Cloakroom restores a real value only for a placeholder it issued in this session. A guessed number, a wrong tag
   or a placeholder from another session stays as text, Claude is told so, and the activity log counts a refused

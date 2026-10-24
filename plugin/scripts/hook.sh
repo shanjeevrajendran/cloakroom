@@ -31,7 +31,7 @@ case "$E" in
   *) echo "usage: hook.sh start|prompt|pre|post" >&2; exit 2 ;;
 esac
 H="${CLOAKROOM_HOME:-$HOME/.cloakroom}"
-PIN=0.6.0
+PIN=0.6.1
 # Git Bash on Windows (W=1): .exe programs, and the PowerShell installer (bootstrap.ps1), which builds the same
 # Windows layout the PowerShell hook looks in
 W=; case "$(uname -s 2>/dev/null)" in MINGW*|MSYS*|CYGWIN*) W=1 ;; esac
