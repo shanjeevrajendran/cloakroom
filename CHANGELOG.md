@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.6.3 (2026-10-24)
 - Keychain: a refused read of the vault key (you clicked Deny, or the Keychain is locked, as over SSH) is now
   remembered until `cloakroom serve` restarts or you run `cloakroom doctor --retry-key`, so macOS asks once instead
   of on every call. You see one message saying your own rules are off and how to turn them back on (built-in checks
