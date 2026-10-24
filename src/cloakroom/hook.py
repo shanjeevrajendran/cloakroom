@@ -15,7 +15,7 @@ import re
 import sys
 import time
 
-from . import client, config, decode, engine, events, filelog, media, shell
+from . import client, config, crypto, decode, engine, events, filelog, media, shell
 from .hookentry import STRUCTURAL, _withhold, closed
 from .vault import ANY_PLACEHOLDER, OLD_FORMAT, PLACEHOLDER, Vault
 
@@ -209,7 +209,7 @@ def _egress_hold(command: str, session: str, vault: Vault, powershell: bool) -> 
 
 def on_prompt(data: dict) -> dict | None:
     out = _on_prompt(data)
-    note = _install_note_once(data.get("session_id", "default"))
+    note = _install_note_once(data.get("session_id", "default")) or crypto.denial_notice()
     if note:
         out = dict(out or {})
         out["systemMessage"] = note + (" · " + out["systemMessage"] if out.get("systemMessage") else "")
@@ -869,7 +869,7 @@ def _install_note(cfg: dict) -> str | None:
     if cfg.get("installing") in ("rules", "model"):
         return ("cloakroom: rules-only protection while the model downloads (one time, a few minutes). Keys, cards "
                 "and IDs are covered; names and addresses may be missed until it's done. Progress: "
-                "~/.cloakroom/bootstrap.log")
+                "~/.cloakroom/bootstrap.log" + (" " + crypto.PREWARN if sys.platform == "darwin" else ""))
     if cfg.get("installing") == "model-failed":
         import platform
         from . import __version__
@@ -907,7 +907,7 @@ def on_start(data: dict) -> dict | None:
     cfg = config.load()
     _ACTION[0] = "session-start"
     _EXTRA.update(version=_version(), mode=cfg["mode"], hooks=_hooks_installed())
-    note = _install_note(cfg)
+    note = _install_note(cfg) or crypto.denial_notice()
     if note:
         return {"systemMessage": note}
     if cfg["mode"] == "full":

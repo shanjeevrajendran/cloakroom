@@ -15,7 +15,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from threading import Lock
 from urllib.parse import parse_qs, urlsplit
 
-from . import __version__, config, dashboard, engine, filelog
+from . import __version__, config, crypto, dashboard, engine, filelog
 from .vault import Vault
 
 LOCK = Lock()  # one model instance; calls are serialized
@@ -120,6 +120,7 @@ class Handler(BaseHTTPRequestHandler):
 
 
 def serve():
+    crypto.clear_denial()  # a restart asks the Keychain once more
     cfg = config.load()
     server = ThreadingHTTPServer(("127.0.0.1", cfg["port"]), Handler)
     server.mode = cfg["mode"]

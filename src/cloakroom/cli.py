@@ -43,7 +43,8 @@ def main(argv=None):
         s.add_argument("--mode", choices=["full", "rules"])
     h = sub.add_parser("hook", help="Claude Code hook entry point (reads hook JSON on stdin)")
     h.add_argument("event", choices=["start", "prompt", "pre", "post"])
-    sub.add_parser("doctor", help="check this machine: Python, vault key store, model, service")
+    dr = sub.add_parser("doctor", help="check this machine: Python, vault key store, model, service")
+    dr.add_argument("--retry-key", action="store_true", help="forget a refused vault-key read and try the key store again")
     x = sub.add_parser("export-onnx", help="export the model to ONNX for fast CPU inference (needs cloakroom[torch] once)")
     x.add_argument("--out", default=None, help="directory (default: the Cloakroom home)")
     x.add_argument("--if-no-gpu", action="store_true",
@@ -77,6 +78,9 @@ def main(argv=None):
         from . import hookentry
         return hookentry.run(a.event)
     if a.cmd == "doctor":
+        if a.retry_key:
+            from . import crypto
+            crypto.clear_denial()
         return _doctor()
     if a.cmd == "export-onnx":
         import pathlib
@@ -122,6 +126,9 @@ def main(argv=None):
             print(client.port_taken(cfg["port"]), file=sys.stderr)
             health = {"ok": False}
         sessions = len(list((config.HOME / "sessions").glob("*.json"))) if (config.HOME / "sessions").exists() else 0
+        from . import crypto
+        if crypto.denied():
+            print(f"vault key: refused, your own rules are off. Retry: {crypto.RETRY}")
         print(f"mode: {cfg['mode']}  service: {'up' if health.get('ok') else 'down'}"
               f"{' (model loaded)' if health.get('model') else ''}  vault sessions: {sessions}")
         return 0
@@ -176,6 +183,8 @@ def _doctor() -> int:
              [crypto.KEY_SOURCE])
     except crypto.KeyUnavailable as e:
         line(False, "vault key", str(e))
+        if crypto.denied():
+            print(f"      {crypto.PREWARN}")
     except Exception as e:
         line(False, "vault key", f"{type(e).__name__}: install the 'cryptography' and 'keyring' packages")
     if cfg["mode"] == "full":

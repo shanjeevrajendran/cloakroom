@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+- Keychain: a refused read of the vault key (you clicked Deny, or the Keychain is locked, as over SSH) is now
+  remembered until `cloakroom serve` restarts or you run `cloakroom doctor --retry-key`, so macOS asks once instead
+  of on every call. You see one message saying your own rules are off and how to turn them back on (built-in checks
+  keep running). Installs and upgrades on a Mac now say in advance to click Always Allow.
+
 ## 0.6.2 (2026-10-24)
 - Fewer false alarms: Cloakroom now leaves alone harmless text it used to mask in code and config. That covers package
   versions (`minipass-flush: ^1.0.5`), short numbers on code constants whose name has no secret word in it

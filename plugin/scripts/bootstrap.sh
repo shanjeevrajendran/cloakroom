@@ -322,6 +322,7 @@ EOF
   fi
   echo "$PIN" >"$STAMP"
   echo "$(date '+%F %T') done: ${NEW:-cloakroom $PIN}"
+  [ "$(uname)" = Darwin ] && echo "$(date '+%F %T') macOS may ask whether 'python' can use the 'cloakroom' item in your Keychain. Click Always Allow: it only lets Cloakroom read its own key. If you deny, your own rules turn off; built-in checks keep running."
 }
 if [ "${1:-}" = --upgrade ]; then
   upgrade >>"$LOG" 2>&1; RC=$?
@@ -384,6 +385,7 @@ fi
       "$CR" export-onnx --if-no-gpu || echo "CPU model build failed: full mode still works, just slower"
     fi
     rm -f "$STATE"; echo "$(date '+%F %T') done: full protection. Program: ${CR:-unknown} (if 'cloakroom' is not found, open a new terminal or use that full path)"
+    [ "$(uname)" = Darwin ] && echo "$(date '+%F %T') macOS may ask whether 'python' can use the 'cloakroom' item in your Keychain. Click Always Allow: it only lets Cloakroom read its own key. If you deny, your own rules turn off; built-in checks keep running."
     # start the service now, so the user's next prompt doesn't wait for the model's first load
     if [ -n "$CR" ]; then (nohup "$CR" serve </dev/null >>"$H/serve.log" 2>&1 &); echo "$(date '+%F %T') service starting"; fi
   else
