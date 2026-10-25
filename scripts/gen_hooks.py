@@ -54,6 +54,8 @@ MESSAGES = (INSTALLING, NO_UV, FAILED, OFFLINE, CHECKSUM)  # hook variables INST
 UPDATING = ("cloakroom: updating itself to the new plugin version (about a minute). Tool calls are held back until "
             "then; progress in ~/.cloakroom/bootstrap.log. " + STOP)
 ANSWERS = MESSAGES + (UPDATING,)  # ... and UPDATING
+NOANSWER = ("cloakroom: the cloakroom program gave no answer, so this was stopped to keep data private. Run: "
+            "cloakroom doctor. " + STOP)  # hook.ps1 only: $noanswer
 EVENTS = ("start", "prompt", "pre", "post")
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "plugin")
 with open(os.path.join(ROOT, ".claude-plugin", "plugin.json"), encoding="utf-8") as _f:
@@ -180,7 +182,8 @@ exit 0
 def hook_ps1() -> str:
     q = lambda s: s.replace("'", "''")  # noqa: E731  PowerShell single-quoted string
     cases = "".join(f"  '{e}' {{ $inst = '{q(i)}'\n    $noinst = '{q(n)}'\n    $failed = '{q(f)}'\n"
-                    f"    $offline = '{q(o)}'\n    $checksum = '{q(c)}'\n    $updating = '{q(u)}' }}\n"
+                    f"    $offline = '{q(o)}'\n    $checksum = '{q(c)}'\n    $updating = '{q(u)}'\n"
+                    f"    $noanswer = '{q(json.dumps(fallback(e, NOANSWER)))}' }}\n"
                     for e in EVENTS for i, n, f, o, c, u in [answers(e)])
     return f"""# Cloakroom hook launcher for PowerShell (Windows without Git Bash): hook.ps1 start|prompt|pre|post, hook JSON on
 # stdin. Runs the cloakroom program if it is installed; otherwise answers for it and starts the installer.
@@ -222,7 +225,13 @@ elseif ($cr) {{
   if ($E -eq 'start' -and (Test-Path $nf)) {{
     [Console]::In.ReadToEnd() | & $cr hook $E | Out-Null; Get-Content $nf -Raw; Remove-Item -Force $nf
   }}
-  else {{ [Console]::In.ReadToEnd() | & $cr hook $E }}
+  else {{
+    # a silent or garbled program must not let a tool's output through: fail closed. A program at the PIN always
+    # answers (at least {{}}); an older one still waiting for its upgrade answers nothing for a clean call.
+    $o = ([Console]::In.ReadToEnd() | & $cr hook $E | Out-String).Trim()
+    $ok = $false; if ($o) {{ try {{ $null = ConvertFrom-Json $o -ErrorAction Stop; $ok = $true }} catch {{ }} }}
+    if ($ok -or $E -eq 'start') {{ $o }} elseif ($o -or $s -eq $pin) {{ $noanswer }}
+  }}
 }}
 elseif ($recent) {{  # the installer leaves the reason for the steps
   switch ((Get-Content (Join-Path $h 'bootstrap.reason') -ErrorAction SilentlyContinue) -join '') {{

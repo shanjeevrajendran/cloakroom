@@ -113,7 +113,7 @@ def run(event: str) -> int:
         out = hook.handle(event, data)
     except BaseException as e:  # noqa: BLE001 - fail closed on anything, including import errors
         out = closed(event, type(e).__name__, data)
-    if out:
-        sys.stdout.write(json.dumps(out) + "\n")
-        sys.stdout.flush()
+    # always an answer, {} for a clean pass: the launcher (hook.ps1) treats a silent program as broken and fails closed
+    sys.stdout.write(json.dumps(out or {}) + "\n")
+    sys.stdout.flush()
     return 0

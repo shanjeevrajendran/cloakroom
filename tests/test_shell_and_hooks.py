@@ -226,6 +226,52 @@ def test_hookentry_reads_bom_and_fails_closed_on_garbage(monkeypatch, capsys):
     assert json.loads(capsys.readouterr().out)["hookSpecificOutput"]["permissionDecision"] == "deny"
 
 
+def test_hookentry_answers_a_clean_pass(monkeypatch, capsys):
+    from cloakroom import hookentry
+    monkeypatch.setattr(sys, "stdin", io.TextIOWrapper(io.BytesIO(b'{"tool_name": "Bash", "tool_input": {"command": "ls"}}')))
+    hookentry.run("pre")
+    assert capsys.readouterr().out == "{}\n"  # never silent: hook.ps1 fails closed on no answer
+
+
+_PS = shutil.which("powershell") or shutil.which("pwsh")
+
+
+@pytest.mark.skipif(not _PS, reason="needs PowerShell")
+@pytest.mark.parametrize("answer", ["", "not json"])
+def test_hook_ps1_fails_closed_when_the_program_gives_no_answer(tmp_path, answer):
+    import pathlib
+    import subprocess
+    root = pathlib.Path(__file__).resolve().parents[1] / "plugin"
+    pin = json.loads((root / ".claude-plugin" / "plugin.json").read_text())["version"]
+    home = tmp_path / "home"
+    home.mkdir()
+    (home / "upgrade.stamp").write_text(pin + "\n")  # the installed program is at the PIN: no upgrade starts
+    stub = tmp_path / "bin"
+    stub.mkdir()
+
+    def program(out):
+        if os.name == "nt":
+            (stub / "cloakroom.cmd").write_text("@findstr \"^\" >nul\r\n" + (f"@echo {out}\r\n" if out else ""))
+        else:
+            (stub / "cloakroom").write_text("#!/bin/sh\ncat >/dev/null\n" + (f"echo '{out}'\n" if out else ""))
+            (stub / "cloakroom").chmod(0o755)
+
+    def hook(event):
+        env = dict(os.environ, PATH=str(stub) + os.pathsep + os.environ["PATH"], CLOAKROOM_HOME=str(home),
+                   USERPROFILE=str(tmp_path), CLAUDE_PLUGIN_ROOT=str(root))
+        p = subprocess.run([_PS, "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", str(root / "scripts" / "hook.ps1"),
+                            event], input='{"tool_name": "Bash", "tool_response": {"stdout": "x"}}', env=env,
+                           capture_output=True, text=True, timeout=60)
+        return p.stdout.strip()
+
+    program(answer)
+    assert "gave no answer" in json.loads(hook("post"))["hookSpecificOutput"]["updatedToolOutput"]
+    assert json.loads(hook("pre"))["hookSpecificOutput"]["permissionDecision"] == "deny"
+    assert "gave no answer" in json.loads(hook("prompt"))["systemMessage"]  # prompts still pass, with a warning
+    program("{}")
+    assert hook("post") == "{}"  # a clean pass stays a pass
+
+
 def _service_down(monkeypatch):
     from cloakroom import client, hook
 
