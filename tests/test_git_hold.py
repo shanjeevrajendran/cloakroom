@@ -92,8 +92,8 @@ def test_commit_all_and_add_in_same_command(repo, monkeypatch, capsys):
     git(repo, "checkout", "README.md")
     (repo / "new.py").write_text(f"K = '{KEY}'\n")  # untracked, added by the same command
     assert decision(bash("git add -A && git commit -m new", repo, monkeypatch, capsys)) == "deny"
-    assert decision(bash(f"cd {repo} && git add . && git commit -m new", repo.parent, monkeypatch, capsys)) == "deny"
-    assert decision(bash(f"git -C {repo} add . ; git -C {repo} commit -m new", "/", monkeypatch, capsys)) == "deny"
+    assert decision(bash(f"cd '{repo}' && git add . && git commit -m new", repo.parent, monkeypatch, capsys)) == "deny"
+    assert decision(bash(f"git -C '{repo}' add . ; git -C '{repo}' commit -m new", "/", monkeypatch, capsys)) == "deny"
 
 
 def test_powershell_commit_held(repo, monkeypatch, capsys):

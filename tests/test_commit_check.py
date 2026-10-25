@@ -1,6 +1,7 @@
 """Write-time check: a key or password restored (or typed) into a file git would commit is denied."""
 import io
 import json
+import os
 import subprocess
 import sys
 
@@ -49,7 +50,7 @@ def test_tracked_file_denied(repo, monkeypatch, capsys):
         h = out["hookSpecificOutput"]
         assert h["permissionDecision"] == "deny" and "updatedInput" not in h
         reason = h["permissionDecisionReason"]
-        assert "PII_SECRET_1" in reason and "app/config.py" in reason and "git would commit" in reason
+        assert "PII_SECRET_1" in reason and os.path.join("app", "config.py") in reason and "git would commit" in reason
         assert KEY not in json.dumps(out)
     from cloakroom import events
     ev = events.read(1)[0]

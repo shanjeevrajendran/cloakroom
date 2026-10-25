@@ -1,6 +1,7 @@
 """A refused Keychain read is remembered: one get_password call across calls and processes, one message, a restart clears it."""
 import importlib
 import json
+import os
 
 import pytest
 
@@ -39,7 +40,8 @@ def test_denial_asks_once_across_calls_and_processes(store):
         crypto.key()
     assert store.gets == 1
     marker = config.HOME / "key-denied"
-    assert (marker.stat().st_mode & 0o777) == 0o600 and set(json.loads(marker.read_text())) == {"at", "notified"}
+    assert (os.name == "nt" or marker.stat().st_mode & 0o777 == 0o600) and set(  # Windows has no POSIX modes
+        json.loads(marker.read_text())) == {"at", "notified"}
     assert not (config.HOME / "vault.key").exists()
 
 

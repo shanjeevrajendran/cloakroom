@@ -1030,7 +1030,7 @@ def _log(event: str, data, out, ms: float = 0.0):
         target = events.target(tool, data.get("tool_input")) if isinstance(data, dict) and _FOUND else ""
         if target:  # a file name can hold a name or an email too: log it masked, like the output
             home = os.path.expanduser("~").rstrip("/\\")
-            if home and target.startswith(home + os.sep):
+            if home and target.startswith((home + os.sep, home + "/")):  # Windows paths can use either slash
                 target = "~" + target[len(home):]  # the home folder's name is not logged, so the report's path class survives masking
             try:
                 target = client.mask(target, data.get("session_id", "default"))["text"]
