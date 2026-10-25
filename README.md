@@ -169,6 +169,12 @@ changed on the way. Each copy gets its own placeholder, and the exact copy is pu
   refused, and Claude is told to use `.env` instead. Ignored files and `.env` work as before.
 - **Commits and pushes:** before Claude runs `git commit` or `git push`, Cloakroom reads what would be committed or
   pushed. A key or password there holds the command, naming the file and placeholder; `cr: allow` lets it run once.
+- **Commits you make yourself:** `cloakroom install git-hook` (in a repo) also checks commits you make yourself,
+  with the same rules and your own known secrets (your always-mask values), no agent needed. It adds `pre-commit`
+  and `pre-push` hooks (where `core.hooksPath` points, if set) and never changes a hook another tool put there: it
+  skips it and prints the one line to add to it. Skip the check once with git's own `--no-verify`; remove it with
+  `cloakroom uninstall git-hook`. One repo at a time (no `--global`: git's template folder would only reach new
+  clones). Mac and Linux; Git Bash on Windows isn't tested yet.
 - **Agent config files:** a live token written into `.mcp.json`, `.claude/settings.json`, `.cursor/mcp.json` or a
   copy of `claude_desktop_config.json` in a repo is refused, and Claude is told to use an environment reference
   such as `${GITHUB_TOKEN}`.
@@ -374,8 +380,11 @@ prompt holding a secret is stopped with what to do next. What's different:
   know, is stopped instead of asked about.
 - **Open gap:** a command that runs longer than Codex waits (10 seconds by default), such as a dev server, a watch
   or a slow build, hands its first output to the model while it is still running, and Codex runs no hook on that
-  output. Cloakroom can't tell such a command apart beforehand, so that output is not masked. Until this is fixed,
-  don't let Codex start long-running commands that print secrets or personal data.
+  output, so it is not masked. To close most of it, set `"codex_hold_long_running": true` in
+  `~/.cloakroom/config.json` (off by default for now): commands that obviously keep running (`tail -f`, `watch`,
+  `npm run dev` and other dev servers, `docker logs -f`, `docker compose up`, `kubectl logs -f`, `journalctl -f`,
+  `ping` without `-c`, `--watch`...) are then held, with one line saying their output won't be masked; `cr: allow`
+  lets one run once. A slow build or a command that only sometimes runs long isn't caught.
 
 To remove it: `cloakroom uninstall codex`. More in
 [Known limits](https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-LIMITS.md#codex).

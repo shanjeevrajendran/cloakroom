@@ -8,6 +8,7 @@
   cloakroom dashboard                            open the local dashboard in your browser, signed in
   cloakroom report [--since DATE] [--format csv|json] [--verify]   counts from the event log, no values
   cloakroom clean-history [--dry-run]            find and replace keys in old Claude Code transcripts
+  cloakroom install git-hook                     check your own commits and pushes in this repo for keys
 """
 from __future__ import annotations
 
@@ -46,8 +47,11 @@ def main(argv=None):
     h.add_argument("--agent", choices=["claude", "codex", "gemini"], default="claude",
                    help="whose hook JSON (default: Claude Code)")
     for name, what in (("install", "add Cloakroom's hooks to"), ("uninstall", "remove Cloakroom's hooks from")):
-        sub.add_parser(name, help=f"{what} another coding agent (Codex, Gemini CLI)").add_argument(
-            "agent", choices=["codex", "gemini"])
+        sub.add_parser(name, help=f"{what} another coding agent (Codex, Gemini CLI), or this repo's git hooks "
+                                  "(git-hook)").add_argument("agent", choices=["codex", "gemini", "git-hook"])
+    g = sub.add_parser("git-check", help="the git hook's check (cloakroom install git-hook): keys and passwords a "
+                                         "commit or push adds")
+    g.add_argument("kind", choices=["commit", "push"])
     dr = sub.add_parser("doctor", help="check this machine: Python, vault key store, model, service")
     dr.add_argument("--retry-key", action="store_true", help="forget a refused vault-key read and try the key store again")
     x = sub.add_parser("export-onnx", help="export the model to ONNX for fast CPU inference (needs cloakroom[torch] once)")
@@ -82,6 +86,12 @@ def main(argv=None):
     if a.cmd == "hook":
         from . import hookentry
         return hookentry.run(a.event, a.agent)
+    if a.cmd in ("install", "uninstall") and a.agent == "git-hook":
+        from . import githook
+        return githook.install(remove=a.cmd == "uninstall")
+    if a.cmd == "git-check":
+        from . import githook
+        return githook.check(a.kind)
     if a.cmd in ("install", "uninstall"):
         from . import agents
         return agents.install(a.agent, remove=a.cmd == "uninstall")

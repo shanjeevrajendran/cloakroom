@@ -148,7 +148,11 @@ Checked against Codex CLI 0.164 (hooks docs: https://developers.openai.com/codex
   model can choose a shorter or longer wait) returns its output so far to the model, and Codex runs no PostToolUse
   hook on it, nor on the polls that follow until the command ends. That output is not masked. The PreToolUse hook
   only sees the command text, not the wait or whether a terminal is attached, so Cloakroom can't tell such a
-  command apart beforehand. Avoid long-running commands (servers, `tail -f`, watches, slow builds) over secrets.
+  command apart beforehand. `"codex_hold_long_running": true` (off by default in 0.7.1) holds the ones that are
+  obviously long-running from their text (servers, `tail -f`, watches, follows, `ping` without a count; `cr: allow`
+  lets one run once); each hold is logged as a held event with `"hold": "long-running"`, so false holds can be
+  counted. A slow build, a script that starts a server, or a command behind `timeout` isn't held. Avoid those over
+  secrets.
 - Trust: Codex runs the hooks only after you trust them once in `/hooks`, and again after they change (a reinstall
   from a different program path). Until then it skips them; `codex exec` gives no warning.
 - Prompts can only be blocked, not masked, as in Claude Code (Codex's request hook only watches).
@@ -168,6 +172,16 @@ Checked against Codex CLI 0.164 (hooks docs: https://developers.openai.com/codex
   `tests/test_codex.py`.
 - Windows isn't supported yet (`cloakroom install codex` refuses there).
 
+
+## Git hook (`cloakroom install git-hook`)
+
+- Checks keys and passwords only (the rules and your always-mask values), in the lines a commit adds or the
+  commits a push sends that no remote has yet. Personal data isn't checked, as for the agent commit hold.
+- Gives up and lets the commit through after 10 seconds or on a change set over 4 MB, with a line saying it wasn't
+  checked. If the cloakroom program is gone, the hook says so and lets the commit through.
+- One repo per install; no `--global`. A hook file another tool owns (husky, pre-commit) is left alone: add
+  `cloakroom git-check commit || exit 1` to it by hand.
+- Tested on Mac and Linux. Git for Windows runs the same `sh` hook, but that isn't tested yet.
 
 ## Gemini CLI
 
