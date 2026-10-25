@@ -169,9 +169,9 @@ Checked against Codex CLI 0.164 (hooks docs: https://developers.openai.com/codex
   which Codex treats as a block). Prompts and session starts go on with Codex's error message, so you are never
   locked out.
 - Live check 2026-10-24: a `codex exec` run with the hooks installed but not yet trusted skipped them and printed
-  no warning. A run with trusted hooks on Codex 0.164 passed three checks: a fake key in Bash output was masked, a
-  placeholder in tool input was restored on disk while the model saw only the placeholder, and a missing `cloakroom`
-  program blocked the tool call (exit 2). The hook answers are tested against Codex's JSON shapes in
+  no warning. Runs with trusted hooks on Codex 0.164 passed: Bash output masked, MCP tool output masked, placeholders
+  in `apply_patch` restored on disk while the model saw only the placeholder, an interactive session masked, and a
+  missing `cloakroom` program blocking the tool call (exit 2). The hook answers are tested against Codex's JSON shapes in
   `tests/test_codex.py`.
 - Windows isn't supported yet (`cloakroom install codex` refuses there).
 
@@ -213,8 +213,10 @@ Checked against Gemini CLI 0.65 (hooks docs: https://geminicli.com/docs/hooks/re
 - A missing or broken `cloakroom` program makes tool calls fail closed (the hook exits with code 2 and a reason,
   which Gemini treats as a block). Prompts and session starts go on with a warning, so you are never locked out.
 - Gemini gives hooks no call id, so the file log of where restored values were written isn't kept for Gemini.
-- Not yet live-checked against a real Gemini run (it needs a Google sign-in or API key); the hook answers are
-  tested against Gemini's JSON shapes in `tests/test_gemini.py`.
+- Live check 2026-10-25 on Gemini CLI 0.65.0 (API key): command output, `read_file` in a trusted folder and MCP
+  tool output masked, real values restored in tool input, an interactive session masked, a prompt holding a key
+  stopped, and a missing `cloakroom` program blocking the tool call. Gemini refuses to run headless in a folder you
+  haven't trusted. The hook answers are also tested against Gemini's JSON shapes in `tests/test_gemini.py`.
 - Windows isn't supported yet (`cloakroom install gemini` refuses there).
 
 

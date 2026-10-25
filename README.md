@@ -29,7 +29,7 @@
 **Cloakroom swaps your secrets and personal data for placeholders before Claude sees them, and puts the real values
 back in the files Claude writes.**
 
-The only Claude Code privacy tool that catches personal data, masks instead of blocking, and learns from your corrections.
+Cloakroom catches personal data as well as keys, masks it instead of blocking the call, and learns from your corrections.
 
 Runs on your machine, sets itself up on first start, works on Mac, Windows and Linux. Free and open source. Young:
 expect rough edges.
@@ -54,11 +54,11 @@ New in 0.7, it also protects other coding agents (Mac and Linux):
 | The agent's `git commit` / `git push` check | ✓ | ✓ | ✓ |
 | Network sends holding secrets or placeholders | ✓ | partly: denied instead of asked | ✓ |
 | Calls that move money | ✓ | ✓ | ✓ |
-| Git hook for your own commits | partly: not tested on Windows | ✓ | ✓ |
+| Git hook for your own commits | ✓ (Windows: untested) | ✓ | ✓ |
 | Systems | Mac, Linux, Windows | Mac, Linux | Mac, Linux |
 
 Codex skips the hooks until you trust them once (`/hooks`). Gemini CLI lets a call through when a check runs past
-its time limit, and hasn't had a live run yet (its hook answers are tested against Gemini's formats). Everything
+its time limit. Both were tested live (Codex 0.164, Gemini CLI 0.65). Everything
 else: [Known limits](https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-LIMITS.md).
 
 ## Recent releases
