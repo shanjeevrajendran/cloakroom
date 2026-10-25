@@ -34,8 +34,10 @@ The only Claude Code privacy tool that catches personal data, masks instead of b
 Runs on your machine, sets itself up on first start, works on Mac, Windows and Linux. Free and open source. Young:
 expect rough edges.
 
-New: it also protects OpenAI's Codex CLI (`cloakroom install codex`, see [Codex](#codex)) and Google's Gemini CLI
-(`cloakroom install gemini`, see [Gemini CLI](#gemini-cli)).
+New in 0.7, it also protects other coding agents (Mac and Linux):
+
+- **OpenAI's Codex CLI:** run `cloakroom install codex` ([Codex](#codex)).
+- **Google's Gemini CLI:** run `cloakroom install gemini` ([Gemini CLI](#gemini-cli)).
 
 **Hand Claude the files you'd never paste into a chat:**
 

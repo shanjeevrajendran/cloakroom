@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.7.0 (2026-10-24)
 - Codex: Cloakroom also protects OpenAI's Codex CLI (Mac and Linux). `cloakroom install codex` adds its hooks to
   `~/.codex/hooks.json` (your own hooks stay), `cloakroom uninstall codex` takes them out, and `cloakroom doctor`
   says whether they are there. Shell output and MCP results are masked, placeholders in shell commands and patches
@@ -14,6 +14,14 @@
   values back, real values are kept out of MCP and web tools, and a prompt holding a secret is stopped. The hooks
   never wait for the model to load: Gemini would let the call through on a timeout
   ([limits](docs-LIMITS.md#gemini-cli)).
+- Windows: the event log is written with plain line ends, so its hash chain checks out (a log from 0.6.6 with
+  Windows line ends still reads), and file names in it start with `~` for your home folder whichever slash the path
+  uses, so `cloakroom report` keeps the folder class.
+- Git Bash on Windows: the commit hold follows `cd /c/...` and `git -C /c/...` to the right repository.
+- Fail-closed hooks: the plugin's launchers (`hook.sh` for bash and Git Bash, `hook.ps1` for PowerShell) now stop a
+  tool call when the cloakroom program answers nothing or something that isn't JSON: output is withheld, the call
+  is denied, a prompt still goes through with a warning (`cloakroom doctor` says what is wrong). The program answers
+  `{}` on a clean pass; a program older than the plugin, still waiting for its upgrade, may answer nothing.
 
 ## 0.6.6 (2026-10-24)
 - Disguised copies of known values: a secret Cloakroom has seen is also caught as an MD5, SHA-1 or SHA-256 hash, as
