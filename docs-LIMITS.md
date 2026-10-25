@@ -1,6 +1,11 @@
 # Known limits (live Claude Code tests 2026-10-09, 2026-10-12 and 2026-10-14, benchmarks through 2026-10-12)
 
-- Prompts can only be blocked, not masked (UserPromptSubmit can't rewrite). A blocked prompt never reaches the
+What Cloakroom doesn't catch or can't do, as found in live tests. Each item says what happens to you; some add the
+technical reason. Terms: hooks are the small checks the agent runs before (PreToolUse) and after (PostToolUse) each
+action, or "tool call". "Held back" or "withheld" means the AI doesn't get that output. "Fail closed" means that when
+Cloakroom can't check, the action is blocked rather than let through.
+
+- Prompts can only be blocked, not masked (Claude Code's prompt hook, UserPromptSubmit, can't rewrite a prompt). A blocked prompt never reaches the
   model, but Claude Code keeps it in its local session records on disk. To limit blocks:
   - a prompt holding only names goes through (you typed them; a name next to an email, phone, key or ID still
     blocks the prompt, as a pasted customer list would). A pasted list of names alone, with nothing else, does go
@@ -21,13 +26,13 @@
   there; masking still happens. Check with `cloakroom dashboard` or `~/.cloakroom/hook.log`.
 - Restored writes: Claude Code's local session log (`~/.claude/projects/...`) records the hook's rewritten tool
   input, so values put back into a file also appear in that log on your disk. They are not sent to the model.
-- Edit: Claude Code validates `old_string` against the file before PreToolUse hooks run, so an `old_string`
+- Edit: Claude Code checks `old_string` against the file before Cloakroom's before-action hook (PreToolUse) runs, so an `old_string`
   containing a placeholder fails ("string not found"). Placeholders in `new_string` are restored. Cloakroom tells
   Claude (once per session) to anchor `old_string` on placeholder-free text or use Write.
-- `updatedInput` replaces the whole tool input in practice, and `updatedToolOutput` must keep the tool result's
-  shape (a string for a structured result is ignored). Cloakroom does both; the fail-closed wrapper needs
-  `python3` to rebuild the shape.
-- Encoded output: `od`, `xxd`, `base64`, spaced-out and truncated dumps are decoded and checked against the
+- Technical, nothing for you to do: `updatedInput` replaces the whole tool input in practice, and
+  `updatedToolOutput` must keep the tool result's shape (a string for a structured result is ignored). Cloakroom
+  does both; the fail-closed wrapper needs `python3` to rebuild the shape.
+- Encoded output: `od`, `xxd`, `base64`, spaced-out and truncated dumps are turned back into text and checked against the
   session's known values (10-character fragments) and the detectors; any hit withholds the whole output. Files a
   Bash command names are scanned first (up to 512 KB). Arbitrary transformations (ROT13, custom ciphers, values
   computed piece by piece) are out of scope: Cloakroom stops accidental leaks, not a model determined to leak.
@@ -77,20 +82,20 @@
 - If the plugin is installed but the `cloakroom` command isn't on PATH, each hook command (one string valid in both
   bash and PowerShell, idea from maisecrets, Apache-2.0) answers by itself: every tool call is denied before it
   runs, and prompts pass with a warning that gives the install and disable commands, so you're never locked out.
-  Checked in CI for bash, Windows PowerShell 5.1 and PowerShell 7.
+  Checked by the automatic tests (CI) for bash, Windows PowerShell 5.1 and PowerShell 7.
 - Windows: run on a real Windows Server 2025 machine before v0.1 (same benchmark result as macOS, Credential Manager
-  vault key); the hooks are covered by CI in bash and both PowerShells. Linux: covered by CI, not yet run on a real
-  desktop.
-- Speed: each tool call is checked by the local model before Claude sees the result. On Apple silicon (MPS) that's
-  about 20 ms per check; on an Apple M-series CPU about 60 ms; on a small 2-core x64 CPU (Windows test VM) about
+  vault key); the hooks are covered by the automatic tests in bash and both PowerShells. Linux: covered by the
+  automatic tests, not yet run on a real desktop.
+- Speed: each tool call is checked by the local model before Claude sees the result. On Apple silicon's built-in
+  graphics chip (MPS) that's about 20 ms per check; on an Apple M-series CPU about 60 ms; on a small 2-core x64 CPU (Windows test VM) about
   0.4 s per check and up to ~0.9 s for a long tool output. So on a modest laptop each tool call may gain under a
   second. `cloakroom doctor` prints your machine's time per check; `CLOAKROOM_MODE=rules` is instant but misses
-  names and free-text PII.
+  names and other personal data in ordinary text.
 - First run downloads the detection model (PII-Tracer, pinned revision) from Hugging Face; offline machines need
   it cached first. The CPU path (ONNX Runtime) needs a one-time export with PyTorch installed (about 4 GB of disk;
   on Windows, PyTorch also needs the Microsoft Visual C++ Redistributable, https://aka.ms/vs/17/release/vc_redist.x64.exe);
-  after that PyTorch isn't needed. The int8 export is opt-in: about 95% span agreement with the full model and a
-  few more false alarms.
+  after that PyTorch isn't needed. A smaller, faster version of the model (the int8 export) is optional: it agrees
+  with the full model on about 95% of what it finds, with a few more false alarms.
 - Left unmasked on purpose (the known-safe filter): numbers reserved for fiction (555-0100..0199, 555-1212),
   toll-free and Twilio test numbers, published test cards and sandbox IDs, documentation example keys and tokens,
   reserved domains (example.com, .test), role and no-reply mailboxes, loopback/private/documentation IP ranges,
@@ -102,10 +107,11 @@
   "Wrong user name or password"`) is left as is when it is two or more words with no digits; a password made of
   words under such a key (`"passwordHint": "Lantern Copper Field"`) is not masked either. A real value that happens
   to look like one of these is not masked; add exceptions with `allow`, or report the case.
-- False alarms: on fresh test data Cloakroom still masks some safe text (4-6 of 40 tricky negatives in the last two
-  one-shot holdouts: landmark addresses, public figures not on the list, office names). On public data, precision is
-  0.81 on TAB court rulings and 0.52 on Gretel finance documents, mostly number strings read as account or reference
-  numbers. On the CredData public-code set it masks 3,457 harmless look-alikes (22 in 100, down from 3,903 before
+- False alarms (harmless text masked by mistake): on fresh test data Cloakroom still masks some safe text (4-6 of
+  40 tricky harmless samples in the last two test sets it had never seen: landmark addresses, public figures not on
+  the list, office names). On public data, 81 in 100 of its masks were labelled personal data on TAB court rulings
+  (precision 0.81), and 52 in 100 on Gretel finance documents (0.52); the rest are mostly number strings read as
+  account or reference numbers. On the CredData public-code set it masks 3,457 harmless look-alikes (22 in 100, down from 3,903 before
   0.6.2), against maisecrets' 997. Masking safe text costs readability, never privacy. Measured and rejected fixes
   (a higher model-confidence bar, a context gate) both leaked real values, so they were not shipped.
 - Commit and push check: it reads the staged change (for `git push`, the commits no remote has yet) and lets the
@@ -135,7 +141,7 @@
   service signs the browser out. The activity log keeps no values or text, but it does keep file paths (masked like
   any output) and the program name of shell commands.
 - Bank numbers: a routing number needs a routing word or field within a few characters and a valid ABA checksum; an
-  account number needs an account word, a CSV column of that name, a NACHA entry line, or a routing number in the
+  account number needs an account word, a CSV column of that name, a line of an ACH payment file (NACHA entry), or a routing number in the
   same record. Bare digits, numbers split across lines, non-US account formats other than IBAN, and words in other
   languages aren't caught. A routing number with the right checksum in a field Cloakroom doesn't know stays visible.
 - Money-movement hold: it sees the command or tool call, not what a program does once it runs. A script or app
@@ -148,9 +154,9 @@
 Checked against Codex CLI 0.164 (hooks docs: https://developers.openai.com/codex/hooks, and its source).
 
 - **Open gap, background output:** a command still running when Codex stops waiting (10 seconds by default; the
-  model can choose a shorter or longer wait) returns its output so far to the model, and Codex runs no PostToolUse
-  hook on it, nor on the polls that follow until the command ends. That output is not masked. The PreToolUse hook
-  only sees the command text, not the wait or whether a terminal is attached, so Cloakroom can't tell such a
+  model can choose a shorter or longer wait) returns its output so far to the model, and Codex runs no after-action
+  hook (PostToolUse) on it, nor on the polls that follow until the command ends. That output is not masked. The
+  before-action hook (PreToolUse) only sees the command text, not the wait or whether a terminal is attached, so Cloakroom can't tell such a
   command apart beforehand. `"codex_hold_long_running": true` (off by default in 0.7.1) holds the ones that are
   obviously long-running from their text (servers, `tail -f`, watches, follows, `ping` without a count; `cr: allow`
   lets one run once); each hold is logged as a held event with `"hold": "long-running"`, so false holds can be
@@ -163,10 +169,10 @@ Checked against Codex CLI 0.164 (hooks docs: https://developers.openai.com/codex
   through a block (`updatedMCPToolOutput` is read but not applied yet).
 - Codex hooks can't ask: a command with placeholders that could send data off the machine, or one Cloakroom
   doesn't know, is denied instead of asked about. Run it yourself if you want it.
-- No hook at all: Codex's hosted web search, and pictures from `view_image`. Hooks also stop when they are turned
+- No hook at all: Codex's own web search (it runs on OpenAI's servers), and pictures from `view_image`. Hooks also stop when they are turned
   off (`[features] hooks = false`) or by an admin policy.
-- A missing or broken `cloakroom` program makes tool calls fail closed (the hook exits with code 2 and a reason,
-  which Codex treats as a block). Prompts and session starts go on with Codex's error message, so you are never
+- A missing or broken `cloakroom` program makes tool calls fail closed: they are blocked (the hook exits with code
+  2 and a reason, which Codex treats as a block). Prompts and session starts go on with Codex's error message, so you are never
   locked out.
 - Live check 2026-10-24: a `codex exec` run with the hooks installed but not yet trusted skipped them and printed
   no warning. Runs with trusted hooks on Codex 0.164 passed: Bash output masked, MCP tool output masked, placeholders
@@ -203,15 +209,15 @@ Checked against Gemini CLI 0.65 (hooks docs: https://geminicli.com/docs/hooks/re
   through a deny.
 - No hook sees `GEMINI.md` and other context files (they go into the system instruction), nor what Gemini's own web
   tools fetch on Google's side.
-- With LLM edit correction turned on (`"disableLLMCorrection": false`; it is off by default), a `replace` that
+- With Gemini's AI edit correction turned on (`"disableLLMCorrection": false`; it is off by default), a `replace` that
   doesn't match sends the file and the restored strings to the model to fix the edit.
-- If you set up Gemini's OpenTelemetry export with prompt logging, it logs tool arguments after Cloakroom restored
+- If you set up Gemini's usage logging (OpenTelemetry export) with prompt logging, it logs tool arguments after Cloakroom restored
   them.
 - The hooks don't run when the extension is off: `gemini -e` naming other extensions (or `none`),
   `/extensions disable cloakroom`, `"hooksConfig": {"enabled": false}`, `/hooks disable`, or an admin policy
   (turning extensions off, or an `allowedExtensions` list, which needs install records Cloakroom doesn't write).
-- A missing or broken `cloakroom` program makes tool calls fail closed (the hook exits with code 2 and a reason,
-  which Gemini treats as a block). Prompts and session starts go on with a warning, so you are never locked out.
+- A missing or broken `cloakroom` program makes tool calls fail closed: they are blocked (the hook exits with code
+  2 and a reason, which Gemini treats as a block). Prompts and session starts go on with a warning, so you are never locked out.
 - Gemini gives hooks no call id, so the file log of where restored values were written isn't kept for Gemini.
 - Live check 2026-10-25 on Gemini CLI 0.65.0 (API key): command output, `read_file` in a trusted folder and MCP
   tool output masked, real values restored in tool input, an interactive session masked, a prompt holding a key

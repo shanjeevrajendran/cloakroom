@@ -24,7 +24,7 @@
 {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Cloakroom","description":"Free and open source. Cloakroom masks API keys, secrets and personal data on your own machine before your AI coding agent sees them. Works with Claude Code, Codex CLI and Gemini CLI.","applicationCategory":"SecurityApplication","operatingSystem":"macOS, Windows, Linux","license":"https://opensource.org/licenses/MIT","url":"https://shanjeevrajendran.github.io/cloakroom/","codeRepository":"https://github.com/shanjeevrajendran/cloakroom","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
 </script>
 <script type="application/ld+json">
-{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Does Cloakroom send my data anywhere?", "acceptedAnswer": {"@type": "Answer", "text": "No. It downloads the detection model once from Hugging Face, and everything else runs on your own machine."}}, {"@type": "Question", "name": "What does it mask?", "acceptedAnswer": {"@type": "Answer", "text": "API keys, secrets and personal data such as names, emails and addresses. Scanned pages and photos are read on your machine and masked like any other file."}}, {"@type": "Question", "name": "Does Claude still work normally?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Claude works with placeholders like PII_PERSON_1, and the real values are put back, locally, in the files Claude writes."}}, {"@type": "Question", "name": "What happens when my prompt contains a secret?", "acceptedAnswer": {"@type": "Answer", "text": "A prompt can be blocked but not rewritten, so Cloakroom stops it and tells you what it found. Put the detail in a file and ask Claude to read it instead."}}, {"@type": "Question", "name": "Does Cloakroom work with Codex or Gemini CLI?", "acceptedAnswer": {"@type": "Answer", "text": "Yes, on Mac and Linux: run cloakroom install codex or cloakroom install gemini. Claude Code works on Mac, Linux and Windows."}}, {"@type": "Question", "name": "What doesn't it protect?", "acceptedAnswer": {"@type": "Answer", "text": "It stops accidental exposure but isn't a sandbox. A prompt injection set on smuggling data out piece by piece, what you type into a prompt, and Claude Code's own local logs are out of scope."}}]}
+{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Does Cloakroom send my data anywhere?", "acceptedAnswer": {"@type": "Answer", "text": "No. It downloads the detection model once from Hugging Face, and everything else runs on your own machine."}}, {"@type": "Question", "name": "What does it mask?", "acceptedAnswer": {"@type": "Answer", "text": "API keys, secrets and personal data such as names, emails and addresses. Scanned pages and photos are read on your machine and masked like any other file."}}, {"@type": "Question", "name": "Does Claude still work normally?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Claude works with placeholders like PII_PERSON_1, and the real values are put back, locally, in the files Claude writes."}}, {"@type": "Question", "name": "What happens when my prompt contains a secret?", "acceptedAnswer": {"@type": "Answer", "text": "A prompt can be blocked but not rewritten, so Cloakroom stops it and tells you what it found. Put the detail in a file and ask Claude to read it instead."}}, {"@type": "Question", "name": "Does Cloakroom work with Codex or Gemini CLI?", "acceptedAnswer": {"@type": "Answer", "text": "Yes, on Mac and Linux: run cloakroom install codex or cloakroom install gemini. Claude Code works on Mac, Linux and Windows."}}, {"@type": "Question", "name": "What doesn't it protect?", "acceptedAnswer": {"@type": "Answer", "text": "It stops accidental leaks, like a key in a file the AI happened to open. It isn't a sandbox that walls the AI off. Out of scope: hidden instructions in a file (a prompt injection) that trick the AI into leaking data piece by piece; what you type into a prompt, which Cloakroom can stop but not rewrite; and Claude Code's own logs on your disk."}}]}
 </script>
 <link rel="stylesheet" href="style.css">
 </head>
@@ -49,9 +49,9 @@
 <main id="main">
 
 <section class="hero" id="top">
-  <p class="eyebrow">A privacy layer for AI coding agents</p>
+  <p class="eyebrow">Keeps your secrets out of AI coding agents</p>
   <h1 class="display">Cloakroom swaps your secrets and personal data for placeholders before your AI coding agent sees them, and puts the real values back in the files it writes.</h1>
-  <p class="lede">Cloakroom masks API keys and personal data before your AI coding agent sees them. It works with Claude Code, Codex CLI and Gemini CLI, runs on your machine, and sets itself up on first start. Claude Code runs on Mac, Windows and Linux; Codex and Gemini on Mac and Linux.</p>
+  <p class="lede">A placeholder is a label like PII_PERSON_1. The AI works with the label; the real value never leaves your machine. Free and open source. It works with Claude Code, Codex CLI and Gemini CLI (AI coding agents that run in a terminal) and sets itself up on first start. Claude Code runs on Mac, Windows and Linux; Codex and Gemini on Mac and Linux.</p>
   <p class="actions">
     <a class="button" href="#install">Install</a>
     <a class="button primary" href="https://github.com/shanjeevrajendran/cloakroom">Star on GitHub</a>
@@ -79,16 +79,16 @@ DATABASE_URL=postgres://admin:<mark class="ph">PII_SECRET_1</mark>@10.0.4.12/pro
 <section class="features" aria-label="What it does">
   <article class="card">
     <h3>Catches personal data</h3>
-    <p>Secrets with a known shape, numbers with a checksum, and names, emails, addresses and birth dates in free text, found by a small model that runs locally.</p>
+    <p>Keys and passwords with a known pattern, card and ID numbers, and names, emails, addresses and birth dates in ordinary text. A small AI model on your machine finds the ones with no fixed pattern.</p>
   </article>
   <article class="card">
-    <h3>Masks and restores</h3>
-    <p>Each value it finds is swapped for a placeholder. When Claude writes a file or runs a command that contains a placeholder, the real value goes back in, locally, just before the tool runs.</p>
+    <h3>Masks, then puts values back</h3>
+    <p>Each value it finds is swapped for a placeholder. When Claude writes a file or runs a command that contains a placeholder, the real value goes back in, on your machine, just before it runs.</p>
   </article>
   <article class="card wide">
     <div class="card-text">
       <h3>Learns from your corrections</h3>
-      <p>Mark a false alarm once in the dashboard and a rule stops it next time. The detection model itself never changes. Your labels become rules in front of it.</p>
+      <p>When it masks something harmless (a false alarm), mark it once in the dashboard and a rule stops it next time. The detection model itself never changes. Your labels become rules that run before it.</p>
     </div>
     <img src="https://raw.githubusercontent.com/shanjeevrajendran/cloakroom/main/assets/dashboard-preview.png" width="2800" height="2000" loading="lazy" decoding="async" alt="The Cloakroom dashboard: a list of recent alerts, each showing the tool, the file and what was masked, with labels like Correct, To review and Missed something, and a panel that turns your labels into suggested rules to approve or dismiss.">
   </article>
@@ -100,8 +100,9 @@ DATABASE_URL=postgres://admin:<mark class="ph">PII_SECRET_1</mark>@10.0.4.12/pro
 <pre class="cmd"><code>/plugin marketplace add shanjeevrajendran/cloakroom
 /plugin install cloakroom@cloakroom</code></pre>
   <p>Restart Claude Code and Cloakroom sets itself up: keys, card numbers and ID numbers are covered within seconds; names and addresses a few minutes later, once the detection model has downloaded.</p>
+  <p>Using Codex CLI or Gemini CLI (Mac and Linux)? Install the program with <code>uv tool install "cloakroom[model,torch,ocr]"</code>, then run <code>cloakroom install codex</code> or <code>cloakroom install gemini</code>. <a href="https://github.com/shanjeevrajendran/cloakroom#codex">Codex steps</a> · <a href="https://github.com/shanjeevrajendran/cloakroom#gemini-cli">Gemini CLI steps</a></p>
   <p>Then, in a terminal:</p>
-<pre class="cmd"><code><span class="c"># checks Python, the key store, the model and the service</span>
+<pre class="cmd"><code><span class="c"># checks Python, the key store, the detection model and the background service</span>
 cloakroom doctor
 <span class="c"># opens your alerts in the browser</span>
 cloakroom dashboard</code></pre>
@@ -121,7 +122,7 @@ cloakroom dashboard</code></pre>
   <h3>Does Cloakroom work with Codex or Gemini CLI?</h3>
   <p>Yes, on Mac and Linux: run cloakroom install codex or cloakroom install gemini. Claude Code works on Mac, Linux and Windows.</p>
   <h3>What doesn't it protect?</h3>
-  <p>It stops accidental exposure but isn't a sandbox. A prompt injection set on smuggling data out piece by piece, what you type into a prompt, and Claude Code's own local logs are out of scope.</p>
+  <p>It stops accidental leaks, like a key in a file the AI happened to open. It isn't a sandbox that walls the AI off. Out of scope: hidden instructions in a file (a prompt injection) that trick the AI into leaking data piece by piece; what you type into a prompt, which Cloakroom can stop but not rewrite; and Claude Code's own logs on your disk.</p>
 </section>
 
 <article class="writeup" id="writeup" aria-labelledby="writeup-title">
@@ -129,17 +130,17 @@ cloakroom dashboard</code></pre>
   <h2 id="writeup-title" class="article-title">How I keep secrets and personal data out of Claude Code</h2>
 
   <h3>The problem</h3>
-  <p>Claude Code reads whatever a task touches. Ask it to fix a failing job and it opens the <code>.env</code>, tails the log, greps the support export. Everything it reads goes to the model as context.</p>
+  <p>Claude Code reads whatever a task touches. Ask it to fix a failing job and it opens the <code>.env</code>, reads the end of the log, searches the support export. Everything it reads goes to the model as context.</p>
   <p>But my working folders hold API keys, database passwords, and support tickets with customers' names, emails and home addresses. I didn't want any of that leaving my machine just because Claude needed to look at a file that happened to contain it.</p>
-  <p>Secret scanners help with keys that have a known shape. They don't help with a customer's name in a ticket, or an address in a log line. To a regex, those look like ordinary text.</p>
+  <p>Secret scanners help with keys that have a known shape. They don't help with a customer's name in a ticket, or an address in a log line. To a pattern matcher, those look like ordinary text.</p>
   <p>So I built Cloakroom: a Claude Code plugin that masks secrets and personal data before the model sees them, and puts the real values back when Claude writes.</p>
 
   <h3>What Claude sees</h3>
-  <p>Claude Code lets a plugin run hooks before and after every tool call. Cloakroom sits on those hooks. When Claude reads a file or runs a command, the output goes through Cloakroom first. It looks for:</p>
+  <p>Claude Code lets a plugin run hooks: small checks before and after every action Claude takes, such as reading a file or running a command. Cloakroom runs in those hooks. When Claude reads a file or runs a command, the output goes through Cloakroom first. It looks for:</p>
   <ul>
     <li>secrets with a known shape (cloud keys, tokens, private keys, passwords in URLs and config lines)</li>
-    <li>numbers with a checksum (cards, IBANs, SSNs)</li>
-    <li>personal data in free text (names, emails, addresses, birth dates), found by a small model that runs locally</li>
+    <li>numbers with a built-in check digit (cards, IBANs, SSNs)</li>
+    <li>personal data in ordinary text (names, emails, addresses, birth dates), found by a small AI model that runs on your machine</li>
   </ul>
   <p>Each value it finds is swapped for a placeholder. Here's a support note and a config line, on disk and as Claude gets them:</p>
 <pre><code># on disk
@@ -152,12 +153,12 @@ DATABASE_URL=postgres://admin:PII_SECRET_1@10.0.4.12/prod</code></pre>
   <p>Claude can still do the job. It knows there's a person, an email and a password, and where each one sits. It just doesn't know the values. A value keeps the same placeholder for the whole session, so <code>PII_PERSON_1</code> in one file is the same person in the next.</p>
 
   <h3>Scans and photos</h3>
-  <p>A lot of personal data lives in pictures: a scanned form, a photo of an ID. Cloakroom can't check pixels, so it reads them instead. A scanned PDF page or a photo that Claude opens goes through OCR on your own machine, and Claude gets the masked text instead of the image. The OCR models ship inside the package, so nothing is uploaded. A photo of a form that says <code>Patient: Nadia Petrov DOB 03/14/1986</code> reaches Claude as <code>Patient: PII_PERSON_1 DOB PII_DATE_1</code>.</p>
+  <p>A lot of personal data lives in pictures: a scanned form, a photo of an ID. Cloakroom can't check pixels, so it reads them instead. A scanned PDF page or a photo that Claude opens goes through OCR (software that reads text out of a picture) on your own machine, and Claude gets the masked text instead of the image. The OCR models ship inside the package, so nothing is uploaded. A photo of a form that says <code>Patient: Nadia Petrov DOB 03/14/1986</code> reaches Claude as <code>Patient: PII_PERSON_1 DOB PII_DATE_1</code>.</p>
   <p>OCR misreads digits, so in that text every long run of them is masked as an account number. Handwriting still reads poorly.</p>
 
-  <h3>How restore works</h3>
+  <h3>How the real values go back</h3>
   <p>Masking alone breaks things. If Claude writes <code>Hi PII_PERSON_1,</code> into a reply draft, that's useless to you.</p>
-  <p>So the original values go into an encrypted vault for the session, with the key in your OS's secure store (Keychain on macOS, Credential Manager on Windows, Secret Service on Linux). When Claude writes a file or runs a command that contains a placeholder, the hook swaps the real value back in, locally, just before the tool runs. The draft on your disk says <code>Hi Nadia Petrov,</code>. The model never saw the name.</p>
+  <p>So the original values go into a vault, an encrypted file kept for the session, with the key in your OS's secure store (Keychain on macOS, Credential Manager on Windows, Secret Service on Linux). When Claude writes a file or runs a command that contains a placeholder, the hook swaps the real value back in, locally, just before the tool runs. The draft on your disk says <code>Hi Nadia Petrov,</code>. The model never saw the name.</p>
   <p>Prompts are different. Claude Code lets a hook block a prompt but not rewrite it, so if you paste a key or an email straight into the chat, Cloakroom stops that prompt and tells you what it found. Put the detail in a file and ask Claude to read it instead, or start the prompt with <code>cr!</code> to send it as is.</p>
 
   <h3>Fixing false alarms</h3>
@@ -166,10 +167,10 @@ DATABASE_URL=postgres://admin:PII_SECRET_1@10.0.4.12/prod</code></pre>
   <p>The detection model itself never changes. Your labels become rules in front of it, encrypted like the vault.</p>
 
   <h3>What I learned</h3>
-  <p><strong>Regex isn't enough.</strong> Keys are easy. Names, addresses and free-text personal data need a model. I use a small one that runs on your machine. The cost is a one-time download and some false alarms, which is why the labels and rules exist.</p>
-  <p><strong>Restore is the hard part.</strong> Detection gets the attention, but the real work was making write-back reliable: the same placeholder everywhere in a session, the right shape for each tool's input, and edge cases like Claude's Edit tool checking text against the file before any hook runs.</p>
-  <p><strong>Fail closed.</strong> If Cloakroom can't check something (the model still loading, the service down, OCR timing out), tool calls are held back rather than waved through. Prompts fall back to the fast rules, so you're never locked out.</p>
-  <p><strong>Encoded output counts.</strong> A command like <code>base64 .env</code> or <code>xxd</code> turns a secret into something no pattern matches. Cloakroom decodes those dumps and checks them too.</p>
+  <p><strong>Patterns aren't enough.</strong> Keys are easy. Names, addresses and free-text personal data need a model. I use a small one that runs on your machine. The cost is a one-time download and some false alarms, which is why the labels and rules exist.</p>
+  <p><strong>Restore is the hard part.</strong> Detection gets the attention, but the real work was putting values back reliably: the same placeholder everywhere in a session, the right shape for each tool's input, and edge cases like Claude's Edit tool checking text against the file before any hook runs.</p>
+  <p><strong>If it can't check, it waits.</strong> If Cloakroom can't check something (the model still loading, the service down, OCR timing out), tool calls are held back rather than waved through. Prompts fall back to the fast rules, so you're never locked out.</p>
+  <p><strong>Encoded output counts.</strong> A command like <code>base64 .env</code> or <code>xxd</code> turns a secret into something no pattern matches. Cloakroom turns those dumps back into text and checks them too.</p>
   <p><strong>Know what it isn't.</strong> Cloakroom stops accidental exposure: the key in a file Claude happened to open, the customer list in a log. It isn't a sandbox, and a model determined to leak data piece by piece is out of scope.</p>
 
   <h3>Try it</h3>

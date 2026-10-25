@@ -2,7 +2,7 @@
 
 <img src="https://raw.githubusercontent.com/shanjeevrajendran/cloakroom/main/assets/hero.svg" alt="Cloakroom, a privacy layer for AI coding agents (Claude Code, Codex CLI, Gemini CLI): names, emails, addresses and API keys are swapped for placeholders before the model sees them." width="880">
 
-**Cloakroom is free and open source. It masks API keys, secrets and personal data (PII) on your machine before your AI coding agent sees them. Works with Claude Code, Codex CLI and Gemini CLI.**
+**Cloakroom is free and open source. It masks API keys, passwords and personal data (names, emails, addresses and the like) on your machine before your AI coding agent sees them. Works with Claude Code, Codex CLI and Gemini CLI.**
 
 <p>
   <a href="https://www.youtube.com/shorts/U9lN4emgeE0">▶ 40-second demo</a> ·
@@ -29,12 +29,16 @@
 **Cloakroom swaps your secrets and personal data for placeholders before Claude sees them, and puts the real values
 back in the files Claude writes.**
 
-Cloakroom catches personal data as well as keys, masks it instead of blocking the call, and learns from your corrections.
+A placeholder is a label such as `PII_PERSON_1` or `PII_SECRET_1`. The AI sees the label and works with it. The
+real value stays on your machine.
 
-Runs on your machine, sets itself up on first start, works on Mac, Windows and Linux. Free and open source. Young:
-expect rough edges.
+Cloakroom catches personal data as well as keys. It masks the data and lets the AI carry on, instead of stopping the
+whole step. And it learns from your corrections.
 
-New in 0.7, it also protects other coding agents (Mac and Linux):
+It runs on your machine, sets itself up on first start, and works on Mac, Windows and Linux. Free and open source.
+It's new, so expect rough edges.
+
+New in 0.7, it also protects two other AI coding agents that run in a terminal (Mac and Linux):
 
 - **OpenAI's Codex CLI:** run `cloakroom install codex` ([Codex](#codex)).
 - **Google's Gemini CLI:** run `cloakroom install gemini` ([Gemini CLI](#gemini-cli)).
@@ -43,35 +47,49 @@ New in 0.7, it also protects other coding agents (Mac and Linux):
 
 ✓ Masked: the AI sees a placeholder, never the real value · ⛔ Stopped: Cloakroom blocks it and tells you how to send it safely · ✗ Not covered: Cloakroom can't see it
 
+Why typed messages are stopped instead of masked: these agents let an add-on stop what you type, but not reliably
+change it. So Cloakroom stops a message holding a key or personal data before it's sent, and nothing reaches the AI.
+
+MCP tools are add-ons that give the AI extra abilities, such as a browser or a database. "Block message" is
+explained under the table.
+
 | Protection | Claude Code | Codex CLI | Gemini CLI |
 |---|---|---|---|
-| Prompts you type | ⛔ Stopped: a message holding a key or personal data isn't sent; Cloakroom tells you how to resend it safely | ⛔ Stopped: a message holding a key or personal data isn't sent; Cloakroom tells you how to resend it safely | ⛔ Stopped: a message holding a key or personal data isn't sent; Cloakroom tells you how to resend it safely; ✗ pictures in a prompt aren't checked |
-| File reads | ✓ | ✓ Masked when read through the shell (shown to the AI as a blocked result) | ✓ Masked (shown to the AI as a blocked result) |
-| Command output | ✓ | ✓ Masked (shown to the AI as a blocked result); ✗ long-running commands | ✓ Masked (shown to the AI as a blocked result) |
-| MCP tool output | ✓ | ✓ Masked (shown to the AI as a blocked result) | ✓ Masked (shown to the AI as a blocked result) |
-| Images and PDFs | ✓ | ✗ Not covered: pictures opened with `view_image` | ✓ Masked: pictures read by OCR; ⛔ PDFs held back |
+| Prompts you type | ⛔ Stopped before sending (the AI never sees it); Cloakroom tells you how to resend it safely | ⛔ Stopped before sending (the AI never sees it); Cloakroom tells you how to resend it safely | ⛔ Stopped before sending (the AI never sees it); Cloakroom tells you how to resend it safely; ✗ pictures in a prompt aren't checked |
+| File reads | ✓ | ✓ Masked when read through the shell (sent as a block message) | ✓ Masked (sent as a block message) |
+| Command output | ✓ | ✓ Masked (sent as a block message); ✗ long-running commands | ✓ Masked (sent as a block message) |
+| MCP tool output | ✓ | ✓ Masked (sent as a block message) | ✓ Masked (sent as a block message) |
+| Images and PDFs | ✓ | ✗ Not covered: pictures opened with `view_image` | ✓ Masked: the text in pictures is read on your machine; ⛔ PDFs held back |
 | Real values put back in commands and edits | ✓ | ✓; ⛔ unknown commands are refused, not asked about | ✓ |
-| Real values kept out of web and MCP calls | ✓ | ✓; ✗ Codex's hosted web search | ✓ |
+| Real values kept out of web and MCP calls | ✓ | ✓; ✗ Codex's own web search (runs on OpenAI's servers) | ✓ |
 | Keys written into files git would commit | ✓ | ✓ | ✓ |
 | The agent's `git commit` / `git push` check | ✓ | ✓ | ✓ |
-| Network sends holding secrets or placeholders | ✓ | ⛔ Stopped: refused, not asked about | ✓ |
+| Commands that send secrets or placeholders over the internet | ✓ | ⛔ Stopped: refused, not asked about | ✓ |
 | Calls that move money | ✓ | ✓ | ✓ |
-| Git hook for your own commits | ✓ (Windows: untested) | ✓ | ✓ |
+| Check on commits you make yourself | ✓ (Windows: untested) | ✓ | ✓ |
 | Systems | Mac, Linux, Windows | Mac, Linux | Mac, Linux |
 
-Codex skips the hooks until you trust them once (`/hooks`). Gemini CLI lets a call through when a check runs past
-its time limit. Both were tested live (Codex 0.164, Gemini CLI 0.65). Everything
+Cloakroom works through hooks: small checks the agent runs before and after each action, such as reading a file or
+running a command.
+
+- **Block message:** Codex and Gemini CLI can't swap a tool's output for a masked copy. So Cloakroom blocks the
+  original, and the AI reads the masked text in the block message instead.
+- **Codex** ignores Cloakroom's hooks until you approve them once (type `/hooks` inside Codex).
+- **Gemini CLI** lets an action through unchecked when a check runs past its time limit.
+
+Both were tested live (Codex 0.164, Gemini CLI 0.65). Everything
 else: [Known limits](https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-LIMITS.md).
 
 ## Recent releases
 
-- **0.7.1** (2026-10-25): checks that let a call through unchecked are logged and counted in `cloakroom report`;
+- **0.7.1** (2026-10-25): when a check is skipped and an action goes through unchecked, it's logged and counted in `cloakroom report`;
   `cloakroom install git-hook` checks the commits you make yourself; Codex can hold long-running commands.
 - **0.7.0** (2026-10-24): Cloakroom also protects Codex CLI and Gemini CLI, on Mac and Linux.
-- **0.6.6** (2026-10-24): a known secret is still caught when hashed, hex-encoded or written backwards.
+- **0.6.6** (2026-10-24): a secret Cloakroom has already seen is still caught when a command scrambles it (hashed,
+  hex-encoded or written backwards).
 - **0.6.5** (2026-10-24): US bank routing and account numbers are masked, and calls that move money wait for your OK.
 
-Claude Code plugin updates arrive a few days after each PyPI release, once the release has settled. All changes:
+Claude Code plugin updates arrive a few days after each PyPI release (PyPI is the Python package site), once the release has settled. All changes:
 [CHANGELOG.md](https://github.com/shanjeevrajendran/cloakroom/blob/main/CHANGELOG.md).
 
 **Hand Claude the files you'd never paste into a chat:**
@@ -84,9 +102,10 @@ Claude Code plugin updates arrive a few days after each PyPI release, once the r
 - **Disguised copies:** a key or email that a command hashed, hex-encoded or reversed is still masked
   ([what's covered](#disguised-copies)).
 - **Finance work:** bank and card numbers are masked, calls that move money wait for your OK, and `cloakroom report`
-  with the tamper-evident log is your audit trail ([for finance teams](#for-finance-teams)).
+  with a log that shows any later edit is your audit trail ([for finance teams](#for-finance-teams)).
 - **Scans and photos of documents:** read on your machine (no upload) and masked like any other file.
-- **Learns from you:** mark a false alarm once in the dashboard and a rule stops it next time.
+- **Learns from you:** when it masks something harmless (a false alarm), mark it once in the dashboard and a rule
+  stops it next time.
 
 <div align="center">
   <img src="https://raw.githubusercontent.com/shanjeevrajendran/cloakroom/main/assets/demo.gif" alt="Claude Code reads a support ticket and .env through Cloakroom: the model sees PII_PERSON_1 and PII_SECRET_1, and reply.md on disk gets the real customer name back" width="820">
@@ -109,7 +128,8 @@ You need Claude Code, installed and signed in. Then:
 
 3. **Restart Claude Code.** Type `/exit`, then `claude` again. Cloakroom now installs itself. Keys and card numbers
    are covered in about a minute; names and addresses a few minutes later, once the detection model has downloaded
-   (about 1 GB on a Mac, up to about 4 GB elsewhere). Claude's tool calls are held back until then.
+   (about 1 GB on a Mac, up to about 4 GB elsewhere). Until then, Claude's actions (reading files, running commands,
+   using add-ons) wait.
    It also updates itself when the plugin updates (an install you made by hand is left alone).
    On a Mac, if it asks to use the "cloakroom" item in your Keychain, click Always Allow (it only lets Cloakroom read its own key).
 4. **Check it.** Open a new terminal window and run:
@@ -121,12 +141,14 @@ You need Claude Code, installed and signed in. Then:
 
 What you need first:
 
-- **Windows, Mac and Linux:** nothing. When neither uv nor pipx is there, Cloakroom fetches uv (a pinned version,
-  checked against its SHA-256 before it runs), and uv brings its own Python. That needs `curl` or `wget`, which
+- **Windows, Mac and Linux:** nothing. When neither uv nor pipx (tools that install Python programs) is there,
+  Cloakroom fetches uv (a fixed version, checked against its known SHA-256 fingerprint before it runs), and uv brings
+  its own Python. That needs `curl` or `wget`, which
   macOS and most Linux systems have. If a Linux machine has neither, Cloakroom tells you the steps:
   `sudo apt install curl` (Ubuntu/Debian) or `sudo dnf install curl` (Fedora/RHEL), then restart Claude Code.
-- **Intel Mac:** rules-only protection (keys, cards, IDs). PyTorch and ONNX Runtime publish no Intel Mac builds, so
-  the detection model for names and addresses can't run there.
+- **Intel Mac:** only the pattern rules run, so keys, cards and ID numbers are caught but most names and addresses
+  are not. The detection model for names and addresses needs PyTorch or ONNX Runtime, and neither is built for
+  Intel Macs.
 
 If something looks wrong:
 
@@ -140,9 +162,13 @@ If something looks wrong:
 Tested from clean installs on macOS, Windows and Ubuntu.
 
 Prefer to install by hand: `uv tool install "cloakroom[model,torch,ocr]"` (Python 3.10+; the part in brackets adds
-the detection model and OCR), then add the plugin as above.
+the detection model and OCR, which reads text out of pictures), then add the plugin as above.
 
 ## How it works
+
+When Claude reads a file or runs a command, Cloakroom checks the result on your machine first. Each real value it
+finds is swapped for a placeholder. The pair is kept in the vault, an encrypted file on your machine. When Claude
+writes a file or runs a command that holds a placeholder, Cloakroom puts the real value back just before it runs.
 
 ```
   Claude Code reads a file or runs a tool
@@ -172,16 +198,17 @@ Masking is the core. These come with it, on by default, and need nothing from yo
 
 **Real values don't leave your machine**
 
-- **Commands that send data are held:** a command that would send a known secret off your machine (curl, wget,
-  ssh, scp, rsync, nc, git push with credentials, a literal token in an `Authorization` header) is held, and the
-  message names what it found by placeholder only. If you meant it, type `cr: allow`, then ask Claude to run the
+- **Commands that send data are held:** a command that would send a secret Cloakroom has seen off your machine
+  (curl, wget, ssh, scp, rsync, nc, git push with credentials, a key typed straight into an `Authorization` header)
+  is held: it doesn't run until you say so. The message names what it found by placeholder only. If you meant it, type `cr: allow`, then ask Claude to run the
   same command again: it passes once.
-- **Network one-liners count too:** `python -c`, `node -e`, `ruby -e`, `perl -e`, `php -r`, `deno eval` and
-  `bash -c` that can open a connection are treated like curl.
-- **Encoded copies count:** a secret Cloakroom has seen is also caught base64-encoded, URL-encoded or JSON-escaped.
+- **One-line scripts count too:** `python -c`, `node -e`, `ruby -e`, `perl -e`, `php -r`, `deno eval` and
+  `bash -c` commands that can connect to the internet are treated like curl.
+- **Encoded copies count:** a secret Cloakroom has seen is also caught when a program rewrites it in a common way
+  (base64-encoded, URL-encoded or JSON-escaped).
 - **Disguised copies count:** that secret is also caught hashed, as hex or reversed ([details](#disguised-copies)).
 - **Web, MCP and subagent calls carry placeholders only:** a web fetch, an MCP tool call or a prompt to a subagent
-  that holds a real value is stopped before it runs.
+  (a helper AI that Claude starts) that holds a real value is stopped before it runs.
 - **Pictures and PDFs become masked text:** PDFs, scans, photos and images returned by MCP tools are read on your
   machine and Claude gets masked text, never the file or the picture. Without OCR an image is held back, with a
   one-line reason.
@@ -200,6 +227,8 @@ changed on the way. Each copy gets its own placeholder, and the exact copy is pu
 
 **Keys stay out of git**
 
+Git saves versions of your code, and those versions are often shared online.
+
 - **Files git would commit:** when Claude writes a file, a key or password that would end up in a tracked file is
   refused, and Claude is told to use `.env` instead. Ignored files and `.env` work as before.
 - **Commits and pushes:** before Claude runs `git commit` or `git push`, Cloakroom reads what would be committed or
@@ -210,16 +239,16 @@ changed on the way. Each copy gets its own placeholder, and the exact copy is pu
   skips it and prints the one line to add to it. Skip the check once with git's own `--no-verify`; remove it with
   `cloakroom uninstall git-hook`. One repo at a time (no `--global`: git's template folder would only reach new
   clones). Mac and Linux; Git Bash on Windows isn't tested yet.
-- **Agent config files:** a live token written into `.mcp.json`, `.claude/settings.json`, `.cursor/mcp.json` or a
-  copy of `claude_desktop_config.json` in a repo is refused, and Claude is told to use an environment reference
-  such as `${GITHUB_TOKEN}`.
+- **Agent config files:** a real key written into `.mcp.json`, `.claude/settings.json`, `.cursor/mcp.json` or a
+  copy of `claude_desktop_config.json` in a repo is refused. Claude is told to point to a setting kept outside the
+  file instead, such as `${GITHUB_TOKEN}`.
 
 **You stay in control, and can show it**
 
 - **Claude can't turn Cloakroom off:** its settings change only from the dashboard or when you type `cr: pause` or
   `cr: resume`.
-- **A log you can check and export:** each line of the activity log carries the hash of the line before it, so an
-  edited or removed line shows up. `cloakroom report` (or Export on the dashboard) gives counts per day and session,
+- **A log you can check and export:** each line of the activity log carries a fingerprint (hash) of the line
+  before it, so an edited or removed line shows up. `cloakroom report` (or Export on the dashboard) gives counts per day and session,
   without values.
 - **Placeholders can't be guessed:** each one ends in a short tag only your machine can make
   (`PII_SECRET_1_k7q2ab`), and only placeholders issued in this session get their real value back. A file that
@@ -227,11 +256,11 @@ changed on the way. Each copy gets its own placeholder, and the exact copy is pu
 - **Files Claude wrote stay masked:** when a real value is put back into a file, Cloakroom remembers where (never the
   value), so reading that file again later, even in a new session, shows the placeholder.
 - **Old transcripts can be cleaned:** `cloakroom clean-history` finds keys and passwords already sitting in old
-  Claude Code transcripts and your prompt history, and replaces them on your yes, with a backup you delete.
+  Claude Code transcripts (saved records of past chats) and your prompt history, and replaces them on your yes, with a backup you delete.
 
 <a id="for-finance-teams"></a>**For finance teams**
 
-- **Bank numbers are masked:** US routing numbers (the ABA checksum plus a word or field like "routing" or "ABA")
+- **Bank numbers are masked:** US routing numbers (a valid ABA check digit plus a word or field like "routing" or "ABA")
   and bank account numbers (next to "account number", "acct", "checking account", "DDA", in a CSV column of that
   name, a line of an ACH payment file, or beside a routing number in the same record) become `PII_BANK_1_k7q2ab`.
   Digits with no such word stay as they are, so order numbers, phone numbers and ZIP+4 codes are left alone.
@@ -241,32 +270,35 @@ changed on the way. Each copy gets its own placeholder, and the exact copy is pu
   once. Reads such as a balance check pass. Add your own hosts and tools in `~/.cloakroom/config.json` with
   `"money_hosts": ["payments.example.com/api/wires"]` and `"money_tools": ["disburse"]`; turn the hold off with
   `"money_hold": false`.
-- **The audit trail:** every hold and every `cr: allow` lands in the same tamper-evident log (above), so
+- **The audit trail:** every hold and every `cr: allow` lands in the same activity log that shows later edits (above), so
   `cloakroom report` shows them per day and session.
 
 <details>
 <summary><b>Commands and limits</b></summary>
 
 - **`cloakroom report [--since 2026-10-01] [--format csv|json]`:** counts per day and session by data kind and action
-  (masked, withheld, held, allowed once, denied), with paths reduced to their extension and top folder. It starts
+  (masked, withheld: output not passed on, held, allowed once, denied), with paths reduced to their extension and top folder. It starts
   with what it covers and what it can't: a miss leaves no line, and other agents, machines without Cloakroom and
   prompts sent with `cr!` are not in it. A "Checks skipped" section counts the calls let through without a full
   check (too large, too slow, a git error, the model not ready), by check and reason; you're also told about each
   reason once per session when it happens.
-- **`cloakroom report --verify`:** checks the log's hash chain and prints the head hash. Keep that somewhere else:
+- **`cloakroom report --verify`:** checks that no line of the log was changed (the hash chain) and prints the last
+  line's fingerprint (the head hash). Keep that somewhere else:
   anyone who rewrites every later line can rebuild the chain. The log keeps `"log_months"` months (default 12).
 - **`cloakroom clean-history [--dry-run]`:** the first run only counts, per project. Files changed in the last ten
   minutes (an open session) are skipped.
-- **Commit and push check:** it reads the staged change (for `git push`, the commits no remote has yet) within two
+- **Commit and push check:** it reads the changes you staged for the commit (for `git push`, the commits no remote has yet) within two
   seconds; a larger or slower one runs unchecked. Repos that commit sample keys need `"allow_secret_paths"`.
 
 </details>
 
 ## Dashboard
 
-Where your labels become rules: false alarms fall as you label them, and the detection model itself never changes.
+Where you correct Cloakroom. Each false alarm you mark can become a rule, so it stops happening. The detection
+model itself never changes.
 
-`cloakroom dashboard` opens a page served by Cloakroom itself on 127.0.0.1, signed in with a one-time link.
+`cloakroom dashboard` opens a page that Cloakroom serves from your own machine only (127.0.0.1). You're signed in with
+a one-time link.
 
 <div align="center">
   <img src="https://raw.githubusercontent.com/shanjeevrajendran/cloakroom/main/assets/dashboard-preview.png" alt="The Cloakroom dashboard: health status, values kept from the model, the alert feed with labels, and the learning panel" width="820">
@@ -276,15 +308,15 @@ Where your labels become rules: false alarms fall as you label them, and the det
   to see its placeholders; the real values show only when you click Reveal.
 - **Your labels:** mark an alert *correct*, a *false alarm*, or type what it *missed*.
 - **Rules from your labels:** a false alarm suggests "never mask this", a miss suggests "always mask this". You
-  approve each one, or later let rules apply by themselves after a replay test against your past labels; rules that
+  approve each one, or later let rules apply by themselves once Cloakroom has tested them against your past labels; rules that
   would unmask a key, password, card or ID number always wait for you. Undo puts everything back. The detection model
   never changes. Details: [the handbook](https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-HANDBOOK.md).
 - **Private by design:** the activity log holds no values or text; labels and rules are encrypted like the vault.
 
 ## When Cloakroom blocks your prompt
 
-Claude Code lets Cloakroom block a prompt but not rewrite it, so a prompt holding a key, an email, a phone, a card or
-an ID number is stopped. Names alone and plain dates go through. The block message says what it found, and how to
+Claude Code lets Cloakroom stop a prompt but not rewrite it. So a prompt holding a key, an email, a phone, a card or
+an ID number is stopped before it's sent, and the AI never sees it. Names alone and plain dates go through. The block message says what it found, and how to
 get past it:
 
 | Type | What happens |
@@ -315,13 +347,16 @@ in a log looks like ordinary text to them.
   Secret Service on Linux (tested on Ubuntu 24.04, plus automatic tests on every change).
 - **No graphics card needed.** Each file or command is checked in a fraction of a second on an ordinary laptop
   (`cloakroom doctor` prints your numbers).
-- **Catches encoded output.** If a command prints data in encoded form (`base64`, hex dumps from `xxd` or `od`),
-  Cloakroom decodes it and checks it too.
+- **Catches encoded output.** If a command prints data in a scrambled but reversible form (`base64`, hex dumps from
+  `xxd` or `od`), Cloakroom turns it back into text and checks it too.
 - **If it can't check, it doesn't let things through.** When Cloakroom isn't ready, Claude's file reads and
   commands wait instead of passing unchecked. Your prompts still get a quick rules check, with a warning, so you're
   never locked out.
 
 ## Results
+
+In short: in our tests Cloakroom let through fewer secrets and personal details than the other tools we tried, and
+masked more harmless text by mistake. The tables below are the detail.
 
 - **Good at:** personal data (names, emails, phone numbers, addresses) and secrets in odd places. On fresh test
   sets it let through 0 of 1,005 personal details; the other Claude Code tools we tested let through 119 to 992.
@@ -331,7 +366,7 @@ in a log looks like ordinary text to them.
   and a rule stops it next time.
 - **What a false alarm costs:** Claude sees a placeholder where it needed the real text. Nothing leaks.
 
-Every number comes from a set run once before any tuning on it unless it says otherwise. All tools at default
+Unless it says otherwise, every number comes from a test set run once, before Cloakroom was adjusted for it. All tools at default
 settings, offline, tested 12 to 14 October 2026 (Cloakroom's rows rerun 24 October for 0.6.2). maisecrets'
 maintainers reproduced our numbers and pointed out where the older sets were unfair to them (keys in formats vendors
 don't issue, and the `regions` setting); the key-format set and the setting below are the fix. The maintainers of
@@ -404,15 +439,15 @@ Cloakroom also works with OpenAI's Codex CLI, on Mac and Linux (tested with Code
 1. Install the program by hand: `uv tool install "cloakroom[model,torch,ocr]"`.
 2. Run `cloakroom install codex`. It adds four hooks to `~/.codex/hooks.json` and leaves your own hooks alone.
 3. Start Codex (`codex`), type `/hooks`, open each of the four Cloakroom hooks and trust it. Until you do, Codex
-   skips them, and `codex exec` gives no warning, so nothing is masked. `cloakroom doctor` shows whether they're
+   skips them, and `codex exec` (Codex run without the chat screen) gives no warning, so nothing is masked. `cloakroom doctor` shows whether they're
    installed.
 
 What works as in Claude Code: shell output and MCP results are masked before the model sees them, placeholders in
-shell commands and patches get their real values back on your machine, real values are kept out of MCP calls, and a
+shell commands and patches (Codex's file edits) get their real values back on your machine, real values are kept out of MCP calls, and a
 prompt holding a secret is stopped with what to do next. What's different:
 
-- Codex can't swap a tool's output in place, so the masked output reaches the model as a "blocked" tool result
-  that holds the masked text.
+- Codex can't swap a tool's output for a masked copy, so Cloakroom blocks the original and the AI reads the masked
+  text in the block message.
 - Codex hooks can't ask you. A command that would send placeholders off the machine, or one Cloakroom doesn't
   know, is stopped instead of asked about.
 - **Open gap:** a command that runs longer than Codex waits (10 seconds by default), such as a dev server, a watch
@@ -442,12 +477,13 @@ pictures are read by local OCR or held back, placeholders in shell commands, `wr
 real values back on your machine, real values are kept out of MCP calls and web tools, and a prompt holding a
 secret is stopped with what to do next. What's different:
 
-- Gemini can't swap a tool's output in place, so the masked output reaches the model as a "blocked" tool result
-  that holds the masked text.
-- Prompts can only be stopped, not masked. Gemini could rewrite a prompt on its way to the model, but it keeps the
+- Gemini can't swap a tool's output for a masked copy, so Cloakroom blocks the original and the AI reads the
+  masked text in the block message.
+- Prompts can only be stopped, not masked: a stopped prompt isn't sent, so the AI never sees it. Gemini could rewrite a prompt on its way to the AI, but it keeps the
   original in the conversation and sends that to Google on other calls no hook sees.
-- Gemini lets a call through when a hook runs past its time limit. Cloakroom never waits for its model to load:
-  until it's ready, checks run on the rules only (keys, cards, IDs).
+- Gemini lets an action through unchecked when a hook runs past its time limit. So Cloakroom never waits for its
+  detection model to load: until it's ready, checks use the pattern rules only (keys, cards, ID numbers), and names
+  and addresses may be missed.
 
 To remove it: `cloakroom uninstall gemini` (deletes that folder, nothing else). More in
 [Known limits](https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-LIMITS.md#gemini-cli).
@@ -455,12 +491,12 @@ To remove it: `cloakroom uninstall gemini` (deletes that folder, nothing else). 
 ## In an editor
 
 - **Claude Code in VS Code or JetBrains:** Cloakroom works as in the terminal. The VS Code extension runs Claude
-  Code with your plugins, and the JetBrains plugin runs `claude` in the IDE's terminal.
+  Code with your plugins, and the JetBrains plugin runs `claude` in the editor's built-in terminal.
 - **Codex in VS Code** (OpenAI's Codex extension): the extension's own Codex reads the same `~/.codex/hooks.json`,
   so it loads Cloakroom's hooks. Trust them first in the `codex` CLI (`/hooks`, step 3 above); the Codex limits
   above apply.
 - **Gemini Code Assist in VS Code:** Cloakroom does not protect you there. Its agent mode doesn't run the hooks
-  of Gemini extensions. Use the Gemini CLI in a terminal instead (VS Code's own terminal is fine).
+  that Gemini extensions bring. Use the Gemini CLI in a terminal instead (VS Code's own terminal is fine).
 - **Antigravity**, and editors not listed here: not supported. Cloakroom installs nothing there.
 
 More in [Known limits](https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-LIMITS.md#editors).
@@ -468,45 +504,49 @@ More in [Known limits](https://github.com/shanjeevrajendran/cloakroom/blob/main/
 ## Ways to run
 
 - **Full mode** (default): rules plus the local model. Catches keys and personal data written as plain text.
-- **Rules mode** (`CLOAKROOM_MODE=rules`): no model, instant, installs with plain `uv tool install cloakroom`.
+- **Rules mode** (`CLOAKROOM_MODE=rules`): pattern rules only, no detection model. Instant, and installs with plain
+  `uv tool install cloakroom`.
   Catches keys, card numbers and IDs, but misses most names and addresses.
 - **Outside Claude Code:** `cloakroom check FILE` shows what would be masked, `cloakroom explain FILE` shows why,
   `cloakroom mask FILE` prints what Claude would see.
-- **Dry run** (`CLOAKROOM_DRY_RUN=1`): lets everything through and logs what it would have done.
+- **Dry run** (`CLOAKROOM_DRY_RUN=1`): a test mode that lets everything through and only logs what it would have
+  done.
 - **Settings** in `~/.cloakroom/config.json`: `"allow"` for your own exceptions, `"mask_all_dates": true` to mask
   every date (by default only birth dates and dates in someone's record), `"mask_own_username": true` to mask your
   own login name in paths too, `"allow_images": true` to let pictures through unchecked (with a warning),
-  `"allow_secret_paths": ["tests/fixtures/*"]` (globs, relative to the project folder) for files where sample keys
+  `"allow_secret_paths": ["tests/fixtures/*"]` (file patterns, relative to the project folder) for files where sample keys
   may be written (or committed) even though git would commit them, `"log_months"` for how many months of the
   activity log to keep (default 12).
 - **Report and log check:** `cloakroom report`, see [Extra protections](#extra-protections).
 
-Exceptions, backends, CI and troubleshooting: [the handbook](https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-HANDBOOK.md).
+Exceptions, how the model runs (backends), automated builds (CI) and troubleshooting: [the handbook](https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-HANDBOOK.md).
 
 ## FAQ
 
-**Does it send my data anywhere?** No. It downloads the detection model once from Hugging Face (a pinned
+**Does it send my data anywhere?** No. It downloads the detection model once from Hugging Face (a fixed
 version); the OCR models come inside the package. Everything else runs on your own machine (127.0.0.1).
 
-**How much slower is Claude?** Each tool call is checked by a small local service: about 20 to 70 ms on Apple
-Silicon, where the model runs on the built-in GPU (an M5 Max to an 8 GB M1 Air), 60 ms on an Apple M-series CPU,
-about 300 ms on a 2-core cloud VM. Without an Apple Silicon or NVIDIA GPU, a fast CPU version of the model is built
-on first start. The first run downloads the model once (about 1 GB). `cloakroom doctor` prints your numbers.
+**How much slower is Claude?** Each action is checked by a small program running in the background on your
+machine: about 20 to 70 ms (thousandths of a second) on Apple Silicon, where the model runs on the built-in graphics
+chip (an M5 Max to an 8 GB M1 Air), 60 ms on an Apple M-series processor alone, about 300 ms on a small 2-core cloud
+server. Without an Apple Silicon or NVIDIA graphics chip, a fast processor-only version of the model is built on
+first start. The first run downloads the model once (about 1 GB). `cloakroom doctor` prints your numbers.
 
 **Will it mask things it shouldn't?** Sometimes, see above. Documented examples (Stripe test cards, `example.com`,
 fictional 555 numbers), plain dates and job titles are left alone. Mark a false alarm on the dashboard and it
 suggests a rule, or add exceptions to `allow` in `~/.cloakroom/config.json`. `cloakroom check FILE` previews masks.
 
-**What doesn't it protect?** It stops accidental exposure; it isn't a sandbox. Out of scope: a prompt injection
-(text in a file that steers Claude) set on smuggling data out piece by piece, what you type into a prompt (a prompt
-can be blocked but not rewritten, and names alone go through), and Claude Code's own local logs. Keys are kept
+**What doesn't it protect?** It stops accidental leaks, like a key in a file Claude happened to open. It isn't a
+sandbox (a sealed-off space the AI can't get out of). Out of scope: a prompt injection (hidden text in a file that
+steers Claude) set on smuggling data out piece by piece, what you type into a prompt (a prompt
+with a key or personal data is stopped before it's sent but can't be rewritten, and names alone go through), and Claude Code's own local logs. Keys are kept
 out of files git would commit when Claude writes them with Write or Edit, but a file a shell command writes some other
 way (a script, `cp`, `sed -i`) is not checked yet, so a commit made from it can still carry a key. Details:
 [docs-LIMITS.md](https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-LIMITS.md).
 
 **What about PDFs, scans and photos?** Cloakroom pulls the text out on your machine and masks it like any file;
 Claude gets the text, never the PDF or the picture. Scanned pages and photos (png, jpg) are read by OCR (reading
-text from an image), running on your CPU with its models inside the package: no download, no cloud, no account.
+text from an image), running on your processor with its models inside the package: no download, no cloud, no account.
 Screenshots and images returned by MCP tools (a browser or desktop tool, say) get the same treatment: the picture
 is read by local OCR and Claude gets the masked text in its place. The trade-off: Claude reads the text, it doesn't
 see the picture (layout, colours, charts and anything that isn't text are lost), and OCR can miss or misread small
@@ -519,8 +559,8 @@ told so; to show Claude a picture anyway, attach it to your own prompt. Page and
 
 ## More
 
-- [Write-up](https://shanjeevrajendran.github.io/cloakroom/): why I built it and how masking, OCR, restore and the dashboard fit together
-- [How it works](https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-HOW-IT-WORKS.md): the detectors, the known-safe filter, the vault and the restore
+- [Write-up](https://shanjeevrajendran.github.io/cloakroom/): why I built it and how masking, reading pictures, putting values back and the dashboard fit together
+- [How it works](https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-HOW-IT-WORKS.md): how values are found, what's left alone on purpose, where real values are kept and how they're put back
 - [Changelog](https://github.com/shanjeevrajendran/cloakroom/blob/main/CHANGELOG.md) · [Setup details](https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-SETUP.md) · [Known limits](https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-LIMITS.md) · [Benchmark](https://github.com/shanjeevrajendran/cloakroom/blob/main/bench/RESULTS.md)
 - Found a way around it? Please report it privately: [SECURITY.md](https://github.com/shanjeevrajendran/cloakroom/blob/main/SECURITY.md)
 
