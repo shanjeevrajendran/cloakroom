@@ -2,8 +2,9 @@
 
 Adds pre-commit and pre-push hooks to the current repo (core.hooksPath respected). They run `cloakroom git-check`,
 which scans the added lines with the agent commit hold's code (hook.git_added): the rules and your always-mask
-entries, keys and passwords only. A hook file that isn't Cloakroom's is never changed: install skips it and says how
-to chain it by hand. Skip the check once with git's own --no-verify.
+entries, keys and passwords only. Git for Windows runs the same hook with its own sh, whichever shell you commit
+from. A hook file that isn't Cloakroom's is never changed: install skips it and says how to chain it by hand. Skip
+the check once with git's own --no-verify.
 """
 from __future__ import annotations
 
@@ -22,6 +23,10 @@ ZERO = "0" * 40
 
 
 def _script(program: str, kind: str) -> str:
+    """The hook git runs with sh. On Windows that's Git for Windows' own sh, which reads C:/Users/a b/cloakroom.exe
+    as-is: forward slashes, so no backslash is ever taken as an escape."""
+    if sys.platform == "win32":
+        program = program.replace("\\", "/")
     verb = "git commit" if kind == "commit" else "git push"
     return (f"#!/bin/sh\n{MARK}: checks the keys and passwords this {kind} adds (cloakroom install git-hook).\n"
             f"# Skip it once: {verb} --no-verify. Remove it: cloakroom uninstall git-hook\n"

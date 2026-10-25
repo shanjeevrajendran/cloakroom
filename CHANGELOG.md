@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+- `cloakroom install git-hook` works on Windows: your commits and pushes are checked whether you commit from Git
+  Bash, PowerShell or cmd, also when Cloakroom is installed in a folder with a space in its name. The git hook's
+  tests now run on Windows too.
+
 ## 0.7.1 (2026-10-25)
 - Skipped checks are visible: when a check lets a call through without running in full (a commit or push over 4 MB
   or slower than 2 s, a git error, git too slow to say whether a written key would be committed, a new file over

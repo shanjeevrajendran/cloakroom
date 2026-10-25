@@ -191,7 +191,7 @@ Checked against Codex CLI 0.164 (hooks docs: https://developers.openai.com/codex
   cloakroom program is gone, the hook says so and lets the commit through.
 - One repo per install; no `--global`. A hook file another tool owns (husky, pre-commit) is left alone: add
   `cloakroom git-check commit || exit 1` to it by hand.
-- Tested on Mac and Linux. Git for Windows runs the same `sh` hook, but that isn't tested yet.
+- Tested on Mac, Linux and Windows. On Windows, git runs the check whichever window you commit from (Git Bash, PowerShell or cmd).
 
 ## Gemini CLI
 

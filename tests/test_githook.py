@@ -2,34 +2,44 @@
 passwords in added lines), with no agent running. Real git, a temp repo, the hook calling this checkout's code."""
 import json
 import os
-import time
+import shutil
 import subprocess
 import sys
+import sysconfig
+import time
+from pathlib import Path
 
 import pytest
 
 from cloakroom import cli
 
 KEY = "ghp_" + "Q7aZ0kLm3Np9Rt2Vw5Xy8Bc1Df4Gh6Jk0LmPq"  # a GitHub-token shape, not a real one
-pytestmark = pytest.mark.skipif(sys.platform == "win32", reason="sh hooks under Git for Windows: not tested yet")
 
 
 def git(repo, *args, check=True):
-    return subprocess.run(["git", "-C", str(repo), "-c", "user.name=t", "-c", "user.email=t@example.com", *args],
-                          check=check, capture_output=True, text=True)
+    return subprocess.run(["git", "-C", str(repo), *args], check=check, capture_output=True, text=True)
+
+
+def shim(folder):
+    """A cloakroom program for the hook to run: this checkout, this Python. Written with LF only: Git for Windows'
+    sh would read a CR as part of the line."""
+    folder.mkdir(parents=True, exist_ok=True)
+    prog = folder / "cloakroom"
+    prog.write_text(f'#!/bin/sh\nexec "{Path(sys.executable).as_posix()}" -m cloakroom "$@"\n', newline="\n")
+    prog.chmod(0o755)
+    return prog
 
 
 @pytest.fixture
 def repo(tmp_path, monkeypatch):
-    prog = tmp_path / "bin" / "cloakroom"  # the program the hook runs: this checkout, this Python
-    prog.parent.mkdir()
-    prog.write_text(f'#!/bin/sh\nexec "{sys.executable}" -m cloakroom "$@"\n')
-    prog.chmod(0o755)
+    prog = shim(tmp_path / "my bin")  # a space in the path, like C:\Users\Jane Doe
     from cloakroom import agents
     monkeypatch.setattr(agents, "_program", lambda: str(prog))
     r = tmp_path / "repo"
     r.mkdir()
     git(r, "init", "-q", "-b", "main")
+    for key, value in (("user.name", "t"), ("user.email", "t@example.com"), ("core.autocrlf", "false")):
+        git(r, "config", key, value)
     (r / "README.md").write_text("hello\n")
     git(r, "add", ".")
     git(r, "commit", "-q", "-m", "first")
@@ -40,6 +50,7 @@ def repo(tmp_path, monkeypatch):
 def test_commit_with_a_key_is_stopped_and_a_clean_one_passes(repo, capsys):
     assert cli.main(["install", "git-hook"]) == 0
     assert "added" in capsys.readouterr().out
+    assert b"\r" not in (repo / ".git" / "hooks" / "pre-commit").read_bytes()  # LF: Git for Windows' sh too
     (repo / "app.py").write_text(f"TOKEN = '{KEY}'\n")
     git(repo, "add", "app.py")
     r = git(repo, "commit", "-m", "key", check=False)
@@ -68,6 +79,46 @@ def test_push_with_a_key_is_stopped(repo, tmp_path):
     git(repo, "commit", "--no-verify", "-q", "-m", "key")
     r = git(repo, "push", "origin", "main", check=False)
     assert r.returncode != 0 and "stopped this push" in r.stderr
+
+
+def _stopped(repo):
+    (repo / "app.py").write_text(f"TOKEN = '{KEY}'\n")
+    git(repo, "add", "app.py")
+    return git(repo, "commit", "-m", "key", check=False)
+
+
+def test_the_installed_program_runs_from_the_hook(repo, monkeypatch):
+    """The real cloakroom(.exe) next to this Python (on Windows a backslash path under Scripts)."""
+    prog = os.path.join(sysconfig.get_path("scripts"), "cloakroom.exe" if sys.platform == "win32" else "cloakroom")
+    if not os.path.isfile(prog):
+        pytest.skip("cloakroom isn't installed next to this Python")
+    from cloakroom import agents
+    monkeypatch.setattr(agents, "_program", lambda: prog)
+    assert cli.main(["install", "git-hook"]) == 0
+    assert "\\" not in (repo / ".git" / "hooks" / "pre-commit").read_text()
+    r = _stopped(repo)
+    assert r.returncode != 0 and "stopped this commit" in r.stderr
+
+
+def test_a_missing_program_lets_the_commit_through_then_path_is_used(repo, tmp_path, monkeypatch):
+    from cloakroom import agents
+    monkeypatch.setattr(agents, "_program", lambda: str(tmp_path / "gone" / "cloakroom"))
+    monkeypatch.setenv("PATH", os.pathsep.join(d for d in os.environ["PATH"].split(os.pathsep)
+                                                if d and not shutil.which("cloakroom", path=d)))
+    assert cli.main(["install", "git-hook"]) == 0
+    r = _stopped(repo)
+    assert r.returncode == 0 and "cloakroom: not installed, so this commit was not checked" in r.stderr
+    git(repo, "reset", "-q", "--soft", "HEAD~1")
+    monkeypatch.setenv("PATH", str(tmp_path / "my bin") + os.pathsep + os.environ["PATH"])  # found on PATH instead
+    r = git(repo, "commit", "-m", "key", check=False)
+    assert r.returncode != 0 and "stopped this commit" in r.stderr
+
+
+def test_a_windows_path_is_written_with_forward_slashes(monkeypatch):
+    from cloakroom import githook
+    monkeypatch.setattr(sys, "platform", "win32")
+    s = githook._script(r"C:\Users\Jane O'Neil\.local\bin\cloakroom.exe", "commit")
+    assert "p='C:/Users/Jane O'\"'\"'Neil/.local/bin/cloakroom.exe'\n" in s and "\\" not in s and "\r" not in s
 
 
 def test_always_mask_values_count(repo, monkeypatch):

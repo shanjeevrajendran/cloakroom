@@ -66,7 +66,7 @@ explained under the table.
 | The agent's `git commit` / `git push` check | ✓ | ✓ | ✓ |
 | Commands that send secrets or placeholders over the internet | ✓ | ⛔ Stopped: refused, not asked about | ✓ |
 | Calls that move money | ✓ | ✓ | ✓ |
-| Check on commits you make yourself | ✓ (Windows: untested) | ✓ | ✓ |
+| Check on commits you make yourself | ✓ | ✓ | ✓ |
 | Systems | Mac, Linux, Windows | Mac, Linux | Mac, Linux |
 
 Cloakroom works through hooks: small checks the agent runs before and after each action, such as reading a file or
@@ -238,7 +238,7 @@ Git saves versions of your code, and those versions are often shared online.
   and `pre-push` hooks (where `core.hooksPath` points, if set) and never changes a hook another tool put there: it
   skips it and prints the one line to add to it. Skip the check once with git's own `--no-verify`; remove it with
   `cloakroom uninstall git-hook`. One repo at a time (no `--global`: git's template folder would only reach new
-  clones). Mac and Linux; Git Bash on Windows isn't tested yet.
+  clones). Mac, Linux and Windows (Git Bash, PowerShell or cmd: git runs the check, whichever window you commit from).
 - **Agent config files:** a real key written into `.mcp.json`, `.claude/settings.json`, `.cursor/mcp.json` or a
   copy of `claude_desktop_config.json` in a repo is refused. Claude is told to point to a setting kept outside the
   file instead, such as `${GITHUB_TOKEN}`.
