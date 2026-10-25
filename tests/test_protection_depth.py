@@ -178,7 +178,8 @@ def test_placeholder_header_is_not_held(monkeypatch, capsys):
     "rsync -av ./dist/ host:/srv/app/",
     "curl -H 'Accept: application/json' -H 'Content-Type: application/json' -d '{\"q\": 1}' https://api.example",
 ])
-def test_ordinary_network_commands_pass(command, monkeypatch, capsys):
+def test_ordinary_network_commands_pass(command, tmp_path, monkeypatch, capsys):
+    monkeypatch.chdir(tmp_path)  # not a repo: the push check has nothing to scan (in a repo, a missing branch is a git error)
     learn(monkeypatch, capsys)
     assert pre_bash(command, monkeypatch, capsys) is None
 

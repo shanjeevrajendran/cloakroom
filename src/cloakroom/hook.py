@@ -33,6 +33,7 @@ _ACTION = [""]  # set when a prompt passes by your own choice (sent anyway, paus
 _NOTE = [""]  # extra detail for the hook.log line (OCR pages and time), never values
 _FOUND: list[tuple[str, str]] = []  # (placeholder, kind) found during the current hook call, for the event log
 _EXTRA: dict = {}  # extra event-log fields for this hook call (session start: version, mode, hooks)
+_SKIPS: list[tuple] = []  # checks this hook call let through without running in full: (reason, check, what, say, extra)
 TIP = ("Cloakroom can't rewrite a prompt, only block it. Put the detail in a file and ask Claude to read it: "
        "it will be masked on the way in and restored for local edits. Send it anyway: add cr! at the start. "
        "Pause prompt checks: type cr: pause 10m (tool output stays masked). Resume: cr: resume.")
@@ -63,6 +64,29 @@ def _strings(value, fn):
             changed |= c
         return out, changed
     return value, False
+
+
+def _skip(reason: str, check: str, what: str = "", say: bool = True, ms: float = 0.0, **numbers):
+    """A check that let this call through without running in full (fail-open): logged as a "skipped" event (no
+    values) and, when say, told to you once per session for each reason and check. what: the check in the message."""
+    _SKIPS.append((reason, check, what or f"this {check}", say, {"ms": round(ms, 1), **numbers}))
+
+
+def _skip_message(session: str) -> str:
+    """The first-in-this-session skip notes, e.g. "Cloakroom didn't check this git push: it was larger than 4 MB"."""
+    out = []
+    for reason, check, what, say, numbers in _SKIPS:
+        if not say:
+            continue
+        safe = "".join(c for c in session if c.isalnum() or c in "-_")[:80] or "default"
+        flag = config.private_dir("skip-noted") / f"{safe}.{reason}.{''.join(c for c in check if c.isalnum())}"
+        if flag.exists():
+            continue
+        flag.touch(mode=0o600)
+        msg = f"Cloakroom didn't check {what}: {events.skip_why({'reason': reason, **numbers})}"
+        if msg not in out:
+            out.append(msg)
+    return " · ".join(out)
 
 
 def _summary(kinds: list[str]) -> str:
@@ -384,7 +408,12 @@ def _prime(command: str, cwd: str, session: str, powershell: bool = False):
             continue
         st = os.stat(path)
         key = f"{os.path.realpath(path)}:{st.st_size}:{st.st_mtime_ns}"
-        if st.st_size > PRIME_MAX_BYTES or key in cache:
+        if st.st_size > PRIME_MAX_BYTES:
+            _skip("too-large", "pre-read of a file a command names",
+                  "a file this command names before it ran (its output is still checked)", size=st.st_size,
+                  limit=PRIME_MAX_BYTES)
+            continue
+        if key in cache:
             continue
         with open(path, encoding="utf-8", errors="replace") as f:
             client.mask(f.read(), session)
@@ -495,7 +524,11 @@ def _git_would_commit(path: str) -> bool:
         return False
     try:
         r = subprocess.run(["git", "-C", d, "check-ignore", "-q", "--", path], capture_output=True, timeout=1)
-    except Exception:
+    except subprocess.TimeoutExpired:
+        _skip("too-slow", "git check on a write holding a key",
+              "whether git would commit this write, which holds a key", ms=1000, limit=1)
+        return False
+    except Exception:  # no git: nothing can commit the file
         return False
     return r.returncode == 1  # 0 ignored, 1 not ignored, 128 not a repo or error
 
@@ -681,6 +714,15 @@ def _added_lines(diff: str) -> dict[str, list[str]]:
     return out
 
 
+def _in_repo(folder: str) -> bool:
+    import subprocess
+    try:
+        return subprocess.run(["git", "-C", folder, "rev-parse", "--git-dir"], capture_output=True,
+                              timeout=1).returncode == 0
+    except Exception:
+        return False
+
+
 def _git_hold(command: str, cwd: str, vault: Vault, powershell: bool) -> dict | None:
     """Hold a git commit or push whose changes carry a known secret or a key the rules recognise, like the egress
     hold (cr: allow lets it run once). Names the file and placeholder or kind, never the value. Fails open on any
@@ -706,7 +748,7 @@ def _git_hold(command: str, cwd: str, vault: Vault, powershell: bool) -> dict | 
             raise RuntimeError("git")
         return r.stdout.decode("utf-8", "replace")
 
-    found, verb = [], ""
+    found, verb, sub, repo = [], "", steps[0][0], steps[0][1]
     try:
         for sub, repo, args, added in steps:
             files: dict[str, list[str]] = {}
@@ -715,9 +757,14 @@ def _git_hold(command: str, cwd: str, vault: Vault, powershell: bool) -> dict | 
                     root = git(repo, "rev-parse", "--show-toplevel").strip()
                     for name in git(repo, "ls-files", "--full-name", "--others", "--exclude-standard", "-z", ":/").split("\0"):
                         path = os.path.join(root, name)
-                        if name and os.path.isfile(path) and os.path.getsize(path) <= 4 * PRIME_MAX_BYTES:
-                            with open(path, encoding="utf-8", errors="replace") as f:
-                                files.setdefault(name, []).extend(f.read().splitlines())
+                        if not (name and os.path.isfile(path)):
+                            continue
+                        if os.path.getsize(path) > 4 * PRIME_MAX_BYTES:
+                            _skip("too-large", "new file in a git commit", "a new file in this git commit",
+                                  size=os.path.getsize(path), limit=4 * PRIME_MAX_BYTES)
+                            continue
+                        with open(path, encoding="utf-8", errors="replace") as f:
+                            files.setdefault(name, []).extend(f.read().splitlines())
                     continue
                 if argv[:2] == ["diff", "HEAD"]:
                     try:
@@ -728,11 +775,13 @@ def _git_hold(command: str, cwd: str, vault: Vault, powershell: bool) -> dict | 
                     out = git(repo, *argv, "--no-color", "--no-ext-diff", "-U0")
                 for name, lines in _added_lines(out).items():
                     files.setdefault(name, []).extend(lines)
-            if sum(len(x) for lines in files.values() for x in lines) > GIT_MAX_TEXT:
+            size = sum(len(x) for lines in files.values() for x in lines)
+            if size > GIT_MAX_TEXT:
+                _skip("too-large", f"git {sub}", size=size, limit=GIT_MAX_TEXT)
                 return None
             for name, lines in files.items():
                 if time.monotonic() > deadline:
-                    return None
+                    raise TimeoutError
                 if any(fnmatch(name, g) or fnmatch(os.path.basename(name), g) for g in globs):
                     continue
                 text = "\n".join(lines)
@@ -743,7 +792,12 @@ def _git_hold(command: str, cwd: str, vault: Vault, powershell: bool) -> dict | 
             if found:
                 verb = sub
                 break
-    except Exception:  # git missing or failing, slow, not a repo: the command runs as before
+    except (TimeoutError, subprocess.TimeoutExpired):  # slow: the command runs as before, unchecked
+        _skip("too-slow", f"git {sub}", ms=1000 * (time.monotonic() - deadline + GIT_SECONDS), limit=GIT_SECONDS)
+        return None
+    except Exception:  # git missing or failing, not a repo: the command runs as before, unchecked
+        if _in_repo(repo):  # no git, or no repo there: the command can't commit or push either
+            _skip("git-error", f"git {sub}")
         return None
     if not found:
         return None
@@ -998,21 +1052,44 @@ def _prompt_rules_only(data: dict, why: str) -> dict:
         _FOUND.extend((p, k) for p, k, _ in r.masked)
         kinds = _summary([k for _, k, _ in r.masked])
         return {"decision": "block", "reason": f"Cloakroom blocked this prompt: it contains {kinds}. {TIP}"}
+    _skip("model", "model check", say=False)  # the warning below already says so, on every such prompt
     return fail_closed("prompt", f"{why}; checked with rules only", data)
+
+
+def _model_fallback(event: str, data: dict):
+    """This call runs on the rules although the model is set: Gemini's cold start (agents._rules_until_warm, told
+    once per session) or the first-start model download (told by the install note). Only calls that run detection."""
+    from .agents import NOTE
+    tool = data.get("tool_name", "")
+    if event == "start" or (event == "pre" and (tool in LOCAL_FILE_TOOLS or tool in SHELL_TOOLS)):
+        return
+    if data.get(NOTE):
+        _skip("model", "model check", "this with the local model")
+    elif config.load().get("installing") in ("rules", "model"):
+        _skip("model", "model check", say=False)
 
 
 def handle(event: str, data: dict) -> dict | None:
     _FOUND.clear()
     _EXTRA.clear()
+    _SKIPS.clear()
     _ACTION[0] = _NOTE[0] = ""
     t0 = time.perf_counter()
     try:
+        _model_fallback(event, data)
         out = HANDLERS[event](data)
     except (client.Unavailable, engine.ModelUnavailable) as e:
         _ACTION[0] = ""
         out = _prompt_rules_only(data, str(e)) if event == "prompt" else fail_closed(event, str(e), data)
     except Exception as e:
         out = fail_closed(event, type(e).__name__, data)
+    try:
+        said = _skip_message(str(data.get("session_id", "default"))) if _SKIPS else ""
+    except Exception:
+        said = ""
+    if said:
+        out = dict(out or {})
+        out["systemMessage"] = said + (" · " + out["systemMessage"] if out.get("systemMessage") else "")
     _log(event, data, out, (time.perf_counter() - t0) * 1000)
     return out
 
@@ -1053,5 +1130,8 @@ def _log(event: str, data, out, ms: float = 0.0):
             except Exception:
                 target = "[path not checked]"
         events.record(event, data, decision, _FOUND, ms, target, dict(_EXTRA))
+        for reason, check, _, _, numbers in _SKIPS:
+            numbers = dict(numbers)
+            events.record("skipped", data, "skipped", [], numbers.pop("ms"), "", {"reason": reason, "check": check, **numbers})
     except Exception:
         pass

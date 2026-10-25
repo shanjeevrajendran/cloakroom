@@ -221,7 +221,13 @@ def test_a_cold_service_is_not_waited_for(monkeypatch, capsys):
     monkeypatch.setattr(client, "start_background", lambda: started.append(1))
     out = after("run_shell_command", f"TOKEN={KEY}", monkeypatch, capsys, {"command": "env"})
     assert out["decision"] == "deny" and KEY not in out["reason"] and "PII_SECRET_1_" in out["reason"]
-    assert "rules only" in out["systemMessage"] and started == [1]
+    assert "Cloakroom didn't check this with the local model: it wasn't ready, so only the rules checked it" in \
+        out["systemMessage"] and started == [1]
+    monkeypatch.setenv("CLOAKROOM_MODE", "full")  # each hook is its own process: undo the first call's rules switch
+    again = after("run_shell_command", "nothing here", monkeypatch, capsys, {"command": "ls"})
+    assert not again  # told once per session; the call is still logged as skipped
+    from cloakroom import events
+    assert [e["reason"] for e in events.read() if e["event"] == "skipped"] == ["model", "model"]
 
 
 @pytest.mark.parametrize("agent", ["codex", "gemini"])
@@ -290,3 +296,43 @@ def test_someone_elses_cloakroom_extension_is_left_alone(tmp_path, monkeypatch):
     assert cli.main(["install", "gemini"]) == 1 and cli.main(["uninstall", "gemini"]) == 1
     assert (ext / "gemini-extension.json").read_text() == '{"name": "cloakroom", "version": "9"}'
     assert not (ext / "hooks").exists()
+
+
+# --- doctor: the extension disabled, or hooks switched off (0.7.1) ---
+
+def test_doctor_names_a_disabled_extension_or_hooks_switched_off(tmp_path, monkeypatch):
+    from cloakroom import agents
+    monkeypatch.setenv("GEMINI_CLI_HOME", str(tmp_path))
+    monkeypatch.setenv("GEMINI_CLI_SYSTEM_SETTINGS_PATH", str(tmp_path / "system.json"))
+    home, work = tmp_path / ".gemini", tmp_path / "work"
+    (home / "extensions").mkdir(parents=True)
+    work.mkdir()
+    assert agents.gemini_problems(str(work)) == []  # nothing set: enabled, hooks on
+    enable = home / "extensions" / "extension-enablement.json"
+    enable.write_text(json.dumps({"cloakroom": {"overrides": ["!/*"]}}))  # gemini extensions disable cloakroom
+    assert "disabled in this folder" in agents.gemini_problems(str(work))[0]
+    enable.write_text(json.dumps({"cloakroom": {"overrides": ["!/*", f"{work}/*"]}}))  # the last match wins
+    assert "disabled in some folders" in agents.gemini_problems(str(work))[0]
+    enable.write_text(json.dumps({"other": {"overrides": ["!/*"]}}))
+    assert agents.gemini_problems(str(work)) == []
+    (home / "settings.json").write_text('{\n  // mine\n  "hooksConfig": {"enabled": false, "disabled": ["cloakroom-pre"]}}')
+    out = agents.gemini_problems(str(work))
+    assert len(out) == 2 and "hooksConfig.disabled" in out[0] and "hooksConfig.enabled is false" in out[1]
+    (work / ".gemini").mkdir()
+    (work / ".gemini" / "settings.json").write_text('{"hooksConfig": {"enabled": true}}')  # workspace wins over user
+    assert not any("enabled is false" in p for p in agents.gemini_problems(str(work)))
+    (tmp_path / "system.json").write_text('{"hooksConfig": {"enabled": false}}')  # system wins over both
+    assert any("enabled is false" in p for p in agents.gemini_problems(str(work)))
+    enable.write_text("{not json")
+    assert any(p.startswith("can't tell whether Cloakroom's extension is enabled") for p in agents.gemini_problems(str(work)))
+
+
+@pytest.mark.skipif(os.name == "nt", reason="Gemini install is refused on Windows")
+def test_doctor_prints_the_warning(tmp_path, monkeypatch, capsys):
+    from cloakroom import agents, cli
+    monkeypatch.setenv("GEMINI_CLI_HOME", str(tmp_path))
+    monkeypatch.setenv("GEMINI_CLI_SYSTEM_SETTINGS_PATH", str(tmp_path / "system.json"))
+    agents.install_gemini("/usr/local/bin/cloakroom")
+    (tmp_path / ".gemini" / "settings.json").write_text('{"hooksConfig": {"enabled": false}}')
+    cli.main(["doctor"])
+    assert "warn  gemini: Gemini's hooks are switched off (hooksConfig.enabled is false" in capsys.readouterr().out

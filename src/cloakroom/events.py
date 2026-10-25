@@ -7,6 +7,10 @@ Each event: id, ts, session, event, tool, target, kinds ({kind: count}), placeho
   prev is the SHA-256 of the line before it ("start" on the chain's first line), so a changed or removed line breaks
   the chain (`cloakroom report --verify`). Tamper-evident, not tamper-proof: whoever rewrites every later line can
   rebuild it, which is why --verify prints the head hash for you to keep.
+A check that let a call through without running in full (fail-open: too large, too slow, git error, model not
+ready) adds its own line: event "skipped", action "skipped", reason (too-large | too-slow | git-error | model),
+check (what wasn't checked, e.g. "git push"), size and limit (bytes, or seconds for too-slow) where they apply, and
+ms. Never values, paths or commands.
 One file per month (events-YYYY-MM.jsonl), kept for log_months months (config, default 12). Files from before 0.6.0
 (events.jsonl, events.1.jsonl) are read as they are and never rewritten; the chain starts fresh after them.
 """
@@ -45,6 +49,25 @@ def counts(kinds: list[str]) -> dict[str, int]:
     for k in kinds:
         out[k] = out.get(k, 0) + 1
     return out
+
+
+SKIP_WHY = {"too-large": "it was larger than {limit}", "too-slow": "it took longer than {limit}",
+            "git-error": "git returned an error",
+            "model": "it wasn't ready, so only the rules checked it (names and addresses may be missed)"}
+
+
+def _amount(reason: str, n) -> str:
+    if reason == "too-slow":
+        return f"{n:g} s"
+    return f"{n / 1048576:g} MB" if n >= 1048576 else f"{n / 1024:g} KB" if n >= 1024 else f"{n} bytes"
+
+
+def skip_why(ev: dict) -> str:
+    """A "skipped" event's reason in plain words, from its reason code and limit."""
+    reason = str(ev.get("reason", ""))
+    why = SKIP_WHY.get(reason, reason or "unknown")
+    return why.format(limit=_amount(reason, ev["limit"])) if "{limit}" in why and ev.get("limit") else \
+        why.replace(" than {limit}", " than its limit")
 
 
 def months() -> list[Path]:

@@ -209,7 +209,9 @@ changed on the way. Each copy gets its own placeholder, and the exact copy is pu
 - **`cloakroom report [--since 2026-10-01] [--format csv|json]`:** counts per day and session by data kind and action
   (masked, withheld, held, allowed once, denied), with paths reduced to their extension and top folder. It starts
   with what it covers and what it can't: a miss leaves no line, and other agents, machines without Cloakroom and
-  prompts sent with `cr!` are not in it.
+  prompts sent with `cr!` are not in it. A "Checks skipped" section counts the calls let through without a full
+  check (too large, too slow, a git error, the model not ready), by check and reason; you're also told about each
+  reason once per session when it happens.
 - **`cloakroom report --verify`:** checks the log's hash chain and prints the head hash. Keep that somewhere else:
   anyone who rewrites every later line can rebuild the chain. The log keeps `"log_months"` months (default 12).
 - **`cloakroom clean-history [--dry-run]`:** the first run only counts, per project. Files changed in the last ten
@@ -388,7 +390,8 @@ Cloakroom also works with Google's Gemini CLI, on Mac and Linux (built against G
 2. Run `cloakroom install gemini`. It writes one thing: a Gemini extension named `cloakroom` in
    `~/.gemini/extensions/cloakroom/` (`gemini-extension.json` and `hooks/hooks.json`, four hooks that call the
    `cloakroom` program). Your `settings.json` and your own hooks and extensions aren't touched. Gemini runs the
-   hooks from its next start, in every folder; `gemini extensions list` shows it, `cloakroom doctor` too.
+   hooks from its next start, in every folder; `gemini extensions list` shows it, `cloakroom doctor` too, and warns
+   when the extension is disabled or Gemini's hooks are switched off.
 
 What works as in Claude Code: the output of every tool (shell, file reads, MCP) is masked before the model sees it,
 pictures are read by local OCR or held back, placeholders in shell commands, `write_file` and `replace` get their

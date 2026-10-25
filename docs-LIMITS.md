@@ -109,7 +109,9 @@
   0.6.2), against maisecrets' 997. Masking safe text costs readability, never privacy. Measured and rejected fixes
   (a higher model-confidence bar, a context gate) both leaked real values, so they were not shipped.
 - Commit and push check: it reads the staged change (for `git push`, the commits no remote has yet) and lets the
-  command run unchecked when the added text is over 4 MB or the check takes over 2 s. A push to a remote with no
+  command run unchecked when the added text is over 4 MB or the check takes over 2 s (a new file over 2 MB is left
+  out of the scan); each such skip is logged and told to you once per session, and `cloakroom report` counts them
+  under "Checks skipped". A push to a remote with no
   remote-tracking refs scans all history, and runs unchecked if that is slow. Commits made outside Claude Code
   (your own terminal, an editor, another agent) aren't checked.
 - Write-time check: a key split into pieces, or one with no known pattern and not seen earlier in the session, isn't
@@ -176,7 +178,7 @@ Checked against Gemini CLI 0.65 (hooks docs: https://geminicli.com/docs/hooks/re
 - **Timeouts let the call through:** Gemini treats a hook that runs past its time limit (30 s at session start,
   60 s for prompts and tool input, 120 s for tool output) as a warning and goes on with the original. Cloakroom
   doesn't wait for its model to load: until the local service is ready, checks run on the rules only (keys, cards,
-  IDs; names and addresses may be missed), with a note in the terminal. A very slow check (a huge output, many OCR
+  IDs; names and addresses may be missed), noted once per session and logged as a skipped check. A very slow check (a huge output, many OCR
   pages) can still run past the limit.
 - Prompts can only be blocked, not masked: Gemini keeps the original prompt in the conversation and also sends it
   to the model from places no hook sees (model routing, history compression, loop checks). Pictures in a prompt
