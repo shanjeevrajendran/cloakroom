@@ -255,6 +255,10 @@ def test_install_writes_only_our_extension_and_uninstall_removes_it(tmp_path, mo
     from cloakroom import agents, cli
     monkeypatch.setenv("GEMINI_CLI_HOME", str(tmp_path))
     monkeypatch.setattr(agents, "_program", lambda: "/opt/cloak room/bin/cloakroom")
+    if os.name == "nt":  # install is refused on Windows by design, like codex
+        assert cli.main(["install", "gemini"]) == 1
+        assert "on Windows isn't supported yet" in capsys.readouterr().err
+        return
     other = tmp_path / ".gemini" / "extensions" / "other"
     other.mkdir(parents=True)
     (other / "gemini-extension.json").write_text('{"name": "other", "version": "1"}')
