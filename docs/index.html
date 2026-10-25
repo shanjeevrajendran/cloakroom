@@ -3,28 +3,28 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Cloakroom: keep secrets and personal data out of Claude Code</title>
-<meta name="description" content="Cloakroom is a free, open-source Claude Code plugin that masks API keys, secrets and personal data on your own machine before the model sees them.">
+<title>Cloakroom: keep secrets and personal data out of your AI coding agent</title>
+<meta name="description" content="Free and open source. Cloakroom masks API keys, secrets and personal data on your own machine before your AI coding agent sees them. Works with Claude Code, Codex CLI and Gemini CLI.">
 <meta name="color-scheme" content="light dark">
 <meta name="theme-color" content="#fbfbfd" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0b0d10" media="(prefers-color-scheme: dark)">
 <link rel="canonical" href="https://shanjeevrajendran.github.io/cloakroom/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Cloakroom">
-<meta property="og:title" content="Cloakroom: keep secrets and personal data out of Claude Code">
-<meta property="og:description" content="Cloakroom is a free, open-source Claude Code plugin that masks API keys, secrets and personal data on your own machine before the model sees them.">
+<meta property="og:title" content="Cloakroom: keep secrets and personal data out of your AI coding agent">
+<meta property="og:description" content="Free and open source. Cloakroom masks API keys, secrets and personal data on your own machine before your AI coding agent sees them. Works with Claude Code, Codex CLI and Gemini CLI.">
 <meta property="og:url" content="https://shanjeevrajendran.github.io/cloakroom/">
 <meta property="og:image" content="https://raw.githubusercontent.com/shanjeevrajendran/cloakroom/main/assets/social-card.png">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Cloakroom: keep secrets and personal data out of Claude Code">
-<meta name="twitter:description" content="Cloakroom is a free, open-source Claude Code plugin that masks API keys, secrets and personal data on your own machine before the model sees them.">
+<meta name="twitter:title" content="Cloakroom: keep secrets and personal data out of your AI coding agent">
+<meta name="twitter:description" content="Free and open source. Cloakroom masks API keys, secrets and personal data on your own machine before your AI coding agent sees them. Works with Claude Code, Codex CLI and Gemini CLI.">
 <meta name="twitter:image" content="https://raw.githubusercontent.com/shanjeevrajendran/cloakroom/main/assets/social-card.png">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 44 44'%3E%3Crect width='44' height='44' rx='9' fill='%230d1117'/%3E%3Cg fill='none' stroke='%2356d364' stroke-width='2.6' stroke-linejoin='round' stroke-linecap='round' transform='translate(4 4) scale(.82)'%3E%3Cpath d='M4 6H40V16A6 6 0 0 0 40 28V38H4V28A6 6 0 0 0 4 16Z'/%3E%3Cpath d='M14 22H30' stroke-dasharray='3 3'/%3E%3C/g%3E%3C/svg%3E">
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Cloakroom","description":"Cloakroom is a free, open-source Claude Code plugin that masks API keys, secrets and personal data on your own machine before the model sees them.","applicationCategory":"SecurityApplication","operatingSystem":"macOS, Windows, Linux","license":"https://opensource.org/licenses/MIT","url":"https://shanjeevrajendran.github.io/cloakroom/","codeRepository":"https://github.com/shanjeevrajendran/cloakroom","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
+{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Cloakroom","description":"Free and open source. Cloakroom masks API keys, secrets and personal data on your own machine before your AI coding agent sees them. Works with Claude Code, Codex CLI and Gemini CLI.","applicationCategory":"SecurityApplication","operatingSystem":"macOS, Windows, Linux","license":"https://opensource.org/licenses/MIT","url":"https://shanjeevrajendran.github.io/cloakroom/","codeRepository":"https://github.com/shanjeevrajendran/cloakroom","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
 </script>
 <script type="application/ld+json">
-{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Does Cloakroom send my data anywhere?", "acceptedAnswer": {"@type": "Answer", "text": "No. It downloads the detection model once from Hugging Face, and everything else runs on your own machine."}}, {"@type": "Question", "name": "What does it mask?", "acceptedAnswer": {"@type": "Answer", "text": "API keys, secrets and personal data such as names, emails and addresses. Scanned pages and photos are read on your machine and masked like any other file."}}, {"@type": "Question", "name": "Does Claude still work normally?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Claude works with placeholders like PII_PERSON_1, and the real values are put back, locally, in the files Claude writes."}}, {"@type": "Question", "name": "What happens when my prompt contains a secret?", "acceptedAnswer": {"@type": "Answer", "text": "A prompt can be blocked but not rewritten, so Cloakroom stops it and tells you what it found. Put the detail in a file and ask Claude to read it instead."}}, {"@type": "Question", "name": "What doesn't it protect?", "acceptedAnswer": {"@type": "Answer", "text": "It stops accidental exposure but isn't a sandbox. A prompt injection set on smuggling data out piece by piece, what you type into a prompt, and Claude Code's own local logs are out of scope."}}]}
+{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Does Cloakroom send my data anywhere?", "acceptedAnswer": {"@type": "Answer", "text": "No. It downloads the detection model once from Hugging Face, and everything else runs on your own machine."}}, {"@type": "Question", "name": "What does it mask?", "acceptedAnswer": {"@type": "Answer", "text": "API keys, secrets and personal data such as names, emails and addresses. Scanned pages and photos are read on your machine and masked like any other file."}}, {"@type": "Question", "name": "Does Claude still work normally?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Claude works with placeholders like PII_PERSON_1, and the real values are put back, locally, in the files Claude writes."}}, {"@type": "Question", "name": "What happens when my prompt contains a secret?", "acceptedAnswer": {"@type": "Answer", "text": "A prompt can be blocked but not rewritten, so Cloakroom stops it and tells you what it found. Put the detail in a file and ask Claude to read it instead."}}, {"@type": "Question", "name": "Does Cloakroom work with Codex or Gemini CLI?", "acceptedAnswer": {"@type": "Answer", "text": "Yes, on Mac and Linux: run cloakroom install codex or cloakroom install gemini. Claude Code works on Mac, Linux and Windows."}}, {"@type": "Question", "name": "What doesn't it protect?", "acceptedAnswer": {"@type": "Answer", "text": "It stops accidental exposure but isn't a sandbox. A prompt injection set on smuggling data out piece by piece, what you type into a prompt, and Claude Code's own local logs are out of scope."}}]}
 </script>
 <link rel="stylesheet" href="style.css">
 </head>
@@ -49,9 +49,9 @@
 <main id="main">
 
 <section class="hero" id="top">
-  <p class="eyebrow">A privacy layer for Claude Code</p>
-  <h1 class="display">Cloakroom swaps your secrets and personal data for placeholders before Claude Code sees them, and puts the real values back in the files it writes.</h1>
-  <p class="lede">Cloakroom is a Claude Code plugin that masks API keys and personal data before the model sees them. It runs on your machine, sets itself up on first start, and works on Mac, Windows and Linux.</p>
+  <p class="eyebrow">A privacy layer for AI coding agents</p>
+  <h1 class="display">Cloakroom swaps your secrets and personal data for placeholders before your AI coding agent sees them, and puts the real values back in the files it writes.</h1>
+  <p class="lede">Cloakroom masks API keys and personal data before your AI coding agent sees them. It works with Claude Code, Codex CLI and Gemini CLI, runs on your machine, and sets itself up on first start. Claude Code runs on Mac, Windows and Linux; Codex and Gemini on Mac and Linux.</p>
   <p class="actions">
     <a class="button" href="#install">Install</a>
     <a class="button primary" href="https://github.com/shanjeevrajendran/cloakroom">Star on GitHub</a>
@@ -118,6 +118,8 @@ cloakroom dashboard</code></pre>
   <p>Yes. Claude works with placeholders like PII_PERSON_1, and the real values are put back, locally, in the files Claude writes.</p>
   <h3>What happens when my prompt contains a secret?</h3>
   <p>A prompt can be blocked but not rewritten, so Cloakroom stops it and tells you what it found. Put the detail in a file and ask Claude to read it instead.</p>
+  <h3>Does Cloakroom work with Codex or Gemini CLI?</h3>
+  <p>Yes, on Mac and Linux: run cloakroom install codex or cloakroom install gemini. Claude Code works on Mac, Linux and Windows.</p>
   <h3>What doesn't it protect?</h3>
   <p>It stops accidental exposure but isn't a sandbox. A prompt injection set on smuggling data out piece by piece, what you type into a prompt, and Claude Code's own local logs are out of scope.</p>
 </section>
