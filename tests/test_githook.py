@@ -1,5 +1,6 @@
 """0.7.1: cloakroom install git-hook. Your own commits and pushes get the agent commit hold's check (keys and
 passwords in added lines), with no agent running. Real git, a temp repo, the hook calling this checkout's code."""
+import json
 import os
 import time
 import subprocess
@@ -109,3 +110,52 @@ def test_not_a_repo(tmp_path, monkeypatch, capsys):
     monkeypatch.chdir(tmp_path)
     assert cli.main(["install", "git-hook"]) == 1
     assert "not in a git repo" in capsys.readouterr().err
+
+
+def _events():
+    from cloakroom import events
+    return list(reversed(events.read()))
+
+
+def test_a_stopped_commit_is_logged_as_held_without_values(repo):
+    assert cli.main(["install", "git-hook"]) == 0
+    (repo / "app.py").write_text(f"TOKEN = '{KEY}'\n")
+    git(repo, "add", "app.py")
+    assert git(repo, "commit", "-m", "key", check=False).returncode != 0
+    from cloakroom import events
+    ev = [e for e in _events() if e["action"] == "held"]
+    assert len(ev) == 1 and ev[0]["tool"] == "git hook" and ev[0]["session"] == "git-hook"
+    assert ev[0]["kinds"] and ev[0]["target"] == "" and ev[0]["placeholders"] == []
+    assert KEY not in json.dumps(_events()) and events.verify()["ok"]
+
+
+@pytest.mark.parametrize("kind", ["commit", "push"])
+def test_too_large_is_logged_as_skipped_and_told(repo, monkeypatch, capsys, kind):
+    from cloakroom import githook, hook
+    monkeypatch.setattr(hook, "GIT_MAX_TEXT", 8)
+    (repo / "app.py").write_text(f"TOKEN = '{KEY}'\n")
+    git(repo, "add", "app.py")
+    if kind == "push":
+        git(repo, "commit", "--no-verify", "-q", "-m", "key")
+        sha = git(repo, "rev-parse", "HEAD").stdout.strip()
+        stdin = [f"refs/heads/main {sha} refs/heads/main {githook.ZERO}\n"]
+    else:
+        stdin = None
+    assert githook.check(kind, stdin) == 0  # fails open
+    assert capsys.readouterr().err.strip() == f"Cloakroom didn't check this git {kind}: it was larger than 8 bytes"
+    ev = [e for e in _events() if e["event"] == "skipped"]
+    assert [(e["reason"], e["check"], e["limit"]) for e in ev] == [("too-large", f"git {kind} (git hook)", 8)]
+    assert ev[0]["size"] > 8 and KEY not in json.dumps(ev)
+
+
+def test_too_slow_and_git_error_are_logged_as_skipped(repo, monkeypatch, capsys):
+    from cloakroom import githook
+    monkeypatch.setattr(githook, "SECONDS", 0.0)
+    assert githook.check("commit") == 0
+    assert "Cloakroom didn't check this git commit: it took longer than" in capsys.readouterr().err
+    monkeypatch.setattr(githook, "SECONDS", 10.0)
+    monkeypatch.chdir(repo.parent)  # not a repo: git errors
+    assert githook.check("commit") == 0
+    assert capsys.readouterr().err.strip() == "Cloakroom didn't check this git commit: git returned an error"
+    assert [(e["reason"], e["check"]) for e in _events() if e["event"] == "skipped"] == [
+        ("too-slow", "git commit (git hook)"), ("git-error", "git commit (git hook)")]

@@ -94,11 +94,21 @@ def install(remove: bool = False, cwd: str = ".") -> int:
     return 1 if skipped else 0
 
 
+def _record(*args, **kw) -> None:
+    from . import events
+    try:
+        events.record(*args, **kw)
+    except Exception:  # noqa: BLE001 - a log that can't be written never stops your commit
+        pass
+
+
 def check(kind: str, stdin=None) -> int:
     """The hook itself: exit 1 (git stops) when the commit or push adds a key or password, else 0. Fails open, with a
-    line on stderr, when it can't check (git error, too large, too slow, bad settings)."""
-    from . import hook
+    line on stderr, when it can't check (git error, too large, too slow, bad settings). Both land in the event log
+    like the agent commit hold's: a "held" line, or a "skipped" line for check "git commit (git hook)" (no values)."""
+    from . import events, hook
     t0 = time.monotonic()
+    label = f"git {kind} (git hook)"
     if kind == "commit":
         argvs = [["diff", "--cached"]]  # git sets GIT_INDEX_FILE for commit -a and commit <paths>: this is what commits
     else:  # pre-push: "<local ref> <local sha> <remote ref> <remote sha>" per ref on stdin
@@ -106,17 +116,29 @@ def check(kind: str, stdin=None) -> int:
                  for parts in (line.split() for line in (stdin or sys.stdin)) if len(parts) == 4 and parts[1] != ZERO]
         if not argvs:
             return 0
+    hook._SKIPS.clear()
     try:
-        found = hook.git_added(".", argvs, None, config.load(), t0 + SECONDS)
-        why = "too large or too slow to scan" if found is None else ""
+        found = hook.git_added(".", argvs, None, config.load(), t0 + SECONDS, label)
+    except (TimeoutError, subprocess.TimeoutExpired):
+        found = None
+        hook._skip("too-slow", label, ms=1000 * (time.monotonic() - t0), limit=SECONDS)
+    except (RuntimeError, OSError):  # git failed or is missing
+        found = None
+        hook._skip("git-error", label)
     except Exception as e:  # noqa: BLE001 - never stop your own commit because the check broke
-        found, why = None, type(e).__name__
-    if found is None:
-        # TODO(skips): record a "skipped" event here (events.record) once the skips branch lands
-        print(f"cloakroom: this {kind} was not checked ({why})", file=sys.stderr)
+        print(f"cloakroom: this {kind} was not checked ({type(e).__name__})", file=sys.stderr)
         return 0
+    ms = 1000 * (time.monotonic() - t0)
+    data = {"session_id": "git-hook", "tool_name": "git hook"}
+    for reason, check_, what, _, numbers in hook._SKIPS:
+        numbers = dict(numbers)
+        _record("skipped", data, "skipped", [], numbers.pop("ms") or ms, "", {"reason": reason, "check": check_,
+                                                                              **numbers})
+        why = events.skip_why({"reason": reason, **numbers})
+        print(f"Cloakroom didn't check {what.replace(' (git hook)', '')}: {why}", file=sys.stderr)
     if not found:
         return 0
+    _record("pre", data, "held", [("", k) for _, _, k in found], ms)
     pairs = list(dict.fromkeys(f"a {k} in {name}" for name, _, k in found))
     what = "; ".join(pairs[:3]) + (f" (and {len(pairs) - 3} more)" if len(pairs) > 3 else "")
     fix = "unstage it" if kind == "commit" else "take it out of those commits (git commit --amend, git rebase)"

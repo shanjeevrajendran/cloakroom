@@ -109,16 +109,16 @@ def test_slow_git_on_a_write_holding_a_key_is_told(repo, monkeypatch, capsys):
     assert skips()[0]["check"] == "git check on a write holding a key"
 
 
-def test_a_file_too_big_to_pre_read_is_told(tmp_path, monkeypatch, capsys):
+def test_a_file_too_big_to_pre_read_is_logged_not_told(tmp_path, monkeypatch, capsys):
     from cloakroom import hook
     monkeypatch.setattr(hook, "PRIME_MAX_BYTES", 100)
     (tmp_path / "big.log").write_text("line\n" * 50)
     (tmp_path / "small.log").write_text("line\n")
     assert bash("cat small.log", tmp_path, monkeypatch, capsys) is None
-    out = bash("cat big.log", tmp_path, monkeypatch, capsys)
-    assert out["systemMessage"] == ("Cloakroom didn't check a file this command names before it ran (its output is "
-                                    "still checked): it was larger than 100 bytes")
-    assert skips()[0]["size"] == 250
+    assert bash("cat big.log", tmp_path, monkeypatch, capsys) is None  # its output is still masked: nothing to tell
+    ev = skips()[0]
+    assert (ev["check"], ev["reason"], ev["size"], ev["limit"]) == ("pre-read of a file a command names",
+                                                                    "too-large", 250, 100)
 
 
 def test_prompt_on_rules_only_is_logged_with_the_warning_unchanged(monkeypatch, capsys):

@@ -430,8 +430,8 @@ def _prime(command: str, cwd: str, session: str, powershell: bool = False):
         st = os.stat(path)
         key = f"{os.path.realpath(path)}:{st.st_size}:{st.st_mtime_ns}"
         if st.st_size > PRIME_MAX_BYTES:
-            _skip("too-large", "pre-read of a file a command names",
-                  "a file this command names before it ran (its output is still checked)", size=st.st_size,
+            # logged only: the command's output is still masked, so telling you "not checked" would be wrong
+            _skip("too-large", "pre-read of a file a command names", say=False, size=st.st_size,
                   limit=PRIME_MAX_BYTES)
             continue
         if key in cache:
