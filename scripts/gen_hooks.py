@@ -55,7 +55,7 @@ UPDATING = ("cloakroom: updating itself to the new plugin version (about a minut
             "then; progress in ~/.cloakroom/bootstrap.log. " + STOP)
 ANSWERS = MESSAGES + (UPDATING,)  # ... and UPDATING
 NOANSWER = ("cloakroom: the cloakroom program gave no answer, so this was stopped to keep data private. Run: "
-            "cloakroom doctor. " + STOP)  # hook.ps1 only: $noanswer
+            "cloakroom doctor. " + STOP)  # hook.sh NOANSWER, hook.ps1 $noanswer
 EVENTS = ("start", "prompt", "pre", "post")
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "plugin")
 with open(os.path.join(ROOT, ".claude-plugin", "plugin.json"), encoding="utf-8") as _f:
@@ -117,7 +117,7 @@ def hooks() -> dict:
 
 def hook_sh() -> str:
     cases = "".join(f"  {e}) INST='{i}'\n    NOINST='{n}'\n    FAILED='{f}'\n    OFFLINE='{o}'\n    CHECKSUM='{c}'\n"
-                    f"    UPDATING='{u}' ;;\n"
+                    f"    UPDATING='{u}'\n    NOANSWER='{json.dumps(fallback(e, NOANSWER)).replace(chr(39), '')}' ;;\n"
                     for e in EVENTS for i, n, f, o, c, u in [answers(e)])
     return f"""#!/usr/bin/env bash
 # Cloakroom hook launcher for bash (macOS, Linux, Git Bash on Windows): hook.sh start|prompt|pre|post, hook JSON on
@@ -156,7 +156,15 @@ elif [ -n "$CR" ]; then
   if [ "$E" = start ] && [ -f "$H/upgrade.notice" ]; then
     "$CR" hook "$E" >/dev/null; cat "$H/upgrade.notice"; rm -f "$H/upgrade.notice"
   else
-    "$CR" hook "$E"
+    # a silent or garbled program must not let a tool's output through: fail closed. A program at the PIN always
+    # answers (at least {{}}); an older one still waiting for its upgrade answers nothing for a clean call.
+    # shortcut: "JSON" here means one {{...}} answer (no JSON parser in sh); the program only ever prints json.dumps
+    O="$("$CR" hook "$E")"; O="${{O%"$(printf '\\r')"}}"  # Python on Windows ends its line with CRLF
+    case "$O" in
+      \\{{*\\}}) printf '%s\\n' "$O" ;;
+      *) if [ "$E" = start ]; then [ -z "$O" ] || printf '%s\\n' "$O"
+         elif [ -n "$O" ] || [ "$S" = "$PIN" ]; then printf '%s\\n' "$NOANSWER"; fi ;;
+    esac
   fi
 # a failed install retries after 10 minutes, not on every call; the installer leaves the reason for the steps
 elif [ "$(cat "$H/bootstrap.state" 2>/dev/null)" = failed ] && [ -z "$(find "$H/bootstrap.state" -mmin +10 2>/dev/null)" ]; then

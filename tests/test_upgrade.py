@@ -176,6 +176,31 @@ def test_no_second_upgrade_while_the_installer_runs(hooked):
 
 
 @needs_bash
+@pytest.mark.parametrize("answer", ["", "not json", '{"cut short'])
+def test_hook_fails_closed_when_the_program_gives_no_answer(hooked, tmp_path, answer):
+    """Same rule as hook.ps1: a program at the PIN always answers (at least {}), so silence or garbage is broken."""
+    hook, h, _ = hooked
+    (h / "upgrade.stamp").write_text(PIN + "\n")
+    prog = tmp_path / "home" / ".local" / "bin" / "cloakroom"
+    stub(prog, f"cat >/dev/null; printf '%s' '{answer}'")
+    assert "gave no answer" in json.loads(hook("post"))["hookSpecificOutput"]["updatedToolOutput"]
+    assert json.loads(hook("pre"))["hookSpecificOutput"]["permissionDecision"] == "deny"
+    assert "gave no answer" in json.loads(hook("prompt"))["systemMessage"]  # prompts still pass, with a warning
+    stub(prog, "cat >/dev/null; printf '{}\\r\\n'")  # Python on Windows ends the line with CRLF
+    assert hook("post") == "{}\n"  # a clean pass stays a pass
+
+
+@needs_bash
+def test_hook_lets_an_older_program_answer_nothing(hooked, tmp_path):
+    """A program older than the PIN (waiting for its upgrade) prints nothing for a clean call: still a pass."""
+    hook, h, called = hooked
+    (h / "upgrade.stamp").write_text("0.4.2\n")
+    stub(tmp_path / "home" / ".local" / "bin" / "cloakroom", "cat >/dev/null")
+    assert hook("post") == ""
+    assert wait_for(called)
+
+
+@needs_bash
 def test_notice_shown_once_at_session_start(hooked):
     hook, h, _ = hooked
     (h / "upgrade.stamp").write_text(PIN + "\n")
