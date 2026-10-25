@@ -112,7 +112,7 @@ def test_slow_git_on_a_write_holding_a_key_is_told(repo, monkeypatch, capsys):
 def test_a_file_too_big_to_pre_read_is_logged_not_told(tmp_path, monkeypatch, capsys):
     from cloakroom import hook
     monkeypatch.setattr(hook, "PRIME_MAX_BYTES", 100)
-    (tmp_path / "big.log").write_text("line\n" * 50)
+    (tmp_path / "big.log").write_bytes(b"line\n" * 50)  # bytes: text mode would write \r\n on Windows
     (tmp_path / "small.log").write_text("line\n")
     assert bash("cat small.log", tmp_path, monkeypatch, capsys) is None
     assert bash("cat big.log", tmp_path, monkeypatch, capsys) is None  # its output is still masked: nothing to tell
