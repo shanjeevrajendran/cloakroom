@@ -82,12 +82,12 @@ else: [Known limits](https://github.com/shanjeevrajendran/cloakroom/blob/main/do
 
 ## Recent releases
 
+- **0.7.2** (2026-10-25): the check on commits you make yourself works on Windows too; clearer README and docs.
 - **0.7.1** (2026-10-25): when a check is skipped and an action goes through unchecked, it's logged and counted in `cloakroom report`;
   `cloakroom install git-hook` checks the commits you make yourself; Codex can hold long-running commands.
 - **0.7.0** (2026-10-24): Cloakroom also protects Codex CLI and Gemini CLI, on Mac and Linux.
 - **0.6.6** (2026-10-24): a secret Cloakroom has already seen is still caught when a command scrambles it (hashed,
   hex-encoded or written backwards).
-- **0.6.5** (2026-10-24): US bank routing and account numbers are masked, and calls that move money wait for your OK.
 
 Claude Code plugin updates arrive a few days after each PyPI release (PyPI is the Python package site), once the release has settled. All changes:
 [CHANGELOG.md](https://github.com/shanjeevrajendran/cloakroom/blob/main/CHANGELOG.md).
