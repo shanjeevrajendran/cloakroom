@@ -162,7 +162,9 @@ Checked against Codex CLI 0.164 (hooks docs: https://developers.openai.com/codex
   which Codex treats as a block). Prompts and session starts go on with Codex's error message, so you are never
   locked out.
 - Live check 2026-10-24: a `codex exec` run with the hooks installed but not yet trusted skipped them and printed
-  no warning. A run with trusted hooks is still to do; the hook answers are tested against Codex's JSON shapes in
+  no warning. A run with trusted hooks on Codex 0.164 passed three checks: a fake key in Bash output was masked, a
+  placeholder in tool input was restored on disk while the model saw only the placeholder, and a missing `cloakroom`
+  program blocked the tool call (exit 2). The hook answers are tested against Codex's JSON shapes in
   `tests/test_codex.py`.
 - Windows isn't supported yet (`cloakroom install codex` refuses there).
 
