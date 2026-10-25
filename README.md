@@ -57,6 +57,7 @@ New in 0.7, it also protects other coding agents (Mac and Linux):
 | Git hook for your own commits | ✓ (Windows: untested) | ✓ | ✓ |
 | Systems | Mac, Linux, Windows | Mac, Linux | Mac, Linux |
 
+<!-- TODO(0.8, flip after Windows CI is green on feature/0.8-githook-windows): git hook row: "✓ (Windows: untested)" -> "✓"; "Commits you make yourself": "Mac and Linux; Git Bash on Windows isn't tested yet." -> "Mac, Linux and Windows (Git Bash, PowerShell or cmd: git runs the check, whichever window you commit from)." -->
 Codex skips the hooks until you trust them once (`/hooks`). Gemini CLI lets a call through when a check runs past
 its time limit. Both were tested live (Codex 0.164, Gemini CLI 0.65). Everything
 else: [Known limits](https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-LIMITS.md).
