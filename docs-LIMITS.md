@@ -113,7 +113,8 @@
   out of the scan); each such skip is logged and told to you once per session, and `cloakroom report` counts them
   under "Checks skipped". A push to a remote with no
   remote-tracking refs scans all history, and runs unchecked if that is slow. Commits made outside Claude Code
-  (your own terminal, an editor, another agent) aren't checked.
+  (your own terminal, an editor, another agent) aren't checked unless the repo has the
+  [git hook](#git-hook-cloakroom-install-git-hook).
 - Write-time check: a key split into pieces, or one with no known pattern and not seen earlier in the session, isn't
   caught when a file is written. Repos that commit sample keys (fixtures, docs) need `"allow_secret_paths"`, or
   those writes and commits are refused or held.
@@ -180,7 +181,8 @@ Checked against Codex CLI 0.164 (hooks docs: https://developers.openai.com/codex
 - Checks keys and passwords only (the rules and your always-mask values), in the lines a commit adds or the
   commits a push sends that no remote has yet. Personal data isn't checked, as for the agent commit hold.
 - Gives up and lets the commit through after 10 seconds or on a change set over 4 MB, with a line saying it wasn't
-  checked. If the cloakroom program is gone, the hook says so and lets the commit through.
+  checked; the skip is logged (`cloakroom report`, "git commit (git hook)"), and so is a stopped commit. If the
+  cloakroom program is gone, the hook says so and lets the commit through.
 - One repo per install; no `--global`. A hook file another tool owns (husky, pre-commit) is left alone: add
   `cloakroom git-check commit || exit 1` to it by hand.
 - Tested on Mac and Linux. Git for Windows runs the same `sh` hook, but that isn't tested yet.

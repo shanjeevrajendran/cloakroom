@@ -1,23 +1,26 @@
 # Changelog
 
-## Unreleased
+## 0.7.1 (2026-10-25)
 - Skipped checks are visible: when a check lets a call through without running in full (a commit or push over 4 MB
   or slower than 2 s, a git error, git too slow to say whether a written key would be committed, a new file over
-  2 MB in a commit, a file over 512 KB a command names, or the model not ready so only the rules checked), the event
-  log gets a "skipped" line (reason, check, size and time; never values), you're told once per session per reason
-  ("Cloakroom didn't check this git push: it was larger than 4 MB") in Claude Code, Codex and Gemini CLI, and
-  `cloakroom report` has a "Checks skipped" section. The dashboard counts them on the "Tool calls checked" tile.
-- Gemini CLI: a call answered on the rules while the model starts is logged as a skipped model check and noted once
-  per session (it was noted on every call). `cloakroom doctor` warns when Cloakroom's extension is disabled
-  (`gemini extensions disable`) or Gemini's hooks are off (`hooksConfig.enabled: false`, or ours in
-  `hooksConfig.disabled`), and says "can't tell" when it can't read those files.
+  2 MB in a commit, or the model not ready so only the rules checked), the event log gets a "skipped" line (reason,
+  check, size and time; never values), you're told once per session per reason ("Cloakroom didn't check this git
+  push: it was larger than 4 MB") in Claude Code, Codex and Gemini CLI, and `cloakroom report` has a "Checks
+  skipped" section. The dashboard counts them on the "Tool calls checked" tile. A file over 512 KB that a command
+  names is logged too, without a note: the command's output is still masked.
+- `cloakroom install git-hook`: also checks commits you make yourself, with the same rules and your own known
+  secrets. Adds `pre-commit` and `pre-push` hooks to the current repo (`core.hooksPath` respected), leaves another
+  tool's hook alone, and is safe to run twice. Skip once with `--no-verify`; `cloakroom uninstall git-hook` removes it.
+  A stopped commit or push is logged as held, and one it couldn't check (too large, too slow, git error) as skipped
+  ("git commit (git hook)"), with the same line on the terminal.
 - Codex: `"codex_hold_long_running": true` in `~/.cloakroom/config.json` holds commands that obviously keep running
   (`tail -f`, `watch`, dev servers, `docker logs -f`, `ping` without `-c`, `--watch`...), whose later output Codex
   never shows a hook, with one line saying why; `cr: allow` lets one run once. Off by default; holds are counted as
   events (`"hold": "long-running"`) so false holds can be measured.
-- `cloakroom install git-hook`: also checks commits you make yourself, with the same rules and your own known
-  secrets. Adds `pre-commit` and `pre-push` hooks to the current repo (`core.hooksPath` respected), leaves another
-  tool's hook alone, and is safe to run twice. Skip once with `--no-verify`; `cloakroom uninstall git-hook` removes it.
+- Gemini CLI: a call answered on the rules while the model starts is logged as a skipped model check and noted once
+  per session (it was noted on every call). `cloakroom doctor` warns when Cloakroom's extension is disabled
+  (`gemini extensions disable`) or Gemini's hooks are off (`hooksConfig.enabled: false`, or ours in
+  `hooksConfig.disabled`), and says "can't tell" when it can't read those files.
 
 ## 0.7.0 (2026-10-24)
 - Codex: Cloakroom also protects OpenAI's Codex CLI (Mac and Linux). `cloakroom install codex` adds its hooks to
