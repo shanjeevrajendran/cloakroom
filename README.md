@@ -5,7 +5,7 @@
 **Cloakroom is free and open source. It masks API keys, passwords and personal data (names, emails, addresses and the like) on your machine before your AI coding agent sees them. Works with Claude Code, Codex CLI and Gemini CLI.**
 
 <p>
-  <a href="https://www.youtube.com/shorts/U9lN4emgeE0">▶ 40-second demo</a> ·
+  <a href="https://www.youtube.com/shorts/U9lN4emgeE0">▶ 40-second demo (Claude Code)</a> ·
   <a href="#get-started">Get started</a> ·
   <a href="#when-cloakroom-blocks-your-prompt">Blocked prompt?</a> ·
   <a href="#results">Results</a> ·
@@ -127,8 +127,9 @@ You need Claude Code, installed and signed in. Then:
    ```
 
 3. **Restart Claude Code.** Type `/exit`, then `claude` again. Cloakroom now installs itself. Keys and card numbers
-   are covered in about a minute; names and addresses a few minutes later, once the detection model has downloaded
-   (about 1 GB on a Mac, up to about 4 GB elsewhere). Until then, Claude's actions (reading files, running commands,
+   are covered within seconds if uv or pipx (tools that install Python programs) is already installed, or in about a
+   minute when Cloakroom has to download them first; names and addresses a few minutes later, once the detection
+   model has downloaded (about 1 GB on a Mac, up to about 4 GB elsewhere). Until then, Claude's actions (reading files, running commands,
    using add-ons) wait.
    It also updates itself when the plugin updates (an install you made by hand is left alone).
    On a Mac, if it asks to use the "cloakroom" item in your Keychain, click Always Allow (it only lets Cloakroom read its own key).

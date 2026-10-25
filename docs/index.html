@@ -55,7 +55,7 @@
   <p class="actions">
     <a class="button" href="#install">Install</a>
     <a class="button primary" href="https://github.com/shanjeevrajendran/cloakroom">Star on GitHub</a>
-    <a class="button" href="https://www.youtube.com/shorts/U9lN4emgeE0">▶ Watch the 40-second demo</a>
+    <a class="button" href="https://www.youtube.com/shorts/U9lN4emgeE0">▶ 40-second demo (Claude Code)</a>
   </p>
 </section>
 
@@ -99,7 +99,7 @@ DATABASE_URL=postgres://admin:<mark class="ph">PII_SECRET_1</mark>@10.0.4.12/pro
   <p>Inside Claude Code:</p>
 <pre class="cmd"><code>/plugin marketplace add shanjeevrajendran/cloakroom
 /plugin install cloakroom@cloakroom</code></pre>
-  <p>Restart Claude Code and Cloakroom sets itself up: keys, card numbers and ID numbers are covered within seconds; names and addresses a few minutes later, once the detection model has downloaded.</p>
+  <p>Restart Claude Code and Cloakroom sets itself up: keys, card numbers and ID numbers are covered within seconds if uv or pipx (tools that install Python programs) is already installed, or in about a minute when Cloakroom has to download them first; names and addresses a few minutes later, once the detection model has downloaded.</p>
   <p>Using Codex CLI or Gemini CLI (Mac and Linux)? Install the program with <code>uv tool install "cloakroom[model,torch,ocr]"</code>, then run <code>cloakroom install codex</code> or <code>cloakroom install gemini</code>. <a href="https://github.com/shanjeevrajendran/cloakroom#codex">Codex steps</a> · <a href="https://github.com/shanjeevrajendran/cloakroom#gemini-cli">Gemini CLI steps</a></p>
   <p>Then, in a terminal:</p>
 <pre class="cmd"><code><span class="c"># checks Python, the key store, the detection model and the background service</span>
@@ -177,7 +177,7 @@ DATABASE_URL=postgres://admin:PII_SECRET_1@10.0.4.12/prod</code></pre>
   <p>It's open source, runs locally, needs no account, and works on macOS, Windows and Linux. Inside Claude Code:</p>
 <pre><code>/plugin marketplace add shanjeevrajendran/cloakroom
 /plugin install cloakroom@cloakroom</code></pre>
-  <p>It protects keys and card numbers within seconds, then downloads the local model in the background for names and addresses.</p>
+  <p>It protects keys and card numbers within about a minute (seconds if uv or pipx is already installed), then downloads the local model in the background for names and addresses.</p>
   <p>I'd like to hear what it misses and what it over-masks: <a href="https://github.com/shanjeevrajendran/cloakroom">https://github.com/shanjeevrajendran/cloakroom</a></p>
 </article>
 
