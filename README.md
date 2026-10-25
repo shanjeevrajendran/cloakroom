@@ -41,18 +41,20 @@ New in 0.7, it also protects other coding agents (Mac and Linux):
 
 ## What works where
 
+✓ Masked: the AI sees a placeholder, never the real value · ⛔ Stopped: Cloakroom blocks it and tells you how to send it safely · ✗ Not covered: Cloakroom can't see it
+
 | Protection | Claude Code | Codex CLI | Gemini CLI |
 |---|---|---|---|
-| Prompts you type | partly: blocked, not masked | partly: blocked, not masked | partly: blocked, not masked; pictures unchecked |
-| File reads | ✓ | partly: via shell, as blocked result | partly: masked, sent as blocked result |
-| Command output | ✓ | partly: blocked result; long-running output unmasked | partly: masked, sent as blocked result |
-| MCP tool output | ✓ | partly: masked, sent as blocked result | partly: masked, sent as blocked result |
-| Images and PDFs | ✓ | partly: `view_image` has no hook | partly: images read by OCR, PDFs held back |
-| Real values put back in commands and edits | ✓ | partly: unknown commands denied, not asked | ✓ |
-| Real values kept out of web and MCP calls | ✓ | partly: hosted web search has no hook | ✓ |
+| Prompts you type | ⛔ Stopped: a message holding a key or personal data isn't sent; Cloakroom tells you how to resend it safely | ⛔ Stopped: a message holding a key or personal data isn't sent; Cloakroom tells you how to resend it safely | ⛔ Stopped: a message holding a key or personal data isn't sent; Cloakroom tells you how to resend it safely; ✗ pictures in a prompt aren't checked |
+| File reads | ✓ | ✓ Masked when read through the shell (shown to the AI as a blocked result) | ✓ Masked (shown to the AI as a blocked result) |
+| Command output | ✓ | ✓ Masked (shown to the AI as a blocked result); ✗ long-running commands | ✓ Masked (shown to the AI as a blocked result) |
+| MCP tool output | ✓ | ✓ Masked (shown to the AI as a blocked result) | ✓ Masked (shown to the AI as a blocked result) |
+| Images and PDFs | ✓ | ✗ Not covered: pictures opened with `view_image` | ✓ Masked: pictures read by OCR; ⛔ PDFs held back |
+| Real values put back in commands and edits | ✓ | ✓; ⛔ unknown commands are refused, not asked about | ✓ |
+| Real values kept out of web and MCP calls | ✓ | ✓; ✗ Codex's hosted web search | ✓ |
 | Keys written into files git would commit | ✓ | ✓ | ✓ |
 | The agent's `git commit` / `git push` check | ✓ | ✓ | ✓ |
-| Network sends holding secrets or placeholders | ✓ | partly: denied instead of asked | ✓ |
+| Network sends holding secrets or placeholders | ✓ | ⛔ Stopped: refused, not asked about | ✓ |
 | Calls that move money | ✓ | ✓ | ✓ |
 | Git hook for your own commits | ✓ (Windows: untested) | ✓ | ✓ |
 | Systems | Mac, Linux, Windows | Mac, Linux | Mac, Linux |
