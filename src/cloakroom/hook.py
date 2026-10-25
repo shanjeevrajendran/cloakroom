@@ -253,6 +253,27 @@ def _money_hold(key: str, why: str) -> dict | None:
                  f"call to get past this; ask the user.")
 
 
+def _long_hold(command: str) -> dict | None:
+    """Codex, with codex_hold_long_running on: hold a command that obviously keeps running (shell.long_running).
+    Codex stops waiting on it after a while and runs no PostToolUse hook on what it prints after that, so that
+    output would reach the model unmasked. Held events carry hold=long-running, so false holds can be counted."""
+    what = shell.long_running(command)
+    if not what:
+        return None
+    _NOTE[0], _EXTRA["hold"] = f"long-running: {what}", "long-running"
+    if _allowed_once(command):
+        _ACTION[0] = "allowed once"
+        return None
+    if _dry("pre", f"long-running ({what}): would hold"):
+        return None
+    _write_held({"mac": _command_mac(command), "until": time.time() + 60 * HOLD_MINUTES, "armed": False})
+    _ACTION[0] = "held"
+    return _deny(f"Cloakroom held this command: {what} keeps running, and what it prints after Codex stops waiting "
+                 f"won't be masked. To run it anyway, type cr: allow, then ask Codex to run the same command again: it "
+                 f"passes once, within {HOLD_MINUTES} min. Codex: don't change the command to get past this; ask the "
+                 "user.")
+
+
 def on_prompt(data: dict) -> dict | None:
     out = _on_prompt(data)
     note = _install_note_once(data.get("session_id", "default")) or crypto.denial_notice()
@@ -723,72 +744,87 @@ def _in_repo(folder: str) -> bool:
         return False
 
 
+def _git_out(repo: str, deadline: float, *argv) -> str:
+    import subprocess
+    left = deadline - time.monotonic()
+    if left <= 0:
+        raise TimeoutError
+    r = subprocess.run(["git", "-C", repo, "-c", "core.quotePath=false", *argv], capture_output=True, timeout=left)
+    if r.returncode != 0:
+        raise RuntimeError("git")
+    return r.stdout.decode("utf-8", "replace")
+
+
+def git_added(repo: str, argvs: list[list[str]], vault: Vault | None, cfg: dict,
+              deadline: float, check: str = "git commit") -> list[tuple[str, str, str]] | None:
+    """(file, placeholder or "", kind) for each key or password the added lines carry (the rules, your always-mask
+    entries and the session's known secrets). argvs: git commands (_commit_diffs, _push_logs). None when the change
+    set is too large to scan (fail open, a "too-large" skip is noted for check); running out of time raises
+    TimeoutError and a git error raises. Also the git hook's check (githook.py)."""
+    from fnmatch import fnmatch
+    known = {v: k for v, k in engine.known_values(vault, cfg["always"]).items() if k in COMMIT_KINDS}
+    always = [(e, k) for e, k in cfg["always"] if k in COMMIT_KINDS]
+    globs = cfg.get("allow_secret_paths") or []
+    files: dict[str, list[str]] = {}
+    for argv in argvs:
+        if argv == ["untracked"]:
+            root = _git_out(repo, deadline, "rev-parse", "--show-toplevel").strip()
+            for name in _git_out(repo, deadline, "ls-files", "--full-name", "--others", "--exclude-standard", "-z",
+                                 ":/").split("\0"):
+                path = os.path.join(root, name)
+                if not (name and os.path.isfile(path)):
+                    continue
+                if os.path.getsize(path) > 4 * PRIME_MAX_BYTES:
+                    _skip("too-large", "new file in a git commit", "a new file in this git commit",
+                          size=os.path.getsize(path), limit=4 * PRIME_MAX_BYTES)
+                    continue
+                with open(path, encoding="utf-8", errors="replace") as f:
+                    files.setdefault(name, []).extend(f.read().splitlines())
+            continue
+        if argv[:2] == ["diff", "HEAD"]:
+            try:
+                out = _git_out(repo, deadline, *argv, "--no-color", "--no-ext-diff", "-U0")
+            except RuntimeError:  # no commit yet: the staged diff covers it
+                continue
+        else:
+            out = _git_out(repo, deadline, *argv, "--no-color", "--no-ext-diff", "-U0")
+        for name, lines in _added_lines(out).items():
+            files.setdefault(name, []).extend(lines)
+    size = sum(len(x) for lines in files.values() for x in lines)
+    if size > GIT_MAX_TEXT:
+        _skip("too-large", check, size=size, limit=GIT_MAX_TEXT)
+        return None
+    found = []
+    for name, lines in files.items():
+        if time.monotonic() > deadline:
+            raise TimeoutError
+        if any(fnmatch(name, g) or fnmatch(os.path.basename(name), g) for g in globs):
+            continue
+        text = "\n".join(lines)
+        hits, _ = engine.detect(text, "rules", cfg["allow"], always, known=known)
+        for f in hits:
+            if f.kind in COMMIT_KINDS:
+                found.append((name, vault.by_value.get(f.value(text), "") if vault else "", f.kind))
+    return found
+
+
 def _git_hold(command: str, cwd: str, vault: Vault, powershell: bool) -> dict | None:
     """Hold a git commit or push whose changes carry a known secret or a key the rules recognise, like the egress
     hold (cr: allow lets it run once). Names the file and placeholder or kind, never the value. Fails open on any
     git error, on a change set too large to scan, or after GIT_SECONDS."""
     import subprocess
-    from fnmatch import fnmatch
     steps = _git_steps(command, cwd, powershell)
     if not steps:
         return None
     deadline = time.monotonic() + GIT_SECONDS
     cfg = config.load()
-    known = {v: k for v, k in engine.known_values(vault, cfg["always"]).items() if k in COMMIT_KINDS}
-    always = [(e, k) for e, k in cfg["always"] if k in COMMIT_KINDS]
-    globs = cfg.get("allow_secret_paths") or []
-
-    def git(repo, *argv) -> str:
-        left = deadline - time.monotonic()
-        if left <= 0:
-            raise TimeoutError
-        r = subprocess.run(["git", "-C", repo, "-c", "core.quotePath=false", *argv], capture_output=True,
-                           timeout=left)
-        if r.returncode != 0:
-            raise RuntimeError("git")
-        return r.stdout.decode("utf-8", "replace")
-
     found, verb, sub, repo = [], "", steps[0][0], steps[0][1]
     try:
         for sub, repo, args, added in steps:
-            files: dict[str, list[str]] = {}
-            for argv in (_commit_diffs(args, added) if sub == "commit" else _push_logs(args)):
-                if argv == ["untracked"]:
-                    root = git(repo, "rev-parse", "--show-toplevel").strip()
-                    for name in git(repo, "ls-files", "--full-name", "--others", "--exclude-standard", "-z", ":/").split("\0"):
-                        path = os.path.join(root, name)
-                        if not (name and os.path.isfile(path)):
-                            continue
-                        if os.path.getsize(path) > 4 * PRIME_MAX_BYTES:
-                            _skip("too-large", "new file in a git commit", "a new file in this git commit",
-                                  size=os.path.getsize(path), limit=4 * PRIME_MAX_BYTES)
-                            continue
-                        with open(path, encoding="utf-8", errors="replace") as f:
-                            files.setdefault(name, []).extend(f.read().splitlines())
-                    continue
-                if argv[:2] == ["diff", "HEAD"]:
-                    try:
-                        out = git(repo, *argv, "--no-color", "--no-ext-diff", "-U0")
-                    except RuntimeError:  # no commit yet: the staged diff covers it
-                        continue
-                else:
-                    out = git(repo, *argv, "--no-color", "--no-ext-diff", "-U0")
-                for name, lines in _added_lines(out).items():
-                    files.setdefault(name, []).extend(lines)
-            size = sum(len(x) for lines in files.values() for x in lines)
-            if size > GIT_MAX_TEXT:
-                _skip("too-large", f"git {sub}", size=size, limit=GIT_MAX_TEXT)
+            argvs = _commit_diffs(args, added) if sub == "commit" else _push_logs(args)
+            found = git_added(repo, argvs, vault, cfg, deadline, f"git {sub}")
+            if found is None:
                 return None
-            for name, lines in files.items():
-                if time.monotonic() > deadline:
-                    raise TimeoutError
-                if any(fnmatch(name, g) or fnmatch(os.path.basename(name), g) for g in globs):
-                    continue
-                text = "\n".join(lines)
-                hits, _ = engine.detect(text, "rules", cfg["allow"], always, known=known)
-                for f in hits:
-                    if f.kind in COMMIT_KINDS:
-                        found.append((name, vault.by_value.get(f.value(text), ""), f.kind))
             if found:
                 verb = sub
                 break
@@ -895,6 +931,10 @@ def on_pre(data: dict) -> dict | None:
         held = _git_hold(args.get("command", ""), cwd, vault, tool == "PowerShell")
         if held:
             return held
+        if data.get("_cloakroom_agent") == "codex" and config.load().get("codex_hold_long_running"):
+            held = _long_hold(args.get("command", ""))
+            if held:
+                return held
         _prime(args.get("command", ""), cwd, session, powershell=tool == "PowerShell")
     elif money_why:
         held = _money_hold(tool + "\0" + json.dumps(args, sort_keys=True), money_why)

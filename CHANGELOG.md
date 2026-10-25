@@ -11,6 +11,13 @@
   per session (it was noted on every call). `cloakroom doctor` warns when Cloakroom's extension is disabled
   (`gemini extensions disable`) or Gemini's hooks are off (`hooksConfig.enabled: false`, or ours in
   `hooksConfig.disabled`), and says "can't tell" when it can't read those files.
+- Codex: `"codex_hold_long_running": true` in `~/.cloakroom/config.json` holds commands that obviously keep running
+  (`tail -f`, `watch`, dev servers, `docker logs -f`, `ping` without `-c`, `--watch`...), whose later output Codex
+  never shows a hook, with one line saying why; `cr: allow` lets one run once. Off by default; holds are counted as
+  events (`"hold": "long-running"`) so false holds can be measured.
+- `cloakroom install git-hook`: also checks commits you make yourself, with the same rules and your own known
+  secrets. Adds `pre-commit` and `pre-push` hooks to the current repo (`core.hooksPath` respected), leaves another
+  tool's hook alone, and is safe to run twice. Skip once with `--no-verify`; `cloakroom uninstall git-hook` removes it.
 
 ## 0.7.0 (2026-10-24)
 - Codex: Cloakroom also protects OpenAI's Codex CLI (Mac and Linux). `cloakroom install codex` adds its hooks to

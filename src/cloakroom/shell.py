@@ -162,6 +162,60 @@ def egress(command: str, powershell: bool = False) -> str:
     return f"a {headers[0][0]}" if headers else ""
 
 
+# Commands that obviously keep running: servers, watchers, follows. {program: subcommands that do} (None: any).
+_SERVES = {"dev", "start", "serve", "watch", "preview", "develop"}  # package-script names (npm run dev, yarn start)
+_LONG = {"watch": None, "nodemon": None, "uvicorn": None, "gunicorn": None, "hypercorn": None, "live-server": None,
+         "http-server": None, "ts-node-dev": None, "webpack-dev-server": None, "next": _SERVES, "nuxt": _SERVES,
+         "astro": _SERVES, "remix": _SERVES, "gatsby": _SERVES, "ng": _SERVES, "webpack": {"serve"},
+         "flask": {"run"}, "rails": {"server", "s"}, "hugo": {"server", "serve"}, "jekyll": {"serve", "s"},
+         "jupyter": {"notebook", "lab"}, "tsx": {"watch"}, "cargo": {"watch"}, "kubectl": {"port-forward"}}
+
+
+def long_running(command: str, powershell: bool = False) -> str:
+    """The part of a command that obviously keeps running ("tail -f", "npm run dev"...), "" when none. Plain shell
+    commands only; a timeout wrapper ends the command, so it never counts."""
+    if powershell:
+        return ""
+    for seg in _SEGMENT_SPLIT.split(command):
+        try:
+            words = shlex.split(seg)
+        except ValueError:
+            words = seg.split()
+        while words and (re.fullmatch(r"\w+=.*", words[0]) or words[0] in ("sudo", "env", "command", "exec", "nohup",
+                                                                           "npx", "bunx", "pnpx")):
+            words = words[1:]
+        if not words:
+            continue
+        prog, rest = re.split(r"[\\/]", words[0])[-1].lower(), words[1:]
+        args = [w for w in rest if not w.startswith("-")]
+        sub = args[0] if args else ""
+        short = "".join(w[1:] for w in rest if w.startswith("-") and not w.startswith("--"))
+        follow = "f" in short or "F" in short or any(w.startswith("--follow") for w in rest)
+        if prog in ("timeout", "gtimeout"):  # shortcut: a long timeout can outlast Codex's wait; parse it if seen
+            continue
+        if "--watch" in rest or "--watchAll" in rest or (prog == "kubectl" and sub == "get" and "w" in short):
+            return f"{prog} --watch"
+        if follow and (prog in ("tail", "journalctl") or "logs" in args[:2]):
+            return f"{prog} {'logs ' if 'logs' in args[:2] else ''}-f"
+        if prog in ("docker", "podman", "docker-compose") and "up" in args and "d" not in short and "--detach" not in rest:
+            return f"{prog} {'compose ' if 'compose' in args else ''}up"
+        if prog in ("ping", "ping6") and not set(short) & set("cwt"):  # -c count, -w deadline (Linux), -t timeout (macOS)
+            return prog
+        if prog in ("npm", "pnpm", "yarn", "bun"):
+            script = args[1] if sub in ("run", "run-script") and len(args) > 1 else sub
+            if set(script.split(":")) & _SERVES:
+                return f"{prog} {'run ' if sub != script else ''}{script}"
+        if prog in ("vite", "parcel") and sub not in ("build", "optimize"):
+            return prog
+        if re.fullmatch(r"python[\d.]*|py", prog) and ("http.server" in args or "runserver" in args):
+            return f"{prog} {'-m http.server' if 'http.server' in args else 'manage.py runserver'}"
+        if prog == "php" and "-S" in rest:
+            return "php -S"
+        if prog in _LONG and (_LONG[prog] is None or sub in _LONG[prog]):
+            return f"{prog} {sub}".strip() if _LONG[prog] else prog
+    return ""
+
+
 def _quote_for(value: str, state: str, powershell: bool = False) -> str:
     if powershell:  # single quotes double up; inside double quotes the escape character is a backtick
         if state == "'":

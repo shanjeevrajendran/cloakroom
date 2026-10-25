@@ -221,7 +221,12 @@ def gemini_answer(event, out, data=None):
     return out
 
 
+AGENT = "_cloakroom_agent"  # which agent's hook this is, for hook.py's Codex-only hold
+
+
 def request(agent, event, data):
+    if agent == "codex":
+        return {**data, AGENT: agent}
     return gemini_request(event, data) if agent == "gemini" else data
 
 
