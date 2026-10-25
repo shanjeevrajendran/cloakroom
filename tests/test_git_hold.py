@@ -92,8 +92,18 @@ def test_commit_all_and_add_in_same_command(repo, monkeypatch, capsys):
     git(repo, "checkout", "README.md")
     (repo / "new.py").write_text(f"K = '{KEY}'\n")  # untracked, added by the same command
     assert decision(bash("git add -A && git commit -m new", repo, monkeypatch, capsys)) == "deny"
-    assert decision(bash(f"cd {repo} && git add . && git commit -m new", repo.parent, monkeypatch, capsys)) == "deny"
-    assert decision(bash(f"git -C {repo} add . ; git -C {repo} commit -m new", "/", monkeypatch, capsys)) == "deny"
+    assert decision(bash(f"cd '{repo}' && git add . && git commit -m new", repo.parent, monkeypatch, capsys)) == "deny"
+    assert decision(bash(f"git -C '{repo}' add . ; git -C '{repo}' commit -m new", "/", monkeypatch, capsys)) == "deny"
+
+
+def test_git_bash_drive_paths(monkeypatch):
+    from cloakroom import hook
+    monkeypatch.setattr(sys, "platform", "win32")
+    steps = hook._git_steps("cd /c/Users/jo/repo && git commit -am x; git -C /d/w commit -m y", "C:\\x", False)
+    assert [s[1].endswith(r) for s, r in zip(steps, ("C:\\Users\\jo\\repo", "D:\\w"))] == [True, True]
+    assert hook._git_bash_path("/c", False) == "C:\\" and hook._git_bash_path("/c/x", True) == "/c/x"
+    monkeypatch.setattr(sys, "platform", "linux")
+    assert hook._git_steps("cd /c/repo && git commit -am x", "/", False)[0][1] == "/c/repo"
 
 
 def test_powershell_commit_held(repo, monkeypatch, capsys):

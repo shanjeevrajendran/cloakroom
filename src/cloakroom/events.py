@@ -63,8 +63,8 @@ def _last_line(path: Path) -> str:
         f.seek(0, os.SEEK_END)
         size = f.tell()
         f.seek(max(0, size - 65536))
-        tail = f.read().decode("utf-8", "replace").rstrip("\n")
-    return tail.rsplit("\n", 1)[-1]
+        tail = f.read().decode("utf-8", "replace").rstrip("\r\n")
+    return tail.rsplit("\n", 1)[-1].rstrip("\r")  # same line verify() sees via splitlines (CRLF logs from 0.6.6 on Windows)
 
 
 def head() -> str:
@@ -128,7 +128,7 @@ def _append(ev: dict) -> dict:
     ev["prev"] = head()
     line = json.dumps(ev)
     fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_APPEND, 0o600)
-    with os.fdopen(fd, "a") as f:
+    with os.fdopen(fd, "a", encoding="utf-8", newline="\n") as f:  # no CRLF on Windows: the hash is of the bare line
         f.write(line + "\n")
     return ev
 

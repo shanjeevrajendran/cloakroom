@@ -35,7 +35,7 @@ def gemini(event, data, monkeypatch, capsys, raw=None):
                                                 **data}).encode())))
     assert hookentry.run(event, "gemini") == 0
     out = capsys.readouterr().out.strip()
-    return json.loads(out) if out else None
+    return json.loads(out or "null") or None  # {} is the program's clean pass
 
 
 def after(tool, llm, monkeypatch, capsys, tool_input=None, **extra):

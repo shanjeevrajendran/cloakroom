@@ -29,7 +29,7 @@ def codex(event, data, monkeypatch, capsys, raw=None):
         raw if raw is not None else json.dumps({**BASE, "hook_event_name": name, **data}).encode())))
     assert hookentry.run(event, "codex") == 0
     out = capsys.readouterr().out.strip()
-    return json.loads(out) if out else None
+    return json.loads(out or "null") or None  # {} is the program's clean pass
 
 
 def bash_post(output, monkeypatch, capsys, command="cat notes.txt"):

@@ -569,6 +569,12 @@ _COMMIT_VALUE_OPTS = {"-m", "--message", "-F", "--file", "-c", "-C", "--reuse-me
 _PUSH_VALUE_OPTS = {"-o", "--push-option", "--repo", "--receive-pack", "--exec", "--signed"}
 
 
+def _git_bash_path(p: str, powershell: bool) -> str:
+    """Git Bash on Windows writes C:\\Users\\x as /c/Users/x; git.exe and Python need the drive form."""
+    m = None if powershell or sys.platform != "win32" else re.fullmatch(r"/([A-Za-z])(/.*)?", p)
+    return f"{m.group(1).upper()}:" + (m.group(2) or "/").replace("/", "\\") if m else p
+
+
 def _git_steps(command: str, cwd: str, powershell: bool) -> list[tuple[str, str, list[str], bool]]:
     """(commit|push, repo folder, its arguments, a git add ran before it) for each git commit or push in the
     command, following cd and git -C."""
@@ -585,14 +591,14 @@ def _git_steps(command: str, cwd: str, powershell: bool) -> list[tuple[str, str,
         if not words:
             continue
         if words[0].lower() in ("cd", "pushd", "set-location", "sl") and len(words) > 1:
-            here = os.path.join(here, os.path.expanduser(words[-1]))
+            here = os.path.join(here, os.path.expanduser(_git_bash_path(words[-1], powershell)))
             continue
         if re.split(r"[\\/]", words[0])[-1].lower() not in ("git", "git.exe"):
             continue
         i, repo = 1, here
         while i < len(words) and words[i].startswith("-"):
             if words[i] == "-C" and i + 1 < len(words):
-                repo = os.path.join(repo, os.path.expanduser(words[i + 1]))
+                repo = os.path.join(repo, os.path.expanduser(_git_bash_path(words[i + 1], powershell)))
                 i += 1
             elif words[i] == "-c":
                 i += 1
@@ -1040,7 +1046,7 @@ def _log(event: str, data, out, ms: float = 0.0):
         target = events.target(tool, data.get("tool_input")) if isinstance(data, dict) and _FOUND else ""
         if target:  # a file name can hold a name or an email too: log it masked, like the output
             home = os.path.expanduser("~").rstrip("/\\")
-            if home and target.startswith(home + os.sep):
+            if home and target.startswith((home + os.sep, home + "/")):  # Windows paths can use either slash
                 target = "~" + target[len(home):]  # the home folder's name is not logged, so the report's path class survives masking
             try:
                 target = client.mask(target, data.get("session_id", "default"))["text"]

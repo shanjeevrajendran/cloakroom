@@ -126,7 +126,8 @@ def run(event: str, agent: str = "claude") -> int:
         out = answer(out)
     except Exception as e:  # noqa: BLE001 - a translation bug must not mean "nothing to do"
         out = answer(closed(event, type(e).__name__, data))
-    if out:
-        sys.stdout.write(json.dumps(out) + "\n")
-        sys.stdout.flush()
+    # always an answer, {} for a clean pass: the launchers (hook.sh, hook.ps1) treat a silent program as broken and
+    # fail closed. Codex and Gemini CLI read {} as no decision too.
+    sys.stdout.write(json.dumps(out or {}) + "\n")
+    sys.stdout.flush()
     return 0

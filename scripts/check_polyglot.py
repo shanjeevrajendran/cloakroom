@@ -53,6 +53,12 @@ with open(os.path.join(shim_dir, "cloakroom"), "w") as f:
     f.write(f'#!/bin/sh\nPYTHONPATH="{src}${{PYTHONPATH:+:$PYTHONPATH}}" exec "{sys.executable}" -m cloakroom "$@"\n')
 os.chmod(os.path.join(shim_dir, "cloakroom"), 0o755)
 shim_path = shim_dir + os.pathsep + os.environ["PATH"]
+# PowerShell can't run that sh shim (it opens an extensionless file instead of running it, prints nothing): a .cmd
+# twin in its own folder, so PowerShell never sees the sh one
+ps_shim_dir = tempfile.mkdtemp()
+with open(os.path.join(ps_shim_dir, "cloakroom.cmd"), "w") as f:
+    f.write(f'@set "PYTHONPATH={src};%PYTHONPATH%"\n@"{sys.executable}" -m cloakroom %*\n')
+ps_shim_path = ps_shim_dir + os.pathsep + os.environ["PATH"]
 vault_key = base64.b64encode(os.urandom(32)).decode()  # one key for own_home's vault across all runs
 os.environ.update(CLAUDE_PLUGIN_ROOT=root)
 
@@ -60,7 +66,7 @@ os.environ.update(CLAUDE_PLUGIN_ROOT=root)
 def run(shell, event, payload, path, home=empty_home, installer="none"):
     env = dict(os.environ, PATH=path, CLOAKROOM_MODE="rules", PYTHONUTF8="1", HOME=own_home, USERPROFILE=own_home,
                CLOAKROOM_HOME=os.path.join(own_home, ".cloakroom"), CLOAKROOM_VAULT_KEY=vault_key)
-    if path != shim_path:
+    if path not in (shim_path, ps_shim_path):
         # an installer started here never downloads anything: CLOAKROOM_INSTALLER=none fails at once (the stub
         # case below passes installer="" so bootstrap picks the stub uv)
         env.update(HOME=home, USERPROFILE=home, CLOAKROOM_HOME=os.path.join(home, ".cloakroom"),
@@ -75,7 +81,8 @@ def run(shell, event, payload, path, home=empty_home, installer="none"):
 
 for sh in shells:
     name = "git-bash" if sh[0] == git_bash else os.path.basename(sh[0])
-    out = run(sh, "post", {"session_id": "ci", "tool_name": "Bash", "tool_response": {"stdout": f"key {key}"}}, shim_path)
+    out = run(sh, "post", {"session_id": "ci", "tool_name": "Bash", "tool_response": {"stdout": f"key {key}"}},
+              ps_shim_path if sh in ps else shim_path)
     ok = key not in json.dumps(out) and "PII_SECRET_1" in json.dumps(out)
     print(f"{name:<11} with cloakroom    post masks key: {ok}")
     failures += [] if ok else [(name, "post", out)]
