@@ -39,6 +39,39 @@ New in 0.7, it also protects other coding agents (Mac and Linux):
 - **OpenAI's Codex CLI:** run `cloakroom install codex` ([Codex](#codex)).
 - **Google's Gemini CLI:** run `cloakroom install gemini` ([Gemini CLI](#gemini-cli)).
 
+## What works where
+
+| Protection | Claude Code | Codex CLI | Gemini CLI |
+|---|---|---|---|
+| Prompts you type | partly: blocked, not masked | partly: blocked, not masked | partly: blocked, not masked; pictures unchecked |
+| File reads | ✓ | partly: via shell, as blocked result | partly: masked, sent as blocked result |
+| Command output | ✓ | partly: blocked result; long-running output unmasked | partly: masked, sent as blocked result |
+| MCP tool output | ✓ | partly: masked, sent as blocked result | partly: masked, sent as blocked result |
+| Images and PDFs | ✓ | partly: `view_image` has no hook | partly: images read by OCR, PDFs held back |
+| Real values put back in commands and edits | ✓ | partly: unknown commands denied, not asked | ✓ |
+| Real values kept out of web and MCP calls | ✓ | partly: hosted web search has no hook | ✓ |
+| Keys written into files git would commit | ✓ | ✓ | ✓ |
+| The agent's `git commit` / `git push` check | ✓ | ✓ | ✓ |
+| Network sends holding secrets or placeholders | ✓ | partly: denied instead of asked | ✓ |
+| Calls that move money | ✓ | ✓ | ✓ |
+| Git hook for your own commits | partly: not tested on Windows | ✓ | ✓ |
+| Systems | Mac, Linux, Windows | Mac, Linux | Mac, Linux |
+
+Codex skips the hooks until you trust them once (`/hooks`). Gemini CLI lets a call through when a check runs past
+its time limit, and hasn't had a live run yet (its hook answers are tested against Gemini's formats). Everything
+else: [Known limits](https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-LIMITS.md).
+
+## Recent releases
+
+- **0.7.1** (2026-10-25): checks that let a call through unchecked are logged and counted in `cloakroom report`;
+  `cloakroom install git-hook` checks the commits you make yourself; Codex can hold long-running commands.
+- **0.7.0** (2026-10-24): Cloakroom also protects Codex CLI and Gemini CLI, on Mac and Linux.
+- **0.6.6** (2026-10-24): a known secret is still caught when hashed, hex-encoded or written backwards.
+- **0.6.5** (2026-10-24): US bank routing and account numbers are masked, and calls that move money wait for your OK.
+
+Claude Code plugin updates arrive a few days after each PyPI release, once the release has settled. All changes:
+[CHANGELOG.md](https://github.com/shanjeevrajendran/cloakroom/blob/main/CHANGELOG.md).
+
 **Hand Claude the files you'd never paste into a chat:**
 
 - **Bank statements** (PDF, scan or CSV): "sort a year of spending by category." Claude sees amounts and merchants, not your name, address or account number.
