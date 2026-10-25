@@ -198,3 +198,23 @@ Checked against Gemini CLI 0.65 (hooks docs: https://geminicli.com/docs/hooks/re
 - Not yet live-checked against a real Gemini run (it needs a Google sign-in or API key); the hook answers are
   tested against Gemini's JSON shapes in `tests/test_gemini.py`.
 - Windows isn't supported yet (`cloakroom install gemini` refuses there).
+
+
+## Editors
+
+Checked 2026-10-25 against the VS Code extensions of Claude Code (2.1.310), Codex (26.1021, which ships Codex
+0.164) and Gemini Code Assist (2.104.0).
+
+- **Claude Code in VS Code:** the extension runs its own copy of Claude Code with your user, project and local
+  settings, so the plugin's hooks run as in the terminal. Live check: that copy, started the way the extension
+  starts it, masked a fake key and a name in a file's Bash output (all four hooks ran). The JetBrains plugin runs
+  `claude` in the IDE's terminal, so nothing changes there.
+- **Codex in VS Code:** the extension runs its own Codex (`codex app-server`), which reads `~/.codex/hooks.json`.
+  Live check: it listed all four Cloakroom hooks, each "untrusted" until you trust it. Trust them once in the
+  `codex` CLI (`/hooks`). A full signed-in session in the extension wasn't run. Every Codex limit above applies,
+  the background-output gap included.
+- **Gemini Code Assist in VS Code:** its agent mode runs a cut-down Gemini CLI server that loads extensions without
+  their hooks and doesn't read hooks from `settings.json` (read from its source). Cloakroom's checks don't run there,
+  so nothing is masked. The Gemini CLI in a terminal, with or without the Gemini CLI Companion extension, runs them.
+- **Antigravity:** it has hooks of its own (`hooks.json` in `~/.gemini/config/` or `.agents/`), but Cloakroom
+  doesn't install any, so it doesn't protect you there.

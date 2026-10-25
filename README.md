@@ -405,6 +405,19 @@ secret is stopped with what to do next. What's different:
 To remove it: `cloakroom uninstall gemini` (deletes that folder, nothing else). More in
 [Known limits](https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-LIMITS.md#gemini-cli).
 
+## In an editor
+
+- **Claude Code in VS Code or JetBrains:** Cloakroom works as in the terminal. The VS Code extension runs Claude
+  Code with your plugins, and the JetBrains plugin runs `claude` in the IDE's terminal.
+- **Codex in VS Code** (OpenAI's Codex extension): the extension's own Codex reads the same `~/.codex/hooks.json`,
+  so it loads Cloakroom's hooks. Trust them first in the `codex` CLI (`/hooks`, step 3 above); the Codex limits
+  above apply.
+- **Gemini Code Assist in VS Code:** Cloakroom does not protect you there. Its agent mode doesn't run the hooks
+  of Gemini extensions. Use the Gemini CLI in a terminal instead (VS Code's own terminal is fine).
+- **Antigravity**, and editors not listed here: not supported. Cloakroom installs nothing there.
+
+More in [Known limits](https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-LIMITS.md#editors).
+
 ## Ways to run
 
 - **Full mode** (default): rules plus the local model. Catches keys and personal data written as plain text.
