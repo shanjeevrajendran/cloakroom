@@ -168,3 +168,33 @@ Checked against Codex CLI 0.164 (hooks docs: https://developers.openai.com/codex
   `tests/test_codex.py`.
 - Windows isn't supported yet (`cloakroom install codex` refuses there).
 
+
+## Gemini CLI
+
+Checked against Gemini CLI 0.65 (hooks docs: https://geminicli.com/docs/hooks/reference, and its source).
+
+- **Timeouts let the call through:** Gemini treats a hook that runs past its time limit (30 s at session start,
+  60 s for prompts and tool input, 120 s for tool output) as a warning and goes on with the original. Cloakroom
+  doesn't wait for its model to load: until the local service is ready, checks run on the rules only (keys, cards,
+  IDs; names and addresses may be missed), with a note in the terminal. A very slow check (a huge output, many OCR
+  pages) can still run past the limit.
+- Prompts can only be blocked, not masked: Gemini keeps the original prompt in the conversation and also sends it
+  to the model from places no hook sees (model routing, history compression, loop checks). Pictures in a prompt
+  (pasted, or `@image.png`) aren't seen by the prompt hook and go unchecked; text from `@file` is checked.
+- Masked output reaches the model as a blocked tool result holding the masked text: Gemini replaces a result only
+  through a deny.
+- No hook sees `GEMINI.md` and other context files (they go into the system instruction), nor what Gemini's own web
+  tools fetch on Google's side.
+- With LLM edit correction turned on (`"disableLLMCorrection": false`; it is off by default), a `replace` that
+  doesn't match sends the file and the restored strings to the model to fix the edit.
+- If you set up Gemini's OpenTelemetry export with prompt logging, it logs tool arguments after Cloakroom restored
+  them.
+- The hooks don't run when the extension is off: `gemini -e` naming other extensions (or `none`),
+  `/extensions disable cloakroom`, `"hooksConfig": {"enabled": false}`, `/hooks disable`, or an admin policy
+  (turning extensions off, or an `allowedExtensions` list, which needs install records Cloakroom doesn't write).
+- A missing or broken `cloakroom` program makes tool calls fail closed (the hook exits with code 2 and a reason,
+  which Gemini treats as a block). Prompts and session starts go on with a warning, so you are never locked out.
+- Gemini gives hooks no call id, so the file log of where restored values were written isn't kept for Gemini.
+- Not yet live-checked against a real Gemini run (it needs a Google sign-in or API key); the hook answers are
+  tested against Gemini's JSON shapes in `tests/test_gemini.py`.
+- Windows isn't supported yet (`cloakroom install gemini` refuses there).

@@ -43,9 +43,11 @@ def main(argv=None):
         s.add_argument("--mode", choices=["full", "rules"])
     h = sub.add_parser("hook", help="Claude Code hook entry point (reads hook JSON on stdin)")
     h.add_argument("event", choices=["start", "prompt", "pre", "post"])
-    h.add_argument("--agent", choices=["claude", "codex"], default="claude", help="whose hook JSON (default: Claude Code)")
+    h.add_argument("--agent", choices=["claude", "codex", "gemini"], default="claude",
+                   help="whose hook JSON (default: Claude Code)")
     for name, what in (("install", "add Cloakroom's hooks to"), ("uninstall", "remove Cloakroom's hooks from")):
-        sub.add_parser(name, help=f"{what} another coding agent (Codex)").add_argument("agent", choices=["codex"])
+        sub.add_parser(name, help=f"{what} another coding agent (Codex, Gemini CLI)").add_argument(
+            "agent", choices=["codex", "gemini"])
     dr = sub.add_parser("doctor", help="check this machine: Python, vault key store, model, service")
     dr.add_argument("--retry-key", action="store_true", help="forget a refused vault-key read and try the key store again")
     x = sub.add_parser("export-onnx", help="export the model to ONNX for fast CPU inference (needs cloakroom[torch] once)")
@@ -226,6 +228,10 @@ def _doctor() -> int:
         on = agents.codex_installed()
         line(on or None, "codex", "Cloakroom's hooks installed; Codex runs them only once you trust them (/hooks in "
              "Codex)" if on else "not protected; to protect it: cloakroom install codex")
+    if os.path.isdir(agents.gemini_home()):  # Gemini CLI is on this machine
+        on = agents.gemini_installed()
+        line(on or None, "gemini", f"Cloakroom's extension installed ({agents.gemini_dir()})" if on else
+             "not protected; to protect it: cloakroom install gemini")
     found = find_program()
     line(found is not None or None, "program", found or "the plugin can't find the cloakroom program, so Claude Code "
          "tool calls are denied: reinstall (uv tool install 'cloakroom[model,torch]', or let the plugin do it by "

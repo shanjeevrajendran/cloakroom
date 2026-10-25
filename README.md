@@ -34,7 +34,8 @@ The only Claude Code privacy tool that catches personal data, masks instead of b
 Runs on your machine, sets itself up on first start, works on Mac, Windows and Linux. Free and open source. Young:
 expect rough edges.
 
-New: it also protects OpenAI's Codex CLI (`cloakroom install codex`, see [Codex](#codex)).
+New: it also protects OpenAI's Codex CLI (`cloakroom install codex`, see [Codex](#codex)) and Google's Gemini CLI
+(`cloakroom install gemini`, see [Gemini CLI](#gemini-cli)).
 
 **Hand Claude the files you'd never paste into a chat:**
 
@@ -376,6 +377,31 @@ prompt holding a secret is stopped with what to do next. What's different:
 
 To remove it: `cloakroom uninstall codex`. More in
 [Known limits](https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-LIMITS.md#codex).
+
+## Gemini CLI
+
+Cloakroom also works with Google's Gemini CLI, on Mac and Linux (built against Gemini CLI 0.65).
+
+1. Install the program by hand: `uv tool install "cloakroom[model,torch,ocr]"`.
+2. Run `cloakroom install gemini`. It writes one thing: a Gemini extension named `cloakroom` in
+   `~/.gemini/extensions/cloakroom/` (`gemini-extension.json` and `hooks/hooks.json`, four hooks that call the
+   `cloakroom` program). Your `settings.json` and your own hooks and extensions aren't touched. Gemini runs the
+   hooks from its next start, in every folder; `gemini extensions list` shows it, `cloakroom doctor` too.
+
+What works as in Claude Code: the output of every tool (shell, file reads, MCP) is masked before the model sees it,
+pictures are read by local OCR or held back, placeholders in shell commands, `write_file` and `replace` get their
+real values back on your machine, real values are kept out of MCP calls and web tools, and a prompt holding a
+secret is stopped with what to do next. What's different:
+
+- Gemini can't swap a tool's output in place, so the masked output reaches the model as a "blocked" tool result
+  that holds the masked text.
+- Prompts can only be stopped, not masked. Gemini could rewrite a prompt on its way to the model, but it keeps the
+  original in the conversation and sends that to Google on other calls no hook sees.
+- Gemini lets a call through when a hook runs past its time limit. Cloakroom never waits for its model to load:
+  until it's ready, checks run on the rules only (keys, cards, IDs).
+
+To remove it: `cloakroom uninstall gemini` (deletes that folder, nothing else). More in
+[Known limits](https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-LIMITS.md#gemini-cli).
 
 ## Ways to run
 

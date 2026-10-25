@@ -103,7 +103,8 @@ def run(event: str, agent: str = "claude") -> int:
         if agent == "claude":
             return out
         from .agents import answer
-        return answer(agent, event, out)
+        return answer(agent, event, out, data)
+    data = {}
     raw = sys.stdin.buffer.read()
     try:
         data = json.loads(raw.decode("utf-8-sig"))  # Windows PowerShell 5.1 may prepend a byte-order mark
@@ -115,6 +116,9 @@ def run(event: str, agent: str = "claude") -> int:
         return 0
     try:
         from . import hook
+        if agent != "claude":  # another agent's input as Claude Code's (agents.py)
+            from .agents import request
+            data = request(agent, event, data)
         out = hook.handle(event, data)
     except BaseException as e:  # noqa: BLE001 - fail closed on anything, including import errors
         out = closed(event, type(e).__name__, data)

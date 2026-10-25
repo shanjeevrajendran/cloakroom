@@ -7,6 +7,13 @@
   get their real values back, real values are kept out of MCP calls, and a prompt holding a secret is stopped with
   what to do next. Trust the hooks once in Codex (`/hooks`). Open gap: output of a command still running when Codex
   stops waiting isn't masked ([limits](docs-LIMITS.md#codex)).
+- Gemini CLI: Cloakroom also protects Google's Gemini CLI (Mac and Linux). `cloakroom install gemini` writes a
+  Gemini extension of its own to `~/.gemini/extensions/cloakroom/` (nothing else is changed), `cloakroom uninstall
+  gemini` deletes it, and `cloakroom doctor` says whether it is there. Every tool's output is masked (pictures read
+  by OCR or held back, PDFs held back), placeholders in shell commands, `write_file` and `replace` get their real
+  values back, real values are kept out of MCP and web tools, and a prompt holding a secret is stopped. The hooks
+  never wait for the model to load: Gemini would let the call through on a timeout
+  ([limits](docs-LIMITS.md#gemini-cli)).
 
 ## 0.6.6 (2026-10-24)
 - Disguised copies of known values: a secret Cloakroom has seen is also caught as an MD5, SHA-1 or SHA-256 hash, as
