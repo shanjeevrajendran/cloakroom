@@ -101,6 +101,28 @@ Useful commands: `cloakroom check FILE` (what would be masked, no values printed
 finding with its rule), `cloakroom status`. Add your own exceptions to `allow` in `~/.cloakroom/config.json`
 (exact values, or `re:<regex>`).
 
+## Other coding agents
+
+The hooks speak Claude Code's JSON. For Codex, `cloakroom hook <event> --agent codex` reads Codex's hook input (the
+same field names) and turns the answer into Codex's: a masked tool result becomes a block whose reason is the
+masked text (Codex shows the model that reason instead of the result), a restored input gets
+`permissionDecision: "allow"`, and an ask becomes a deny. Codex's file edits (`apply_patch`) are restored and checked
+like Write: placeholders in the patch get their real values, and a key the patch would add to a file git would
+commit is denied. `cloakroom install codex` writes the four hooks into `~/.codex/hooks.json`; the tool-call hooks
+end in `|| exit 2` with a reason, so a missing program blocks instead of letting the call through.
+
+Gemini CLI uses its own tool names with Claude Code's argument names, so `--agent gemini` first renames the tool
+(`run_shell_command` is Bash, `write_file` is Write, `replace` is Edit, `read_file` is Read, `mcp_<server>_<tool>`
+is `mcp__<server>__<tool>`; any other tool is treated as one that can send data off the machine) and turns the
+result (`llmContent`: text, or parts with pictures) into text and MCP-style blocks. The answer goes back as Gemini's:
+a masked result becomes `decision: "deny"` whose reason is the masked text (Gemini gives the model that reason
+instead of the result), a restored input goes in `hookSpecificOutput.tool_input`, an ask stays an ask, and a
+blocked prompt is a deny, which keeps it out of the conversation. A part Cloakroom can't read (a PDF, audio) is held
+back. Gemini lets a call through when a hook times out, so with the model not loaded yet the hook doesn't wait: it
+checks with the rules in-process and starts the service for the next call. `cloakroom install gemini` writes these
+hooks as an extension of its own, `~/.gemini/extensions/cloakroom/`, because Gemini skips the hooks in
+`settings.json` in a folder you haven't trusted, but runs an extension's hooks everywhere.
+
 ## Threat model
 
 Cloakroom stops **accidental** exposure: secrets and personal data in files, logs and command output an agent

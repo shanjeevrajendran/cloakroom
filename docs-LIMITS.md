@@ -139,3 +139,62 @@
   (`python pay.py`, a test suite, a server Claude starts) that calls a payment API isn't held, nor is a host or MCP
   tool name not on the lists (add them with `"money_hosts"` / `"money_tools"`), a GraphQL payment API, or a URL built
   from variables. A tool call is matched by its name, so a payment tool with a plain name (`run`, `execute`) passes.
+
+## Codex
+
+Checked against Codex CLI 0.164 (hooks docs: https://developers.openai.com/codex/hooks, and its source).
+
+- **Open gap, background output:** a command still running when Codex stops waiting (10 seconds by default; the
+  model can choose a shorter or longer wait) returns its output so far to the model, and Codex runs no PostToolUse
+  hook on it, nor on the polls that follow until the command ends. That output is not masked. The PreToolUse hook
+  only sees the command text, not the wait or whether a terminal is attached, so Cloakroom can't tell such a
+  command apart beforehand. Avoid long-running commands (servers, `tail -f`, watches, slow builds) over secrets.
+- Trust: Codex runs the hooks only after you trust them once in `/hooks`, and again after they change (a reinstall
+  from a different program path). Until then it skips them; `codex exec` gives no warning.
+- Prompts can only be blocked, not masked, as in Claude Code (Codex's request hook only watches).
+- Masked output reaches the model as a blocked tool result holding the masked text: Codex replaces a result only
+  through a block (`updatedMCPToolOutput` is read but not applied yet).
+- Codex hooks can't ask: a command with placeholders that could send data off the machine, or one Cloakroom
+  doesn't know, is denied instead of asked about. Run it yourself if you want it.
+- No hook at all: Codex's hosted web search, and pictures from `view_image`. Hooks also stop when they are turned
+  off (`[features] hooks = false`) or by an admin policy.
+- A missing or broken `cloakroom` program makes tool calls fail closed (the hook exits with code 2 and a reason,
+  which Codex treats as a block). Prompts and session starts go on with Codex's error message, so you are never
+  locked out.
+- Live check 2026-10-24: a `codex exec` run with the hooks installed but not yet trusted skipped them and printed
+  no warning. A run with trusted hooks on Codex 0.164 passed three checks: a fake key in Bash output was masked, a
+  placeholder in tool input was restored on disk while the model saw only the placeholder, and a missing `cloakroom`
+  program blocked the tool call (exit 2). The hook answers are tested against Codex's JSON shapes in
+  `tests/test_codex.py`.
+- Windows isn't supported yet (`cloakroom install codex` refuses there).
+
+
+## Gemini CLI
+
+Checked against Gemini CLI 0.65 (hooks docs: https://geminicli.com/docs/hooks/reference, and its source).
+
+- **Timeouts let the call through:** Gemini treats a hook that runs past its time limit (30 s at session start,
+  60 s for prompts and tool input, 120 s for tool output) as a warning and goes on with the original. Cloakroom
+  doesn't wait for its model to load: until the local service is ready, checks run on the rules only (keys, cards,
+  IDs; names and addresses may be missed), with a note in the terminal. A very slow check (a huge output, many OCR
+  pages) can still run past the limit.
+- Prompts can only be blocked, not masked: Gemini keeps the original prompt in the conversation and also sends it
+  to the model from places no hook sees (model routing, history compression, loop checks). Pictures in a prompt
+  (pasted, or `@image.png`) aren't seen by the prompt hook and go unchecked; text from `@file` is checked.
+- Masked output reaches the model as a blocked tool result holding the masked text: Gemini replaces a result only
+  through a deny.
+- No hook sees `GEMINI.md` and other context files (they go into the system instruction), nor what Gemini's own web
+  tools fetch on Google's side.
+- With LLM edit correction turned on (`"disableLLMCorrection": false`; it is off by default), a `replace` that
+  doesn't match sends the file and the restored strings to the model to fix the edit.
+- If you set up Gemini's OpenTelemetry export with prompt logging, it logs tool arguments after Cloakroom restored
+  them.
+- The hooks don't run when the extension is off: `gemini -e` naming other extensions (or `none`),
+  `/extensions disable cloakroom`, `"hooksConfig": {"enabled": false}`, `/hooks disable`, or an admin policy
+  (turning extensions off, or an `allowedExtensions` list, which needs install records Cloakroom doesn't write).
+- A missing or broken `cloakroom` program makes tool calls fail closed (the hook exits with code 2 and a reason,
+  which Gemini treats as a block). Prompts and session starts go on with a warning, so you are never locked out.
+- Gemini gives hooks no call id, so the file log of where restored values were written isn't kept for Gemini.
+- Not yet live-checked against a real Gemini run (it needs a Google sign-in or API key); the hook answers are
+  tested against Gemini's JSON shapes in `tests/test_gemini.py`.
+- Windows isn't supported yet (`cloakroom install gemini` refuses there).

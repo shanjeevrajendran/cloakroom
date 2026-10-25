@@ -98,7 +98,13 @@ def closed(event, why, data):
                                    "permissionDecisionReason": msg}}
 
 
-def run(event: str) -> int:
+def run(event: str, agent: str = "claude") -> int:
+    def answer(out):  # another agent's JSON (agents.py, standard library only); Claude Code's is hook.py's own
+        if agent == "claude":
+            return out
+        from .agents import answer
+        return answer(agent, event, out, data)
+    data = {}
     raw = sys.stdin.buffer.read()
     try:
         data = json.loads(raw.decode("utf-8-sig"))  # Windows PowerShell 5.1 may prepend a byte-order mark
@@ -106,13 +112,20 @@ def run(event: str) -> int:
             raise ValueError("hook input is not an object")
     except Exception:
         # Unreadable input must never mean "nothing to do": for a tool result that would pass the output through.
-        sys.stdout.write(json.dumps(closed(event, "unreadable hook input", {})) + "\n")
+        sys.stdout.write(json.dumps(answer(closed(event, "unreadable hook input", {}))) + "\n")
         return 0
     try:
         from . import hook
+        if agent != "claude":  # another agent's input as Claude Code's (agents.py)
+            from .agents import request
+            data = request(agent, event, data)
         out = hook.handle(event, data)
     except BaseException as e:  # noqa: BLE001 - fail closed on anything, including import errors
         out = closed(event, type(e).__name__, data)
+    try:
+        out = answer(out)
+    except Exception as e:  # noqa: BLE001 - a translation bug must not mean "nothing to do"
+        out = answer(closed(event, type(e).__name__, data))
     if out:
         sys.stdout.write(json.dumps(out) + "\n")
         sys.stdout.flush()
