@@ -232,6 +232,8 @@ def _doctor() -> int:
         on = agents.gemini_installed()
         line(on or None, "gemini", f"Cloakroom's extension installed ({agents.gemini_dir()})" if on else
              "not protected; to protect it: cloakroom install gemini")
+        for problem in agents.gemini_problems(os.getcwd()) if on else []:
+            line(None, "gemini", problem)
     found = find_program()
     line(found is not None or None, "program", found or "the plugin can't find the cloakroom program, so Claude Code "
          "tool calls are denied: reinstall (uv tool install 'cloakroom[model,torch]', or let the plugin do it by "

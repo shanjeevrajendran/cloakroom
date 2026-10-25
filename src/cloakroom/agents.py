@@ -45,7 +45,7 @@ GEMINI_GUIDE = ("Cloakroom note: values like PII_EMAIL_1_k7q2ab are placeholders
 GEMINI_EVENTS = {"start": "SessionStart", "prompt": "BeforeAgent", "pre": "BeforeTool", "post": "AfterTool"}
 GEMINI_TOOLS = {"run_shell_command": "Bash", "read_file": "Read", "write_file": "Write", "replace": "Edit",
                 "glob": "Glob", "grep_search": "Grep", "list_directory": "LS"}  # same argument names as Claude Code
-HELD, NOTE = "_cloakroom_held", "_cloakroom_note"  # set by gemini_request for gemini_answer
+HELD, NOTE = "_cloakroom_held", "_cloakroom_note"  # set by gemini_request: for gemini_answer, and (NOTE) for hook.py
 NOT_CHECKED = ("cloakroom: not working, so this message was not checked. Tool calls stay blocked until it works "
                "again. Run: cloakroom doctor")
 ASK_NOTE = " Codex can't ask you from a hook, so the call was stopped; run it yourself if it's what you want."
@@ -124,9 +124,8 @@ def codex_answer(event, out):
 def gemini_request(event, data):
     """Gemini's hook input as Claude Code's: tool names, the tool result as text or MCP-style blocks."""
     data = dict(data)
-    note = _rules_until_warm()
-    if note:
-        data[NOTE] = note
+    if _rules_until_warm():
+        data[NOTE] = True  # hook.py logs this call as a skipped model check and tells you once per session
     name = str(data.get("tool_name", ""))
     mcp = data.get("mcp_context") if isinstance(data.get("mcp_context"), dict) else {}
     if name.startswith("mcp_") and mcp.get("server_name") and mcp.get("tool_name"):
@@ -165,31 +164,29 @@ def gemini_request(event, data):
 
 def _rules_until_warm():
     """Gemini goes on unchecked when a hook runs past its timeout, so a hook never waits for the model to load: until
-    the service answers, this call runs on the rules in-process, and the service is started for the next one."""
+    the service answers, this call runs on the rules in-process, and the service is started for the next one.
+    True when this call runs on the rules."""
     from . import client, config
     cfg = config.load()
     if cfg["mode"] != "full" or client.health(cfg["port"]) is not None:
-        return ""
+        return False
     import socket
     try:  # something listening but not answering yet: the service is loading the model
         socket.create_connection(("127.0.0.1", cfg["port"]), 0.5).close()
     except OSError:
         client.start_background()
     os.environ["CLOAKROOM_MODE"] = "rules"  # this process only
-    return ("cloakroom: the local model is still starting, so this was checked with the rules only (keys, cards, "
-            "IDs; names and addresses may be missed)")
+    return True
 
 
 def gemini_answer(event, out, data=None):
     """hook.py's Claude Code answer as Gemini's. None or {} stays as it is: a clean pass."""
     data = data if isinstance(data, dict) else {}
     held = event == "post" and data.get(HELD)
-    if not out and not held and not data.get(NOTE):
+    if not out and not held:
         return out
     out = dict(out or {})
     name = NAMES["gemini"]
-    if data.get(NOTE):
-        out["systemMessage"] = data[NOTE] + (" · " + out["systemMessage"] if out.get("systemMessage") else "")
     for k in ("systemMessage", "stopReason"):
         if k in out:
             out[k] = _words(out[k], name)
@@ -399,6 +396,81 @@ def uninstall_gemini():
 
 def gemini_installed():
     return _gemini_ours()
+
+
+_JSONC = re.compile(r'("(?:\\.|[^"\\])*")|//[^\n]*|/\*.*?\*/', re.DOTALL)  # Gemini's settings may hold comments
+
+
+def _jsonc(path):
+    """A Gemini JSON file, comments allowed: None when it's absent, ValueError when it can't be read."""
+    try:
+        with open(path, encoding="utf-8") as f:
+            text = f.read()
+    except FileNotFoundError:
+        return None
+    except OSError as e:
+        raise ValueError(str(e)) from e
+    data = json.loads(_JSONC.sub(lambda m: m.group(1) or "", text))
+    if not isinstance(data, dict):
+        raise ValueError("not an object")
+    return data
+
+
+def _gemini_enabled_here(rules, cwd):
+    """Gemini's extension enablement rules (extensionEnablement.ts): "!" disables, a trailing * covers subfolders,
+    the last rule that matches the folder wins, enabled when none does."""
+    def folder(p):  # with leading and trailing slashes, as Gemini compares them
+        p = p.replace("\\", "/").strip("/")
+        return f"/{p}/" if p else "/"
+    here = folder(os.path.abspath(cwd))
+    on = True
+    for rule in rules:
+        off = rule.startswith("!")
+        base = rule[1:] if off else rule
+        sub = base.endswith("*")
+        base = base[:-1] if sub else base
+        base = folder(base)
+        if here == base or (sub and here.startswith(base)):
+            on = not off
+    return on
+
+
+def gemini_problems(cwd):
+    """Why Gemini CLI may not run Cloakroom's hooks: the extension disabled (gemini extensions disable), hooks off
+    (hooksConfig.enabled false) or ours in hooksConfig.disabled. One plain sentence each; "can't tell" when a file
+    can't be read. [] when none applies (a -e flag on Gemini's command line can't be seen from here)."""
+    out = []
+    path = os.path.join(gemini_home(), "extensions", "extension-enablement.json")
+    try:
+        rules = ((_jsonc(path) or {}).get("cloakroom") or {}).get("overrides") or []
+        if not _gemini_enabled_here([str(r) for r in rules], cwd):
+            out.append("Cloakroom's extension is disabled in this folder, so Gemini doesn't run its hooks here. "
+                       "To turn it on: gemini extensions enable cloakroom")
+        elif any(str(r).startswith("!") for r in rules):
+            out.append("Cloakroom's extension is disabled in some folders, where Gemini doesn't run its hooks "
+                       "(gemini extensions list shows which)")
+    except (ValueError, AttributeError):
+        out.append(f"can't tell whether Cloakroom's extension is enabled: {path} can't be read")
+    system = os.environ.get("GEMINI_CLI_SYSTEM_SETTINGS_PATH") or (
+        "/Library/Application Support/GeminiCli/settings.json" if sys.platform == "darwin" else
+        "C:\\ProgramData\\gemini-cli\\settings.json" if os.name == "nt" else "/etc/gemini-cli/settings.json")
+    enabled, where = None, ""
+    for path in (os.path.join(gemini_home(), "settings.json"), os.path.join(cwd, ".gemini", "settings.json"), system):
+        try:
+            hc = (_jsonc(path) or {}).get("hooksConfig") or {}
+            if not isinstance(hc, dict):
+                raise ValueError("hooksConfig is not an object")
+        except ValueError:
+            out.append(f"can't tell whether Gemini's hooks are on: {path} can't be read")
+            continue
+        if isinstance(hc.get("enabled"), bool):  # user, then workspace, then system: the last one set wins
+            enabled, where = hc["enabled"], path
+        if any("cloakroom" in str(h) for h in hc.get("disabled") or []):
+            out.append(f"Cloakroom's hooks are listed in hooksConfig.disabled in {path}, so Gemini skips them")
+    if enabled is False:
+        out.append(f"Gemini's hooks are switched off (hooksConfig.enabled is false in {where}), so it runs none of "
+                   "Cloakroom's hooks")
+    return out
 
 
 def install(agent, remove=False):

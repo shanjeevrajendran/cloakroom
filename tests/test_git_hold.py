@@ -144,10 +144,17 @@ def test_git_errors_and_slow_git_fail_open(repo, monkeypatch, capsys):
     from cloakroom import hook
     (repo / "app.py").write_text(f"TOKEN = '{KEY}'\n")
     git(repo, "add", "app.py")
-    assert bash("git push origin no-such-branch", repo, monkeypatch, capsys) is None  # git error
-    assert bash("git commit -m x", repo.parent, monkeypatch, capsys) is None  # not a repo
+    # each still runs (fail-open), and since 0.7.1 is logged as a skipped check and told once per session
+    out = bash("git push origin no-such-branch", repo, monkeypatch, capsys)  # git error
+    assert out == {"systemMessage": "Cloakroom didn't check this git push: git returned an error"}
+    assert bash("git push origin no-such-branch", repo, monkeypatch, capsys) is None  # said once
+    assert bash("git commit -m x", repo.parent, monkeypatch, capsys) is None  # not a repo: git can't commit either
     monkeypatch.setattr(hook, "GIT_SECONDS", 0.0)
-    assert bash("git commit -m x", repo, monkeypatch, capsys) is None
+    out = bash("git commit -m x", repo, monkeypatch, capsys)
+    assert decision(out) is None and out["systemMessage"].startswith("Cloakroom didn't check this git commit: it took")
+    from cloakroom import events
+    skips = [(e["reason"], e["check"]) for e in reversed(events.read()) if e["event"] == "skipped"]
+    assert skips == [("git-error", "git push")] * 2 + [("too-slow", "git commit")]
 
 
 def test_commit_hold_dry_run(repo, monkeypatch, capsys):

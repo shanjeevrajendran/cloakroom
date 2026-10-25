@@ -253,7 +253,10 @@ header.top { position: sticky; top: 0; z-index: 5; background: var(--bg); paddin
     $("#t-legend").innerHTML = Object.keys(sevs).map(k => `<span><i style="background:${cols[k]}"></i>${sevs[k]} ${names[k]}</span>`).join("");
     const tools = evs.filter(e => e.event === "pre" || e.event === "post"), n = a => tools.filter(e => e.action === a).length;
     $("#t-checked").textContent = tools.length.toLocaleString();
-    $("#t-checked-sub").textContent = `${n("masked")} masked · ${n("withheld")} withheld · ${n("deny")} denied`;
+    const sk = evs.filter(e => e.event === "skipped"), why = {};
+    sk.forEach(e => why[e.check] = (why[e.check] || 0) + 1);
+    $("#t-checked-sub").textContent = `${n("masked")} masked · ${n("withheld")} withheld · ${n("deny")} denied` + (sk.length ? ` · ${sk.length} not fully checked` : "");
+    $("#t-checked-sub").title = Object.entries(why).map(([c, k]) => `${k} × ${c}`).join("\n");
     $("#t-blocked").textContent = evs.filter(e => e.event === "prompt" && e.action === "block").length;
     const lab = evs.filter(e => e.label), fa = lab.filter(e => e.label === "false_alarm").length;
     $("#t-fa").textContent = lab.length ? Math.round(fa / lab.length * 100) + "%" : "-";
@@ -320,9 +323,9 @@ header.top { position: sticky; top: 0; z-index: 5; background: var(--bg); paddin
     renderBars($("#kinds"), Object.entries(kinds).sort((a, b) => b[1] - a[1]).slice(0, 8).map(([k, n]) => [k, n, sev(k)]));
     renderBars($("#hot"), Object.entries(hot).sort((a, b) => b[1][0] - a[1][0]).slice(0, 6).map(([k, v]) => [k, v[0], v[1]]));
     renderBars($("#tools"), Object.entries(tools).sort((a, b) => b[1] - a[1]).slice(0, 6).map(([k, n]) => [k, n, "low"]));
-    const ms = evs.filter(e => e.event !== "start" && e.event !== "log").map(e => e.ms).sort((a, b) => a - b), q = p => ms.length ? ms[Math.min(ms.length - 1, Math.floor(p * ms.length))] : null;
+    const ms = evs.filter(e => e.event !== "start" && e.event !== "log" && e.event !== "skipped").map(e => e.ms).sort((a, b) => a - b), q = p => ms.length ? ms[Math.min(ms.length - 1, Math.floor(p * ms.length))] : null;
     $("#p50").textContent = ms.length ? Math.round(q(.5)) + " ms" : "-"; $("#p95").textContent = ms.length ? Math.round(q(.95)) + " ms" : "-";
-    const pts = evs.filter(e => e.event !== "start" && e.event !== "log").slice(0, 40).reverse().map(e => e.ms), W = 300, H = 54, max = Math.max(10, ...pts);
+    const pts = evs.filter(e => e.event !== "start" && e.event !== "log" && e.event !== "skipped").slice(0, 40).reverse().map(e => e.ms), W = 300, H = 54, max = Math.max(10, ...pts);
     if (pts.length > 1) {
       const xy = pts.map((v, i) => [4 + i * (W - 8) / (pts.length - 1), H - 6 - v / max * (H - 12)]);
       const line = xy.map((p, i) => (i ? "L" : "M") + p[0].toFixed(1) + " " + p[1].toFixed(1)).join(" "), last = xy[xy.length - 1];

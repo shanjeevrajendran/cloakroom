@@ -16,6 +16,8 @@ ABOUT = [
     "It holds no values, no placeholder ids and no full paths (a path is shown only as its extension and top folder).",
     "It does not show what Cloakroom missed: a miss leaves no line. It does not cover other agents, machines without "
     "Cloakroom, or prompts you sent with cr! (counted as 'sent anyway', not checked).",
+    ("Checks skipped: calls Cloakroom let through without a full check (too large, too slow, git error, model not "
+     "ready), counted by check and reason."),
     "It is a record of this tool's actions, not a compliance attestation.",
 ]
 ACTIONS = {"deny": "denied", "block": "denied"}  # the rest keep their own name (masked, withheld, held, allowed once...)
@@ -47,7 +49,7 @@ def rows(since: str = "") -> list[dict]:
         if since and ts[:10] < since:
             continue
         action = ACTIONS.get(ev.get("action", ""), ev.get("action", ""))
-        if not action or action in SKIP or action == "restored":
+        if ev.get("event") == "skipped" or not action or action in SKIP or action == "restored":
             continue
         cls = path_class(str(ev.get("target", "")), str(ev.get("tool", ""))) if ev.get("event") != "log" else ""
         kinds = ev.get("kinds") or {"": 1}
@@ -58,18 +60,33 @@ def rows(since: str = "") -> list[dict]:
             for (d, s, k, a, c), n in sorted(counts.items())]
 
 
+def skipped(since: str = "") -> list[dict]:
+    """Checks skipped (fail-open), counted by check and reason, most first."""
+    counts: dict[tuple, int] = {}
+    for ev in events.all_events():
+        if ev.get("event") != "skipped" or (since and str(ev.get("ts", ""))[:10] < since):
+            continue
+        key = (str(ev.get("check", "")), str(ev.get("reason", "")), events.skip_why(ev))
+        counts[key] = counts.get(key, 0) + 1
+    return [{"check": c, "reason": r, "why": w, "count": n}
+            for (c, r, w), n in sorted(counts.items(), key=lambda x: (-x[1], x[0]))]
+
+
 def export(fmt: str = "csv", since: str = "") -> str:
     chain = events.verify()
-    data = rows(since)
+    data, skips = rows(since), skipped(since)
     if fmt == "json":
         return json.dumps({"about": ABOUT, "version": __version__, "since": since or None,
                            "chain": {"ok": chain["ok"], "head": chain["head"], "lines": chain["lines"]},
-                           "rows": data}, indent=1) + "\n"
+                           "rows": data, "skipped": skips}, indent=1) + "\n"
     out = io.StringIO()
     for line in ABOUT:
         out.write(f"# {line}\n")
     out.write(f"# cloakroom {__version__}; log chain {'intact' if chain['ok'] else 'BROKEN at ' + chain['broken']}, "
               f"head {chain['head']}\n")
+    out.write(f"# Checks skipped: {sum(x['count'] for x in skips)}\n")
+    for x in skips:
+        out.write(f"#   {x['count']} x {x['check']}: {x['why']}\n")
     w = csv.DictWriter(out, fieldnames=["day", "session", "kind", "action", "path_class", "count"], lineterminator="\n")
     w.writeheader()
     w.writerows(data)
