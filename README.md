@@ -77,7 +77,7 @@ Claude Code plugin updates arrive a few days after each PyPI release, once the r
 **Hand Claude the files you'd never paste into a chat:**
 
 - **Bank statements** (PDF, scan or CSV): "sort a year of spending by category." Claude sees amounts and merchants, not your name, address or account number.
-- **Support tickets:** "draft replies to this week's tickets." Claude writes to a stand-in name (`PII_PERSON_1`);
+- **Support tickets:** "draft replies to this week's tickets." Claude writes to a placeholder name (`PII_PERSON_1`);
   the drafts saved on your disk have the real names.
 - **Medical or HR records:** names, birth dates, addresses and ID numbers are masked, so Claude can summarise or tidy a record without knowing whose it is.
 - **`.env` files and logs:** Claude fixes the config without ever seeing the password or API key.
