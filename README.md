@@ -26,14 +26,15 @@
 
 </div>
 
+**Cloakroom swaps your secrets and personal data for placeholders before Claude sees them, and puts the real values
+back in the files Claude writes.**
+
 **Install** (inside Claude Code, one line at a time):
 
 ```
 /plugin marketplace add shanjeevrajendran/cloakroom
 /plugin install cloakroom@cloakroom
 ```
-
-Then restart Claude Code. Details and other tools: [Get started](#get-started).
 
 Or, from a terminal:
 
@@ -42,8 +43,7 @@ claude plugin marketplace add shanjeevrajendran/cloakroom
 claude plugin install cloakroom@cloakroom
 ```
 
-**Cloakroom swaps your secrets and personal data for placeholders before Claude sees them, and puts the real values
-back in the files Claude writes.**
+Then restart Claude Code. Details and other tools: [Get started](#get-started).
 
 A placeholder is a label such as `PII_PERSON_1` or `PII_SECRET_1`. The AI sees the label and works with it. The
 real value stays on your machine.
