@@ -33,6 +33,10 @@ On test data it hadn't seen before, Cloakroom let through 0 of 1,005 personal de
 through 119 to 992) and 0 of 77 keys and passwords in the formats vendors really issue. Its weak spot is false
 alarms: it masks more harmless text than secret-only tools do. [Results](#results)
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/shanjeevrajendran/cloakroom/main/assets/demo-clip.gif" alt="Claude Code reads .env through Cloakroom: the fake Stripe key on disk is swapped for a placeholder before Claude sees it" width="760">
+</p>
+
 **Install** (inside Claude Code, one line at a time):
 
 ```
