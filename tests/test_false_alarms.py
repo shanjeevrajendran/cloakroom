@@ -59,3 +59,20 @@ def test_key_prefix_cut_short_is_safe(monkeypatch):
 def test_test_mode_key_after_prefix_still_masked(monkeypatch):
     text = "Stripe key sk_test_" + "4eC39HqLyjWDarjtT1zdp7dc"
     assert len(_model_says(monkeypatch, text, "4eC39HqLyjWDarjtT1zdp7dc", "SECRET")) == 1
+
+
+# a placeholder the agent writes on purpose under a secret key: a description in brackets, a variable, prose
+@pytest.mark.parametrize("text", ['{"apiKey": "<LITELLM_API_KEY from .env>"}', "api_key: <your OpenAI key>",
+                                  'token = "<paste the token here>"', 'api_key = "${LITELLM_API_KEY}"',
+                                  '"apiKey": "your key here"', '"apiKey": "YOUR_API_KEY_HERE"'])
+def test_placeholder_under_secret_key_is_safe(text):
+    assert engine.detect(text, mode="rules")[0] == []
+
+
+# leak guards: a real value under the same key, or a real key shape inside the brackets, stays masked
+@pytest.mark.parametrize("text,value", [('{"apiKey": "Zq8vR2mK4pL7wX1nAb3dEf9h"}', "Zq8vR2mK4pL7wX1nAb3dEf9h"),
+                                        ('{"apiKey": "<sk-' + 'proj-Ab3dEf9hJk2mNp5qRs8tUvWx from .env>"}',
+                                         "sk-" + "proj-Ab3dEf9hJk2mNp5qRs8tUvWx"),
+                                        ("api_key: <Zq8vR2mK4pL7wX1nAb3dEf9h", "<Zq8vR2mK4pL7wX1nAb3dEf9h")])
+def test_real_key_near_placeholder_still_masked(text, value):
+    assert [text[f.start:f.end] for f in engine.detect(text, mode="rules")[0]] == [value]

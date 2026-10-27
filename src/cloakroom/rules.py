@@ -54,7 +54,8 @@ SECRET_RULES = [
      r"(?:\"([^\"\n]{4,64})\"|'([^'\n]{4,64})'|([^\s\"]{4,64}))", 0, None),
     ("keyed-secret", "SECRET",
      r"(?i)(?:pass(?:word|wd|phrase)?|pwd|secret|token|api[_-]?key|access[_-]?key|auth[_-]?token|authorization|bearer|credentials?|private[_-]?key)"
-     r"[\w.-]*[\"']?\s*[:=]\s*[\"']?(?:(?:Bearer|Basic|Token)\s+)?([^\s\"',;]{6,})", 1, None),
+     # a <bracketed description> is taken whole, spaces and all, so the example check sees its closing ">"
+     r"[\w.-]*[\"']?\s*[:=]\s*[\"']?(?:(?:Bearer|Basic|Token)\s+)?(<[^<>\"'\n]{1,80}>|[^\s\"',;]{6,})", 1, None),
 ]
 
 PII_RULES = [
