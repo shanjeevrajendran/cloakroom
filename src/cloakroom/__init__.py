@@ -3,4 +3,4 @@ from .engine import ModelUnavailable, detect, mask
 from .vault import Vault
 
 __all__ = ["mask", "detect", "Vault", "ModelUnavailable"]
-__version__ = "0.7.2"
+__version__ = "0.8.0"

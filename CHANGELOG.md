@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.8.0 (unreleased)
+## 0.8.0 (2026-10-27)
 
 ### Added
 - `cloakroom exposure [--since DATE] [--format text|json]`: which keys and passwords your coding agents saw, so you

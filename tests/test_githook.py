@@ -91,7 +91,8 @@ def test_the_installed_program_runs_from_the_hook(repo, monkeypatch):
     """The real cloakroom(.exe) next to this Python (on Windows a backslash path under Scripts)."""
     prog = os.path.join(sysconfig.get_path("scripts"), "cloakroom.exe" if sys.platform == "win32" else "cloakroom")
     if not os.path.isfile(prog):
-        pytest.skip("cloakroom isn't installed next to this Python")
+        # in CI the package is always installed, so a missing program is a broken build, not a reason to skip
+        (pytest.fail if os.environ.get("CI") else pytest.skip)("cloakroom isn't installed next to this Python")
     from cloakroom import agents
     monkeypatch.setattr(agents, "_program", lambda: prog)
     assert cli.main(["install", "git-hook"]) == 0

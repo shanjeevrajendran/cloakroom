@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "cloakroom"
-version = "0.7.2"
+version = "0.8.0"
 description = "Masks API keys, secrets and personal data before your AI coding agent sees them, and restores them locally. Works with Claude Code, Codex CLI and Gemini CLI."
 readme = "README.md"
 license = "Apache-2.0"
