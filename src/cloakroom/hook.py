@@ -370,7 +370,7 @@ def on_post(data: dict) -> dict | None:
     def check(t):
         if len(t) < 6:
             return t
-        hit = decode.known_value_hit(t, known)
+        hit = decode.known_value_hit(t, known, as_typed=True)
         for view in ([] if hit else decode.views(t, reverse=reverse)):
             if decode.known_value_hit(view, known) or client.mask(view, session, roots=roots)["masked"]:
                 hit = True
@@ -629,11 +629,30 @@ def _git_bash_path(p: str, powershell: bool) -> str:
     return f"{m.group(1).upper()}:" + (m.group(2) or "/").replace("/", "\\") if m else p
 
 
-def _git_steps(command: str, cwd: str, powershell: bool) -> list[tuple[str, str, list[str], bool]]:
-    """(commit|push, repo folder, its arguments, a git add ran before it) for each git commit or push in the
-    command, following cd and git -C."""
+def _add_specs(args: list[str], folder: str) -> tuple[list[str], list[str]]:
+    """What a git add stages, as pathspecs: (for changed tracked files, for new files). Paths are made absolute
+    (git takes those inside the work tree); ":/" is the whole repo."""
+    paths, everything, tracked_only, rest = [], False, False, False
+    for a in args:
+        if rest or not a.startswith("-"):
+            paths.append(os.path.normpath(os.path.join(folder, os.path.expanduser(a))))
+        elif a == "--":
+            rest = True
+        elif a.startswith("--pathspec-from-file"):  # paths unknown here: the whole repo
+            return [":/"], [":/"]
+        elif a in ("-A", "--all", "--no-ignore-removal"):
+            everything = True
+        elif a in ("-u", "--update"):
+            tracked_only = True
+    specs = paths or ([":/"] if everything or tracked_only else [])
+    return specs, [] if tracked_only else specs
+
+
+def _git_steps(command: str, cwd: str, powershell: bool) -> list[tuple[str, str, list[str], tuple | None]]:
+    """(commit|push, repo folder, its arguments, what git adds before it staged: _add_specs, or None) for each
+    git commit or push in the command, following cd and git -C."""
     import shlex
-    out, here, added = [], cwd, False
+    out, here, added = [], cwd, None
     for seg in (shell._PS_SEGMENT_SPLIT if powershell else shell._SEGMENT_SPLIT).split(command):
         try:
             words = shlex.split(seg, posix=not powershell)
@@ -659,15 +678,17 @@ def _git_steps(command: str, cwd: str, powershell: bool) -> list[tuple[str, str,
             i += 1
         sub = words[i] if i < len(words) else ""
         if sub == "add":
-            added = True
+            tracked, new = _add_specs(words[i + 1:], repo)
+            added = (added[0] + tracked, added[1] + new) if added else (tracked, new)
         elif sub in ("commit", "push"):
             out.append((sub, repo, words[i + 1:], added))
     return out
 
 
-def _commit_diffs(args: list[str], added: bool) -> list[list[str]]:
-    """git commands whose output is what a commit with these arguments would record (a superset is fine)."""
-    widen, i = added, 0
+def _commit_diffs(args: list[str], added: tuple | None) -> list[list[str]]:
+    """git commands whose output is what a commit with these arguments would record (a superset is fine).
+    added: what git adds earlier in the command stage (_add_specs), which hasn't run yet when this is checked."""
+    widen, i = False, 0
     while i < len(args):
         a = args[i]
         if a in _COMMIT_VALUE_OPTS:
@@ -691,8 +712,10 @@ def _commit_diffs(args: list[str], added: bool) -> list[list[str]]:
     cmds = [["diff", "--cached"]]
     if widen:
         cmds.append(["diff", "HEAD"])
-    if added:
-        cmds.append(["untracked"])
+    elif added and added[0]:
+        cmds.append(["diff", "HEAD", "--", *added[0]])
+    if added and added[1]:
+        cmds.append(["untracked", *added[1]])
     return cmds
 
 
@@ -766,11 +789,19 @@ def git_added(repo: str, argvs: list[list[str]], vault: Vault | None, cfg: dict,
     always = [(e, k) for e, k in cfg["always"] if k in COMMIT_KINDS]
     globs = cfg.get("allow_secret_paths") or []
     files: dict[str, list[str]] = {}
+    root = ""
     for argv in argvs:
-        if argv == ["untracked"]:
-            root = _git_out(repo, deadline, "rev-parse", "--show-toplevel").strip()
+        specs = argv[3:] if argv[:3] == ["diff", "HEAD", "--"] else argv[1:] if argv[0] == "untracked" else None
+        if specs:  # a git add's paths: only those in this repo (cd a && git add x && cd ../b && git commit)
+            root = root or os.path.realpath(_git_out(repo, deadline, "rev-parse", "--show-toplevel").strip())
+            specs = [s for s in specs if s == ":/" or os.path.realpath(s) == root
+                     or os.path.realpath(s).startswith(root + os.sep)]
+            if not specs:
+                continue
+        if argv[0] == "untracked":
+            root = root or os.path.realpath(_git_out(repo, deadline, "rev-parse", "--show-toplevel").strip())
             for name in _git_out(repo, deadline, "ls-files", "--full-name", "--others", "--exclude-standard", "-z",
-                                 ":/").split("\0"):
+                                 "--", *(specs or [":/"])).split("\0"):
                 path = os.path.join(root, name)
                 if not (name and os.path.isfile(path)):
                     continue
@@ -783,7 +814,8 @@ def git_added(repo: str, argvs: list[list[str]], vault: Vault | None, cfg: dict,
             continue
         if argv[:2] == ["diff", "HEAD"]:
             try:
-                out = _git_out(repo, deadline, *argv, "--no-color", "--no-ext-diff", "-U0")
+                out = _git_out(repo, deadline, "diff", "HEAD", "--no-color", "--no-ext-diff", "-U0", *argv[2:3],
+                               *(specs or []))
             except RuntimeError:  # no commit yet: the staged diff covers it
                 continue
         else:
