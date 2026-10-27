@@ -29,6 +29,10 @@
 **Cloakroom swaps your secrets and personal data for placeholders before Claude sees them, and puts the real values
 back in the files Claude writes.**
 
+On test data it hadn't seen before, Cloakroom let through 0 of 1,005 personal details (the other tools we tested let
+through 119 to 992) and 0 of 77 keys and passwords in the formats vendors really issue. Its weak spot is false
+alarms: it masks more harmless text than secret-only tools do. [Results](#results)
+
 **Install** (inside Claude Code, one line at a time):
 
 ```
