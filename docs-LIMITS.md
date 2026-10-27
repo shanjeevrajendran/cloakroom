@@ -129,6 +129,10 @@ Cloakroom can't check, the action is blocked rather than let through.
   machines without Cloakroom and prompts sent with `cr!` are not in it.
 - `cloakroom clean-history` skips files changed in the last 10 minutes (an open session). It replaces sample keys
   too, not only real ones; the backup folder keeps the originals, and holds the values until you delete it.
+- `cloakroom exposure` lists only what Cloakroom detected: a key it missed leaves no line, so an empty list is not
+  proof nothing leaked. The agent column starts with this release (older lines say "unknown"); a hint needs the
+  session's vault, so keys Cloakroom denied or withheld show "not kept". The scan uses rules only, skips files changed
+  in the last 10 minutes or over 200 MB, and dates a find by the file's last change.
 - Signed placeholders: placeholders from before 0.6.1 (`PII_EMAIL_1`) are no longer restored, by design. A resumed
   session's old placeholders stay as text until you give the value again. The tag stops guessing, not a program
   that already runs as you and can read the vault key.
