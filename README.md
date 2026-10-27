@@ -35,6 +35,7 @@ alarms: it masks more harmless text than secret-only tools do. [Results](#result
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/shanjeevrajendran/cloakroom/main/assets/demo-clip.gif" alt="Claude Code reads .env through Cloakroom: the fake Stripe key on disk is swapped for a placeholder before Claude sees it" width="760">
+  <br><sub>When Claude writes a file, Cloakroom puts the real value back in on your disk.</sub>
 </p>
 
 **Install** (inside Claude Code, one line at a time):
@@ -130,11 +131,6 @@ Claude Code plugin updates arrive a few days after each PyPI release (PyPI is th
 - **Scans and photos of documents:** read on your machine (no upload) and masked like any other file.
 - **Learns from you:** when it masks something harmless (a false alarm), mark it once in the dashboard and a rule
   stops it next time.
-
-<div align="center">
-  <img src="https://raw.githubusercontent.com/shanjeevrajendran/cloakroom/main/assets/demo.gif" alt="Claude Code reads a support ticket and .env through Cloakroom: the model sees PII_PERSON_1 and PII_SECRET_1, and reply.md on disk gets the real customer name back" width="820">
-  <br><sub>Claude writes the reply. The customer's name never left your machine.</sub>
-</div>
 
 ## Get started
 
