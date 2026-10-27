@@ -129,6 +129,10 @@ Cloakroom can't check, the action is blocked rather than let through.
   machines without Cloakroom and prompts sent with `cr!` are not in it.
 - `cloakroom clean-history` skips files changed in the last 10 minutes (an open session). It replaces sample keys
   too, not only real ones; the backup folder keeps the originals, and holds the values until you delete it.
+- `cloakroom exposure` lists only what Cloakroom detected: a key it missed leaves no line, so an empty list is not
+  proof nothing leaked. The agent column starts with this release (older lines say "unknown"); a hint needs the
+  session's vault, so keys Cloakroom denied or withheld show "not kept". The scan uses rules only, skips files changed
+  in the last 10 minutes or over 200 MB, and dates a find by the file's last change.
 - Signed placeholders: placeholders from before 0.6.1 (`PII_EMAIL_1`) are no longer restored, by design. A resumed
   session's old placeholders stay as text until you give the value again. The tag stops guessing, not a program
   that already runs as you and can read the vault key.
@@ -192,6 +196,12 @@ Checked against Codex CLI 0.164 (hooks docs: https://developers.openai.com/codex
 - One repo per install; no `--global`. A hook file another tool owns (husky, pre-commit) is left alone: add
   `cloakroom git-check commit || exit 1` to it by hand.
 - Tested on Mac, Linux and Windows. On Windows, git runs the check whichever window you commit from (Git Bash, PowerShell or cmd).
+- The agent config warning (`post-checkout`, `post-merge`) comes after the fact and only for changes that arrive
+  through git: a config file edited by hand, by a script or by an npm install isn't compared (run `cloakroom scan`).
+  It warns and never blocks. It can't stop a planted SessionStart hook that is already there when you open the agent:
+  Claude Code runs a repo's SessionStart hooks at the same moment as Cloakroom's own, with no order between them.
+  A `git pull --rebase` is covered through its checkout of the new upstream commits; `git clone` isn't (no hooks yet).
+  The file list is fixed (Claude Code, `.mcp.json`, Codex, Gemini CLI, VS Code tasks); Cursor and other editors' config isn't read.
 
 ## Gemini CLI
 

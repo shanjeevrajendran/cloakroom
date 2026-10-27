@@ -92,6 +92,14 @@ DATABASE_URL=postgres://admin:<mark class="ph">PII_SECRET_1</mark>@10.0.4.12/pro
     </div>
     <img src="https://raw.githubusercontent.com/shanjeevrajendran/cloakroom/main/assets/dashboard-preview.png" width="2800" height="2000" loading="lazy" decoding="async" alt="The Cloakroom dashboard: a list of recent alerts, each showing the tool, the file and what was masked, with labels like Correct, To review and Missed something, and a panel that turns your labels into suggested rules to approve or dismiss.">
   </article>
+  <article class="card">
+    <h3>Shows which keys your agents saw</h3>
+    <p><code>cloakroom exposure</code> lists the keys and passwords Claude Code, Codex CLI and Gemini CLI saw, each as a hint (<code>ghp_…LmPq</code>), never the key, and ends with a "Rotate these" list. It lists only what Cloakroom detected.</p>
+  </article>
+  <article class="card">
+    <h3>Warns when a pull changes what your agent runs</h3>
+    <p><code>cloakroom scan</code> lists every command a repo's agent and editor config would run and flags the npm worm's shape. After <code>cloakroom install git-hook</code>, each pull, checkout or merge that adds or changes such a command prints it. It warns, never blocks.</p>
+  </article>
 </section>
 
 <section class="install" id="install" aria-labelledby="install-title">

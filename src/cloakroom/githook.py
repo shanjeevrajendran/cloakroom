@@ -1,5 +1,8 @@
 """cloakroom install git-hook: the commit check for commits you make yourself, with no agent running.
 
+It also adds post-checkout and post-merge hooks that warn (never block) when a pull, checkout or merge adds or
+changes a command in the repo's agent config (configscan.py): the trusted-repo gap no coding agent re-asks about.
+
 Adds pre-commit and pre-push hooks to the current repo (core.hooksPath respected). They run `cloakroom git-check`,
 which scans the added lines with the agent commit hold's code (hook.git_added): the rules and your always-mask
 entries, keys and passwords only. Git for Windows runs the same hook with its own sh, whichever shell you commit
@@ -18,7 +21,8 @@ from . import config
 
 MARK = "# cloakroom git hook"
 SECONDS = 10.0  # your own commit can wait longer than an agent's tool call (hook.GIT_SECONDS)
-HOOKS = {"pre-commit": "commit", "pre-push": "push"}
+HOOKS = {"pre-commit": "commit", "pre-push": "push", "post-checkout": "checkout", "post-merge": "merge"}
+POST = ("checkout", "merge")  # warn only: configscan.check
 ZERO = "0" * 40
 
 
@@ -28,12 +32,15 @@ def _script(program: str, kind: str) -> str:
     if sys.platform == "win32":
         program = program.replace("\\", "/")
     verb = "git commit" if kind == "commit" else "git push"
-    return (f"#!/bin/sh\n{MARK}: checks the keys and passwords this {kind} adds (cloakroom install git-hook).\n"
-            f"# Skip it once: {verb} --no-verify. Remove it: cloakroom uninstall git-hook\n"
+    what, skip, args = ((f"warns when this {kind} adds or changes agent config commands", "It never blocks.", ' "$@"')
+                        if kind in POST else
+                        (f"checks the keys and passwords this {kind} adds", f"Skip it once: {verb} --no-verify.", ""))
+    return (f"#!/bin/sh\n{MARK}: {what} (cloakroom install git-hook).\n"
+            f"# {skip} Remove it: cloakroom uninstall git-hook\n"
             f"p={shlex.quote(program)}\n"
             '[ -x "$p" ] || p=$(command -v cloakroom) || {\n'
             f'  echo "cloakroom: not installed, so this {kind} was not checked" >&2; exit 0; }}\n'
-            f'exec "$p" git-check {kind}\n')
+            f'exec "$p" git-check {kind}{args}\n')
 
 
 def hooks_dir(cwd: str = ".") -> str:
@@ -80,7 +87,8 @@ def install(remove: bool = False, cwd: str = ".") -> int:
             if not remove:
                 skipped += 1
                 print(f"cloakroom: {path} is another tool's hook, left as it is. To add the check, put this line "
-                      f"near its top: cloakroom git-check {kind} || exit 1")
+                      f"near its top: " + (f'cloakroom git-check {kind} "$@"' if kind in POST
+                                           else f"cloakroom git-check {kind} || exit 1"))
             continue
         if remove:
             if exists:
@@ -95,7 +103,9 @@ def install(remove: bool = False, cwd: str = ".") -> int:
         print(f"cloakroom: {'updated' if exists else 'added'} {path}")
     if not remove:
         print("Commits and pushes in this repo are now checked for keys and passwords, with the same rules as the "
-              "agent hold and your own always-mask values. Skip once: --no-verify. Remove: cloakroom uninstall git-hook")
+              "agent hold and your own always-mask values. Skip once: --no-verify. Pulls, checkouts and merges that add or "
+              "change commands in the agent config (.claude, .mcp.json, .codex, .gemini, .vscode/tasks.json) get a "
+              "warning. Remove: cloakroom uninstall git-hook")
     return 1 if skipped else 0
 
 
@@ -107,10 +117,13 @@ def _record(*args, **kw) -> None:
         pass
 
 
-def check(kind: str, stdin=None) -> int:
+def check(kind: str, stdin=None, args=()) -> int:
     """The hook itself: exit 1 (git stops) when the commit or push adds a key or password, else 0. Fails open, with a
     line on stderr, when it can't check (git error, too large, too slow, bad settings). Both land in the event log
     like the agent commit hold's: a "held" line, or a "skipped" line for check "git commit (git hook)" (no values)."""
+    if kind in POST:
+        from . import configscan
+        return configscan.check(kind, list(args))
     from . import events, hook
     t0 = time.monotonic()
     label = f"git {kind} (git hook)"

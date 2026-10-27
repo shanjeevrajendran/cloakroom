@@ -72,6 +72,15 @@ New in 0.7, it also protects two other AI coding agents that run in a terminal (
 - **OpenAI's Codex CLI:** run `cloakroom install codex` ([Codex](#codex)).
 - **Google's Gemini CLI:** run `cloakroom install gemini` ([Gemini CLI](#gemini-cli)).
 
+New in 0.8:
+
+- **See which keys your agents saw:** `cloakroom exposure` lists the keys and passwords Claude Code, Codex CLI and
+  Gemini CLI saw, each as a hint (`ghp_…LmPq`), never the key, and ends with a "Rotate these" list. It lists only
+  what Cloakroom detected ([details](#extra-protections)).
+- **A warning when a pull changes what your agent runs:** `cloakroom scan` lists every command a repo's agent and
+  editor config would run and flags the npm worm's shape. After `cloakroom install git-hook`, each pull, checkout or
+  merge that adds or changes such a command prints it. It warns, never blocks ([details](#extra-protections)).
+
 ## What works where
 
 ✓ Masked: the AI sees a placeholder, never the real value · ⛔ Stopped: Cloakroom blocks it and tells you how to send it safely · ✗ Not covered: Cloakroom can't see it
@@ -111,6 +120,9 @@ else: [Known limits](https://github.com/shanjeevrajendran/cloakroom/blob/main/do
 
 ## Recent releases
 
+- **0.8.0** (2026-10-27): `cloakroom exposure` shows which keys your agents saw, with a rotate list; `cloakroom scan`
+  and a git-hook warning when a pull changes the commands a repo's agent config would run; three fixes found by a
+  live agent test ([Results](#results)).
 - **0.7.2** (2026-10-25): the check on commits you make yourself works on Windows too; clearer README and docs.
 - **0.7.1** (2026-10-25): when a check is skipped and an action goes through unchecked, it's logged and counted in `cloakroom report`;
   `cloakroom install git-hook` checks the commits you make yourself; Codex can hold long-running commands.
@@ -264,6 +276,14 @@ Git saves versions of your code, and those versions are often shared online.
   skips it and prints the one line to add to it. Skip the check once with git's own `--no-verify`; remove it with
   `cloakroom uninstall git-hook`. One repo at a time (no `--global`: git's template folder would only reach new
   clones). Mac, Linux and Windows (Git Bash, PowerShell or cmd: git runs the check, whichever window you commit from).
+- **A trusted repo that changes under you:** Claude Code, Codex, Gemini CLI and VS Code ask before trusting a new
+  folder, but not again when a folder you already trusted changes. A pull can add a hook that runs the next time you
+  open the agent there (the Tensorlake npm worm did this in October 2026). The same `cloakroom install git-hook` adds
+  `post-checkout` and `post-merge` hooks: after a pull, checkout or merge, Cloakroom compares the commands in
+  `.claude/settings.json`, `.mcp.json`, `.codex/`, `.gemini/settings.json` and `.vscode/tasks.json` before and after,
+  and prints each new or changed one with its file and line. It only warns: nothing is blocked or edited.
+  `cloakroom scan [folder]` lists every such command at any time and flags the worm's shape (an agent hook running a
+  file in `.vscode/` and a folder-open task running a file in `.claude/`).
 - **Agent config files:** a real key written into `.mcp.json`, `.claude/settings.json`, `.cursor/mcp.json` or a
   copy of `claude_desktop_config.json` in a repo is refused. Claude is told to point to a setting kept outside the
   file instead, such as `${GITHUB_TOKEN}`.
@@ -282,6 +302,11 @@ Git saves versions of your code, and those versions are often shared online.
   value), so reading that file again later, even in a new session, shows the placeholder.
 - **Old transcripts can be cleaned:** `cloakroom clean-history` finds keys and passwords already sitting in old
   Claude Code transcripts (saved records of past chats) and your prompt history, and replaces them on your yes, with a backup you delete.
+- **See which keys your agent saw:** `cloakroom exposure` lists the keys and passwords your coding agents saw, so you
+  know what to rotate. It reads Cloakroom's own log (per session and agent: where the key was seen and what Cloakroom
+  did) and scans old Claude Code, Codex CLI and Gemini CLI transcripts for keys from before Cloakroom. It ends with a
+  "Rotate these" checklist. It shows a hint (`ghp_…LmPq`), never the key, and only reads the transcripts. It lists
+  only what Cloakroom detected: a key it missed has no line, so no line is not proof a key is safe.
 
 <a id="for-finance-teams"></a>**For finance teams**
 
@@ -312,6 +337,15 @@ Git saves versions of your code, and those versions are often shared online.
   anyone who rewrites every later line can rebuild the chain. The log keeps `"log_months"` months (default 12).
 - **`cloakroom clean-history [--dry-run]`:** the first run only counts, per project. Files changed in the last ten
   minutes (an open session) are skipped.
+- **`cloakroom exposure [--since 2026-10-01] [--format text|json]`:** keys and passwords seen with Cloakroom and found
+  in old agent transcripts, with a hint (a known prefix such as `sk-` or `ghp_` and, for values of 16 characters or
+  more, the last 4) and a rotate checklist. It lists only what Cloakroom detected: a key it missed has no line.
+- **`cloakroom scan [folder]`:** lists every command the agent and editor config in a folder would run
+  (`.claude/settings.json`, `.mcp.json`, `.codex/`, `.gemini/settings.json`, `.vscode/tasks.json`), with its file and
+  line, and flags the npm worm's shape. Read-only.
+- **Pull, checkout and merge warning:** `cloakroom install git-hook` adds `post-checkout` and `post-merge` hooks that
+  print each new or changed command in those files. It warns, never blocks. Run it again in a repo that already has
+  the hook to get the new ones.
 - **Commit and push check:** it reads the changes you staged for the commit (for `git push`, the commits no remote has yet) within two
   seconds; a larger or slower one runs unchecked. Repos that commit sample keys need `"allow_secret_paths"`.
 
@@ -390,6 +424,12 @@ masked more harmless text by mistake. The tables below are the detail.
   than secret-only scanners; Claude still gets the job done with a placeholder. Label a false alarm in the dashboard
   and a rule stops it next time.
 - **What a false alarm costs:** Claude sees a placeholder where it needed the real text. Nothing leaks.
+
+**A live agent run** ([bench/black-october/](https://github.com/shanjeevrajendran/cloakroom/tree/main/bench/black-october)):
+the same Claude Code task on a repo of 11 dummy keys and passwords, once without Cloakroom and once with it, then two
+secret scanners on what each run left behind. Without Cloakroom the model saw all 11 (11 of 11); with it, none
+(0 of 11), and none reached the saved transcript or the commit. One machine, one model, one prompt: it shows the
+pieces work together, not a rate you should expect everywhere.
 
 Unless it says otherwise, every number comes from a test set run once, before Cloakroom was adjusted for it. All tools at default
 settings, offline, tested 12 to 14 October 2026 (Cloakroom's rows rerun 24 October for 0.6.2). maisecrets'

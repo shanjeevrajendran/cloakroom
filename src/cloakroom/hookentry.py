@@ -119,6 +119,7 @@ def run(event: str, agent: str = "claude") -> int:
         if agent != "claude":  # another agent's input as Claude Code's (agents.py)
             from .agents import request
             data = request(agent, event, data)
+        data["_cloakroom_agent"] = agent  # the event log's agent field (cloakroom exposure)
         out = hook.handle(event, data)
     except BaseException as e:  # noqa: BLE001 - fail closed on anything, including import errors
         out = closed(event, type(e).__name__, data)

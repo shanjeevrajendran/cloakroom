@@ -1,5 +1,36 @@
 # Changelog
 
+## 0.8.0 (2026-10-27)
+
+### Added
+- `cloakroom exposure [--since DATE] [--format text|json]`: which keys and passwords your coding agents saw, so you
+  know what to rotate. Part one reads Cloakroom's own log (per session and agent: where the key was seen and what
+  Cloakroom did); part two scans old Claude Code, Codex CLI and Gemini CLI transcripts for keys from before
+  Cloakroom, read-only. It ends with a "Rotate these" checklist and shows a hint (`ghp_…LmPq`), never the key. It
+  lists only what Cloakroom detected: no line is not proof a key is safe.
+- `cloakroom scan [folder]`: lists every command a repo's agent and editor config would run (`.claude/settings.json`,
+  `.mcp.json`, `.codex/`, `.gemini/settings.json`, `.vscode/tasks.json`) and flags the npm worm's shape (an agent
+  hook running a file in `.vscode/`, a folder-open task running a file in `.claude/`).
+- `bench/black-october/`: the same Claude Code task on a repo of dummy secrets, with and without Cloakroom, then
+  gitleaks and trufflehog on what each run left behind.
+
+### Changed
+- `cloakroom install git-hook` also adds `post-checkout` and `post-merge` hooks: after a pull, checkout or merge,
+  Cloakroom prints each new or changed command in the agent config files above, with its file and line. It only
+  warns; nothing is blocked or edited. Run it again in a repo that already has the hook to get the new ones.
+- The event log records which agent made each call (Claude Code, Codex CLI, Gemini CLI), so `cloakroom exposure` can
+  name it. Older lines say "unknown".
+
+### Fixed
+- A config file holding a short known value as typed (a database user like `litellm`, under 8 characters) is no
+  longer withheld as "encoded or spaced-out"; the agent gets it masked as usual. Trade-off: a known value under
+  8 characters that appears as typed in a later output stays visible there, as the masking engine already leaves
+  values that short alone (too likely to turn up by chance). Spaced-out and decoded copies of it are still withheld.
+- `git add <paths> && git commit` held by the agent's commit check now looks only at the paths `git add` stages, not
+  every untracked file and unstaged change in the repo, so a key in an unrelated `.env` no longer holds the commit.
+- A placeholder in angle brackets with spaces (`"apiKey": "<LITELLM_API_KEY from .env>"`) is no longer taken for a
+  real key, so writing a setup file that uses one isn't denied. A real key inside the brackets is still masked.
+
 ## 0.7.2 (2026-10-25)
 - `cloakroom install git-hook` works on Windows: your commits and pushes are checked whether you commit from Git
   Bash, PowerShell or cmd, also when Cloakroom is installed in a folder with a space in its name. The git hook's
