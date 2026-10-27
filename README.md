@@ -264,6 +264,14 @@ Git saves versions of your code, and those versions are often shared online.
   skips it and prints the one line to add to it. Skip the check once with git's own `--no-verify`; remove it with
   `cloakroom uninstall git-hook`. One repo at a time (no `--global`: git's template folder would only reach new
   clones). Mac, Linux and Windows (Git Bash, PowerShell or cmd: git runs the check, whichever window you commit from).
+- **A trusted repo that changes under you:** Claude Code, Codex, Gemini CLI and VS Code ask before trusting a new
+  folder, but not again when a folder you already trusted changes. A pull can add a hook that runs the next time you
+  open the agent there (the Tensorlake npm worm did this in October 2026). The same `cloakroom install git-hook` adds
+  `post-checkout` and `post-merge` hooks: after a pull, checkout or merge, Cloakroom compares the commands in
+  `.claude/settings.json`, `.mcp.json`, `.codex/`, `.gemini/settings.json` and `.vscode/tasks.json` before and after,
+  and prints each new or changed one with its file and line. It only warns: nothing is blocked or edited.
+  `cloakroom scan [folder]` lists every such command at any time and flags the worm's shape (an agent hook running a
+  file in `.vscode/` and a folder-open task running a file in `.claude/`).
 - **Agent config files:** a real key written into `.mcp.json`, `.claude/settings.json`, `.cursor/mcp.json` or a
   copy of `claude_desktop_config.json` in a repo is refused. Claude is told to point to a setting kept outside the
   file instead, such as `${GITHUB_TOKEN}`.

@@ -196,6 +196,12 @@ Checked against Codex CLI 0.164 (hooks docs: https://developers.openai.com/codex
 - One repo per install; no `--global`. A hook file another tool owns (husky, pre-commit) is left alone: add
   `cloakroom git-check commit || exit 1` to it by hand.
 - Tested on Mac, Linux and Windows. On Windows, git runs the check whichever window you commit from (Git Bash, PowerShell or cmd).
+- The agent config warning (`post-checkout`, `post-merge`) comes after the fact and only for changes that arrive
+  through git: a config file edited by hand, by a script or by an npm install isn't compared (run `cloakroom scan`).
+  It warns and never blocks. It can't stop a planted SessionStart hook that is already there when you open the agent:
+  Claude Code runs a repo's SessionStart hooks at the same moment as Cloakroom's own, with no order between them.
+  A `git pull --rebase` is covered through its checkout of the new upstream commits; `git clone` isn't (no hooks yet).
+  The file list is fixed (Claude Code, `.mcp.json`, Codex, Gemini CLI, VS Code tasks); Cursor and other editors' config isn't read.
 
 ## Gemini CLI
 
