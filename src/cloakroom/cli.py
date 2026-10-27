@@ -9,6 +9,7 @@
   cloakroom report [--since DATE] [--format csv|json] [--verify]   counts from the event log, no values
   cloakroom clean-history [--dry-run]            find and replace keys in old Claude Code transcripts
   cloakroom install git-hook                     check your own commits and pushes in this repo for keys
+  cloakroom scan [DIR]                           the commands this repo's agent config would run
 """
 from __future__ import annotations
 
@@ -51,7 +52,11 @@ def main(argv=None):
                                   "(git-hook)").add_argument("agent", choices=["codex", "gemini", "git-hook"])
     g = sub.add_parser("git-check", help="the git hook's check (cloakroom install git-hook): keys and passwords a "
                                          "commit or push adds")
-    g.add_argument("kind", choices=["commit", "push"])
+    g.add_argument("kind", choices=["commit", "push", "checkout", "merge"])
+    g.add_argument("args", nargs="*", help=argparse.SUPPRESS)  # post-checkout's previous HEAD, new HEAD, flag
+    sc = sub.add_parser("scan", help="list the commands this repo's agent config would run (Claude Code, Codex, "
+                                     "Gemini CLI, VS Code tasks) and flag the npm-worm shape")
+    sc.add_argument("dir", nargs="?", default=".")
     dr = sub.add_parser("doctor", help="check this machine: Python, vault key store, model, service")
     dr.add_argument("--retry-key", action="store_true", help="forget a refused vault-key read and try the key store again")
     x = sub.add_parser("export-onnx", help="export the model to ONNX for fast CPU inference (needs cloakroom[torch] once)")
@@ -91,7 +96,10 @@ def main(argv=None):
         return githook.install(remove=a.cmd == "uninstall")
     if a.cmd == "git-check":
         from . import githook
-        return githook.check(a.kind)
+        return githook.check(a.kind, args=a.args)
+    if a.cmd == "scan":
+        from . import configscan
+        return configscan.scan(a.dir)
     if a.cmd in ("install", "uninstall"):
         from . import agents
         return agents.install(a.agent, remove=a.cmd == "uninstall")
