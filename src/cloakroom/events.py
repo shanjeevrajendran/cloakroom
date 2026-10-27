@@ -1,6 +1,7 @@
 """Event log for the dashboard and `cloakroom report`: one JSON line per hook call. Never values or text.
 
-Each event: id, ts, session, event, tool, target, kinds ({kind: count}), placeholders, action, ms, prev.
+Each event: id, ts, session, agent (claude, codex, gemini; absent on older lines), event, tool, target,
+  kinds ({kind: count}), placeholders, action, ms, prev.
   target is set only when something was found: the file path for file tools (masked like any output), the program
   name for shell commands (never its arguments), else "". placeholders (PII_EMAIL_1...) let the dashboard look the
   values up in the session vault when you choose to reveal them.
@@ -162,7 +163,8 @@ def record(event: str, data, action: str, found: list[tuple[str, str]], ms: floa
     tool = data.get("tool_name", "")
     placeholders = list(dict.fromkeys(p for p, _ in found if p.startswith("PII_")))
     ev = {"id": secrets.token_hex(6), "ts": time.strftime("%Y-%m-%dT%H:%M:%S"),
-          "session": str(data.get("session_id", "default"))[:80], "event": event, "tool": tool,
+          "session": str(data.get("session_id", "default"))[:80], "agent": str(data.get("_cloakroom_agent", ""))[:10],
+          "event": event, "tool": tool,
           "target": target, "kinds": counts([k for _, k in found]), "placeholders": placeholders, "action": action,
           "ms": round(ms, 1), **(extra or {})}
     with _locked():

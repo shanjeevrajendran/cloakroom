@@ -8,6 +8,7 @@
   cloakroom dashboard                            open the local dashboard in your browser, signed in
   cloakroom report [--since DATE] [--format csv|json] [--verify]   counts from the event log, no values
   cloakroom clean-history [--dry-run]            find and replace keys in old Claude Code transcripts
+  cloakroom exposure [--since DATE] [--format text|json]   which keys and passwords your agents saw, to rotate
   cloakroom install git-hook                     check your own commits and pushes in this repo for keys
 """
 from __future__ import annotations
@@ -69,6 +70,10 @@ def main(argv=None):
     c = sub.add_parser("clean-history", help="find keys and passwords in old Claude Code transcripts and replace them")
     c.add_argument("--dry-run", action="store_true", help="count only, change nothing (always so on the first run)")
     c.add_argument("--yes", action="store_true", help="don't ask before replacing")
+    e = sub.add_parser("exposure", help="which keys and passwords your agents saw (Cloakroom's log and old agent "
+                       "transcripts), with a rotate list; hints only, never values")
+    e.add_argument("--since", default="", help="first day, YYYY-MM-DD")
+    e.add_argument("--format", choices=["text", "json"], default="text")
     a = p.parse_args(argv)
 
     if a.cmd == "report":
@@ -78,6 +83,10 @@ def main(argv=None):
             from . import events
             return 0 if events.verify()["ok"] else 1
         sys.stdout.write(report.export(a.format, a.since))
+        return 0
+    if a.cmd == "exposure":
+        from . import exposure
+        sys.stdout.write(exposure.render(exposure.build(a.since), a.format))
         return 0
     if a.cmd == "clean-history":
         from . import history

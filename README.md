@@ -258,6 +258,10 @@ Git saves versions of your code, and those versions are often shared online.
   value), so reading that file again later, even in a new session, shows the placeholder.
 - **Old transcripts can be cleaned:** `cloakroom clean-history` finds keys and passwords already sitting in old
   Claude Code transcripts (saved records of past chats) and your prompt history, and replaces them on your yes, with a backup you delete.
+- **See which keys your agent saw:** `cloakroom exposure` lists the keys and passwords your coding agents saw, so you
+  know what to rotate. It reads Cloakroom's own log (per session and agent: where the key was seen and what Cloakroom
+  did) and scans old Claude Code, Codex CLI and Gemini CLI transcripts for keys from before Cloakroom. It ends with a
+  "Rotate these" checklist. It shows a hint (`ghp_…LmPq`), never the key, and only reads the transcripts.
 
 <a id="for-finance-teams"></a>**For finance teams**
 
@@ -288,6 +292,9 @@ Git saves versions of your code, and those versions are often shared online.
   anyone who rewrites every later line can rebuild the chain. The log keeps `"log_months"` months (default 12).
 - **`cloakroom clean-history [--dry-run]`:** the first run only counts, per project. Files changed in the last ten
   minutes (an open session) are skipped.
+- **`cloakroom exposure [--since 2026-10-01] [--format text|json]`:** keys and passwords seen with Cloakroom and found
+  in old agent transcripts, with a hint (a known prefix such as `sk-` or `ghp_` and, for values of 16 characters or
+  more, the last 4) and a rotate checklist. It lists only what Cloakroom detected: a key it missed has no line.
 - **Commit and push check:** it reads the changes you staged for the commit (for `git push`, the commits no remote has yet) within two
   seconds; a larger or slower one runs unchecked. Repos that commit sample keys need `"allow_secret_paths"`.
 
