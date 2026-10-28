@@ -57,7 +57,8 @@
   <p>Disclosure: I built Cloakroom, an open-source tool that masks secrets before AI coding agents see them.</p>
   <h1 id="writeup-title" class="article-title">What Cloakroom would and wouldn't have done in October's incidents</h1>
 
-  <p>October had four incidents that put developer and agent keys at risk. LiteLLM 1.107.0 shipped with a credential stealer, after an attacker got in through a master key committed to a public repo. Tensorlake's npm package 0.5.144 carried a worm that read credential files and planted agent config in repos. Railway's internal systems were breached and some encrypted variables decrypted. OpenCode's hosted Console exposed provider keys users had stored there. I checked which steps Cloakroom touches.</p>
+  <p>An API key is a password that also pays the bill: hold a copy and you can run up charges on someone else's account until they revoke it. In October, developers' keys leaked four different ways in one month.</p>
+  <p>LiteLLM 1.107.0, a popular AI gateway, shipped an update that copied its users' keys every time Python started; the attacker got in through a master key that had been committed to a public repo. Tensorlake's npm package 0.5.144 carried code that copied developers' keys, used them to spread into their other packages, and planted agent config in repos. Railway, a cloud hosting company, was breached and some stored settings were decrypted. OpenCode's hosted Console exposed the provider keys users had saved in it. I checked which steps Cloakroom touches.</p>
 
   <h2>Step by step</h2>
   <p><strong>stops</strong> means Cloakroom, as shipped, prevents the step. <strong>reduces</strong> means it removes one copy or one path but not the step. <strong>none</strong> means it is outside what a local agent hook can see.</p>
