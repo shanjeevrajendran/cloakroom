@@ -7,9 +7,9 @@
   <rect width="880" height="400" rx="12" fill="#0d1117"/>
   <rect width="880" height="400" rx="12" fill="url(#grid)"/>
   <rect width="880" height="230" rx="12" fill="url(#glow)"/>
-  <g transform="translate(307 44)" fill="none" stroke="#56d364" stroke-width="2.6" stroke-linejoin="round">
+  <g transform="translate(307 44)" fill="#56d364" stroke="#56d364" stroke-width="2.6" stroke-linejoin="round">
     <path d="M4 6 H40 V16 A6 6 0 0 0 40 28 V38 H4 V28 A6 6 0 0 0 4 16 Z"/>
-    <path d="M14 22 H30" stroke-dasharray="3 3"/>
+    <path d="M14 22 H30" stroke="#0d1117" stroke-dasharray="3 3"/>
   </g>
   <text x="367" y="80" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="42" font-weight="700" letter-spacing="-0.8" fill="#ffffff">Cloakroom</text>
   <text x="440" y="118" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="15" fill="#8b949e" text-anchor="middle">A privacy layer for AI coding agents</text>
