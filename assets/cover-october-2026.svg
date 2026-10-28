@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 420" width="1000" height="420" role="img" aria-label="What Cloakroom would and wouldn't have done in October's incidents">
+  <defs>
+    <pattern id="grid" width="44" height="44" patternUnits="userSpaceOnUse"><path d="M44 0H0V44" fill="none" stroke="#d2a8ff" stroke-opacity="0.05"/></pattern>
+    <radialGradient id="glow" cx="50%" cy="15%" r="70%"><stop offset="0%" stop-color="#56d364" stop-opacity="0.13"/><stop offset="100%" stop-color="#56d364" stop-opacity="0"/></radialGradient>
+  </defs>
+  <rect width="1000" height="420" fill="#0d1117"/>
+  <rect width="1000" height="420" fill="url(#grid)"/>
+  <rect width="1000" height="240" fill="url(#glow)"/>
+  <g transform="translate(478 52)" fill="#56d364" stroke="#56d364" stroke-width="2.6" stroke-linejoin="round">
+    <path d="M4 6 H40 V16 A6 6 0 0 0 40 28 V38 H4 V28 A6 6 0 0 0 4 16 Z"/>
+    <path d="M14 22 H30" stroke="#0d1117" stroke-dasharray="3 3"/>
+  </g>
+  <text x="500" y="128" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="22" fill="#8b949e" text-anchor="middle">Cloakroom</text>
+  <text x="500" y="208" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="44" font-weight="700" letter-spacing="-0.6" fill="#ffffff" text-anchor="middle">What it would and wouldn't have done</text>
+  <text x="500" y="262" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="44" font-weight="700" letter-spacing="-0.6" fill="#ffffff" text-anchor="middle">in October's incidents</text>
+  <text x="500" y="330" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="22" font-weight="600" fill="#56d364" text-anchor="middle">Step by step, with a test you can rerun in one command.</text>
+</svg>
