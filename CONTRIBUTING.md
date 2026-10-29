@@ -48,4 +48,4 @@ uv run python bench/run_bench.py cloakroom_rules
 
 ## License
 
-By contributing, you agree your work is released under the [Apache-2.0 license](LICENSE).
+By contributing, you agree your work is released under the [Apache-2.0 license](LICENSE). Your first pull request asks you to sign the [CLA](CLA.md) once, with a comment; the bot does the rest.
