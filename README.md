@@ -624,7 +624,7 @@ told so; to show Claude a picture anyway, attach it to your own prompt. Page and
 
 ## More
 
-- [Write-up](https://shanjeevrajendran.github.io/cloakroom/): why I built it and how masking, reading pictures, putting values back and the dashboard fit together
+- [Write-up](https://cloakroom.sh/): why I built it and how masking, reading pictures, putting values back and the dashboard fit together
 - [How it works](https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-HOW-IT-WORKS.md): how values are found, what's left alone on purpose, where real values are kept and how they're put back
 - [Changelog](https://github.com/shanjeevrajendran/cloakroom/blob/main/CHANGELOG.md) · [Setup details](https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-SETUP.md) · [Known limits](https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-LIMITS.md) · [Benchmark](https://github.com/shanjeevrajendran/cloakroom/blob/main/bench/RESULTS.md)
 - Found a way around it? Please report it privately: [SECURITY.md](https://github.com/shanjeevrajendran/cloakroom/blob/main/SECURITY.md)
