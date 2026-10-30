@@ -130,7 +130,8 @@ else: [Known limits](https://github.com/shanjeevrajendran/cloakroom/blob/main/do
 - **0.6.6** (2026-10-24): a secret Cloakroom has already seen is still caught when a command scrambles it (hashed,
   hex-encoded or written backwards).
 
-Claude Code plugin updates arrive a few days after each PyPI release (PyPI is the Python package site), once the release has settled. All changes:
+Claude Code plugin updates arrive a few days after each PyPI release (PyPI is the Python package site), once the release has settled
+([how updates reach you](#updates)). All changes:
 [CHANGELOG.md](https://github.com/shanjeevrajendran/cloakroom/blob/main/CHANGELOG.md).
 
 **Hand Claude the files you'd never paste into a chat:**
@@ -200,6 +201,29 @@ Tested from clean installs on macOS, Windows and Ubuntu.
 
 Prefer to install by hand: `uv tool install "cloakroom[model,torch,ocr]"` (Python 3.10+; the part in brackets adds
 the detection model and OCR, which reads text out of pictures), then add the plugin as above.
+
+## Updates
+
+- **Claude Code:** Claude Code updates the Cloakroom plugin, and the plugin then updates the `cloakroom` program the
+  next time you start Claude Code. A plugin update comes out a few days after each new Cloakroom release. Claude
+  Code only does this by itself if automatic updates are on for the place you added Cloakroom from (Claude Code
+  calls it a marketplace). They're off unless you added Cloakroom from the plugin directory on claude.ai, where
+  they're on. To switch them on:
+  1. In Claude Code, type `/plugin` and press Enter.
+  2. Go to the **Marketplaces** tab and choose **cloakroom**.
+  3. Choose **Enable auto-update**.
+
+  When an update arrives, Claude Code says "Run /reload-plugins": type that, or restart Claude Code. To update
+  right away instead, run `claude plugin update cloakroom@cloakroom` in a terminal.
+- **Codex, Gemini CLI, git commits, or a `cloakroom` you installed yourself:** run `cloakroom update` in a
+  terminal. It updates Cloakroom with the installer you used (uv, pipx or pip) and keeps the optional parts you had
+  (the detection model and OCR, the reading of text in scans and photos). Then it sets up Cloakroom's checks again
+  for Codex, Gemini CLI and git commits in the current folder, only where they were set up before, so they match
+  the new version. If Codex's checks changed, Codex asks you to approve them once more: start `codex`, type
+  `/hooks` and trust each Cloakroom entry. To see what it would do without changing anything:
+  `cloakroom update --check`. It never changes the Claude Code plugin; Claude Code does that.
+- **Which version you have:** `cloakroom doctor` shows the version of the program and, if you use Claude Code,
+  of the plugin, and says what to do when they differ.
 
 ## How it works
 

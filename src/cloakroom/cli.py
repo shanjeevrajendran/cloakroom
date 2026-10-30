@@ -11,6 +11,7 @@
   cloakroom exposure [--since DATE] [--format text|json]   which keys and passwords your agents saw, to rotate
   cloakroom install git-hook                     check your own commits and pushes in this repo for keys
   cloakroom scan [DIR]                           the commands this repo's agent config would run
+  cloakroom update [--check]                     update Cloakroom with the installer you used, redo its setup
 """
 from __future__ import annotations
 
@@ -72,6 +73,10 @@ def main(argv=None):
     r.add_argument("--since", default="", help="first day, YYYY-MM-DD")
     r.add_argument("--format", choices=["csv", "json"], default="csv")
     r.add_argument("--verify", action="store_true", help="check the log's hash chain and print the head hash")
+    u = sub.add_parser("update", help="update Cloakroom with the installer you used (uv, pipx or pip), keeping "
+                                      "its optional parts, then set up its checks again for Codex, Gemini CLI and "
+                                      "git commits where they were set up")
+    u.add_argument("--check", action="store_true", help="only show what it would do; change nothing")
     c = sub.add_parser("clean-history", help="find keys and passwords in old Claude Code transcripts and replace them")
     c.add_argument("--dry-run", action="store_true", help="count only, change nothing (always so on the first run)")
     c.add_argument("--yes", action="store_true", help="don't ask before replacing")
@@ -97,6 +102,9 @@ def main(argv=None):
         from . import history
         return history.run(dry_run=a.dry_run, yes=a.yes)
 
+    if a.cmd == "update":
+        from . import update
+        return update.run(check=a.check)
     if a.cmd == "hook":
         from . import hookentry
         return hookentry.run(a.event, a.agent)
@@ -202,6 +210,10 @@ def _doctor() -> int:
         print(f"{'ok ' if good else 'warn' if good is None else 'FAIL'}  {label}: {detail}")
 
     line(sys.version_info >= (3, 10), "python", f"{platform.python_version()} on {platform.system()} {platform.machine()}")
+    line(True, "version", f"cloakroom {__version__}")
+    from . import update
+    for key, version in update.plugin_versions():  # Claude Code's plugin, read from its own records
+        line(version == __version__ or None, "claude plugin", update.plugin_line(key, version))
     cfg = config.load()
     line(True, "mode", cfg["mode"] + (" (rules only: names and addresses may be missed)" if cfg["mode"] == "rules" else ""))
     if cfg.get("installing"):
