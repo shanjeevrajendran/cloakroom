@@ -93,7 +93,7 @@ explained under the table.
 
 | Protection | Claude Code | Codex CLI | Gemini CLI |
 |---|---|---|---|
-| Prompts you type | ⛔ Stopped before sending (the AI never sees it); Cloakroom tells you how to resend it safely | ⛔ Stopped before sending (the AI never sees it); Cloakroom tells you how to resend it safely | ⛔ Stopped before sending (the AI never sees it); Cloakroom tells you how to resend it safely; ✗ pictures in a prompt aren't checked |
+| Prompts you type | ⛔ Stopped before sending (the AI never sees it); Cloakroom gives you a copy with placeholders to send instead | ⛔ Stopped before sending (the AI never sees it); Cloakroom gives you a copy with placeholders to send instead | ⛔ Stopped before sending (the AI never sees it); Cloakroom gives you a copy with placeholders to send instead; ✗ pictures in a prompt aren't checked |
 | File reads | ✓ | ✓ Masked when read through the shell (sent as a block message) | ✓ Masked (sent as a block message) |
 | Command output | ✓ | ✓ Masked (sent as a block message); ✗ long-running commands | ✓ Masked (sent as a block message) |
 | MCP tool output | ✓ | ✓ Masked (sent as a block message) | ✓ Masked (sent as a block message) |
@@ -375,8 +375,22 @@ a one-time link.
 ## When Cloakroom blocks your prompt
 
 Claude Code lets Cloakroom stop a prompt but not rewrite it. So a prompt holding a key, an email, a phone, a card or
-an ID number is stopped before it's sent, and the AI never sees it. Names alone and plain dates go through. The block message says what it found, and how to
-get past it:
+an ID number is stopped before it's sent, and the AI never sees it. Names alone and plain dates go through. The
+message says what it found and gives your prompt back with each private value swapped for a placeholder (like
+`PII_EMAIL_1_k7q2ab`), ready to copy and send:
+
+```
+Cloakroom stopped this prompt: it holds private data (EMAIL x1, SECRET x1), so it wasn't sent. In the copy below
+that data is replaced by placeholders, which Cloakroom turns back into the real values on this computer when Claude
+uses them.
+Send this instead:
+Add PII_SECRET_1_dhqyhg to .env and mail PII_EMAIL_1_p2iq6z when it's done
+Send it anyway: add cr! at the start. ...
+```
+
+Claude only ever sees the placeholders. When it writes one into a file or a local command, Cloakroom puts the real
+value back on your computer, so the file ends up with the real key. A very long prompt (over 10,000 characters) gets
+the advice below instead of a copy. Other ways past a stop:
 
 | Type | What happens |
 |---|---|
@@ -385,7 +399,7 @@ get past it:
 | `cr: resume` | checks are back on |
 
 Files and command output stay masked the whole time. Only you can do this: Claude never sees these commands and
-can't change Cloakroom's settings. Usually better still: put the detail in a file and ask Claude to read it. It gets
+can't change Cloakroom's settings. For a long paste: put the detail in a file and ask Claude to read it. It gets
 masked on the way in and the real values come back when Claude writes.
 
 ## Why Cloakroom
@@ -509,7 +523,7 @@ Cloakroom also works with OpenAI's Codex CLI, on Mac and Linux (tested with Code
 
 What works as in Claude Code: shell output and MCP results are masked before the model sees them, placeholders in
 shell commands and patches (Codex's file edits) get their real values back on your machine, real values are kept out of MCP calls, and a
-prompt holding a secret is stopped with what to do next. What's different:
+prompt holding a secret is stopped, with a copy to send instead. What's different:
 
 - Codex can't swap a tool's output for a masked copy, so Cloakroom blocks the original and the AI reads the masked
   text in the block message.
@@ -540,7 +554,7 @@ Cloakroom also works with Google's Gemini CLI, on Mac and Linux (built against G
 What works as in Claude Code: the output of every tool (shell, file reads, MCP) is masked before the model sees it,
 pictures are read by local OCR or held back, placeholders in shell commands, `write_file` and `replace` get their
 real values back on your machine, real values are kept out of MCP calls and web tools, and a prompt holding a
-secret is stopped with what to do next. What's different:
+secret is stopped, with a copy to send instead. What's different:
 
 - Gemini can't swap a tool's output for a masked copy, so Cloakroom blocks the original and the AI reads the
   masked text in the block message.
