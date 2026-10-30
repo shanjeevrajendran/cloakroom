@@ -31,6 +31,7 @@ bare_venv() {
 
 step version-init version_init
 step version-pins env PYTHONPATH=src python3 -m pytest -q tests/test_shell_and_hooks.py::test_plugin_installers_pin_this_release
+step completeness python3 scripts/release_complete.py
 step hooks-current python3 scripts/gen_hooks.py --check
 step polyglot python3 scripts/check_polyglot.py
 step tests env PYTHONPATH=src python3 -m pytest -q tests
