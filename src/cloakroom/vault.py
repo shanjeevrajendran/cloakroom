@@ -42,6 +42,7 @@ class Vault:
         self.counts: dict[str, int] = {}
         self.derived: set[str] = set()  # placeholders of copies derived from a known value: never seeds themselves
         self.refused: list[tuple[str, str]] = []  # (placeholder, reason) refused by this instance
+        self.given: dict[str, str] = {}  # placeholder -> value from `cloakroom give` (handoff.py): never saved here
         self.id = secrets.token_hex(16)
         self._key = None if self.path else secrets.token_bytes(32)  # no file: tags only need to hold for this object
         if self.path and self.path.exists():
@@ -56,6 +57,17 @@ class Vault:
                                    for ph, v in data["map"].items()}
             self.by_value = {v: k for k, v in self.by_placeholder.items()}
             self.derived = set(data.get("derived", []))  # 0.6.6+; derived copies are always signed
+        if self.path:
+            self.load_given()
+
+    def load_given(self):
+        """Read the values handed over for this session's project, fresh (the service keeps vaults for hours)."""
+        from . import handoff
+        for ph in self.given:
+            self.by_value.pop(self.by_placeholder.pop(ph, None), None)
+        self.given = handoff.values(self.session)
+        self.by_placeholder.update(self.given)
+        self.by_value.update({v: ph for ph, v in self.given.items()})
 
     def _tag(self, name: str) -> str:
         if self._key is None:
@@ -81,6 +93,8 @@ class Vault:
 
     def lookup(self, placeholder: str) -> str | None:
         """The real value for a placeholder this session issued, else None (and the refusal is noted)."""
+        if placeholder in self.given:  # the full placeholder, tag included, is the proof: only give() makes it
+            return self.given[placeholder]
         m = _PARTS.fullmatch(placeholder)
         if not m or not m.group(2):
             self.refused.append((placeholder, OLD_FORMAT))
@@ -108,7 +122,8 @@ class Vault:
             return
         self.path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
         from . import crypto
-        blob = crypto.encrypt(json.dumps({"id": self.id, "map": self.by_placeholder, "counts": self.counts,
+        own = {p: v for p, v in self.by_placeholder.items() if p not in self.given}  # handed-over values stay in handoff.py
+        blob = crypto.encrypt(json.dumps({"id": self.id, "map": own, "counts": self.counts,
                                        "derived": sorted(self.derived)}).encode())
         tmp = self.path.with_suffix(".tmp")
         fd = os.open(tmp, os.O_WRONLY | os.O_CREAT | os.O_TRUNC | getattr(os, "O_BINARY", 0), 0o600)

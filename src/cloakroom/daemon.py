@@ -25,6 +25,7 @@ VAULTS: dict[str, Vault] = {}
 def _vault(session: str) -> Vault:
     if session not in VAULTS:
         VAULTS[session] = Vault(config.vault_path(session))
+    VAULTS[session].load_given()
     return VAULTS[session]
 
 

@@ -10,6 +10,7 @@
   cloakroom clean-history [--dry-run]            find and replace keys in old Claude Code transcripts
   cloakroom exposure [--since DATE] [--format text|json]   which keys and passwords your agents saw, to rotate
   cloakroom install git-hook                     check your own commits and pushes in this repo for keys
+  cloakroom give NAME [--hours N]                type a key hidden, get a placeholder for the agent (--list, --forget NAME)
   cloakroom scan [DIR]                           the commands this repo's agent config would run
   cloakroom update [--check]                     update Cloakroom with the installer you used, redo its setup
 """
@@ -18,6 +19,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+import time
 import urllib.request
 
 from . import __version__, config, engine
@@ -59,6 +61,12 @@ def main(argv=None):
     sc = sub.add_parser("scan", help="list the commands this repo's agent config would run (Claude Code, Codex, "
                                      "Gemini CLI, VS Code tasks) and flag the npm-worm shape")
     sc.add_argument("dir", nargs="?", default=".")
+    gv = sub.add_parser("give", help="hand the agent a key without typing it into a prompt: you type it hidden here, "
+                                     "the agent gets a placeholder, local files and commands get the real value")
+    gv.add_argument("name", nargs="?", help="what to call it, e.g. STRIPE_KEY")
+    gv.add_argument("--list", action="store_true", help="names and hints for this project (never values)")
+    gv.add_argument("--forget", metavar="NAME", help="remove one")
+    gv.add_argument("--hours", type=float, default=24, help="how long it stays (default 24)")
     dr = sub.add_parser("doctor", help="check this machine: Python, vault key store, model, service")
     dr.add_argument("--retry-key", action="store_true", help="forget a refused vault-key read and try the key store again")
     x = sub.add_parser("export-onnx", help="export the model to ONNX for fast CPU inference (needs cloakroom[torch] once)")
@@ -114,6 +122,8 @@ def main(argv=None):
     if a.cmd == "git-check":
         from . import githook
         return githook.check(a.kind, args=a.args)
+    if a.cmd == "give":
+        return _give(a, gv)
     if a.cmd == "scan":
         from . import configscan
         return configscan.scan(a.dir)
@@ -198,6 +208,34 @@ def main(argv=None):
         for kind, source, why in r.skipped:
             print(f"SKIP  {kind:<8} by {source}: {why}")
     return 1 if (a.cmd == "check" and r.masked) else 0
+
+
+def _give(a, parser) -> int:
+    import os
+    from . import handoff
+    project = handoff.project_of(os.getcwd())
+    if a.list:
+        rows = handoff.entries(project)
+        for name, e in sorted(rows.items()):
+            print(f"{name:<24} {e['hint']:<16} {e['placeholder']}  {max(1, int((e['expires'] - time.time()) / 60))} min left")
+        print(f"{len(rows)} handed over for {project}" if rows else f"nothing handed over for {project}")
+        return 0
+    if a.forget:
+        gone = handoff.forget(a.forget, project)
+        print(f"forgot {a.forget}" if gone else f"{a.forget}: nothing by that name for {project}")
+        return 0 if gone else 1
+    if not a.name:
+        parser.error("give NAME, or --list, or --forget NAME")
+    import getpass
+    value = getpass.getpass(f"Value for {a.name} (hidden, goes only to this machine): ")
+    try:
+        ph = handoff.give(a.name, value, project, a.hours)
+    except ValueError as e:
+        print(f"cloakroom: {e}", file=sys.stderr)
+        return 2
+    print(f"Stored {a.name} ({handoff.hint(value)}) for {project}, {a.hours:g} h.\n"
+          f"Tell the agent: {a.name} is {ph}")
+    return 0
 
 
 def _doctor() -> int:
