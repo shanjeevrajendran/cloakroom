@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.8.1 (2026-10-30)
 - A stopped prompt gives you your message back with placeholders to send instead (Claude Code, Codex, Gemini CLI):
   the stop message says why in one line, then "Send this instead:" with your text, each key or personal value
   swapped for a placeholder (`PII_EMAIL_1_k7q2ab`), then the `cr!` line. The session keeps the real values, so when
@@ -8,6 +8,16 @@
   10,000 characters, or when only the rules could check the prompt, the message gives the old advice instead. The
   event for a stopped prompt is unchanged (kinds only). Gemini CLI: a note Cloakroom adds to a stop now shows under
   the stop message instead of replacing it.
+- `cloakroom update`: updates Cloakroom with the installer you used (uv, pipx or pip) and keeps the optional parts
+  you had (the detection model and OCR). Then it sets up Cloakroom's checks again for Codex, Gemini CLI and git
+  commits in the current folder, only where they were set up before, so they match the new version, and says when
+  Codex needs you to approve them again (`/hooks`). When it can't tell which installer you used, on Windows, or for
+  a copy installed from Cloakroom's source code, it changes nothing and prints the commands to run. `--check` shows
+  what it would do without changing anything. It leaves the Claude Code plugin to Claude Code.
+- `cloakroom doctor` shows the program's version and, when Claude Code has the Cloakroom plugin, the plugin's
+  version, with one line on what to do when they differ. It reads this from Claude Code's own files, offline.
+- README: a new "Updates" section: how updates reach you in Claude Code (and how to switch on automatic updates),
+  and `cloakroom update` for Codex, Gemini CLI, git commits and copies you installed yourself.
 
 ## 0.8.0 (2026-10-27)
 
