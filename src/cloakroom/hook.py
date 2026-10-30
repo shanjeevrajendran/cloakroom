@@ -341,8 +341,13 @@ def _scrub(data: dict, full: bool) -> str:
 
 
 def on_scrub(data: dict) -> dict | None:
-    """Stop (after each reply: does something only when a prompt was stopped in this session) and SessionEnd (the
-    safety net: also every key and password in the transcript, then the stopped list is done)."""
+    """Stop (after each reply: does something only when a prompt was stopped in this session), SessionEnd (the
+    safety net: also every key and password in the transcript, then the stopped list is done) and PostToolUseFailure."""
+    if data.get("hook_event_name") == "PostToolUseFailure":
+        # a failed call's error text: Claude Code lets this hook add context but not change the text, so it can't be
+        # masked, only counted as unchecked (logged, told once per session, shown in `cloakroom report`)
+        _skip("failed-command", "error output of a failed tool call", "the error output of this failed tool call")
+        return None
     end = data.get("hook_event_name") == "SessionEnd"
     line = _scrub(data, full=end)
     if end:

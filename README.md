@@ -120,6 +120,9 @@ else: [Known limits](https://github.com/shanjeevrajendran/cloakroom/blob/main/do
 
 ## Recent releases
 
+- **0.9.0** (2026-10-30): `cloakroom give NAME` hands the agent a key through a hidden prompt, so you never paste it
+  into a chat; a prompt Cloakroom stops is taken out of the session's saved Claude Code transcript; a failed command is
+  counted as not checked in `cloakroom report`. See [Hand the agent a key safely](#hand-the-agent-a-key-safely).
 - **0.8.1** (2026-10-30): a stopped prompt comes back with placeholders in place of your private values, ready to
   send instead; `cloakroom update` updates Cloakroom and redoes its setup for Codex, Gemini CLI and git commits;
   `cloakroom doctor` shows the version; a new [Updates](#updates) section.
@@ -429,7 +432,10 @@ Files and command output stay masked the whole time. Only you can do this: Claud
 can't change Cloakroom's settings. For a long paste: put the detail in a file and ask Claude to read it. It gets
 masked on the way in and the real values come back when Claude writes.
 
-A stopped prompt is also taken out of this session's saved Claude Code transcript (right away, after the next reply and when the session ends); to keep it, set `"scrub_transcript": false` in `~/.cloakroom/config.json`.
+Claude Code also saves every chat on your disk. A prompt Cloakroom stops is taken out of that saved copy for the
+current session (right away, after the next reply and when the session ends), so the key you typed doesn't stay
+behind. Codex and Gemini CLI saved chats are not touched. To keep the text, set `"scrub_transcript": false` in
+`~/.cloakroom/config.json`.
 
 ## Hand the agent a key safely
 

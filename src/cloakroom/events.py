@@ -9,7 +9,7 @@ Each event: id, ts, session, agent (claude, codex, gemini; absent on older lines
   the chain (`cloakroom report --verify`). Tamper-evident, not tamper-proof: whoever rewrites every later line can
   rebuild it, which is why --verify prints the head hash for you to keep.
 A check that let a call through without running in full (fail-open: too large, too slow, git error, model not
-ready) adds its own line: event "skipped", action "skipped", reason (too-large | too-slow | git-error | model),
+ready) adds its own line: event "skipped", action "skipped", reason (too-large | too-slow | git-error | model | failed-command),
 check (what wasn't checked, e.g. "git push"), size and limit (bytes, or seconds for too-slow) where they apply, and
 ms. Never values, paths or commands.
 One file per month (events-YYYY-MM.jsonl), kept for log_months months (config, default 12). Files from before 0.6.0
@@ -54,6 +54,7 @@ def counts(kinds: list[str]) -> dict[str, int]:
 
 SKIP_WHY = {"too-large": "it was larger than {limit}", "too-slow": "it took longer than {limit}",
             "git-error": "git returned an error",
+            "failed-command": "Claude Code doesn't let Cloakroom change it, so it may show a key or personal value",
             "model": "it wasn't ready, so only the rules checked it (names and addresses may be missed)"}
 
 

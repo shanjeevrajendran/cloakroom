@@ -193,3 +193,21 @@ def test_the_launchers_and_hook_entry_know_the_new_event(claude_home, monkeypatc
     monkeypatch.setattr(sys, "stdin", io.TextIOWrapper(io.BytesIO(b"not json")))
     assert hookentry.run("scrub") == 0
     assert capsys.readouterr().out.strip() == "{}"
+
+
+def test_a_failed_tool_call_is_counted_as_unchecked_and_told_once(claude_home, monkeypatch, capsys):
+    from cloakroom import events
+    data = {"session_id": "s1", "hook_event_name": "PostToolUseFailure", "tool_name": "Bash",
+            "tool_input": {"command": "false"}, "error": f"Command failed: token {KEY}"}
+    out = run_hook("scrub", data, monkeypatch, capsys)
+    assert out["systemMessage"].startswith("Cloakroom didn't check the error output of this failed tool call")
+    assert run_hook("scrub", data, monkeypatch, capsys) is None  # once per session
+    sk = [e for e in events.read() if e["event"] == "skipped"]
+    assert [(e["reason"], e["tool"]) for e in sk] == [("failed-command", "Bash")] * 2  # every one is counted
+    assert KEY not in json.dumps(sk) and events.verify()["ok"]
+
+
+def test_the_plugin_registers_the_failure_event():
+    path = os.path.join(os.path.dirname(__file__), "..", "plugin", "hooks", "hooks.json")
+    with open(path, encoding="utf-8") as f:
+        assert "scrub" in json.load(f)["hooks"]["PostToolUseFailure"][0]["hooks"][0]["command"]

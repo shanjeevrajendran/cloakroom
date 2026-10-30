@@ -43,7 +43,7 @@ switch ($E) {
   default { [Console]::Error.WriteLine('usage: hook.ps1 start|prompt|pre|post|scrub'); exit 2 }
 }
 $h = if ($env:CLOAKROOM_HOME) { $env:CLOAKROOM_HOME } else { Join-Path $env:USERPROFILE '.cloakroom' }
-$pin = '0.8.1'
+$pin = '0.9.0'
 # the program: on PATH, in ~/.local/bin (where the installers put it) or in ~/.cloakroom/venv
 $cr = (Get-Command cloakroom -ErrorAction SilentlyContinue).Source
 foreach ($c in @((Join-Path $env:USERPROFILE '.local\bin\cloakroom.exe'), (Join-Path $h 'venv\Scripts\cloakroom.exe'))) {

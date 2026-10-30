@@ -115,7 +115,8 @@ def hooks() -> dict:
         return [e]
     return {"hooks": {"SessionStart": entry("start", 30), "UserPromptSubmit": entry("prompt", 60),
                       "PreToolUse": entry("pre", 60, "*"), "PostToolUse": entry("post", 120, "*"),
-                      "Stop": entry("scrub", 30), "SessionEnd": entry("scrub", 30)}}
+                      "Stop": entry("scrub", 30), "SessionEnd": entry("scrub", 30),
+                      "PostToolUseFailure": entry("scrub", 30)}}
 
 
 def hook_sh() -> str:

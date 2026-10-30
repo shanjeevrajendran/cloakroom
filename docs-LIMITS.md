@@ -19,8 +19,11 @@ Cloakroom can't check, the action is blocked rather than let through.
   - your own login name in a home-folder path is never masked (`"mask_own_username": true` to change that);
   - `cr!` at the start of a prompt sends it unchecked, `cr: pause 10m` pauses prompt checks, `cr: resume` ends the
     pause. These are typed by you and never reach Claude; tool output stays masked throughout.
-- Failed commands: In Claude Code, output from a command that fails (non-zero exit) goes through a different hook
-  event that Cloakroom does not yet handle, so it may reach the model unmasked. A fix is planned.
+- Failed commands: In Claude Code, the error output of a tool call that fails (for example a command with a non-zero
+  exit) goes through a different hook event, `PostToolUseFailure`, which lets a hook add notes but not change the
+  text. So it can't be masked and may reach the model with a key or personal value in it. Since 0.9.0 Cloakroom
+  registers that event and counts each such call as unchecked: the event log, "Checks skipped" in `cloakroom report`,
+  the dashboard, and one note per session. It does not look inside the text. Keep keys out of commands that print them.
 - When the local service can't check (still starting, port held by another program, model failing), tool calls
   are held back, and prompts are checked with the rules alone in-process: a pasted key, card or ID number is still
   blocked, other prompts go through with a warning that they weren't fully checked. On a cold start the first
