@@ -388,6 +388,8 @@ Files and command output stay masked the whole time. Only you can do this: Claud
 can't change Cloakroom's settings. Usually better still: put the detail in a file and ask Claude to read it. It gets
 masked on the way in and the real values come back when Claude writes.
 
+A stopped prompt is also taken out of this session's saved Claude Code transcript (right away, after the next reply and when the session ends); to keep it, set `"scrub_transcript": false` in `~/.cloakroom/config.json`.
+
 ## Why Cloakroom
 
 Claude Code reads whatever your task touches: `.env` files, logs, customer exports, support tickets. All of it

@@ -73,6 +73,8 @@ def prompt_warning(why):
 
 def closed(event, why, data):
     msg = f"Cloakroom couldn't check this ({why}), so it was stopped to keep data private."
+    if event == "scrub":  # Stop and SessionEnd have nothing to deny or withhold
+        return {}
     if event == "start":
         return {"systemMessage": f"cloakroom: not working ({why}); tool output will be withheld until it is fixed. Run: cloakroom doctor"}
     if event == "prompt":

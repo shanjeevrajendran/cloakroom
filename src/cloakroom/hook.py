@@ -15,7 +15,7 @@ import re
 import sys
 import time
 
-from . import client, config, crypto, decode, engine, events, filelog, media, money, shell
+from . import client, config, crypto, decode, engine, events, filelog, history, media, money, shell
 from .hookentry import STRUCTURAL, _withhold, closed
 from .vault import ANY_PLACEHOLDER, OLD_FORMAT, PLACEHOLDER, Vault
 
@@ -304,7 +304,37 @@ def _on_prompt(data: dict) -> dict | None:
     kinds = _summary([k for _, k, _ in r["masked"]])
     if _dry("prompt", f"would block: {kinds}"):
         return None
-    return {"decision": "block", "reason": f"Cloakroom blocked this prompt: it contains {kinds}. {TIP}"}
+    out = {"decision": "block", "reason": f"Cloakroom blocked this prompt: it contains {kinds}. {TIP}"}
+    # the transcript may already hold the text, or get it just after this hook: scrub now and at the next stop and end
+    stopped = [p for p, k, _ in r["masked"] if k not in PROMPT_OK]
+    try:
+        history.mark_stopped(data.get("session_id", "default"), stopped)
+        line = _scrub(data, full=False)
+    except Exception:
+        line = ""  # the prompt is stopped either way; the session end tries again
+    return {**out, "systemMessage": line} if line else out
+
+
+def _scrub(data: dict, full: bool) -> str:
+    """Take stopped prompts' values (full: and every key and password) out of this session's own Claude Code
+    transcript; the report line, or "" when nothing changed. Codex and Gemini transcripts are not touched (docs-LIMITS)."""
+    if data.get("_cloakroom_agent", "claude") != "claude":
+        return ""
+    tally, root = history.scrub_session(data.get("transcript_path"), data.get("session_id", "default"), full)
+    if not tally:
+        return ""
+    events.record("scrub", data, "scrubbed", [("", k) for k, n in tally.items() for _ in range(n)], 0.0)
+    return history.summary(tally, root)
+
+
+def on_scrub(data: dict) -> dict | None:
+    """Stop (after each reply: does something only when a prompt was stopped in this session) and SessionEnd (the
+    safety net: also every key and password in the transcript, then the stopped list is done)."""
+    end = data.get("hook_event_name") == "SessionEnd"
+    line = _scrub(data, full=end)
+    if end:
+        history.clear_stopped(data.get("session_id", "default"))
+    return {"systemMessage": line} if line else None
 
 
 def on_post(data: dict) -> dict | None:
@@ -1104,7 +1134,7 @@ def _hooks_installed() -> list[str]:
         return []
 
 
-HANDLERS = {"prompt": on_prompt, "post": on_post, "pre": on_pre, "start": on_start}
+HANDLERS = {"prompt": on_prompt, "post": on_post, "pre": on_pre, "start": on_start, "scrub": on_scrub}
 
 
 def fail_closed(event: str, why: str, data=None) -> dict:

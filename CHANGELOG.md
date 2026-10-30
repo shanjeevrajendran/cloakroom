@@ -1,5 +1,18 @@
 # Changelog
 
+## Unreleased
+
+### Added
+- A prompt Cloakroom stops no longer stays in the session's saved transcript. Claude Code keeps every chat in a file
+  on disk; the same code as `cloakroom clean-history` now takes the stopped values (keys, passwords and any personal
+  data that made it stop) out of the current session's transcript only, right after the stop, after the next reply
+  and when the session ends. At session end it also replaces any key or password it finds in that file. The usual
+  report line is shown, and `cloakroom report` counts these as "scrubbed". No backup is kept (it would keep the
+  values). Turn it off with `"scrub_transcript": false` in `~/.cloakroom/config.json`. Claude Code only: Codex and
+  Gemini transcripts are not touched (see docs-LIMITS).
+- The plugin registers Cloakroom for Claude Code's `Stop` and `SessionEnd` events (the hook command takes a new
+  `scrub` event).
+
 ## 0.8.0 (2026-10-27)
 
 ### Added

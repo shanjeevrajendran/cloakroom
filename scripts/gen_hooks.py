@@ -56,7 +56,7 @@ UPDATING = ("cloakroom: updating itself to the new plugin version (about a minut
 ANSWERS = MESSAGES + (UPDATING,)  # ... and UPDATING
 NOANSWER = ("cloakroom: the cloakroom program gave no answer, so this was stopped to keep data private. Run: "
             "cloakroom doctor. " + STOP)  # hook.sh NOANSWER, hook.ps1 $noanswer
-EVENTS = ("start", "prompt", "pre", "post")
+EVENTS = ("start", "prompt", "pre", "post", "scrub")
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "plugin")
 with open(os.path.join(ROOT, ".claude-plugin", "plugin.json"), encoding="utf-8") as _f:
     PIN = json.load(_f)["version"]  # the release this plugin version installs; bootstrap.sh/.ps1 pin the same
@@ -78,6 +78,8 @@ def fallback(event: str, msg: str) -> dict:
                                        "permissionDecisionReason": deny}},
         # tools never run while cloakroom is missing (pre denies), so there is no real output to withhold here
         "post": {"hookSpecificOutput": {"hookEventName": "PostToolUse", "updatedToolOutput": f"[{deny}]"}},
+        # Stop and SessionEnd: nothing to scrub or tell the user while the program is missing
+        "scrub": {},
     }[event]
 
 
@@ -112,7 +114,8 @@ def hooks() -> dict:
             e = {"matcher": matcher, **e}
         return [e]
     return {"hooks": {"SessionStart": entry("start", 30), "UserPromptSubmit": entry("prompt", 60),
-                      "PreToolUse": entry("pre", 60, "*"), "PostToolUse": entry("post", 120, "*")}}
+                      "PreToolUse": entry("pre", 60, "*"), "PostToolUse": entry("post", 120, "*"),
+                      "Stop": entry("scrub", 30), "SessionEnd": entry("scrub", 30)}}
 
 
 def hook_sh() -> str:
@@ -120,12 +123,12 @@ def hook_sh() -> str:
                     f"    UPDATING='{u}'\n    NOANSWER='{json.dumps(fallback(e, NOANSWER)).replace(chr(39), '')}' ;;\n"
                     for e in EVENTS for i, n, f, o, c, u in [answers(e)])
     return f"""#!/usr/bin/env bash
-# Cloakroom hook launcher for bash (macOS, Linux, Git Bash on Windows): hook.sh start|prompt|pre|post, hook JSON on
+# Cloakroom hook launcher for bash (macOS, Linux, Git Bash on Windows): hook.sh start|prompt|pre|post|scrub, hook JSON on
 # stdin. Runs the cloakroom program if it is installed; otherwise answers for it and starts the installer.
 # {GENERATED}
 E="${{1:-}}"
 case "$E" in
-{cases}  *) echo "usage: hook.sh start|prompt|pre|post" >&2; exit 2 ;;
+{cases}  *) echo "usage: hook.sh start|prompt|pre|post|scrub" >&2; exit 2 ;;
 esac
 H="${{CLOAKROOM_HOME:-$HOME/.cloakroom}}"
 PIN={PIN}
@@ -193,14 +196,14 @@ def hook_ps1() -> str:
                     f"    $offline = '{q(o)}'\n    $checksum = '{q(c)}'\n    $updating = '{q(u)}'\n"
                     f"    $noanswer = '{q(json.dumps(fallback(e, NOANSWER)))}' }}\n"
                     for e in EVENTS for i, n, f, o, c, u in [answers(e)])
-    return f"""# Cloakroom hook launcher for PowerShell (Windows without Git Bash): hook.ps1 start|prompt|pre|post, hook JSON on
+    return f"""# Cloakroom hook launcher for PowerShell (Windows without Git Bash): hook.ps1 start|prompt|pre|post|scrub, hook JSON on
 # stdin. Runs the cloakroom program if it is installed; otherwise answers for it and starts the installer.
 # {GENERATED}
 param([string]$E)
 # UTF-8 without a byte-order mark: Windows PowerShell 5.1's [Text.Encoding]::UTF8 adds one to piped input
 $u = New-Object System.Text.UTF8Encoding $false; [Console]::InputEncoding = $u; [Console]::OutputEncoding = $u; $OutputEncoding = $u
 switch ($E) {{
-{cases}  default {{ [Console]::Error.WriteLine('usage: hook.ps1 start|prompt|pre|post'); exit 2 }}
+{cases}  default {{ [Console]::Error.WriteLine('usage: hook.ps1 start|prompt|pre|post|scrub'); exit 2 }}
 }}
 $h = if ($env:CLOAKROOM_HOME) {{ $env:CLOAKROOM_HOME }} else {{ Join-Path $env:USERPROFILE '.cloakroom' }}
 $pin = '{PIN}'

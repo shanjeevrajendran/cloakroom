@@ -45,6 +45,28 @@
           }
         ]
       }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "set -- `# <#`\nbash \"${CLAUDE_PLUGIN_ROOT}/scripts/hook.sh\" scrub\nexit\n: <<'#PS_END'\n#>\n$u = New-Object System.Text.UTF8Encoding $false; [Console]::InputEncoding = $u; [Console]::OutputEncoding = $u; $OutputEncoding = $u\n[Console]::In.ReadToEnd() | powershell -NoProfile -ExecutionPolicy Bypass -File \"${CLAUDE_PLUGIN_ROOT}/scripts/hook.ps1\" scrub; exit $LASTEXITCODE\n#PS_END",
+            "timeout": 30
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "set -- `# <#`\nbash \"${CLAUDE_PLUGIN_ROOT}/scripts/hook.sh\" scrub\nexit\n: <<'#PS_END'\n#>\n$u = New-Object System.Text.UTF8Encoding $false; [Console]::InputEncoding = $u; [Console]::OutputEncoding = $u; $OutputEncoding = $u\n[Console]::In.ReadToEnd() | powershell -NoProfile -ExecutionPolicy Bypass -File \"${CLAUDE_PLUGIN_ROOT}/scripts/hook.ps1\" scrub; exit $LASTEXITCODE\n#PS_END",
+            "timeout": 30
+          }
+        ]
+      }
     ]
   }
 }
