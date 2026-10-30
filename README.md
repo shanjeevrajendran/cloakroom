@@ -388,6 +388,25 @@ Files and command output stay masked the whole time. Only you can do this: Claud
 can't change Cloakroom's settings. Usually better still: put the detail in a file and ask Claude to read it. It gets
 masked on the way in and the real values come back when Claude writes.
 
+## Hand the agent a key safely
+
+When the agent needs a key (a Stripe key, a database password), don't paste it into a prompt. In a terminal, in your project folder:
+
+```bash
+cloakroom give STRIPE_KEY
+```
+
+You type the value hidden. Cloakroom keeps it on your machine and prints a placeholder; tell the agent `STRIPE_KEY is PII_SECRET_1_k7q2ab`. When the agent writes that placeholder into a local file or command, Cloakroom puts the real value back, and masks it again in anything the agent reads. The agent never sees the value. It works in Claude Code, Codex CLI and Gemini CLI, for every session in that project.
+
+| Command | What it does |
+|---|---|
+| `cloakroom give NAME` | store a value (hidden prompt), print its placeholder; give the same name again to replace the value |
+| `cloakroom give --list` | names, hints (`sk-…Q4z`) and time left, never values |
+| `cloakroom give --forget NAME` | remove one |
+| `cloakroom give NAME --hours 2` | keep it 2 hours instead of the 24 default |
+
+If you type `cr: give NAME` into a prompt, Cloakroom stops it and tells you to use the terminal command.
+
 ## Why Cloakroom
 
 Claude Code reads whatever your task touches: `.env` files, logs, customer exports, support tickets. All of it

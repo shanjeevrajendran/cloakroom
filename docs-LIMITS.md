@@ -153,6 +153,20 @@ Cloakroom can't check, the action is blocked rather than let through.
   tool name not on the lists (add them with `"money_hosts"` / `"money_tools"`), a GraphQL payment API, or a URL built
   from variables. A tool call is matched by its name, so a payment tool with a plain name (`run`, `execute`) passes.
 
+## Hand-over (`cloakroom give NAME`)
+
+- Scope is the project: the folder with `.git` above where you ran `give`. A session started in another folder doesn't
+  restore it (the placeholder stays text). Run `give` in the project, before or during the session.
+- The agent has to be told the placeholder (you paste it). It restores only in local tools (Write, Edit, local
+  commands, Codex `apply_patch`, Gemini `write_file` and shell). A command that could send data off the machine, web
+  tools and MCP calls keep the placeholder; Codex denies those and Gemini asks.
+- The real value does end up in the file or command the agent writes, as you asked. A file git would commit is
+  refused as for any key. Output of a Codex command still running when Codex stops waiting isn't masked (see Codex).
+- A value under 8 characters is restored but not masked again if it shows up in tool output.
+- Anyone who can run commands as you on this machine can read it from the encrypted store with your vault key; it
+  isn't protection against your own account being taken over. Entries expire after 24 hours; `--forget` removes one now.
+- A value typed into a prompt anyway is caught only if it has a key shape; a plain password or a name goes through.
+
 ## Codex
 
 Checked against Codex CLI 0.164 (hooks docs: https://developers.openai.com/codex/hooks, and its source).

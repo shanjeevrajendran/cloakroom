@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased
+
+### Added
+- `cloakroom give NAME`: hand the agent a key without pasting it into a prompt. You type the value hidden in a
+  terminal and get a placeholder to paste; when the agent writes the placeholder into a local file or command,
+  Cloakroom's restore puts the real value back, and tool output that shows it is masked again. Works in Claude Code,
+  Codex CLI and Gemini CLI, for every session in that project. `--list` shows names and hints (`sk-…Q4z`),
+  `--forget NAME` removes one, entries expire after 24 hours (`--hours N`). A prompt containing `cr: give NAME` is
+  stopped with the terminal command. The value is stored encrypted and never reaches a log, event, the dashboard or the
+  session vault.
+
 ## 0.8.0 (2026-10-27)
 
 ### Added

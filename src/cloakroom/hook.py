@@ -15,7 +15,7 @@ import re
 import sys
 import time
 
-from . import client, config, crypto, decode, engine, events, filelog, media, money, shell
+from . import client, config, crypto, decode, engine, events, filelog, handoff, media, money, shell
 from .hookentry import STRUCTURAL, _withhold, closed
 from .vault import ANY_PLACEHOLDER, OLD_FORMAT, PLACEHOLDER, Vault
 
@@ -39,6 +39,8 @@ TIP = ("Cloakroom can't rewrite a prompt, only block it. Put the detail in a fil
        "Pause prompt checks: type cr: pause 10m (tool output stays masked). Resume: cr: resume.")
 _ALLOW_CMD = re.compile(r"(?i)^\s*cr:\s*allow(?:\s+once)?\s*$")
 HOLD_MINUTES = 10  # how long a held command can be allowed with cr: allow
+_GIVE_CMD = re.compile(r"(?i)\bcr:\s*give\b")
+GIVE_TIP = "Cloakroom: never type a value here. In a terminal run: cloakroom give NAME (hidden prompt), then paste the placeholder it prints."
 _PAUSE_CMD = re.compile(r"(?i)^\s*cr:\s*(pause(?:\s+(\d{1,3})\s*m(?:in(?:utes?)?)?)?|resume)\s*$")
 
 
@@ -127,6 +129,9 @@ def _control(prompt: str) -> dict | None:
     if _ALLOW_CMD.match(prompt):
         _ACTION[0] = "allow armed"
         return {"decision": "block", "reason": _arm_held()}
+    if _GIVE_CMD.search(prompt):
+        _ACTION[0] = "give stopped"
+        return {"decision": "block", "reason": GIVE_TIP}
     m = _PAUSE_CMD.match(prompt)
     if not m:
         return None
@@ -1148,6 +1153,7 @@ def handle(event: str, data: dict) -> dict | None:
     _ACTION[0] = _NOTE[0] = ""
     t0 = time.perf_counter()
     try:
+        handoff.note_session(str(data.get("session_id", "default")), data.get("cwd") or os.getcwd())
         _model_fallback(event, data)
         out = HANDLERS[event](data)
     except (client.Unavailable, engine.ModelUnavailable) as e:
