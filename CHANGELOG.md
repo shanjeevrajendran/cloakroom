@@ -18,6 +18,8 @@
   version, with one line on what to do when they differ. It reads this from Claude Code's own files, offline.
 - README: a new "Updates" section: how updates reach you in Claude Code (and how to switch on automatic updates),
   and `cloakroom update` for Codex, Gemini CLI, git commits and copies you installed yourself.
+- Windows: writing a restored key to a file on another drive than the folder Claude was started in (for example
+  a project on D: and a file under C:) was refused as "couldn't check"; it now works as on one drive.
 - Known limit: In Claude Code, output from a command that fails (non-zero exit) goes through a different hook event
   that Cloakroom does not yet handle, so it may reach the model unmasked. A fix is planned.
 

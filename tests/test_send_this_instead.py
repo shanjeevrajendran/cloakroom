@@ -5,6 +5,7 @@ real value. Real values never appear in the message, the logs or the events. Syn
 """
 import io
 import json
+import os
 import re
 import sys
 from pathlib import Path
@@ -109,13 +110,21 @@ def test_gemini_keeps_the_copy_when_there_is_a_system_message(monkeypatch, capsy
     ("claude", "Write", lambda path, text: {"file_path": path, "content": text}),
     ("gemini", "write_file", lambda path, text: {"file_path": path, "content": text}),
 ])
-def test_resent_copy_is_restored_in_the_file_the_agent_writes(agent, tool, args, tmp_path, monkeypatch, capsys):
+@pytest.mark.parametrize("other_drive", [False, True])  # True: Windows with the file on another drive than cwd
+def test_resent_copy_is_restored_in_the_file_the_agent_writes(agent, tool, args, other_drive, tmp_path, monkeypatch,
+                                                              capsys):
     stopped = run(agent, "prompt", {"prompt": PROMPT}, monkeypatch, capsys)
     copy = copy_of(stopped["reason"])
     assert run(agent, "prompt", {"prompt": copy}, monkeypatch, capsys) is None  # the copy goes through as it is
     secret = re.search(r"PII_SECRET_1_[a-z2-7]{6}", copy).group()
     path = str(tmp_path / ".env")
-    out = run(agent, "pre", {"tool_name": tool, "tool_input": args(path, f"DEPLOY_KEY={secret}\n")}, monkeypatch, capsys)
+    def no_relative_path(*a, **k):
+        raise ValueError("path is on mount 'C:', start on mount 'D:'")
+    with monkeypatch.context() as m:
+        if other_drive:
+            m.setattr(os.path, "relpath", no_relative_path)
+        out = run(agent, "pre", {"tool_name": tool, "tool_input": args(path, f"DEPLOY_KEY={secret}\n")}, monkeypatch,
+                  capsys)
     h = out["hookSpecificOutput"]
     written = (h.get("updatedInput") or h.get("tool_input"))["content"]
     Path(path).write_text(written)  # what the agent's own tool does with the input Cloakroom gave back

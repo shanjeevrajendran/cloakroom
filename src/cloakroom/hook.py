@@ -603,7 +603,10 @@ def _commit_check(tool: str, args: dict, original: dict, cwd: str, vault: Vault)
         if not target:
             continue
         path = os.path.normpath(os.path.join(cwd, os.path.expanduser(target)))
-        rel = os.path.relpath(path, cwd)
+        try:
+            rel = os.path.relpath(path, cwd)
+        except ValueError:  # Windows: a file on another drive than cwd has no relative path
+            rel = path
         rel = path if rel.startswith("..") else rel
         agent = _agent_config(path)
         here = list(found)
