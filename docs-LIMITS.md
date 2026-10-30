@@ -136,6 +136,17 @@ Cloakroom can't check, the action is blocked rather than let through.
   machines without Cloakroom and prompts sent with `cr!` are not in it.
 - `cloakroom clean-history` skips files changed in the last 10 minutes (an open session). It replaces sample keys
   too, not only real ones; the backup folder keeps the originals, and holds the values until you delete it.
+- Transcript clean-up for the current session (Claude Code only, `"scrub_transcript"`, on by default): a stopped
+  prompt's values are taken out of that session's own transcript file, never another file or one outside
+  `~/.claude/projects`. Claude Code may write the prompt to the file after the hook runs, so the clean-up repeats after
+  each reply and at session end; if Claude Code is killed before either, run `cloakroom clean-history`. Session end
+  also replaces keys and passwords only (a name or address you sent with `cr!` stays). A file that keeps changing
+  while it is rewritten is left as it is until the next try; a line written in the last instant between the check and
+  the swap can be lost. No backup is made.
+  Not covered, not tested: Codex (`transcript_path` in its hook input can be `null`, and the file is Codex's own
+  session record, written while it runs, so a swap may cut off what it writes next; Codex source and docs read
+  2026-10-30), Gemini CLI (its session file changed from `.json` to `.jsonl` between versions and is migrated on
+  resume, so the format is not fixed), and feedback or upload bundles (made from the agent's own copy).
 - `cloakroom exposure` lists only what Cloakroom detected: a key it missed leaves no line, so an empty list is not
   proof nothing leaked. The agent column starts with this release (older lines say "unknown"); a hint needs the
   session's vault, so keys Cloakroom denied or withheld show "not kept". The scan uses rules only, skips files changed

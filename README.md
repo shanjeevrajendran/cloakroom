@@ -429,6 +429,8 @@ Files and command output stay masked the whole time. Only you can do this: Claud
 can't change Cloakroom's settings. For a long paste: put the detail in a file and ask Claude to read it. It gets
 masked on the way in and the real values come back when Claude writes.
 
+A stopped prompt is also taken out of this session's saved Claude Code transcript (right away, after the next reply and when the session ends); to keep it, set `"scrub_transcript": false` in `~/.cloakroom/config.json`.
+
 ## Hand the agent a key safely
 
 When the agent needs a key (a Stripe key, a database password), don't paste it into a prompt. In a terminal, in your project folder:

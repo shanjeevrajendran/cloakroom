@@ -10,7 +10,8 @@ HOME = Path(os.environ.get("CLOAKROOM_HOME", Path.home() / ".cloakroom"))
 DEFAULTS = {"mode": "full", "port": 37787,  # not 8787: Headroom's proxy defaults to it
             "allow": [], "mask_own_username": False, "mask_all_dates": False,
             "allow_images": False, "ocr": True, "ocr_max_pages": 20, "ocr_timeout": 30, "log_months": 12,
-            "codex_hold_long_running": False}  # Codex: hold servers and watchers (hook.py _long_hold)
+            "codex_hold_long_running": False,  # Codex: hold servers and watchers (hook.py _long_hold)
+            "scrub_transcript": True}  # take a stopped prompt out of the session's saved transcript (history.py)
 
 
 def load() -> dict:

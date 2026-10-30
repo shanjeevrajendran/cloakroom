@@ -48,7 +48,7 @@ def main(argv=None):
         s.add_argument("file", nargs="?", default="-")
         s.add_argument("--mode", choices=["full", "rules"])
     h = sub.add_parser("hook", help="Claude Code hook entry point (reads hook JSON on stdin)")
-    h.add_argument("event", choices=["start", "prompt", "pre", "post"])
+    h.add_argument("event", choices=["start", "prompt", "pre", "post", "scrub"])
     h.add_argument("--agent", choices=["claude", "codex", "gemini"], default="claude",
                    help="whose hook JSON (default: Claude Code)")
     for name, what in (("install", "add Cloakroom's hooks to"), ("uninstall", "remove Cloakroom's hooks from")):
