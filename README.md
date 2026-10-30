@@ -120,6 +120,9 @@ else: [Known limits](https://github.com/shanjeevrajendran/cloakroom/blob/main/do
 
 ## Recent releases
 
+- **0.8.1** (2026-10-30): a stopped prompt comes back with placeholders in place of your private values, ready to
+  send instead; `cloakroom update` updates Cloakroom and redoes its setup for Codex, Gemini CLI and git commits;
+  `cloakroom doctor` shows the version; a new [Updates](#updates) section.
 - **0.8.0** (2026-10-27): `cloakroom exposure` shows which keys your agents saw, with a rotate list; `cloakroom scan`
   and a git-hook warning when a pull changes the commands a repo's agent config would run; three fixes found by a
   live agent test ([Results](#results)).
