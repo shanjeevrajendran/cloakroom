@@ -80,6 +80,11 @@ New in 0.8:
 - **A warning when a pull changes what your agent runs:** `cloakroom scan` lists every command a repo's agent and
   editor config would run and flags the npm worm's shape. After `cloakroom install git-hook`, each pull, checkout or
   merge that adds or changes such a command prints it. It warns, never blocks ([details](#extra-protections)).
+- **Hand the agent a key safely:** `cloakroom give NAME` asks for the value in a hidden terminal prompt and gives
+  you a placeholder to paste. When the agent writes that placeholder into a local file or command, the real value goes
+  back in. The AI never sees it ([details](#hand-the-agent-a-key-safely)).
+- **Stopped prompts leave no copy behind:** a prompt Cloakroom stops is taken out of the session's saved Claude Code
+  transcript, right after the stop and again at session end ([details](#extra-protections)).
 
 ## What works where
 
