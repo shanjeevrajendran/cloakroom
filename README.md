@@ -93,7 +93,7 @@ explained under the table.
 
 | Protection | Claude Code | Codex CLI | Gemini CLI |
 |---|---|---|---|
-| Prompts you type | ⛔ Stopped before sending (the AI never sees it); Cloakroom tells you how to resend it safely | ⛔ Stopped before sending (the AI never sees it); Cloakroom tells you how to resend it safely | ⛔ Stopped before sending (the AI never sees it); Cloakroom tells you how to resend it safely; ✗ pictures in a prompt aren't checked |
+| Prompts you type | ⛔ Stopped before sending (the AI never sees it); Cloakroom gives you a copy with placeholders to send instead | ⛔ Stopped before sending (the AI never sees it); Cloakroom gives you a copy with placeholders to send instead | ⛔ Stopped before sending (the AI never sees it); Cloakroom gives you a copy with placeholders to send instead; ✗ pictures in a prompt aren't checked |
 | File reads | ✓ | ✓ Masked when read through the shell (sent as a block message) | ✓ Masked (sent as a block message) |
 | Command output | ✓ | ✓ Masked (sent as a block message); ✗ long-running commands | ✓ Masked (sent as a block message) |
 | MCP tool output | ✓ | ✓ Masked (sent as a block message) | ✓ Masked (sent as a block message) |
@@ -120,6 +120,9 @@ else: [Known limits](https://github.com/shanjeevrajendran/cloakroom/blob/main/do
 
 ## Recent releases
 
+- **0.8.1** (2026-10-30): a stopped prompt comes back with placeholders in place of your private values, ready to
+  send instead; `cloakroom update` updates Cloakroom and redoes its setup for Codex, Gemini CLI and git commits;
+  `cloakroom doctor` shows the version; a new [Updates](#updates) section.
 - **0.8.0** (2026-10-27): `cloakroom exposure` shows which keys your agents saw, with a rotate list; `cloakroom scan`
   and a git-hook warning when a pull changes the commands a repo's agent config would run; three fixes found by a
   live agent test ([Results](#results)).
@@ -130,7 +133,8 @@ else: [Known limits](https://github.com/shanjeevrajendran/cloakroom/blob/main/do
 - **0.6.6** (2026-10-24): a secret Cloakroom has already seen is still caught when a command scrambles it (hashed,
   hex-encoded or written backwards).
 
-Claude Code plugin updates arrive a few days after each PyPI release (PyPI is the Python package site), once the release has settled. All changes:
+Claude Code plugin updates arrive a few days after each PyPI release (PyPI is the Python package site), once the release has settled
+([how updates reach you](#updates)). All changes:
 [CHANGELOG.md](https://github.com/shanjeevrajendran/cloakroom/blob/main/CHANGELOG.md).
 
 **Hand Claude the files you'd never paste into a chat:**
@@ -200,6 +204,29 @@ Tested from clean installs on macOS, Windows and Ubuntu.
 
 Prefer to install by hand: `uv tool install "cloakroom[model,torch,ocr]"` (Python 3.10+; the part in brackets adds
 the detection model and OCR, which reads text out of pictures), then add the plugin as above.
+
+## Updates
+
+- **Claude Code:** Claude Code updates the Cloakroom plugin, and the plugin then updates the `cloakroom` program the
+  next time you start Claude Code. A plugin update comes out a few days after each new Cloakroom release. Claude
+  Code only does this by itself if automatic updates are on for the place you added Cloakroom from (Claude Code
+  calls it a marketplace). They're off unless you added Cloakroom from the plugin directory on claude.ai, where
+  they're on. To switch them on:
+  1. In Claude Code, type `/plugin` and press Enter.
+  2. Go to the **Marketplaces** tab and choose **cloakroom**.
+  3. Choose **Enable auto-update**.
+
+  When an update arrives, Claude Code says "Run /reload-plugins": type that, or restart Claude Code. To update
+  right away instead, run `claude plugin update cloakroom@cloakroom` in a terminal.
+- **Codex, Gemini CLI, git commits, or a `cloakroom` you installed yourself:** run `cloakroom update` in a
+  terminal. It updates Cloakroom with the installer you used (uv, pipx or pip) and keeps the optional parts you had
+  (the detection model and OCR, the reading of text in scans and photos). Then it sets up Cloakroom's checks again
+  for Codex, Gemini CLI and git commits in the current folder, only where they were set up before, so they match
+  the new version. If Codex's checks changed, Codex asks you to approve them once more: start `codex`, type
+  `/hooks` and trust each Cloakroom entry. To see what it would do without changing anything:
+  `cloakroom update --check`. It never changes the Claude Code plugin; Claude Code does that.
+- **Which version you have:** `cloakroom doctor` shows the version of the program and, if you use Claude Code,
+  of the plugin, and says what to do when they differ.
 
 ## How it works
 
@@ -375,8 +402,22 @@ a one-time link.
 ## When Cloakroom blocks your prompt
 
 Claude Code lets Cloakroom stop a prompt but not rewrite it. So a prompt holding a key, an email, a phone, a card or
-an ID number is stopped before it's sent, and the AI never sees it. Names alone and plain dates go through. The block message says what it found, and how to
-get past it:
+an ID number is stopped before it's sent, and the AI never sees it. Names alone and plain dates go through. The
+message says what it found and gives your prompt back with each private value swapped for a placeholder (like
+`PII_EMAIL_1_k7q2ab`), ready to copy and send:
+
+```
+Cloakroom stopped this prompt: it holds private data (EMAIL x1, SECRET x1), so it wasn't sent. In the copy below
+that data is replaced by placeholders, which Cloakroom turns back into the real values on this computer when Claude
+uses them.
+Send this instead:
+Add PII_SECRET_1_dhqyhg to .env and mail PII_EMAIL_1_p2iq6z when it's done
+Send it anyway: add cr! at the start. ...
+```
+
+Claude only ever sees the placeholders. When it writes one into a file or a local command, Cloakroom puts the real
+value back on your computer, so the file ends up with the real key. A very long prompt (over 10,000 characters) gets
+the advice below instead of a copy. Other ways past a stop:
 
 | Type | What happens |
 |---|---|
@@ -385,7 +426,7 @@ get past it:
 | `cr: resume` | checks are back on |
 
 Files and command output stay masked the whole time. Only you can do this: Claude never sees these commands and
-can't change Cloakroom's settings. Usually better still: put the detail in a file and ask Claude to read it. It gets
+can't change Cloakroom's settings. For a long paste: put the detail in a file and ask Claude to read it. It gets
 masked on the way in and the real values come back when Claude writes.
 
 ## Why Cloakroom
@@ -509,7 +550,7 @@ Cloakroom also works with OpenAI's Codex CLI, on Mac and Linux (tested with Code
 
 What works as in Claude Code: shell output and MCP results are masked before the model sees them, placeholders in
 shell commands and patches (Codex's file edits) get their real values back on your machine, real values are kept out of MCP calls, and a
-prompt holding a secret is stopped with what to do next. What's different:
+prompt holding a secret is stopped, with a copy to send instead. What's different:
 
 - Codex can't swap a tool's output for a masked copy, so Cloakroom blocks the original and the AI reads the masked
   text in the block message.
@@ -540,7 +581,7 @@ Cloakroom also works with Google's Gemini CLI, on Mac and Linux (built against G
 What works as in Claude Code: the output of every tool (shell, file reads, MCP) is masked before the model sees it,
 pictures are read by local OCR or held back, placeholders in shell commands, `write_file` and `replace` get their
 real values back on your machine, real values are kept out of MCP calls and web tools, and a prompt holding a
-secret is stopped with what to do next. What's different:
+secret is stopped, with a copy to send instead. What's different:
 
 - Gemini can't swap a tool's output for a masked copy, so Cloakroom blocks the original and the AI reads the
   masked text in the block message.

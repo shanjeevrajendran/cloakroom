@@ -49,7 +49,8 @@ HELD, NOTE = "_cloakroom_held", "_cloakroom_note"  # set by gemini_request: for 
 NOT_CHECKED = ("cloakroom: not working, so this message was not checked. Tool calls stay blocked until it works "
                "again. Run: cloakroom doctor")
 ASK_NOTE = " Codex can't ask you from a hook, so the call was stopped; run it yourself if it's what you want."
-_PROMPT = re.compile(r"^Cloakroom blocked this prompt: it contains (.+?)\. ")
+_PROMPT = re.compile(r"^Cloakroom stopped this prompt: it holds private data \((.+?)\), so it wasn't sent\.")
+_COPY = "\nSend this instead:\n"
 
 
 def _words(text, name):
@@ -65,10 +66,19 @@ def _codex_words(text):
 
 
 def _prompt_reason(reason, name):
+    """hook.py's prompt stop as this agent's: the copy with placeholders kept exactly as it is (never renamed)."""
     m = _PROMPT.match(reason or "")
-    return (f"Cloakroom stopped this message: it holds {m.group(1)}. To go on, put that detail in a file and ask {name} "
-            "to read it (Cloakroom masks it on the way in), or take it out and send again. To send it as it is, "
-            "start the message with cr!" if m else _words(reason, name))
+    if not m:
+        return _words(reason, name)
+    from .hook import COPY_NOTE, TOO_LONG  # the hook ran, so it can be imported
+    head = f"Cloakroom stopped this message: it holds private data ({m.group(1)}), so it wasn't sent."
+    cr = "To send it as it is, start the message with cr!"
+    if _COPY in reason:  # the copy sits between that line and hook.py's last line (one line, no newline)
+        copy = reason.split(_COPY, 1)[1].rpartition("\n")[0]
+        return f"{head} {_words(COPY_NOTE, name)}{_COPY}{copy}\n{cr}"
+    long = f" {TOO_LONG}" if TOO_LONG in reason else ""
+    return (f"{head}{long} To go on, put that detail in a file and ask {name} to read it (Cloakroom masks it on the "
+            f"way in), or take it out and send again. {cr}")
 
 
 def _as_text(value):
@@ -192,6 +202,8 @@ def gemini_answer(event, out, data=None):
             out[k] = _words(out[k], name)
     if out.get("decision") == "block":  # a prompt
         out.update(decision="deny", reason=_prompt_reason(out.get("reason", ""), name))
+        if out.get("systemMessage"):  # Gemini shows a stop's systemMessage instead of its reason: keep both
+            out["reason"] += "\n\n" + out.pop("systemMessage")
     h = out.pop("hookSpecificOutput", None) or {}
     ctx = h.get("additionalContext")
     if ctx:

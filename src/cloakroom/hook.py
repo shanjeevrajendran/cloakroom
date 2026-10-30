@@ -34,9 +34,17 @@ _NOTE = [""]  # extra detail for the hook.log line (OCR pages and time), never v
 _FOUND: list[tuple[str, str]] = []  # (placeholder, kind) found during the current hook call, for the event log
 _EXTRA: dict = {}  # extra event-log fields for this hook call (session start: version, mode, hooks)
 _SKIPS: list[tuple] = []  # checks this hook call let through without running in full: (reason, check, what, say, extra)
+SEND_ANYWAY = ("Send it anyway: add cr! at the start. Pause prompt checks: type cr: pause 10m (tool output stays "
+               "masked). Resume: cr: resume.")
 TIP = ("Cloakroom can't rewrite a prompt, only block it. Put the detail in a file and ask Claude to read it: "
-       "it will be masked on the way in and restored for local edits. Send it anyway: add cr! at the start. "
-       "Pause prompt checks: type cr: pause 10m (tool output stays masked). Resume: cr: resume.")
+       "it will be masked on the way in and restored for local edits. " + SEND_ANYWAY)
+STOPPED = "Cloakroom stopped this prompt: it holds private data ({kinds}), so it wasn't sent."  # agents.py reads this
+COPY_NOTE = ("In the copy below that data is replaced by placeholders, which Cloakroom turns back into the real values "
+             "on this computer when Claude uses them.")
+# Claude Code caps its own hook text (systemMessage, additionalContext) at 10,000 characters and Codex at about 2,500
+# tokens; none of the three agents caps a stop reason, but a longer copy is no longer something to read and resend.
+COPY_MAX = 10_000
+TOO_LONG = f"It is too long to give back here with placeholders (over {COPY_MAX:,} characters)."
 _ALLOW_CMD = re.compile(r"(?i)^\s*cr:\s*allow(?:\s+once)?\s*$")
 HOLD_MINUTES = 10  # how long a held command can be allowed with cr: allow
 _PAUSE_CMD = re.compile(r"(?i)^\s*cr:\s*(pause(?:\s+(\d{1,3})\s*m(?:in(?:utes?)?)?)?|resume)\s*$")
@@ -304,7 +312,19 @@ def _on_prompt(data: dict) -> dict | None:
     kinds = _summary([k for _, k, _ in r["masked"]])
     if _dry("prompt", f"would block: {kinds}"):
         return None
-    return {"decision": "block", "reason": f"Cloakroom blocked this prompt: it contains {kinds}. {TIP}"}
+    return {"decision": "block", "reason": _stop_reason(kinds, r)}
+
+
+def _stop_reason(kinds: str, r: dict | None = None) -> str:
+    """Your prompt back with placeholders the session's vault holds, so the agent's later use of them is restored
+    locally like any masked value. Without a copy (too long, or none made): the advice to use a file instead."""
+    head = STOPPED.format(kinds=kinds)
+    copy = (r or {}).get("text", "")
+    if not copy or not all(p in copy for p, _, _ in r["masked"]):  # every value must have become a placeholder
+        return f"{head} {TIP}"
+    if len(copy) > COPY_MAX:
+        return f"{head} {TOO_LONG} {TIP}"
+    return f"{head} {COPY_NOTE}\nSend this instead:\n{copy}\n{SEND_ANYWAY}"
 
 
 def on_post(data: dict) -> dict | None:
@@ -583,7 +603,10 @@ def _commit_check(tool: str, args: dict, original: dict, cwd: str, vault: Vault)
         if not target:
             continue
         path = os.path.normpath(os.path.join(cwd, os.path.expanduser(target)))
-        rel = os.path.relpath(path, cwd)
+        try:
+            rel = os.path.relpath(path, cwd)
+        except ValueError:  # Windows: a file on another drive than cwd has no relative path
+            rel = path
         rel = path if rel.startswith("..") else rel
         agent = _agent_config(path)
         here = list(found)
@@ -1123,7 +1146,8 @@ def _prompt_rules_only(data: dict, why: str) -> dict:
     if r.masked:
         _FOUND.extend((p, k) for p, k, _ in r.masked)
         kinds = _summary([k for _, k, _ in r.masked])
-        return {"decision": "block", "reason": f"Cloakroom blocked this prompt: it contains {kinds}. {TIP}"}
+        # no copy here: this runs without the service, whose copy of the session's vault would miss these values
+        return {"decision": "block", "reason": _stop_reason(kinds)}
     _skip("model", "model check", say=False)  # the warning below already says so, on every such prompt
     return fail_closed("prompt", f"{why}; checked with rules only", data)
 

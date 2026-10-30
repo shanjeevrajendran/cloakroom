@@ -6,7 +6,12 @@ action, or "tool call". "Held back" or "withheld" means the AI doesn't get that 
 Cloakroom can't check, the action is blocked rather than let through.
 
 - Prompts can only be blocked, not masked (Claude Code's prompt hook, UserPromptSubmit, can't rewrite a prompt). A blocked prompt never reaches the
-  model, but Claude Code keeps it in its local session records on disk. To limit blocks:
+  model, but Claude Code keeps it in its local session records on disk. The stop message gives the prompt back with
+  placeholders to send instead (Claude Code, Codex and Gemini CLI); the session keeps their real values, so they are
+  restored like any other placeholder. No copy is given when the prompt is over 10,000 characters (none of the three
+  agents limits a stop message, but Claude Code and Codex cap their other hook text near that size), or when the
+  local service isn't answering and the rules check the prompt on their own: the message then gives the old advice
+  (put the detail in a file, or `cr!`). To limit blocks:
   - a prompt holding only names goes through (you typed them; a name next to an email, phone, key or ID still
     blocks the prompt, as a pasted customer list would). A pasted list of names alone, with nothing else, does go
     through;
@@ -14,6 +19,8 @@ Cloakroom can't check, the action is blocked rather than let through.
   - your own login name in a home-folder path is never masked (`"mask_own_username": true` to change that);
   - `cr!` at the start of a prompt sends it unchecked, `cr: pause 10m` pauses prompt checks, `cr: resume` ends the
     pause. These are typed by you and never reach Claude; tool output stays masked throughout.
+- Failed commands: In Claude Code, output from a command that fails (non-zero exit) goes through a different hook
+  event that Cloakroom does not yet handle, so it may reach the model unmasked. A fix is planned.
 - When the local service can't check (still starting, port held by another program, model failing), tool calls
   are held back, and prompts are checked with the rules alone in-process: a pasted key, card or ID number is still
   blocked, other prompts go through with a warning that they weren't fully checked. On a cold start the first
