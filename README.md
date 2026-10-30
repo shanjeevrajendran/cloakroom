@@ -120,6 +120,9 @@ else: [Known limits](https://github.com/shanjeevrajendran/cloakroom/blob/main/do
 
 ## Recent releases
 
+- **0.9.0** (2026-10-30): `cloakroom give NAME` hands the agent a key through a hidden prompt, so you never paste it
+  into a chat; a prompt Cloakroom stops is taken out of the session's saved Claude Code transcript; a failed command is
+  counted as not checked in `cloakroom report`. See [Hand the agent a key safely](#hand-the-agent-a-key-safely).
 - **0.8.1** (2026-10-30): a stopped prompt comes back with placeholders in place of your private values, ready to
   send instead; `cloakroom update` updates Cloakroom and redoes its setup for Codex, Gemini CLI and git commits;
   `cloakroom doctor` shows the version; a new [Updates](#updates) section.
@@ -428,6 +431,30 @@ the advice below instead of a copy. Other ways past a stop:
 Files and command output stay masked the whole time. Only you can do this: Claude never sees these commands and
 can't change Cloakroom's settings. For a long paste: put the detail in a file and ask Claude to read it. It gets
 masked on the way in and the real values come back when Claude writes.
+
+Claude Code also saves every chat on your disk. A prompt Cloakroom stops is taken out of that saved copy for the
+current session (right away, after the next reply and when the session ends), so the key you typed doesn't stay
+behind. Codex and Gemini CLI saved chats are not touched. To keep the text, set `"scrub_transcript": false` in
+`~/.cloakroom/config.json`.
+
+## Hand the agent a key safely
+
+When the agent needs a key (a Stripe key, a database password), don't paste it into a prompt. In a terminal, in your project folder:
+
+```bash
+cloakroom give STRIPE_KEY
+```
+
+You type the value hidden. Cloakroom keeps it on your machine and prints a placeholder; tell the agent `STRIPE_KEY is PII_SECRET_1_k7q2ab`. When the agent writes that placeholder into a local file or command, Cloakroom puts the real value back, and masks it again in anything the agent reads. The agent never sees the value. It works in Claude Code, Codex CLI and Gemini CLI, for every session in that project.
+
+| Command | What it does |
+|---|---|
+| `cloakroom give NAME` | store a value (hidden prompt), print its placeholder; give the same name again to replace the value |
+| `cloakroom give --list` | names, hints (`sk-…Q4z`) and time left, never values |
+| `cloakroom give --forget NAME` | remove one |
+| `cloakroom give NAME --hours 2` | keep it 2 hours instead of the 24 default |
+
+If you type `cr: give NAME` into a prompt, Cloakroom stops it and tells you to use the terminal command.
 
 ## Why Cloakroom
 

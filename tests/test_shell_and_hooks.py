@@ -393,7 +393,8 @@ def test_hooks_only_launch_fixed_scripts():
     import pathlib, subprocess
     root = pathlib.Path(__file__).resolve().parents[1]
     hooks = json.loads((root / "plugin" / "hooks" / "hooks.json").read_text())["hooks"]
-    assert set(hooks) == {"SessionStart", "UserPromptSubmit", "PreToolUse", "PostToolUse"}
+    assert set(hooks) == {"SessionStart", "UserPromptSubmit", "PreToolUse", "PostToolUse", "Stop", "SessionEnd",
+                         "PostToolUseFailure"}
     for event, entries in hooks.items():
         cmd = entries[0]["hooks"][0]["command"]
         for banned in ("command -v", "uv tool dir", "uv ", "uvx", "pipx", "$CR", "Get-Command"):

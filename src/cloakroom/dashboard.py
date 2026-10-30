@@ -95,7 +95,7 @@ def values(event_id: str) -> list[dict]:
     if not ev:
         return []
     vault = Vault(config.vault_path(ev["session"]))
-    return [{"placeholder": p, "kind": p.split("_")[1], "value": vault.by_placeholder.get(p, "")}
+    return [{"placeholder": p, "kind": p.split("_")[1], "value": "" if p in vault.given else vault.by_placeholder.get(p, "")}
             for p in ev.get("placeholders", [])]
 
 

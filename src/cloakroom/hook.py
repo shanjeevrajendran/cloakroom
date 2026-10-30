@@ -15,7 +15,7 @@ import re
 import sys
 import time
 
-from . import client, config, crypto, decode, engine, events, filelog, media, money, shell
+from . import client, config, crypto, decode, engine, events, filelog, handoff, history, media, money, shell
 from .hookentry import STRUCTURAL, _withhold, closed
 from .vault import ANY_PLACEHOLDER, OLD_FORMAT, PLACEHOLDER, Vault
 
@@ -47,6 +47,8 @@ COPY_MAX = 10_000
 TOO_LONG = f"It is too long to give back here with placeholders (over {COPY_MAX:,} characters)."
 _ALLOW_CMD = re.compile(r"(?i)^\s*cr:\s*allow(?:\s+once)?\s*$")
 HOLD_MINUTES = 10  # how long a held command can be allowed with cr: allow
+_GIVE_CMD = re.compile(r"(?i)\bcr:\s*give\b")
+GIVE_TIP = "Cloakroom: never type a value here. In a terminal run: cloakroom give NAME (hidden prompt), then paste the placeholder it prints."
 _PAUSE_CMD = re.compile(r"(?i)^\s*cr:\s*(pause(?:\s+(\d{1,3})\s*m(?:in(?:utes?)?)?)?|resume)\s*$")
 
 
@@ -135,6 +137,9 @@ def _control(prompt: str) -> dict | None:
     if _ALLOW_CMD.match(prompt):
         _ACTION[0] = "allow armed"
         return {"decision": "block", "reason": _arm_held()}
+    if _GIVE_CMD.search(prompt):
+        _ACTION[0] = "give stopped"
+        return {"decision": "block", "reason": GIVE_TIP}
     m = _PAUSE_CMD.match(prompt)
     if not m:
         return None
@@ -312,7 +317,42 @@ def _on_prompt(data: dict) -> dict | None:
     kinds = _summary([k for _, k, _ in r["masked"]])
     if _dry("prompt", f"would block: {kinds}"):
         return None
-    return {"decision": "block", "reason": _stop_reason(kinds, r)}
+    out = {"decision": "block", "reason": _stop_reason(kinds, r)}
+    # the transcript may already hold the text, or get it just after this hook: scrub now and at the next stop and end
+    stopped = [p for p, k, _ in r["masked"] if k not in PROMPT_OK]
+    try:
+        history.mark_stopped(data.get("session_id", "default"), stopped)
+        line = _scrub(data, full=False)
+    except Exception:
+        line = ""  # the prompt is stopped either way; the session end tries again
+    return {**out, "systemMessage": line} if line else out
+
+
+def _scrub(data: dict, full: bool) -> str:
+    """Take stopped prompts' values (full: and every key and password) out of this session's own Claude Code
+    transcript; the report line, or "" when nothing changed. Codex and Gemini transcripts are not touched (docs-LIMITS)."""
+    if data.get("_cloakroom_agent", "claude") != "claude":
+        return ""
+    tally, root = history.scrub_session(data.get("transcript_path"), data.get("session_id", "default"), full)
+    if not tally:
+        return ""
+    events.record("scrub", data, "scrubbed", [("", k) for k, n in tally.items() for _ in range(n)], 0.0)
+    return history.summary(tally, root)
+
+
+def on_scrub(data: dict) -> dict | None:
+    """Stop (after each reply: does something only when a prompt was stopped in this session), SessionEnd (the
+    safety net: also every key and password in the transcript, then the stopped list is done) and PostToolUseFailure."""
+    if data.get("hook_event_name") == "PostToolUseFailure":
+        # a failed call's error text: Claude Code lets this hook add context but not change the text, so it can't be
+        # masked, only counted as unchecked (logged, told once per session, shown in `cloakroom report`)
+        _skip("failed-command", "error output of a failed tool call", "the error output of this failed tool call")
+        return None
+    end = data.get("hook_event_name") == "SessionEnd"
+    line = _scrub(data, full=end)
+    if end:
+        history.clear_stopped(data.get("session_id", "default"))
+    return {"systemMessage": line} if line else None
 
 
 def _stop_reason(kinds: str, r: dict | None = None) -> str:
@@ -1127,7 +1167,7 @@ def _hooks_installed() -> list[str]:
         return []
 
 
-HANDLERS = {"prompt": on_prompt, "post": on_post, "pre": on_pre, "start": on_start}
+HANDLERS = {"prompt": on_prompt, "post": on_post, "pre": on_pre, "start": on_start, "scrub": on_scrub}
 
 
 def fail_closed(event: str, why: str, data=None) -> dict:
@@ -1172,6 +1212,7 @@ def handle(event: str, data: dict) -> dict | None:
     _ACTION[0] = _NOTE[0] = ""
     t0 = time.perf_counter()
     try:
+        handoff.note_session(str(data.get("session_id", "default")), data.get("cwd") or os.getcwd())
         _model_fallback(event, data)
         out = HANDLERS[event](data)
     except (client.Unavailable, engine.ModelUnavailable) as e:

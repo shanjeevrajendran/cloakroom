@@ -19,8 +19,11 @@ Cloakroom can't check, the action is blocked rather than let through.
   - your own login name in a home-folder path is never masked (`"mask_own_username": true` to change that);
   - `cr!` at the start of a prompt sends it unchecked, `cr: pause 10m` pauses prompt checks, `cr: resume` ends the
     pause. These are typed by you and never reach Claude; tool output stays masked throughout.
-- Failed commands: In Claude Code, output from a command that fails (non-zero exit) goes through a different hook
-  event that Cloakroom does not yet handle, so it may reach the model unmasked. A fix is planned.
+- Failed commands: In Claude Code, the error output of a tool call that fails (for example a command with a non-zero
+  exit) goes through a different hook event, `PostToolUseFailure`, which lets a hook add notes but not change the
+  text. So it can't be masked and may reach the model with a key or personal value in it. Since 0.9.0 Cloakroom
+  registers that event and counts each such call as unchecked: the event log, "Checks skipped" in `cloakroom report`,
+  the dashboard, and one note per session. It does not look inside the text. Keep keys out of commands that print them.
 - When the local service can't check (still starting, port held by another program, model failing), tool calls
   are held back, and prompts are checked with the rules alone in-process: a pasted key, card or ID number is still
   blocked, other prompts go through with a warning that they weren't fully checked. On a cold start the first
@@ -136,6 +139,17 @@ Cloakroom can't check, the action is blocked rather than let through.
   machines without Cloakroom and prompts sent with `cr!` are not in it.
 - `cloakroom clean-history` skips files changed in the last 10 minutes (an open session). It replaces sample keys
   too, not only real ones; the backup folder keeps the originals, and holds the values until you delete it.
+- Transcript clean-up for the current session (Claude Code only, `"scrub_transcript"`, on by default): a stopped
+  prompt's values are taken out of that session's own transcript file, never another file or one outside
+  `~/.claude/projects`. Claude Code may write the prompt to the file after the hook runs, so the clean-up repeats after
+  each reply and at session end; if Claude Code is killed before either, run `cloakroom clean-history`. Session end
+  also replaces keys and passwords only (a name or address you sent with `cr!` stays). A file that keeps changing
+  while it is rewritten is left as it is until the next try; a line written in the last instant between the check and
+  the swap can be lost. No backup is made.
+  Not covered, not tested: Codex (`transcript_path` in its hook input can be `null`, and the file is Codex's own
+  session record, written while it runs, so a swap may cut off what it writes next; Codex source and docs read
+  2026-10-30), Gemini CLI (its session file changed from `.json` to `.jsonl` between versions and is migrated on
+  resume, so the format is not fixed), and feedback or upload bundles (made from the agent's own copy).
 - `cloakroom exposure` lists only what Cloakroom detected: a key it missed leaves no line, so an empty list is not
   proof nothing leaked. The agent column starts with this release (older lines say "unknown"); a hint needs the
   session's vault, so keys Cloakroom denied or withheld show "not kept". The scan uses rules only, skips files changed
@@ -159,6 +173,20 @@ Cloakroom can't check, the action is blocked rather than let through.
   (`python pay.py`, a test suite, a server Claude starts) that calls a payment API isn't held, nor is a host or MCP
   tool name not on the lists (add them with `"money_hosts"` / `"money_tools"`), a GraphQL payment API, or a URL built
   from variables. A tool call is matched by its name, so a payment tool with a plain name (`run`, `execute`) passes.
+
+## Hand-over (`cloakroom give NAME`)
+
+- Scope is the project: the folder with `.git` above where you ran `give`. A session started in another folder doesn't
+  restore it (the placeholder stays text). Run `give` in the project, before or during the session.
+- The agent has to be told the placeholder (you paste it). It restores only in local tools (Write, Edit, local
+  commands, Codex `apply_patch`, Gemini `write_file` and shell). A command that could send data off the machine, web
+  tools and MCP calls keep the placeholder; Codex denies those and Gemini asks.
+- The real value does end up in the file or command the agent writes, as you asked. A file git would commit is
+  refused as for any key. Output of a Codex command still running when Codex stops waiting isn't masked (see Codex).
+- A value under 8 characters is restored but not masked again if it shows up in tool output.
+- Anyone who can run commands as you on this machine can read it from the encrypted store with your vault key; it
+  isn't protection against your own account being taken over. Entries expire after 24 hours; `--forget` removes one now.
+- A value typed into a prompt anyway is caught only if it has a key shape; a plain password or a name goes through.
 
 ## Codex
 

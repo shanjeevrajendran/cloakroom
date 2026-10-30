@@ -1,5 +1,27 @@
 # Changelog
 
+## 0.9.0 (2026-10-30)
+- `cloakroom give NAME`: hand the agent a key without pasting it into a prompt. You type the value hidden in a
+  terminal and get a placeholder to paste; when the agent writes the placeholder into a local file or command,
+  Cloakroom's restore puts the real value back, and tool output that shows it is masked again. Works in Claude Code,
+  Codex CLI and Gemini CLI, for every session in that project. `--list` shows names and hints (`sk-…Q4z`),
+  `--forget NAME` removes one, entries expire after 24 hours (`--hours N`). A prompt containing `cr: give NAME` is
+  stopped with the terminal command. The value is stored encrypted and never reaches a log, event, the dashboard or the
+  session vault.
+- A prompt Cloakroom stops no longer stays in the session's saved transcript. Claude Code keeps every chat in a file
+  on disk; the same code as `cloakroom clean-history` now takes the stopped values (keys, passwords and any personal
+  data that made it stop) out of the current session's transcript only, right after the stop, after the next reply
+  and when the session ends. At session end it also replaces any key or password it finds in that file. The usual
+  report line is shown, and `cloakroom report` counts these as "scrubbed". No backup is kept (it would keep the
+  values). Turn it off with `"scrub_transcript": false` in `~/.cloakroom/config.json`. Claude Code only: Codex and
+  Gemini transcripts are not touched (see docs-LIMITS).
+- The plugin registers Cloakroom for Claude Code's `Stop`, `SessionEnd` and `PostToolUseFailure` events (the hook
+  command takes a new `scrub` event).
+- A tool call that fails in Claude Code (for example a command with a non-zero exit) is now counted as "not checked":
+  it shows in the event log, in "Checks skipped" in `cloakroom report`, on the dashboard, and as one note per session.
+- Known limit: the error output of a failed call still can't be masked, because Claude Code lets this hook add notes
+  but not change the text, so it may reach the model with a key in it (see docs-LIMITS, "Failed commands").
+
 ## 0.8.1 (2026-10-30)
 - A stopped prompt gives you your message back with placeholders to send instead (Claude Code, Codex, Gemini CLI):
   the stop message says why in one line, then "Send this instead:" with your text, each key or personal value
