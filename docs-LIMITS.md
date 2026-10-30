@@ -6,7 +6,12 @@ action, or "tool call". "Held back" or "withheld" means the AI doesn't get that 
 Cloakroom can't check, the action is blocked rather than let through.
 
 - Prompts can only be blocked, not masked (Claude Code's prompt hook, UserPromptSubmit, can't rewrite a prompt). A blocked prompt never reaches the
-  model, but Claude Code keeps it in its local session records on disk. To limit blocks:
+  model, but Claude Code keeps it in its local session records on disk. The stop message gives the prompt back with
+  placeholders to send instead (Claude Code, Codex and Gemini CLI); the session keeps their real values, so they are
+  restored like any other placeholder. No copy is given when the prompt is over 10,000 characters (none of the three
+  agents limits a stop message, but Claude Code and Codex cap their other hook text near that size), or when the
+  local service isn't answering and the rules check the prompt on their own: the message then gives the old advice
+  (put the detail in a file, or `cr!`). To limit blocks:
   - a prompt holding only names goes through (you typed them; a name next to an email, phone, key or ID still
     blocks the prompt, as a pasted customer list would). A pasted list of names alone, with nothing else, does go
     through;

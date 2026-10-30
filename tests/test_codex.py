@@ -49,8 +49,8 @@ def placeholder(monkeypatch, capsys):
 def test_prompt_with_a_key_is_stopped_with_what_to_do(monkeypatch, capsys):
     out = codex("prompt", {"prompt": f"deploy with {KEY}"}, monkeypatch, capsys)
     assert out["decision"] == "block" and KEY not in json.dumps(out)
-    assert out["reason"].startswith("Cloakroom stopped this message: it holds SECRET")
-    assert "put that detail in a file" in out["reason"] and "take it out" in out["reason"] and "cr!" in out["reason"]
+    assert out["reason"].startswith("Cloakroom stopped this message: it holds private data (SECRET x1)")
+    assert "Send this instead:\ndeploy with PII_SECRET_1_" in out["reason"] and out["reason"].endswith("cr!")
     assert "hookSpecificOutput" not in out
 
 

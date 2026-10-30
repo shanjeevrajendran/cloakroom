@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased
+- A stopped prompt gives you your message back with placeholders to send instead (Claude Code, Codex, Gemini CLI):
+  the stop message says why in one line, then "Send this instead:" with your text, each key or personal value
+  swapped for a placeholder (`PII_EMAIL_1_k7q2ab`), then the `cr!` line. The session keeps the real values, so when
+  the agent writes a placeholder into a file or a local command, the real value goes back in on your machine. Over
+  10,000 characters, or when only the rules could check the prompt, the message gives the old advice instead. The
+  event for a stopped prompt is unchanged (kinds only). Gemini CLI: a note Cloakroom adds to a stop now shows under
+  the stop message instead of replacing it.
+
 ## 0.8.0 (2026-10-27)
 
 ### Added
