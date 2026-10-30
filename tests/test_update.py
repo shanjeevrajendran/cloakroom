@@ -96,7 +96,7 @@ def test_a_failed_upgrade_refreshes_nothing(home, monkeypatch, capsys):
     monkeypatch.setattr(update.subprocess, "run",
                         lambda argv, **kw: calls.append(argv) or subprocess.CompletedProcess(argv, 1))
     assert cli.main(["update"]) == 1 and len(calls) == 1
-    assert "Version 0.7.1 stays" in capsys.readouterr().err
+    assert f"Version {update.__version__} stays" in capsys.readouterr().err
 
 
 def test_check_changes_nothing(home, monkeypatch, capsys):
