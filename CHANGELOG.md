@@ -18,6 +18,8 @@
   version, with one line on what to do when they differ. It reads this from Claude Code's own files, offline.
 - README: a new "Updates" section: how updates reach you in Claude Code (and how to switch on automatic updates),
   and `cloakroom update` for Codex, Gemini CLI, git commits and copies you installed yourself.
+- Known limit: In Claude Code, output from a command that fails (non-zero exit) goes through a different hook event
+  that Cloakroom does not yet handle, so it may reach the model unmasked. A fix is planned.
 
 ## 0.8.0 (2026-10-27)
 
