@@ -8,8 +8,7 @@ import sys
 import urllib.error
 import urllib.request
 
-from . import config, engine, filelog
-from .vault import Vault
+from . import config, engine, filelog, handoff
 
 
 class Unavailable(RuntimeError):
@@ -88,8 +87,8 @@ def port_taken(port: int) -> str:
             f"~/.cloakroom/config.json (for example {{\"port\": 37788}}) or CLOAKROOM_PORT, then restart Claude Code")
 
 
-def start_background():
-    """Start `cloakroom serve` detached, once. Output goes to ~/.cloakroom/serve.log (never values)."""
+def start_background(command: str = "serve"):
+    """Start `cloakroom serve` (or another command) detached, once. Output goes to ~/.cloakroom/serve.log (never values)."""
     log = config.private_dir() / "serve.log"
     fd = os.open(log, os.O_WRONLY | os.O_CREAT | os.O_APPEND, 0o600)
     if os.name == "nt":  # detach from the hook's console so the service outlives it, without a window
@@ -98,7 +97,7 @@ def start_background():
     else:
         detach = {"start_new_session": True}
     with os.fdopen(fd, "ab") as out:
-        subprocess.Popen([sys.executable, "-m", "cloakroom", "serve"], stdout=out, stderr=out,
+        subprocess.Popen([sys.executable, "-m", "cloakroom", *command.split()], stdout=out, stderr=out,
                          stdin=subprocess.DEVNULL, env=os.environ.copy(), **detach)
 
 
@@ -108,7 +107,7 @@ def mask(text: str, session: str, ocr: bool = False, roots: list[str] | None = N
     cfg = config.load()
     if cfg["mode"] == "rules":
         files = filelog.known(roots, read) if roots else None
-        r = engine.mask(text, Vault(config.vault_path(session)), "rules", cfg["allow"], cfg["always"], ocr, files)
+        r = engine.mask(text, handoff.vault_for(session), "rules", cfg["allow"], cfg["always"], ocr, files)
         return {"text": r.text, "mode": "rules", "masked": r.masked, "skipped": r.skipped}
     return _post("/mask", {"text": text, "session": session, **({"ocr": True} if ocr else {}),
                            **({"roots": roots, "read": read} if roots else {})})
@@ -116,6 +115,6 @@ def mask(text: str, session: str, ocr: bool = False, roots: list[str] | None = N
 
 def restore(text: str, session: str) -> dict:
     if config.load()["mode"] == "rules":
-        out, unknown = Vault(config.vault_path(session)).restore(text)
+        out, unknown = handoff.vault_for(session).restore(text)
         return {"text": out, "unknown": unknown}
     return _post("/restore", {"text": text, "session": session})

@@ -15,11 +15,12 @@ import json
 import os
 import re
 import secrets
+import threading
 import time
 from pathlib import Path
 
 from . import config, crypto
-from .vault import TAG_INFO, TAG_LEN
+from .vault import TAG_INFO, TAG_LEN, Vault
 
 KIND = "SECRET"
 HOURS = 24
@@ -121,3 +122,80 @@ def values(session: str) -> dict[str, str]:
     if not _path(project).exists():
         return {}
     return {e["placeholder"]: e["value"] for e in entries(project).values()}
+
+
+# --- the proxy's store (proxy.py): the same file format and expiry as `give`, under one name no folder can have ---
+# A value the proxy masks in a request gets a placeholder here. Every session's vault loads these next to the
+# project's handed-over values (vault.py load_given), so a hook restores the placeholder when the model writes it
+# into a local file or command, whichever project or agent that is.
+
+PROXY = "\0proxy"
+_MINT = threading.Lock()  # the service and the proxy mint from threads
+PROXY_SESSION = "(proxy)"  # not a name vault_path() can make, so no hook session is mistaken for it
+
+
+def proxy_values() -> dict[str, str]:
+    """{placeholder: value} the proxy has masked in the last 24 hours. {} when none, or the store can't be read
+    (then nothing is restored, which leaves the placeholder as text: the safe side)."""
+    try:
+        return {e["placeholder"]: e["value"] for e in entries(PROXY).values()} if _path(PROXY).exists() else {}
+    except (OSError, ValueError):
+        return {}
+
+
+def proxy_placeholder(value: str, kind: str, hours: float = HOURS) -> str:
+    """The placeholder for value, minted on first sight and kept 24 hours from the last time it was masked."""
+    with _MINT:
+        return _mint(value, kind, hours)
+
+
+def _mint(value: str, kind: str, hours: float) -> str:
+    store = _load(PROXY)
+    store["entries"] = _live(store)
+    name = hashlib.sha256(f"{kind}|{value}".encode()).hexdigest()[:24]
+    old = store["entries"].get(name)
+    if old and old["expires"] > time.time() + 3600:
+        return old["placeholder"]  # most of its time is left: no write
+    if old:
+        base = old["placeholder"].rsplit("_", 1)[0]
+    else:
+        counts = store.setdefault("counts", {})
+        counts[kind] = counts.get(kind, 0) + 1
+        base = f"PII_{kind}_{counts[kind]}"
+    mac = hmac.new(hmac.new(crypto.key(), TAG_INFO, hashlib.sha256).digest(),
+                   f"proxy|{store['id']}|{base}".encode(), hashlib.sha256).digest()
+    ph = f"{base}_{base64.b32encode(mac).decode().lower()[:TAG_LEN]}"
+    store["entries"][name] = {"placeholder": ph, "value": value, "expires": time.time() + hours * 3600}
+    _save(PROXY, store)
+    return ph
+
+
+class ProxyVault(Vault):
+    """What engine.mask writes placeholders into for the proxy: the store above, not a session file."""
+
+    SESSION = PROXY_SESSION
+
+    def __init__(self):
+        super().__init__(None)
+        self.session = self.SESSION
+        self._lock = threading.Lock()
+        self.load_given()
+
+    def load_given(self):
+        with self._lock:
+            self.by_placeholder = proxy_values()
+            self.by_value = {v: ph for ph, v in self.by_placeholder.items()}
+
+    def placeholder(self, value: str, kind: str, derived: bool = False) -> str:
+        with self._lock:
+            ph = proxy_placeholder(value, kind)
+            self.by_value[value], self.by_placeholder[ph] = ph, value
+            return ph
+
+    def lookup(self, placeholder: str) -> str | None:
+        return self.by_placeholder.get(placeholder)
+
+
+def vault_for(session: str) -> Vault:
+    """The vault for a hook session, or the proxy's store for the proxy's own session name."""
+    return ProxyVault() if session == PROXY_SESSION else Vault(config.vault_path(session))

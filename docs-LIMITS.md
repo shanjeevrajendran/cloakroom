@@ -204,6 +204,25 @@ Cloakroom can't check, the action is blocked rather than let through.
   can't tell whether it is remote. With the list on it is held until you approve that name.
 - The list is global (one `allowed_hosts` for every project); Cloakroom has no per-project settings.
 
+## Cloakroom proxy (`cloakroom proxy`)
+
+- It covers a tool only if the tool lets you set its API address and you set it (`cloakroom proxy install NAME`). Cursor
+  and Copilot are not covered: Cursor sends through its own servers, and Copilot's default path goes to GitHub's, so
+  there is no address on your machine to point them at. A tool's other traffic (sign-in, telemetry, updates, a model
+  provider you didn't route) doesn't pass through it and isn't seen.
+- Headers are not scanned or changed. The Authorization header is your own key; a person's name or email in a custom
+  header goes through.
+- Replies are not masked. Cloakroom hooks restore placeholders when the agent writes them to a local file or command;
+  a reply is shown as the AI company sent it.
+- Only the text of a JSON body is checked. A body that isn't JSON (an upload), is compressed with zstd or brotli, or is
+  over `proxy_max_mb` (16) goes through unchanged and is counted as not checked. Text inside an image or a signed
+  "thinking" block is not checked.
+- Codex CLI signed in with ChatGPT and Gemini CLI signed in with a Google account talk to other addresses than the API
+  ones; `openai_base_url` and `GOOGLE_GEMINI_BASE_URL` apply to API-key sign-in only.
+- While the proxy isn't running, a tool pointed at it fails (it never goes around it). `cloakroom proxy uninstall NAME`
+  undoes the setting.
+- A restored placeholder needs a Cloakroom hook in the agent that writes the file or command, and works for 24 hours.
+
 ## Codex
 
 Checked against Codex CLI 0.164 (hooks docs: https://developers.openai.com/codex/hooks, and its source).

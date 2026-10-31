@@ -13,6 +13,17 @@
 - A command, WebFetch or MCP call whose address, query string or headers carry your email address, phone number,
   name or your computer's username is now held, naming the kind (`cr: allow` lets it through once). The username
   comes from the operating system, not from `$USER`.
+- `cloakroom proxy`: point any tool that lets you set its API address (Claude Code, Codex CLI, Gemini CLI) at a small
+  server on your machine ([details](#point-any-tool-at-cloakroom)). It masks the text in every request body the way file
+  reads are masked, forwards the request with the same headers (never read, logged or changed), and passes the reply
+  back as a stream. `cloakroom proxy install claude|codex|gemini` writes the address into that tool's own config
+  (`--print` only shows it, `uninstall` puts back what was there). Values it masks are restored when a hook writes
+  their placeholder to a local file or command; they are kept encrypted for 24 hours. Each request goes into the
+  where-it-went ledger (host and kinds), the approved-sites list applies to its upstreams, and `cloakroom doctor`
+  shows whether it runs. Off until you start it; Mac, Linux and Windows.
+- Known limit: the proxy covers tools that let you set the API address. Cursor and Copilot send through their own
+  servers and are not covered; headers are not scanned; the agent's own traffic that doesn't go through the proxy is
+  not seen (see docs-LIMITS, "Cloakroom proxy").
 - Known limit: the ledger and the approved-sites list only see calls that pass through Cloakroom's checks, not the
   agent's own calls to its model provider or a tool that runs no check (see docs-LIMITS, "Outgoing data").
 

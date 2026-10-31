@@ -13,7 +13,10 @@ DEFAULTS = {"mode": "full", "port": 37787,  # not 8787: Headroom's proxy default
             "codex_hold_long_running": False,  # Codex: hold servers and watchers (hook.py _long_hold)
             "egress": "off",  # "allowlist": a call to a site not in allowed_hosts is held (egress.py, hook.py _site_hold)
             "allowed_hosts": [],  # hosts you approve, or *.example.com; `cloakroom allow-host` edits it
-            "scrub_transcript": True}  # take a stopped prompt out of the session's saved transcript (history.py)
+            "scrub_transcript": True,
+            "proxy_port": 0,  # `cloakroom proxy`: 0 = pick a free port once and keep it (proxy.json)
+            "proxy_max_mb": 16,  # a request body bigger than this goes through unchecked (logged as not checked)
+            "proxy_upstreams": {}}  # more prefixes for the proxy: {"/mistral": "https://api.mistral.ai"}  # take a stopped prompt out of the session's saved transcript (history.py)
 
 
 def load() -> dict:
@@ -29,6 +32,8 @@ def load() -> dict:
         raise ValueError("mode must be 'full' or 'rules'")
     if cfg["egress"] not in ("off", "allowlist"):
         raise ValueError("egress must be 'off' or 'allowlist'")
+    if not isinstance(cfg["proxy_upstreams"], dict):
+        cfg["proxy_upstreams"] = {}
     cfg["allowed_hosts"] = [h for h in cfg["allowed_hosts"] if isinstance(h, str)] \
         if isinstance(cfg["allowed_hosts"], list) else []
     # While the plugin's first-start installer is still fetching the model (plugin/scripts/bootstrap.sh), run on
