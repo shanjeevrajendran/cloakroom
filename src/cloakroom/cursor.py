@@ -201,7 +201,7 @@ def wrap(data: dict, out: dict | None) -> dict | None:
     program = agents._program()
     if not program:
         return hook._deny(NO_PROGRAM)
-    shown, ident = str(args.get("command", "")), secrets.token_urlsafe(12)
+    shown, ident = str(args.get("command", "")), "r" + secrets.token_urlsafe(11)  # 16 characters; a leading "-" would read as an option
     wrapper = f"{shlex.quote(program)} cursor-run {ident} {shlex.quote(shown)}"
     # no real values: the runner restores placeholders from the session's encrypted vault when it runs
     record = {"session": data.get("session_id", "default"), "cwd": data.get("cwd") or os.getcwd(), "shown": shown,

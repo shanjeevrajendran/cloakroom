@@ -332,6 +332,14 @@ def test_runner_refuses_a_missing_or_used_record(cur, ws):
     assert runner(stale, ws).returncode == 126
 
 
+def test_runner_id_never_starts_with_a_dash(cur, ws, monkeypatch):
+    from cloakroom import cursor
+    monkeypatch.setattr(cursor.secrets, "token_urlsafe", lambda n: "-" * ((n * 4 + 2) // 3))  # the worst draw
+    wrapper = shell(cur, "echo hi")["updated_input"]["command"]
+    assert re.search(r"cursor-run r-{15} ", wrapper)
+    assert runner(wrapper, ws).stdout == "hi\n"
+
+
 def test_runner_passes_the_signal_exit_code(cur, ws):
     r = runner(shell(cur, "kill -TERM $$")["updated_input"]["command"], ws)
     assert r.returncode == 128 + signal.SIGTERM
