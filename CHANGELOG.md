@@ -1,6 +1,7 @@
 # Changelog
 
 ## 1.1.0 (unreleased)
+- Dashboard: new Console look, solid icon in the header and as favicon, refreshed preview.
 - Cursor's command-line agent: `cloakroom install cursor` adds Cloakroom's hooks to `~/.cursor/hooks.json`, next to yours
   (`uninstall` removes only its own). Cursor can't swap a tool's output for a masked copy, so Cloakroom changes the
   input: a file read goes to a masked copy of the file, a shell command runs inside Cloakroom,
@@ -50,7 +51,6 @@
   docs-LIMITS, "Failed commands").
 - Release gate: `scripts/release_check.sh` also runs the test suite under the oldest Python `pyproject.toml` allows (3.10), and
   fails on generated site pages that show an older version (`python scripts/gen_pages.py --local` regenerates them).
-- Dashboard: new Console look, solid icon in the header and as favicon, refreshed preview.
 
 ## 0.9.0 (2026-10-30)
 - `cloakroom give NAME`: hand the agent a key without pasting it into a prompt. You type the value hidden in a
