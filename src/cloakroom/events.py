@@ -55,7 +55,9 @@ def counts(kinds: list[str]) -> dict[str, int]:
 SKIP_WHY = {"too-large": "it was larger than {limit}", "too-slow": "it took longer than {limit}",
             "git-error": "git returned an error",
             "failed-command": "Claude Code doesn't let Cloakroom change it, so it may show a key or personal value",
-            "model": "it wasn't ready, so only the rules checked it (names and addresses may be missed)"}
+            "model": "it wasn't ready, so only the rules checked it (names and addresses may be missed)",
+            "not-json": "it isn't JSON, so Cloakroom can't tell which parts are text",
+            "encoding": "it is compressed in a way Cloakroom can't read"}
 
 
 def _amount(reason: str, n) -> str:

@@ -11,7 +11,7 @@ import pathlib
 import re
 import sys
 
-ENTRY = re.compile(r"^## (\d+\.\d+\.\d+) \((\d{4}-\d{2}-\d{2})\)\s*$", re.M)
+ENTRY = re.compile(r"^## (\d+\.\d+\.\d+) \((\d{4}-\d{2}-\d{2}|unreleased)\)\s*$", re.M)
 CMD = re.compile(r"`cloakroom ([a-z][a-z-]*)")
 ANCHOR = re.compile(r"\(#([a-z0-9-]+)\)")
 
@@ -43,7 +43,7 @@ def check(root):
         return out, ["CHANGELOG.md or README.md: file missing"]
     heads = list(ENTRY.finditer(log))
     if not heads:
-        return out, ["CHANGELOG.md: no '## x.y.z (YYYY-MM-DD)' entry"]
+        return out, ["CHANGELOG.md: no '## x.y.z (YYYY-MM-DD)' or '(unreleased)' entry"]
     version = heads[0].group(1)
     entry = log[heads[0].end():heads[1].start() if len(heads) > 1 else len(log)]
     older = log[heads[1].start():] if len(heads) > 1 else ""
@@ -97,7 +97,9 @@ def check(root):
         if not miss:
             out.append("ok (e) docs/index.html features")
     want = re.search(r'^version = "([^"]+)"', pyproject or "", re.M)
-    if not want or want.group(1) != version:
+    if heads[0].group(2) == "unreleased":  # the version pins move at release time, not while the entry is written
+        out.append(f"note: (f) CHANGELOG {version} is unreleased, version pin check skipped")
+    elif not want or want.group(1) != version:
         bad.append(f"(f) pyproject.toml: version {want and want.group(1)} but newest CHANGELOG entry is {version}")
     else:
         out.append(f"ok (f) CHANGELOG {version} = pyproject (the other pins: version-init and version-pins steps)")

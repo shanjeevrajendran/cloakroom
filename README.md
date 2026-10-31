@@ -72,6 +72,17 @@ New in 0.7, it also protects two other AI coding agents that run in a terminal (
 - **OpenAI's Codex CLI:** run `cloakroom install codex` ([Codex](#codex)).
 - **Google's Gemini CLI:** run `cloakroom install gemini` ([Gemini CLI](#gemini-cli)).
 
+New in 1.0:
+
+- **See where your agent sends data, and limit it to sites you approve:** `cloakroom report --destinations` lists the
+  hosts your agent's commands, web fetches and MCP calls went to, with the kinds of data they carried.
+  `cloakroom allow-host example.com` builds an approved-sites list; once you turn it on, a call to any other site is
+  held. An email, phone number, name or your username in a web address or header is held too
+  ([details](#see-where-your-agent-sends-data)).
+- **Point any tool at Cloakroom:** `cloakroom proxy` is a small server on your machine for tools that let you set their
+  API address (Claude Code, Codex CLI, Gemini CLI). They send their requests to it, Cloakroom masks the text, and the
+  request goes on to the AI company. Off until you start it ([details](#point-any-tool-at-cloakroom)).
+
 New in 0.8:
 
 - **See which keys your agents saw:** `cloakroom exposure` lists the keys and passwords Claude Code, Codex CLI and
@@ -125,6 +136,11 @@ else: [Known limits](https://github.com/shanjeevrajendran/cloakroom/blob/main/do
 
 ## Recent releases
 
+- **1.0.0** (unreleased): the ledger of where your agent sends data (`cloakroom report --destinations`), an opt-in
+  approved-sites list (`cloakroom allow-host`), and a hold on a web address or header that carries your email, phone,
+  name or username. See [See where your agent sends data](#see-where-your-agent-sends-data). `cloakroom proxy` masks the
+  requests of any tool that lets you set its API address, on Mac, Linux and Windows. See
+  [Point any tool at Cloakroom](#point-any-tool-at-cloakroom).
 - **0.9.0** (2026-10-30): `cloakroom give NAME` hands the agent a key through a hidden prompt, so you never paste it
   into a chat; a prompt Cloakroom stops is taken out of the session's saved Claude Code transcript; a failed command is
   counted as not checked in `cloakroom report`. See [Hand the agent a key safely](#hand-the-agent-a-key-safely).
@@ -460,6 +476,74 @@ You type the value hidden. Cloakroom keeps it on your machine and prints a place
 | `cloakroom give NAME --hours 2` | keep it 2 hours instead of the 24 default |
 
 If you type `cr: give NAME` into a prompt, Cloakroom stops it and tells you to use the terminal command.
+
+## See where your agent sends data
+
+Cloakroom writes down where your agent sends data and can limit it to sites you approve. It sees the commands that
+send data (`curl`, `wget`, `ssh`, `scp`, `git push`, network one-liners), WebFetch and WebSearch, and MCP calls to remote
+servers. Each is logged with the host and the kinds of data it carried (`EMAIL x2`, never a value). Calls to `localhost`
+aren't logged.
+
+```bash
+cloakroom report --destinations            # per host: calls, held, kinds carried (--since DATE, --format json)
+cloakroom allow-host example.com           # approve a site; *.example.com approves its subdomains
+cloakroom allow-host --list                # the list, and whether it is on
+```
+
+The approved-sites list is off until you add `"egress": "allowlist"` to `~/.cloakroom/config.json`. Then a call to a host
+that isn't on the list is held, whatever it carries, with the same message and `cr: allow` as any held command: type
+`cr: allow` in the chat, then ask the agent to run the same call again. A call whose destination Cloakroom can't read
+(`aws s3 ls`, `npm publish`) is held too. WebSearch counts as the host `web-search`, and an MCP server your config
+doesn't name as `mcp:NAME`; approve those with `cloakroom allow-host web-search` or `cloakroom allow-host mcp:NAME`.
+
+Always on, with or without the list: a command or web call whose address, query string or headers carry an email
+address, a phone number, a name or your computer's username is held, and the message says which. The username comes
+from the operating system, not from `$USER`. A placeholder in the address is fine.
+
+| Command | What it does |
+|---|---|
+| `cloakroom report --destinations` | hosts, calls, holds and kinds carried; the dashboard shows the same as "Where data went" |
+| `cloakroom allow-host HOST` | add a site to the approved-sites list (`--remove` takes it off, `--list` shows it) |
+
+It doesn't see the agent's own calls to its model provider, or a tool that runs no Cloakroom check
+([Known limits](https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-LIMITS.md)).
+
+## Point any tool at Cloakroom
+
+Some tools let you set the address they send their requests to. `cloakroom proxy` runs a small server on your own
+machine (`127.0.0.1` only, never reachable from the network); you point the tool at it, and every request body is
+masked the way Cloakroom masks a file read, then sent on to the real address with the same headers. Replies come back
+unchanged, as a stream. It works on Mac, Linux and Windows and is off until you start it.
+
+```bash
+cloakroom proxy                      # run it (Ctrl+C stops it); --background starts it detached
+cloakroom proxy install claude       # Claude Code: sets ANTHROPIC_BASE_URL in ~/.claude/settings.json
+cloakroom proxy install codex        # Codex CLI: sets openai_base_url in ~/.codex/config.toml
+cloakroom proxy install gemini       # Gemini CLI: sets GOOGLE_GEMINI_BASE_URL in ~/.gemini/.env (API-key sign-in)
+cloakroom proxy install claude --print   # show the change, write nothing
+cloakroom proxy uninstall claude     # put back what was there before
+```
+
+The text Cloakroom checks is every string in the JSON body (messages, system prompt, tool results, tool descriptions)
+except names, ids, signatures and images. A value it masks gets a placeholder that your tools restore the same way as the
+placeholders from file reads: when the agent writes it to a local file or a command, the real value goes in. The
+placeholders are kept encrypted for 24 hours, like `cloakroom give`. A placeholder that a Cloakroom hook already put
+in the text passes through as it is.
+
+Each request is logged in the where-it-went ledger with the host and the kinds masked, never a value, so
+`cloakroom report --destinations` shows the proxy's traffic next to the commands. With the approved-sites list on, a
+request to an upstream that isn't on it is refused. A body Cloakroom can't read (not JSON, a compression it doesn't know,
+over `proxy_max_mb`, 16 by default) goes through unchanged and is counted as not checked. If the check can't run, the
+request is refused, not sent. `cloakroom doctor` shows whether the proxy runs and which tools point at it.
+
+| Setting in `~/.cloakroom/config.json` | What it does |
+|---|---|
+| `proxy_port` | the port; 0 (default) picks a free one the first time and keeps it |
+| `proxy_max_mb` | bigger bodies go through unchecked (default 16) |
+| `proxy_upstreams` | more routes, for example `{"/mistral": "https://api.mistral.ai"}`; `https` only (a loopback address may use `http`) |
+
+Cursor and Copilot are not covered: their requests go through the vendor's own servers, so there is no address on your
+machine to point them at ([Known limits](https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-LIMITS.md)).
 
 ## Why Cloakroom
 

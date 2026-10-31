@@ -1,5 +1,32 @@
 # Changelog
 
+## 1.0.0 (unreleased)
+- Where your agent sends data, and a way to limit it ([details](#see-where-your-agent-sends-data)). Every command that
+  sends data (`curl`, `wget`, `ssh`, `scp`, `git push`, network one-liners), every WebFetch and WebSearch, and every
+  MCP call to a remote server now logs where it went: the host and the kinds of data it carried (`EMAIL x1`), never a
+  value. `cloakroom report --destinations` prints the calls, holds and kinds per host, and the dashboard has a
+  "Where data went" list. Calls to `localhost` are not logged.
+- `cloakroom allow-host HOST` builds an approved-sites list (`*.example.com` is allowed, `*` alone is not). It does
+  nothing until you set `"egress": "allowlist"` in `~/.cloakroom/config.json`; then a call to any other site is held,
+  whatever it carries, and `cr: allow` lets that one call through. A call whose destination Cloakroom can't read
+  (`aws s3 ls`) is held too. Off by default: nothing changes until you turn it on.
+- A command, WebFetch or MCP call whose address, query string or headers carry your email address, phone number,
+  name or your computer's username is now held, naming the kind (`cr: allow` lets it through once). The username
+  comes from the operating system, not from `$USER`.
+- `cloakroom proxy`: point any tool that lets you set its API address (Claude Code, Codex CLI, Gemini CLI) at a small
+  server on your machine ([details](#point-any-tool-at-cloakroom)). It masks the text in every request body the way file
+  reads are masked, forwards the request with the same headers (never read, logged or changed), and passes the reply
+  back as a stream. `cloakroom proxy install claude|codex|gemini` writes the address into that tool's own config
+  (`--print` only shows it, `uninstall` puts back what was there). Values it masks are restored when a hook writes
+  their placeholder to a local file or command; they are kept encrypted for 24 hours. Each request goes into the
+  where-it-went ledger (host and kinds), the approved-sites list applies to its upstreams, and `cloakroom doctor`
+  shows whether it runs. Off until you start it; Mac, Linux and Windows.
+- Known limit: the proxy covers tools that let you set the API address. Cursor and Copilot send through their own
+  servers and are not covered; headers are not scanned; the agent's own traffic that doesn't go through the proxy is
+  not seen (see docs-LIMITS, "Cloakroom proxy").
+- Known limit: the ledger and the approved-sites list only see calls that pass through Cloakroom's checks, not the
+  agent's own calls to its model provider or a tool that runs no check (see docs-LIMITS, "Outgoing data").
+
 ## 0.9.0 (2026-10-30)
 - `cloakroom give NAME`: hand the agent a key without pasting it into a prompt. You type the value hidden in a
   terminal and get a placeholder to paste; when the agent writes the placeholder into a local file or command,
