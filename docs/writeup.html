@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How I keep secrets and personal data out of Claude Code</title>
+<meta name="description" content="How and why I built Cloakroom, what Claude sees, how the real values go back, and what I learned.">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#0a100c">
+<link rel="canonical" href="https://cloakroom.sh/writeup.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Cloakroom">
+<meta property="og:title" content="How I keep secrets and personal data out of Claude Code">
+<meta property="og:description" content="How and why I built Cloakroom, what Claude sees, how the real values go back, and what I learned.">
+<meta property="og:url" content="https://cloakroom.sh/writeup.html">
+<meta property="og:image" content="https://raw.githubusercontent.com/shanjeevrajendran/cloakroom/main/assets/social-card.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="How I keep secrets and personal data out of Claude Code">
+<meta name="twitter:description" content="How and why I built Cloakroom, what Claude sees, how the real values go back, and what I learned.">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/shanjeevrajendran/cloakroom/main/assets/social-card.png">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 44 44'%3E%3Crect width='44' height='44' rx='9' fill='%230d1117'/%3E%3Cg fill='%2356d364' stroke='%2356d364' stroke-width='2.6' stroke-linejoin='round' stroke-linecap='round' transform='translate(4 4) scale(.82)'%3E%3Cpath d='M4 6H40V16A6 6 0 0 0 40 28V38H4V28A6 6 0 0 0 4 16Z'/%3E%3Cpath d='M14 22H30' stroke='%230d1117' stroke-dasharray='3 3'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Martian+Mono:wdth,wght@75..112.5,400..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<script>document.documentElement.classList.add('js')</script>
+</head>
+<body class="t-terminal">
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="bar">
+  <div class="container bar-inner">
+    <a class="brand" href="./" aria-label="Cloakroom, home">
+      <svg viewBox="0 0 44 44" width="26" height="26" aria-hidden="true"><rect width="44" height="44" rx="9" fill="#0d1117"/><g fill="#56d364" stroke="#56d364" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round" transform="translate(4 4) scale(.82)"><path d="M4 6H40V16A6 6 0 0 0 40 28V38H4V28A6 6 0 0 0 4 16Z"/><path d="M14 22H30" stroke="#0d1117" stroke-dasharray="3 3"/></g></svg>
+      <span>Cloakroom</span>
+    </a>
+    <nav aria-label="Page">
+      <a href="./#install">Install</a>
+      <a href="./#faq">Questions</a>
+      <a href="./#writeup">Write-up</a>
+      <a href="https://github.com/shanjeevrajendran/cloakroom">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+<article class="writeup writeup--page container" id="writeup" aria-labelledby="writeup-title">
+<header class="doc-hero">
+  <h1 id="writeup-title" class="article-title">How I keep secrets and personal data out of Claude Code</h1>
+</header>
+<div class="doc">
+  <h2>The problem</h2>
+  <p>Claude Code reads whatever a task touches. Ask it to fix a failing job and it opens the <code>.env</code>, reads the end of the log, searches the support export. Everything it reads goes to the model as context.</p>
+  <p>But my working folders hold API keys, database passwords, and support tickets with customers’ names, emails and home addresses. I didn’t want any of that leaving my machine just because Claude needed to look at a file that happened to contain it.</p>
+  <p>Secret scanners help with keys that have a known shape. They don’t help with a customer’s name in a ticket, or an address in a log line. To a pattern matcher, those look like ordinary text.</p>
+  <p>So I built Cloakroom: a Claude Code plugin that masks secrets and personal data before the model sees them, and puts the real values back when Claude writes.</p>
+
+  <h2>What Claude sees</h2>
+  <p>Claude Code lets a plugin run hooks: small checks before and after every action Claude takes, such as reading a file or running a command. Cloakroom runs in those hooks. When Claude reads a file or runs a command, the output goes through Cloakroom first. It looks for:</p>
+  <ul>
+    <li>secrets with a known shape (cloud keys, tokens, private keys, passwords in URLs and config lines)</li>
+    <li>numbers with a built-in check digit (cards, IBANs, SSNs)</li>
+    <li>personal data in ordinary text (names, emails, addresses, birth dates), found by a small AI model that runs on your machine</li>
+  </ul>
+  <p>Each value it finds is swapped for a placeholder. Here’s a support note and a config line, on disk and as Claude gets them:</p>
+<pre><code># on disk
+Nadia Petrov called about a double charge. Reach her at nadia.petrov@gmail.com, 18 Larkspur Lane, Charlotte NC.
+DATABASE_URL=postgres://admin:Hunter2x9@10.0.4.12/prod
+
+# what Claude sees
+PII_PERSON_1 called about a double charge. Reach her at PII_EMAIL_1, PII_ADDRESS_1.
+DATABASE_URL=postgres://admin:PII_SECRET_1@10.0.4.12/prod</code></pre>
+  <p>Claude can still do the job. It knows there’s a person, an email and a password, and where each one sits. It just doesn’t know the values. A value keeps the same placeholder for the whole session, so <code>PII_PERSON_1</code> in one file is the same person in the next.</p>
+
+  <h2>Scans and photos</h2>
+  <p>A lot of personal data lives in pictures: a scanned form, a photo of an ID. Cloakroom can’t check pixels, so it reads them instead. A scanned PDF page or a photo that Claude opens goes through OCR (software that reads text out of a picture) on your own machine, and Claude gets the masked text instead of the image. The OCR models ship inside the package, so nothing is uploaded. A photo of a form that says <code>Patient: Nadia Petrov DOB 03/14/1986</code> reaches Claude as <code>Patient: PII_PERSON_1 DOB PII_DATE_1</code>.</p>
+  <p>OCR misreads digits, so in that text every long run of them is masked as an account number. Handwriting still reads poorly.</p>
+
+  <h2>How the real values go back</h2>
+  <p>Masking alone breaks things. If Claude writes <code>Hi PII_PERSON_1,</code> into a reply draft, that’s useless to you.</p>
+  <p>So the original values go into a vault, an encrypted file kept for the session, with the key in your OS’s secure store (Keychain on macOS, Credential Manager on Windows, Secret Service on Linux). When Claude writes a file or runs a command that contains a placeholder, the hook swaps the real value back in, locally, just before the tool runs. The draft on your disk says <code>Hi Nadia Petrov,</code>. The model never saw the name.</p>
+  <p>Prompts are different. Claude Code lets a hook block a prompt but not rewrite it, so if you paste a key or an email straight into the chat, Cloakroom stops that prompt and tells you what it found. Put the detail in a file and ask Claude to read it instead, or start the prompt with <code>cr!</code> to send it as is.</p>
+
+  <h2>Fixing false alarms</h2>
+  <p>A detector that masks too much gets switched off. Mine flagged <code>Order 4471</code> as an account number, which is harmless and gets in the way.</p>
+  <p><code>cloakroom dashboard</code> opens a local page listing every masked call. Label an alert as correct, a false alarm, or something it missed. A false alarm suggests a “never mask this” rule; a miss suggests an “always mask this” one. Approve the rule and that order number reaches Claude as plain text from then on. Rules that would unmask a key, password or card number always wait for your yes, and undo puts everything back.</p>
+  <p>The detection model itself never changes. Your labels become rules in front of it, encrypted like the vault.</p>
+
+  <h2>What I learned</h2>
+  <p><strong>Patterns aren’t enough.</strong> Keys are easy. Names, addresses and free-text personal data need a model. I use a small one that runs on your machine. The cost is a one-time download and some false alarms, which is why the labels and rules exist.</p>
+  <p><strong>Restore is the hard part.</strong> Detection gets the attention, but the real work was putting values back reliably: the same placeholder everywhere in a session, the right shape for each tool’s input, and edge cases like Claude’s Edit tool checking text against the file before any hook runs.</p>
+  <p><strong>If it can’t check, it waits.</strong> If Cloakroom can’t check something (the model still loading, the service down, OCR timing out), tool calls are held back rather than waved through. Prompts fall back to the fast rules, so you’re never locked out.</p>
+  <p><strong>Encoded output counts.</strong> A command like <code>base64 .env</code> or <code>xxd</code> turns a secret into something no pattern matches. Cloakroom turns those dumps back into text and checks them too.</p>
+  <p><strong>Know what it isn’t.</strong> Cloakroom stops accidental exposure: the key in a file Claude happened to open, the customer list in a log. It isn’t a sandbox, and a model determined to leak data piece by piece is out of scope.</p>
+
+  <h2>Try it</h2>
+  <p>It’s open source, runs locally, needs no account, and works on macOS, Windows and Linux. Inside Claude Code:</p>
+<pre><code>/plugin marketplace add shanjeevrajendran/cloakroom
+/plugin install cloakroom@cloakroom</code></pre>
+  <p>It protects keys and card numbers within about a minute (seconds if uv or pipx is already installed), then downloads the local model in the background for names and addresses.</p>
+  <p>I’d like to hear what it misses and what it over-masks: <a href="https://github.com/shanjeevrajendran/cloakroom">https://github.com/shanjeevrajendran/cloakroom</a></p>
+  <p>More: <a href="october-2026.html">What Cloakroom would and wouldn’t have done in October’s incidents</a></p>
+
+</div>
+</article>
+
+</main>
+
+<footer class="foot">
+  <div class="container foot-inner">
+    <nav aria-label="Project links">
+      <a href="https://github.com/shanjeevrajendran/cloakroom">GitHub</a>
+      <a href="https://pypi.org/project/cloakroom/">PyPI</a>
+      <a href="https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-LIMITS.md">Known limits</a>
+      <a href="https://github.com/shanjeevrajendran/cloakroom/blob/main/LICENSE">Apache-2.0</a>
+    </nav>
+    <p>Made by <a href="https://github.com/shanjeevrajendran">Shanjeev Rajendran</a>.</p>
+  </div>
+</footer>
+</body>
+</html>
