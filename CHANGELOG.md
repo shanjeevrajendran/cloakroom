@@ -1,6 +1,7 @@
 # Changelog
 
 ## 1.1.0 (unreleased)
+- Dashboard: new Console look, solid icon in the header and as favicon, refreshed preview.
 - Cursor's command-line agent: `cloakroom install cursor` adds Cloakroom's hooks to `~/.cursor/hooks.json`, next to yours
   (`uninstall` removes only its own). Cursor can't swap a tool's output for a masked copy, so Cloakroom changes the
   input: a file read goes to a masked copy of the file, a shell command runs inside Cloakroom,
