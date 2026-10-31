@@ -103,6 +103,13 @@ def check(root):
         bad.append(f"(f) pyproject.toml: version {want and want.group(1)} but newest CHANGELOG entry is {version}")
     else:
         out.append(f"ok (f) CHANGELOG {version} = pyproject (the other pins: version-init and version-pins steps)")
+    # (h) the generated pages carry pyproject's version; llms.txt is built from install and security only, no version
+    if want and heads[0].group(2) != "unreleased":
+        stale = [p for p in ("docs/commands.html", "docs/releases.html")
+                 if not re.search(rf"(?<![\d.]){re.escape(want.group(1))}(?![\d.])", read(p) or "")]
+        bad.extend(f"(h) {p}: no {want.group(1)}; run: python scripts/gen_pages.py --local" for p in stale)
+        if not stale:
+            out.append(f"ok (h) generated pages show {want.group(1)}")
     limit_bullets = [b for b in re.split(r"\n(?=- )", entry) if b.lstrip("- ").lower().startswith("known limit")]
     ok = True
     for b in limit_bullets:

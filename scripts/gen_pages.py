@@ -3,9 +3,13 @@
 Installs cloakroom==VERSION into a throwaway venv and reads every command's --help; reads CHANGELOG.md, the
 handbook and the README from the public repo at the release tag (never a local checkout). Page chrome (head,
 nav, footer) is copied from docs/install.html, so every page shares it. Same inputs, same bytes out.
-    python3 scripts/gen_pages.py
+    python3 scripts/gen_pages.py           the live-site workflow: the published release, from PyPI and its tag
+    python3 scripts/gen_pages.py --local   before publishing: this checkout's version, sources and the
+                                           `cloakroom` on PATH (activate the checkout's venv first)
 """
+import argparse
 import html
+import shutil
 from html.parser import HTMLParser
 import pathlib
 import re
@@ -16,7 +20,9 @@ import tempfile
 VERSION = "0.9.0"
 REPO = "https://github.com/shanjeevrajendran/cloakroom"
 VENV = pathlib.Path("/tmp/ck-venv")
-DOCS = pathlib.Path(__file__).resolve().parents[1] / "docs"
+ROOT = pathlib.Path(__file__).resolve().parents[1]
+DOCS = ROOT / "docs"
+SOURCES = ("CHANGELOG.md", "docs-HANDBOOK.md", "README.md")
 
 # Typed by the machine or once at most (the handbook's "Other commands" line, the hook entry points).
 RARE = ["export-onnx", "status", "serve", "clean-history", "hook", "git-check"]
@@ -50,7 +56,17 @@ def run(*cmd, **kw):
 def fetch_sources():
     tmp = pathlib.Path(tempfile.mkdtemp(prefix="ck-src-"))
     run("git", "clone", "-q", "--depth", "1", "--branch", f"v{VERSION}", REPO + ".git", str(tmp / "ck"))
-    return {n: (tmp / "ck" / n).read_text() for n in ("CHANGELOG.md", "docs-HANDBOOK.md", "README.md")}
+    return {n: (tmp / "ck" / n).read_text() for n in SOURCES}
+
+
+def local_cloakroom():
+    exe = shutil.which("cloakroom")
+    if not exe:
+        sys.exit("--local needs `cloakroom` on PATH: activate this checkout's venv (pip install -e .)")
+    got = run(exe, "--version").split()[-1]
+    if got != VERSION:
+        sys.exit(f"--local: `cloakroom` on PATH is {got}, pyproject.toml says {VERSION}")
+    return lambda *a: run(exe, *a, env={"COLUMNS": "1000", "PATH": "/usr/bin:/bin"})
 
 
 def cloakroom():
@@ -298,8 +314,14 @@ def llms():
 
 
 def main():
-    src = fetch_sources()
-    ck = cloakroom()
+    global VERSION
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--local", action="store_true", help="use this checkout instead of the published release")
+    if ap.parse_args().local:
+        VERSION = re.search(r'^version = "([^"]+)"', (ROOT / "pyproject.toml").read_text(), re.M).group(1)
+        src, ck = {n: (ROOT / n).read_text() for n in SOURCES}, local_cloakroom()
+    else:
+        src, ck = fetch_sources(), cloakroom()
     (DOCS / "commands.html").write_text(commands(src, ck))
     (DOCS / "releases.html").write_text(releases(src))
     (DOCS / "llms.txt").write_text(llms())

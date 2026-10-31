@@ -24,6 +24,8 @@ FILES = {
     ),
     "docs/index.html": '<section class="features"><h3>Waving</h3><code>cloakroom wave</code></section>',
     "docs-LIMITS.md": "# Limits\n- Fading waves: they fade.\n",
+    "docs/commands.html": "<p>Every command in Cloakroom 1.2.0</p>",
+    "docs/releases.html": "<h2>1.2.0</h2><h2>1.1.0</h2>",
     "llms.txt": "# x\nRun `cloakroom wave` or `cloakroom report`.\n",
 }
 
@@ -55,6 +57,8 @@ def test_complete_tree_passes(tmp_path):
     ("(d)", {"llms.txt": "# x\nRun `cloakroom other`.\n"}, "cloakroom wave"),
     ("(e)", {"docs/index.html": '<section class="features"><h3>Other</h3></section>'}, "cloakroom wave"),
     ("(f)", {"pyproject.toml": 'version = "1.1.0"\n'}, "newest CHANGELOG entry is 1.2.0"),
+    ("(h)", {"docs/releases.html": "<h2>1.1.0</h2><h2>11.2.0</h2>"}, "gen_pages.py --local"),
+    ("(h)", {"docs/commands.html": "<p>Every command in Cloakroom 1.1.0</p>"}, "docs/commands.html"),
     ("(g)", {"docs-LIMITS.md": "# Limits\n"}, "Fading waves"),
     ("(g)", {"CHANGELOG.md": FILES["CHANGELOG.md"].replace(" (see docs-LIMITS, \"Fading waves\")", "")}, "pointer"),
 ])
