@@ -17,6 +17,13 @@ its own answers:
   - BeforeTool takes the whole rewritten input in hookSpecificOutput.tool_input, and "ask" is supported;
   - AfterTool replaces the result only through a deny, whose reason the model gets instead (additionalContext is
     dropped then, so the guide goes into the reason).
+Cursor (https://cursor.com/docs/hooks, checked against the command-line agent 2026.10.22) can change a tool's input
+but never its output, except an MCP tool's. So Cloakroom masks before the model can see anything:
+  - a file read is pointed at a masked copy of the file (preToolUse updated_input, cursor.py);
+  - a shell command is rewritten to run inside `cloakroom cursor-run`, which prints only masked output;
+  - MCP output is replaced after the call (postToolUse updated_mcp_tool_output);
+  - everything else is checked in the tool's input, as for Codex. An ask becomes a deny: Cursor doesn't enforce it
+    on preToolUse. The command-line agent doesn't run beforeSubmitPrompt, so typed prompts aren't covered there.
 Standard library only: hookentry imports this before anything else can fail.
 """
 import json
@@ -25,8 +32,8 @@ import re
 import shlex
 import sys
 
-AGENTS = ("claude", "codex", "gemini")
-NAMES = {"codex": "Codex", "gemini": "Gemini CLI"}
+AGENTS = ("claude", "codex", "gemini", "cursor")
+NAMES = {"codex": "Codex", "gemini": "Gemini CLI", "cursor": "Cursor"}
 HOOK_EVENTS = {"start": "SessionStart", "prompt": "UserPromptSubmit", "pre": "PreToolUse", "post": "PostToolUse"}
 TIMEOUTS = {"start": 30, "prompt": 60, "pre": 60, "post": 120}  # seconds, as for Claude Code
 FAILED = ("Cloakroom is not installed or not working, so this was stopped to keep data private. Run: cloakroom doctor")
@@ -49,6 +56,39 @@ HELD, NOTE = "_cloakroom_held", "_cloakroom_note"  # set by gemini_request: for 
 NOT_CHECKED = ("cloakroom: not working, so this message was not checked. Tool calls stay blocked until it works "
                "again. Run: cloakroom doctor")
 ASK_NOTE = " Codex can't ask you from a hook, so the call was stopped; run it yourself if it's what you want."
+CURSOR_ASK_NOTE = " Cursor can't ask you from this hook, so the call was stopped; run it yourself if it's what you want."
+CURSOR_GUIDE = ("Cloakroom note: values like PII_EMAIL_1_k7q2ab are placeholders for real data kept on this machine. Use "
+                "them verbatim in local shell commands (cat, grep, sed, python...): Cloakroom puts the real values "
+                "back before the command runs and masks them again in the output. Cursor's Write and edit tools "
+                "can't get the real values back, so a Write or edit that carries a placeholder is refused: write "
+                "that file with a shell command instead (printf, cat <<'EOF', python). When you edit part of a file, "
+                "the text you replace must not contain a placeholder (the file holds the real value, so it won't "
+                "match): anchor on nearby text. Search file contents with a shell command (rg, grep), not the Grep "
+                "tool. Copy placeholders exactly, tag included: Cloakroom restores only the ones it issued in this "
+                "session. Don't try to recover the real values.")
+WRITE_DENY = ("Cloakroom: this write carries a placeholder, and Cursor's Write tool can't take the real value back "
+              "from Cloakroom. Write the file with a shell command instead (printf, cat <<'EOF', python), keeping "
+              "the placeholder as it is: Cloakroom restores it there.")
+GREP_DENY = ("Cloakroom: Cursor's Grep tool shows file contents that can't be masked. Search with a shell command "
+             "instead (rg or grep): Cloakroom masks its output. Grep that lists only file names (files_with_matches "
+             "or count) is fine.")
+# Cursor event -> (cloakroom hook event, matcher, failClosed). Tool hooks fail closed; prompt and session hooks never
+# lock you out (hookentry.closed).
+CURSOR_HOOKS = {
+    "sessionStart": ("start", None, False),
+    "beforeSubmitPrompt": ("prompt", None, False),
+    "preToolUse": ("pre", ".*", True),
+    "beforeShellExecution": ("pre", None, True),
+    "beforeMCPExecution": ("pre", None, True),
+    "beforeReadFile": ("pre", None, True),
+    "postToolUse": ("post", ".*", True),
+    "postToolUseFailure": ("scrub", ".*", False),
+    "sessionEnd": ("scrub", None, False),
+}
+CURSOR_EVENTS = {"preToolUse": "PreToolUse", "beforeShellExecution": "PreToolUse", "beforeMCPExecution": "PreToolUse",
+                 "beforeReadFile": "PreToolUse", "postToolUse": "PostToolUse",
+                 "postToolUseFailure": "PostToolUseFailure", "sessionStart": "SessionStart",
+                 "sessionEnd": "SessionEnd", "beforeSubmitPrompt": "UserPromptSubmit"}
 _PROMPT = re.compile(r"^Cloakroom stopped this prompt: it holds private data \((.+?)\), so it wasn't sent\.")
 _COPY = "\nSend this instead:\n"
 
@@ -233,18 +273,97 @@ def gemini_answer(event, out, data=None):
     return out
 
 
+def _cursor_words(text):
+    """Cloakroom's messages as Cursor's CLI shows them: it has no prompt hook, so cr: allow can't be typed there."""
+    return _words(text, "Cursor").replace("type cr: allow", "run cloakroom allow in a terminal") \
+        if isinstance(text, str) else text
+
+
+def _json_or(value, key):
+    """MCP input and output arrive as JSON strings: the parsed value, else {key: the string}."""
+    if not isinstance(value, str):
+        return value
+    try:
+        return json.loads(value)
+    except ValueError:
+        return {key: value}
+
+
+def cursor_request(event, data):
+    """Cursor's hook input as Claude Code's (section 2 of the design). Cursor's own event name stays in
+    _cursor_event, so hook.py can tell preToolUse from beforeShellExecution."""
+    data = dict(data)
+    cursor_event = data.get("hook_event_name")
+    data["_cursor_event"] = cursor_event
+    data["hook_event_name"] = CURSOR_EVENTS.get(cursor_event, cursor_event)
+    args = data.get("tool_input") if isinstance(data.get("tool_input"), dict) else {}
+    roots = data.get("workspace_roots") if isinstance(data.get("workspace_roots"), list) else []
+    data["cwd"] = next((str(c) for c in (data.get("cwd"), args.get("cwd"), roots[0] if roots else None) if c),
+                       os.getcwd())
+    name = str(data.get("tool_name", ""))
+    if cursor_event == "beforeMCPExecution":
+        data["tool_name"] = f"mcp__{data.get('mcp_server_name')}__{name}"
+        parsed = _json_or(data.get("tool_input"), "input")
+        data["tool_input"] = parsed if isinstance(parsed, dict) else {"input": parsed}
+    elif cursor_event == "preToolUse":
+        if name == "Shell":
+            data["tool_name"] = "Bash"
+        elif name == "Write" and "content" not in args and ("old_string" in args or "new_string" in args):
+            data["tool_name"] = "Edit"
+        elif name.startswith("MCP:"):
+            data["tool_name"] = "mcp__cursor__" + name[4:]
+    elif cursor_event == "postToolUse" and name.startswith("MCP:"):
+        data["tool_name"] = "mcp__cursor__" + name[4:]
+        data["tool_response"] = _json_or(data.get("tool_output"), "text")
+    return data
+
+
+def cursor_answer(event, out, data=None):
+    """hook.py's Claude Code answer as Cursor's (section 2 of the design). Always an object: {} is a clean pass."""
+    data = data if isinstance(data, dict) else {}
+    h = (out or {}).get("hookSpecificOutput") or {}
+    if event == "start":
+        return {"additional_context": CURSOR_GUIDE}
+    if event == "prompt":
+        if (out or {}).get("decision") == "block":
+            return {"continue": False, "user_message": _prompt_reason((out or {}).get("reason", ""), "Cursor")}
+        return {}  # a broken Cloakroom never blocks a prompt
+    if event == "pre":
+        reason = _cursor_words(h.get("permissionDecisionReason", ""))
+        if h.get("permissionDecision") == "ask":  # Cursor doesn't enforce ask on preToolUse: never run unasked
+            reason += CURSOR_ASK_NOTE
+        if h.get("permissionDecision") in ("deny", "ask"):
+            return {"permission": "deny", "user_message": reason, "agent_message": reason}  # which one reaches the model is untested
+        return {"permission": "allow", "updated_input": h["updatedInput"]} if "updatedInput" in h else {}
+    if event == "post":
+        res = {}
+        tool = str(data.get("tool_name", ""))
+        if "updatedToolOutput" in h and (not tool or tool.startswith(("mcp__", "MCP:"))):  # unreadable input: no name
+            res["updated_mcp_tool_output"] = _as_text(h["updatedToolOutput"]) or "[Cloakroom: empty output]"
+        if h.get("additionalContext"):
+            from .hook import GUIDE  # only imported once the hook ran, so it can be imported
+            ctx = h["additionalContext"]
+            res["additional_context"] = CURSOR_GUIDE if ctx == GUIDE else _cursor_words(ctx)
+        return res
+    return {}  # scrub; systemMessage is dropped: Cursor has no status line, and hook.log keeps it
+
+
 AGENT = "_cloakroom_agent"  # which agent's hook this is, for hook.py's Codex-only hold
 
 
 def request(agent, event, data):
     if agent == "codex":
         return {**data, AGENT: agent}
+    if agent == "cursor":
+        return {**cursor_request(event, data), AGENT: agent}
     return gemini_request(event, data) if agent == "gemini" else data
 
 
 def answer(agent, event, out, data=None):
     if agent == "codex":
         return codex_answer(event, out)
+    if agent == "cursor":
+        return cursor_answer(event, out, data)
     return gemini_answer(event, out, data) if agent == "gemini" else out
 
 
@@ -341,6 +460,95 @@ def codex_installed():
         return False
     return all(any(_ours(h) for g in hooks.get(n, []) if isinstance(g, dict) for h in g.get("hooks", []))
                for n in HOOK_EVENTS.values())
+
+
+# --- install / uninstall into Cursor's hooks.json (flat lists of entries, not Codex's groups) ---
+
+def cursor_home():
+    # HOME first: Windows' expanduser ignores it, and tests point HOME at a temp folder (never the real ~/.cursor)
+    return os.path.join(os.environ.get("HOME") or os.path.expanduser("~"), ".cursor")
+
+
+def cursor_command(program, event):
+    """No `|| exit 2` fallback as for Codex: failClosed turns any failure of a tool hook into a deny."""
+    return f"{shlex.quote(program)} hook {event} --agent cursor"
+
+
+def _cursor_ours(entry):
+    return isinstance(entry, dict) and " hook " in str(entry.get("command", "")) \
+        and "--agent cursor" in str(entry.get("command", ""))
+
+
+def _cursor_load(path):
+    data = _load(path)
+    if not all(isinstance(v, list) for v in data.get("hooks", {}).values()):
+        raise ValueError(f"{path} is not a hooks file this version understands; left as it is")
+    return data
+
+
+def _cursor_strip(data):
+    """Our entries taken out; events left empty by that go too. Other hooks stay as they are."""
+    hooks = data.get("hooks", {})
+    for name, entries in list(hooks.items()):
+        kept = [e for e in entries if not _cursor_ours(e)]
+        if kept:
+            hooks[name] = kept
+        else:
+            del hooks[name]
+    return data
+
+
+def install_cursor(program):
+    path = os.path.join(cursor_home(), "hooks.json")
+    data = _cursor_strip(_cursor_load(path))
+    data.setdefault("version", 1)
+    hooks = data.setdefault("hooks", {})
+    for name, (event, matcher, fail_closed) in CURSOR_HOOKS.items():
+        entry = {"command": cursor_command(program, event)}
+        if matcher:
+            entry["matcher"] = matcher
+        if fail_closed:
+            entry["failClosed"] = True
+        hooks.setdefault(name, []).append(entry)
+    _write(path, data)
+    return path
+
+
+def uninstall_cursor():
+    path = os.path.join(cursor_home(), "hooks.json")
+    if not os.path.exists(path):
+        return path
+    data = _cursor_strip(_cursor_load(path))
+    if data.get("hooks") or set(data) - {"version", "hooks"}:
+        _write(path, data)
+    else:
+        os.remove(path)  # the file held only our hooks
+    return path
+
+
+def cursor_installed():
+    """True when Cursor's hooks.json holds Cloakroom's hooks for all nine events."""
+    try:
+        hooks = _cursor_load(os.path.join(cursor_home(), "hooks.json")).get("hooks", {})
+    except (ValueError, OSError):
+        return False
+    return all(any(_cursor_ours(e) for e in hooks.get(n, [])) for n in CURSOR_HOOKS)
+
+
+def cursor_other_hooks(cwd):
+    """Files other than the user file that hold a hook on Cursor's tool calls that isn't ours (the project file and
+    the enterprise file): one of them may change a command or a read too, and which change wins is unknown."""
+    enterprise = ("/Library/Application Support/Cursor/hooks.json" if sys.platform == "darwin" else
+                  "C:\\ProgramData\\Cursor\\hooks.json" if os.name == "nt" else "/etc/cursor/hooks.json")
+    found = []
+    for path in (os.path.join(cwd, ".cursor", "hooks.json"), enterprise):
+        try:
+            hooks = _cursor_load(path).get("hooks", {})
+        except (ValueError, OSError):
+            continue
+        if any(not _cursor_ours(e) for n in ("preToolUse", "beforeShellExecution") for e in hooks.get(n, [])):
+            found.append(path)
+    return found
 
 
 def _program():
@@ -504,6 +712,9 @@ def install(agent, remove=False):
                 path = uninstall_gemini()
                 print(f"cloakroom: Gemini CLI extension removed ({path})")
                 return 0
+            if agent == "cursor":
+                print(f"cloakroom: Cursor hooks removed from {uninstall_cursor()}")
+                return 0
             print(f"cloakroom: Codex hooks removed from {uninstall_codex()}")
             return 0
         program = _program()
@@ -511,7 +722,7 @@ def install(agent, remove=False):
             print(f"cloakroom: can't find the cloakroom program to point {NAMES[agent]} at; install it first "
                   "(uv tool install 'cloakroom[model,torch]')", file=sys.stderr)
             return 1
-        path = install_gemini(program) if agent == "gemini" else install_codex(program)
+        path = {"gemini": install_gemini, "cursor": install_cursor}.get(agent, install_codex)(program)
     except (ValueError, OSError) as e:
         print(f"cloakroom: {e}", file=sys.stderr)
         return 1
@@ -520,6 +731,12 @@ def install(agent, remove=False):
               f"(gemini-extension.json and hooks/hooks.json, four hooks running {program}).\n"
               "No other Gemini file was changed. Gemini runs the hooks in every folder from its next start on;\n"
               "gemini extensions list shows it. To remove it: cloakroom uninstall gemini")
+        return 0
+    if agent == "cursor":
+        print(f"cloakroom: Cursor hooks written to {path} (program: {program}).\n"
+              "Cursor's command-line agent (agent) runs them from its next start. The editor reads the same file but "
+              "hasn't been checked with Cloakroom yet.\n"
+              "To remove them: cloakroom uninstall cursor")
         return 0
     print(f"cloakroom: Codex hooks written to {path} (program: {program}).\n"
           "Next, once: start Codex (codex), type /hooks, open each of the four Cloakroom hooks and trust it.\n"

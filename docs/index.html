@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Cloakroom: keep secrets and personal data out of your AI coding agent</title>
-<meta name="description" content="Free and open source. Cloakroom masks API keys, secrets and personal data on your own machine before your AI coding agent sees them. Works with Claude Code, Codex CLI and Gemini CLI.">
+<meta name="description" content="Free and open source. Cloakroom masks API keys, secrets and personal data on your own machine before your AI coding agent sees them. Works with Claude Code, Codex CLI, Gemini CLI and Cursor’s command-line agent.">
 <meta name="author" content="Shanjeev Rajendran">
 <meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#0a100c">
@@ -12,19 +12,19 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Cloakroom">
 <meta property="og:title" content="Cloakroom: keep secrets and personal data out of your AI coding agent">
-<meta property="og:description" content="Free and open source. Cloakroom masks API keys, secrets and personal data on your own machine before your AI coding agent sees them. Works with Claude Code, Codex CLI and Gemini CLI.">
+<meta property="og:description" content="Free and open source. Cloakroom masks API keys, secrets and personal data on your own machine before your AI coding agent sees them. Works with Claude Code, Codex CLI, Gemini CLI and Cursor’s command-line agent.">
 <meta property="og:url" content="https://cloakroom.sh/">
 <meta property="og:image" content="https://raw.githubusercontent.com/shanjeevrajendran/cloakroom/main/assets/social-card.png">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Cloakroom: keep secrets and personal data out of your AI coding agent">
-<meta name="twitter:description" content="Free and open source. Cloakroom masks API keys, secrets and personal data on your own machine before your AI coding agent sees them. Works with Claude Code, Codex CLI and Gemini CLI.">
+<meta name="twitter:description" content="Free and open source. Cloakroom masks API keys, secrets and personal data on your own machine before your AI coding agent sees them. Works with Claude Code, Codex CLI, Gemini CLI and Cursor’s command-line agent.">
 <meta name="twitter:image" content="https://raw.githubusercontent.com/shanjeevrajendran/cloakroom/main/assets/social-card.png">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 44 44'%3E%3Crect width='44' height='44' rx='9' fill='%230d1117'/%3E%3Cg fill='%2356d364' stroke='%2356d364' stroke-width='2.6' stroke-linejoin='round' stroke-linecap='round' transform='translate(4 4) scale(.82)'%3E%3Cpath d='M4 6H40V16A6 6 0 0 0 40 28V38H4V28A6 6 0 0 0 4 16Z'/%3E%3Cpath d='M14 22H30' stroke='%230d1117' stroke-dasharray='3 3'/%3E%3C/g%3E%3C/svg%3E">
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Cloakroom","description":"Free and open source. Cloakroom masks API keys, secrets and personal data on your own machine before your AI coding agent sees them. Works with Claude Code, Codex CLI and Gemini CLI.","applicationCategory":"SecurityApplication","operatingSystem":"macOS, Windows, Linux","license":"https://opensource.org/licenses/MIT","url":"https://cloakroom.sh/","codeRepository":"https://github.com/shanjeevrajendran/cloakroom","author":{"@type":"Person","name":"Shanjeev Rajendran","url":"https://shanjeevrajendran.github.io/"},"sameAs":["https://github.com/shanjeevrajendran/cloakroom","https://pypi.org/project/cloakroom/"],"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
+{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Cloakroom","description":"Free and open source. Cloakroom masks API keys, secrets and personal data on your own machine before your AI coding agent sees them. Works with Claude Code, Codex CLI, Gemini CLI and Cursor’s command-line agent.","applicationCategory":"SecurityApplication","operatingSystem":"macOS, Windows, Linux","license":"https://opensource.org/licenses/MIT","url":"https://cloakroom.sh/","codeRepository":"https://github.com/shanjeevrajendran/cloakroom","author":{"@type":"Person","name":"Shanjeev Rajendran","url":"https://shanjeevrajendran.github.io/"},"sameAs":["https://github.com/shanjeevrajendran/cloakroom","https://pypi.org/project/cloakroom/"],"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
 </script>
 <script type="application/ld+json">
-{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Does Cloakroom send my data anywhere?", "acceptedAnswer": {"@type": "Answer", "text": "No. It downloads the detection model once from Hugging Face, and everything else runs on your own machine."}}, {"@type": "Question", "name": "What does it mask?", "acceptedAnswer": {"@type": "Answer", "text": "API keys, secrets and personal data such as names, emails and addresses. Scanned pages and photos are read on your machine and masked like any other file."}}, {"@type": "Question", "name": "Does Claude still work normally?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Claude works with placeholders like PII_PERSON_1, and the real values are put back, locally, in the files Claude writes."}}, {"@type": "Question", "name": "What happens when my prompt contains a secret?", "acceptedAnswer": {"@type": "Answer", "text": "A prompt can be blocked but not rewritten, so Cloakroom stops it and tells you what it found. Put the detail in a file and ask Claude to read it instead."}}, {"@type": "Question", "name": "Does Cloakroom work with Codex or Gemini CLI?", "acceptedAnswer": {"@type": "Answer", "text": "Yes, on Mac and Linux: run cloakroom install codex or cloakroom install gemini. Claude Code works on Mac, Linux and Windows."}}, {"@type": "Question", "name": "What is stored and what leaves my machine?", "acceptedAnswer": {"@type": "Answer", "text": "The Security model page at https://cloakroom.sh/security.html lists what is stored, where, what leaves your machine and what it cannot catch."}}, {"@type": "Question", "name": "What doesn't it protect?", "acceptedAnswer": {"@type": "Answer", "text": "It stops accidental leaks, like a key in a file the AI happened to open. It isn't a sandbox that walls the AI off. Out of scope: hidden instructions in a file (a prompt injection) that trick the AI into leaking data piece by piece; what you type into a prompt, which Cloakroom can stop but not rewrite; and Claude Code's own logs on your disk."}}]}
+{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Does Cloakroom send my data anywhere?", "acceptedAnswer": {"@type": "Answer", "text": "No. It downloads the detection model once from Hugging Face, and everything else runs on your own machine."}}, {"@type": "Question", "name": "What does it mask?", "acceptedAnswer": {"@type": "Answer", "text": "API keys, secrets and personal data such as names, emails and addresses. Scanned pages and photos are read on your machine and masked like any other file."}}, {"@type": "Question", "name": "Does Claude still work normally?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Claude works with placeholders like PII_PERSON_1, and the real values are put back, locally, in the files Claude writes."}}, {"@type": "Question", "name": "What happens when my prompt contains a secret?", "acceptedAnswer": {"@type": "Answer", "text": "A prompt can be blocked but not rewritten, so Cloakroom stops it and tells you what it found. Put the detail in a file and ask Claude to read it instead."}}, {"@type": "Question", "name": "Does Cloakroom work with Codex, Gemini CLI or Cursor?", "acceptedAnswer": {"@type": "Answer", "text": "Yes, on Mac and Linux: run cloakroom install codex, cloakroom install gemini or cloakroom install cursor (Cursor’s command-line agent; the editor isn’t checked yet). Claude Code works on Mac, Linux and Windows."}}, {"@type": "Question", "name": "What is stored and what leaves my machine?", "acceptedAnswer": {"@type": "Answer", "text": "The Security model page at https://cloakroom.sh/security.html lists what is stored, where, what leaves your machine and what it cannot catch."}}, {"@type": "Question", "name": "What doesn't it protect?", "acceptedAnswer": {"@type": "Answer", "text": "It stops accidental leaks, like a key in a file the AI happened to open. It isn't a sandbox that walls the AI off. Out of scope: hidden instructions in a file (a prompt injection) that trick the AI into leaking data piece by piece; what you type into a prompt, which Cloakroom can stop but not rewrite; and Claude Code's own logs on your disk."}}]}
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -64,6 +64,7 @@
       <button type="button" role="tab" id="tab-claude" aria-controls="panel-claude" aria-selected="true">Claude Code</button>
       <button type="button" role="tab" id="tab-codex" aria-controls="panel-codex" aria-selected="false">Codex CLI</button>
       <button type="button" role="tab" id="tab-gemini" aria-controls="panel-gemini" aria-selected="false">Gemini CLI</button>
+      <button type="button" role="tab" id="tab-cursor" aria-controls="panel-cursor" aria-selected="false">Cursor</button>
     </div>
     <div class="tabpanel" role="tabpanel" id="panel-claude" aria-labelledby="tab-claude">
       <p class="tab-note">Inside Claude Code:</p>
@@ -79,6 +80,11 @@ cloakroom install codex</code></pre><button type="button" class="copy">Copy</but
       <p class="tab-note">Gemini CLI (Mac and Linux), in a terminal:</p>
       <div class="cmd-row"><pre><code>uv tool install "cloakroom[model,torch,ocr]"
 cloakroom install gemini</code></pre><button type="button" class="copy">Copy</button></div>
+    </div>
+    <div class="tabpanel" role="tabpanel" id="panel-cursor" aria-labelledby="tab-cursor">
+      <p class="tab-note">Mac and Linux (checked against Cursor’s command-line agent 2026.10.22).</p>
+      <div class="cmd-row"><pre><code>uv tool install "cloakroom[model,torch,ocr]"
+cloakroom install cursor</code></pre><button type="button" class="copy">Copy</button></div>
     </div>
   </div>
   <p class="actions">
@@ -123,7 +129,7 @@ cloakroom install gemini</code></pre><button type="button" class="copy">Copy</bu
   </article>
   <article class="feat">
     <h3>Shows which keys your agents saw</h3>
-    <p><code>cloakroom exposure</code> lists the keys and passwords Claude Code, Codex CLI and Gemini CLI saw, each as a hint (<code>ghp_…LmPq</code>), never the key, and ends with a “Rotate these” list. It lists only what Cloakroom detected.</p>
+    <p><code>cloakroom exposure</code> lists the keys and passwords Claude Code, Codex CLI, Gemini CLI and Cursor’s command-line agent saw, each as a hint (<code>ghp_…LmPq</code>), never the key, and ends with a “Rotate these” list. It lists only what Cloakroom detected.</p>
   </article>
   <article class="feat">
     <h3>Warns when a pull changes what your agent runs</h3>
@@ -143,7 +149,7 @@ cloakroom install gemini</code></pre><button type="button" class="copy">Copy</bu
   </article>
   <article class="feat">
     <h3>Updates with one command</h3>
-    <p>Run <code>cloakroom update</code> in a terminal. It updates Cloakroom with the installer you used (uv, pipx or pip) and keeps the optional parts you had. Then it sets up Cloakroom’s checks again for Codex, Gemini CLI and git commits, only where they were set up before.</p>
+    <p>Run <code>cloakroom update</code> in a terminal. It updates Cloakroom with the installer you used (uv, pipx or pip) and keeps the optional parts you had. Then it sets up Cloakroom’s checks again for Codex, Gemini CLI, Cursor’s command-line agent and git commits, only where they were set up before.</p>
   </article>
   <article class="feat">
     <h3>Takes stopped prompts out of the saved chat</h3>
@@ -167,13 +173,13 @@ cloakroom install gemini</code></pre><button type="button" class="copy">Copy</bu
 <section class="install container" id="install" aria-labelledby="install-title">
   <h2 id="install-title">Install</h2>
   <div class="install-body">
-  <p>Free and open source. It works with Claude Code, Codex CLI and Gemini CLI (AI coding agents that run in a terminal) and sets itself up on first start. Claude Code runs on Mac, Windows and Linux; Codex and Gemini on Mac and Linux.</p>
+  <p>Free and open source. It works with Claude Code, Codex CLI, Gemini CLI and Cursor’s command-line agent (AI coding agents that run in a terminal) and sets itself up on first start. Claude Code runs on Mac, Windows and Linux; Codex, Gemini and Cursor on Mac and Linux.</p>
   <p>Inside Claude Code:</p>
 <pre class="cmd"><code>/plugin marketplace add shanjeevrajendran/cloakroom
 /plugin install cloakroom@cloakroom</code></pre>
   <p>Restart Claude Code and Cloakroom sets itself up: keys, card numbers and ID numbers are covered within seconds if uv or pipx (tools that install Python programs) is already installed, or in about a minute when Cloakroom has to download them first; names and addresses a few minutes later, once the detection model has downloaded.</p>
-  <p>Using Codex CLI or Gemini CLI (Mac and Linux)? Install the program with <code>uv tool install "cloakroom[model,torch,ocr]"</code>, then run <code>cloakroom install codex</code> or <code>cloakroom install gemini</code>.</p>
-  <ul class="links"><li><a href="https://github.com/shanjeevrajendran/cloakroom#codex">Codex steps</a></li><li><a href="https://github.com/shanjeevrajendran/cloakroom#gemini-cli">Gemini CLI steps</a></li></ul>
+  <p>Using Codex CLI, Gemini CLI or Cursor (Mac and Linux)? Install the program with <code>uv tool install "cloakroom[model,torch,ocr]"</code>, then run <code>cloakroom install codex</code>, <code>cloakroom install gemini</code> or <code>cloakroom install cursor</code>.</p>
+  <ul class="links"><li><a href="https://github.com/shanjeevrajendran/cloakroom#codex">Codex steps</a></li><li><a href="https://github.com/shanjeevrajendran/cloakroom#gemini-cli">Gemini CLI steps</a></li><li><a href="https://github.com/shanjeevrajendran/cloakroom#cursor">Cursor steps</a></li></ul>
   <p>Then, in a terminal:</p>
 <pre class="cmd"><code><span class="c"># checks Python, the key store, the detection model and the background service</span>
 cloakroom doctor
@@ -194,8 +200,8 @@ cloakroom dashboard</code></pre>
   <p>Yes. Claude works with placeholders like PII_PERSON_1, and the real values are put back, locally, in the files Claude writes.</p>
   <h3>What happens when my prompt contains a secret?</h3>
   <p>A prompt can be blocked but not rewritten, so Cloakroom stops it and tells you what it found. Put the detail in a file and ask Claude to read it instead.</p>
-  <h3>Does Cloakroom work with Codex or Gemini CLI?</h3>
-  <p>Yes, on Mac and Linux: run cloakroom install codex or cloakroom install gemini. Claude Code works on Mac, Linux and Windows.</p>
+  <h3>Does Cloakroom work with Codex, Gemini CLI or Cursor?</h3>
+  <p>Yes, on Mac and Linux: run cloakroom install codex, cloakroom install gemini or cloakroom install cursor (Cursor’s command-line agent; the editor isn’t checked yet). Claude Code works on Mac, Linux and Windows.</p>
   <h3>What is stored and what leaves my machine?</h3>
   <p>The <a href="security.html">Security model</a> lists what is stored, where, what leaves your machine and what it cannot catch.</p>
   <h3>What doesn't it protect?</h3>

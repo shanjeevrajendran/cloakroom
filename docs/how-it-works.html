@@ -126,10 +126,11 @@
 <section class="sec container" id="agents" aria-labelledby="agents-title">
   <h2 id="agents-title">Other coding agents</h2>
   <div class="sec-body">
-    <p>Codex and Gemini CLI can’t swap a tool’s output for a masked copy, so Cloakroom blocks the original and the AI reads the masked text in the block message.</p>
+    <p>Codex and Gemini CLI can’t swap a tool’s output for a masked copy, so Cloakroom blocks the original and the AI reads the masked text in the block message. Cursor’s command-line agent can’t swap output either, so Cloakroom changes the input instead: a file read goes to a masked copy of the file, and a shell command runs inside Cloakroom, which prints only masked output.</p>
     <dl class="defs defs--2">
       <div><dt>Codex</dt><dd><code>cloakroom hook &lt;event&gt; --agent codex</code> reads Codex’s hook input and turns the answer into Codex’s. Codex’s file edits (<code>apply_patch</code>) are restored and checked like Write. <code>cloakroom install codex</code> writes the four hooks into <code>~/.codex/hooks.json</code>.</dd></div>
       <div><dt>Gemini CLI</dt><dd>Gemini CLI uses its own tool names with Claude Code’s argument names, so <code>--agent gemini</code> first renames the tool. Gemini lets a call through when a hook times out, so with the model not loaded yet the hook doesn’t wait: it checks with the rules in-process. <code>cloakroom install gemini</code> writes these hooks as an extension of its own.</dd></div>
+      <div><dt>Cursor</dt><dd>Cursor’s command-line agent sends its own tool names (Shell, Read, Write) with its own events, so <code>--agent cursor</code> first maps them. A read is redirected to a masked copy kept in Cloakroom’s home; a command is wrapped in <code>cloakroom cursor-run</code>, which runs it and masks what it prints; MCP output is replaced with a masked copy. A write that carries a placeholder is refused, because Cursor ignores a hook’s rewritten input there, and the agent is told to write through the shell. Cursor’s Grep tool is refused when it would show file contents.</dd></div>
     </dl>
     <p>What it protects against, and what it doesn’t: <a href="security.html">Security model</a>. Every detail: <a href="https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-HOW-IT-WORKS.md">docs-HOW-IT-WORKS.md</a>.</p>
   </div>

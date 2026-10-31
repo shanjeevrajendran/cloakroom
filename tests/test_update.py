@@ -24,6 +24,7 @@ def home(tmp_path, monkeypatch):
     """Codex, Gemini CLI and Claude Code homes in tmp, a folder that is no git repo, no uv or pipx lookups."""
     monkeypatch.setenv("CODEX_HOME", str(tmp_path / ".codex"))
     monkeypatch.setenv("GEMINI_CLI_HOME", str(tmp_path))
+    monkeypatch.setenv("HOME", str(tmp_path))  # Cursor's home too, never the real one
     monkeypatch.setenv("CLAUDE_CONFIG_DIR", str(tmp_path / ".claude"))
     (tmp_path / "work").mkdir()
     monkeypatch.chdir(tmp_path / "work")
@@ -87,6 +88,23 @@ def test_update_refreshes_only_what_was_installed_and_asks_for_codex_trust(home,
     assert "still running version 0.7.1" in out and "Claude Code: nothing changed there" in out
     calls.clear()  # the same hook text again: no trust reminder
     assert cli.main(["update"]) == 0 and "trust each Cloakroom entry" not in capsys.readouterr().out
+
+
+def test_update_knows_cursor(home, monkeypatch, capsys):
+    assert "cursor" not in update.installed()
+    agents.install_cursor("/old/cloakroom")
+    assert update.installed() == ["cursor"]
+    monkeypatch.setattr(update, "route", lambda: ("pipx", ["pipx", "install", "--force", "cloakroom"], None))
+    monkeypatch.setattr(update.subprocess, "run", lambda *a, **k: pytest.fail("--check ran a command"))
+    assert cli.main(["update", "--check"]) == 0
+    assert "for Cursor's command-line agent again: cloakroom install cursor" in capsys.readouterr().out
+
+
+def test_cursor_home_follows_the_home_env(tmp_path, monkeypatch):
+    # Windows' expanduser ignores HOME; without this, the tests above would write into the real ~/.cursor there
+    monkeypatch.setenv("HOME", str(tmp_path))
+    monkeypatch.setattr(agents.os.path, "expanduser", lambda p: "/elsewhere")
+    assert agents.cursor_home() == str(tmp_path / ".cursor")
 
 
 def test_a_failed_upgrade_refreshes_nothing(home, monkeypatch, capsys):

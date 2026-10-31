@@ -11,7 +11,7 @@ That's a security bug. Report it privately (see [SECURITY.md](SECURITY.md)), not
 Open an issue with:
 
 - the Cloakroom version (`cloakroom --version`), your OS, and the mode (`full` or `rules`)
-- which agent you use (Claude Code, Codex CLI or Gemini CLI)
+- which agent you use (Claude Code, Codex CLI, Gemini CLI or Cursor's command-line agent)
 - a small example that shows the problem, and what `cloakroom explain FILE` says about it
 
 Use fake values only. Never paste a real key, password or someone's personal data into an issue.
