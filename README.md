@@ -89,8 +89,8 @@ New in 1.0:
 
 New in 0.8:
 
-- **See which keys your agents saw:** `cloakroom exposure` lists the keys and passwords Claude Code, Codex CLI and
-  Gemini CLI saw, each as a hint (`ghp_…LmPq`), never the key, and ends with a "Rotate these" list. It lists only
+- **See which keys your agents saw:** `cloakroom exposure` lists the keys and passwords Claude Code, Codex CLI,
+  Gemini CLI and Cursor's command-line agent saw, each as a hint (`ghp_…LmPq`), never the key, and ends with a "Rotate these" list. It lists only
   what Cloakroom detected ([details](#extra-protections)).
 - **A warning when a pull changes what your agent runs:** `cloakroom scan` lists every command a repo's agent and
   editor config would run and flags the npm worm's shape. After `cloakroom install git-hook`, each pull, checkout or
@@ -136,8 +136,11 @@ Cursor's editor reads the same hooks file, but Cloakroom hasn't been checked the
   original, and the AI reads the masked text in the block message instead.
 - **Codex** ignores Cloakroom's hooks until you approve them once (type `/hooks` inside Codex).
 - **Gemini CLI** lets an action through unchecked when a check runs past its time limit.
+- **Cursor's command-line agent** can't swap a tool's output either, so Cloakroom changes the input: a read goes to
+  a masked copy of the file and a command runs inside Cloakroom, which prints only masked output. A write that
+  carries a placeholder is refused and the agent writes through the shell instead. Typed prompts aren't checked.
 
-Both were tested live (Codex 0.164, Gemini CLI 0.65). Everything
+All three were tested live (Codex 0.164, Gemini CLI 0.65, Cursor's agent 2026.10.22). Everything
 else: [Known limits](https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-LIMITS.md).
 
 ## Recent releases
@@ -250,7 +253,7 @@ the detection model and OCR, which reads text out of pictures), then add the plu
 
   When an update arrives, Claude Code says "Run /reload-plugins": type that, or restart Claude Code. To update
   right away instead, run `claude plugin update cloakroom@cloakroom` in a terminal.
-- **Codex, Gemini CLI, git commits, or a `cloakroom` you installed yourself:** run `cloakroom update` in a
+- **Codex, Gemini CLI, Cursor, git commits, or a `cloakroom` you installed yourself:** run `cloakroom update` in a
   terminal. It updates Cloakroom with the installer you used (uv, pipx or pip) and keeps the optional parts you had
   (the detection model and OCR, the reading of text in scans and photos). Then it sets up Cloakroom's checks again
   for Codex, Gemini CLI, Cursor and git commits in the current folder, only where they were set up before, so they match
@@ -463,7 +466,7 @@ masked on the way in and the real values come back when Claude writes.
 
 Claude Code also saves every chat on your disk. A prompt Cloakroom stops is taken out of that saved copy for the
 current session (right away, after the next reply and when the session ends), so the key you typed doesn't stay
-behind. Codex and Gemini CLI saved chats are not touched. To keep the text, set `"scrub_transcript": false` in
+behind. Codex, Gemini CLI and Cursor saved chats are not touched. To keep the text, set `"scrub_transcript": false` in
 `~/.cloakroom/config.json`.
 
 ## Hand the agent a key safely
