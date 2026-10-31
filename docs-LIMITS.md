@@ -188,6 +188,48 @@ Cloakroom can't check, the action is blocked rather than let through.
   isn't protection against your own account being taken over. Entries expire after 24 hours; `--forget` removes one now.
 - A value typed into a prompt anyway is caught only if it has a key shape; a plain password or a name goes through.
 
+## Outgoing data (`cloakroom report --destinations`, approved sites)
+
+- The ledger and the approved-sites list cover only calls that pass through Cloakroom's checks: commands, WebFetch,
+  WebSearch and MCP calls. They don't see the agent's own calls to its model provider, or any tool or agent that runs
+  no Cloakroom check (see Codex and Gemini CLI for what those two check).
+- The host of a command is read from its web addresses, `user@host` words, the first host-like word of `ssh`, `scp`,
+  `nc` and similar, and the remote of `git push`, `fetch` and `pull`. A program that sends data without naming a host
+  (`aws`, `npm publish`, `docker pull`) is logged as `(unresolved)` and, with the list on, held. A host built by the
+  shell at run time (`curl "$URL"`) can't be read either.
+- The header guard checks the address, query string and headers with the rules only (emails, phone numbers, names in a
+  name field), not the model, so a bare name in a web address can pass. It doesn't read a request body. A
+  username that is also a public handle (a repository owner in a web address) is held as well; `cr: allow` passes it.
+- An MCP server that isn't in `.mcp.json` or `~/.claude.json` (a plugin or connector) is logged as `mcp:NAME`: Cloakroom
+  can't tell whether it is remote. With the list on it is held until you approve that name.
+- The list is global (one `allowed_hosts` for every project); Cloakroom has no per-project settings.
+
+## Cloakroom proxy (`cloakroom proxy`)
+
+- It covers a tool only if the tool lets you set its API address and you set it (`cloakroom proxy install NAME`). Cursor
+  and Copilot are not covered: Cursor sends through its own servers, and Copilot's default path goes to GitHub's, so
+  there is no address on your machine to point them at. A tool's other traffic (sign-in, telemetry, updates, a model
+  provider you didn't route) doesn't pass through it and isn't seen.
+- Headers are not scanned or changed. The Authorization header is your own key; a person's name or email in a custom
+  header goes through.
+- Replies are not masked. Cloakroom hooks restore placeholders when the agent writes them to a local file or command;
+  a reply is shown as the AI company sent it.
+- Only the text of a JSON body is checked. A body that isn't JSON (an upload), is compressed with zstd or brotli, or is
+  over `proxy_max_mb` (16) is refused with a 503 and a plain reason, never sent, and is counted as denied in
+  `cloakroom report`. Text inside an image or a signed "thinking" block is not checked.
+- Codex CLI signed in with ChatGPT and Gemini CLI signed in with a Google account talk to other addresses than the API
+  ones; `openai_base_url` and `GOOGLE_GEMINI_BASE_URL` apply to API-key sign-in only. Tested on Codex CLI 0.166.0 and
+  Gemini CLI 0.66.0: with an API key both go through the proxy and a key is masked. Codex with a ChatGPT sign-in does
+  send its requests to the proxy once `openai_base_url` is set, but compressed with zstd, which 1.0 cannot read, so the
+  proxy refuses every one of them (503) and Codex stops; `cloakroom proxy install codex` warns when it sees a ChatGPT
+  sign-in. Use an API key (`CODEX_API_KEY`) with the proxy. zstd support is planned for 1.0.1. Codex first tries a
+  WebSocket, which the proxy doesn't carry; it falls back to ordinary requests after about ten seconds of retries.
+- While the proxy isn't running, a tool pointed at it fails (it never goes around it). `cloakroom proxy uninstall NAME`
+  undoes the setting.
+- A restored placeholder needs a Cloakroom hook in the agent that writes the file or command, and works for 24 hours.
+- The placeholder store is machine-wide: for those 24 hours any session on the same machine, under your account, can
+  restore a placeholder the proxy made, not only the session that sent it.
+
 ## Codex
 
 Checked against Codex CLI 0.164 (hooks docs: https://developers.openai.com/codex/hooks, and its source).

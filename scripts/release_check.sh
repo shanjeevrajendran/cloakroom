@@ -24,6 +24,11 @@ version_init() {
   got=$(sed -n 's/^__version__ *= *"\(.*\)"/\1/p' src/cloakroom/__init__.py | head -1)
   [[ -n $want && $want == "$got" ]] || { echo "pyproject $want vs __init__ $got"; return 1; }
 }
+oldest_python() {  # the suite under the lowest Python pyproject allows: syntax only newer Pythons accept must fail here
+  local py; py=$(sed -n 's/^requires-python = ">=\([0-9.]*\)"/\1/p' pyproject.toml | head -1)
+  command -v uv >/dev/null || { echo "uv is needed for the Python $py run (brew install uv)"; return 1; }
+  CLOAKROOM_MODE=rules uv run -q --python "$py" --no-project --with-editable . --with pytest python -m pytest -q -p no:cacheprovider tests
+}
 bare_venv() {
   local v=${TMPDIR:-/tmp}/cloakroom-bare
   rm -rf "$v" && python3 -m venv "$v" && "$v/bin/pip" -q install -e . pytest && "$v/bin/pytest" -q tests
@@ -35,6 +40,7 @@ step completeness python3 scripts/release_complete.py
 step hooks-current python3 scripts/gen_hooks.py --check
 step polyglot python3 scripts/check_polyglot.py
 step tests env PYTHONPATH=src python3 -m pytest -q tests
+step oldest-python oldest_python
 if [[ $QUICK == 0 ]]; then
   step live-test bench/live_test.sh
   step bare-venv bare_venv

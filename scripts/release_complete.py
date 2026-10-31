@@ -11,7 +11,7 @@ import pathlib
 import re
 import sys
 
-ENTRY = re.compile(r"^## (\d+\.\d+\.\d+) \((\d{4}-\d{2}-\d{2})\)\s*$", re.M)
+ENTRY = re.compile(r"^## (\d+\.\d+\.\d+) \((\d{4}-\d{2}-\d{2}|unreleased)\)\s*$", re.M)
 CMD = re.compile(r"`cloakroom ([a-z][a-z-]*)")
 ANCHOR = re.compile(r"\(#([a-z0-9-]+)\)")
 
@@ -43,7 +43,7 @@ def check(root):
         return out, ["CHANGELOG.md or README.md: file missing"]
     heads = list(ENTRY.finditer(log))
     if not heads:
-        return out, ["CHANGELOG.md: no '## x.y.z (YYYY-MM-DD)' entry"]
+        return out, ["CHANGELOG.md: no '## x.y.z (YYYY-MM-DD)' or '(unreleased)' entry"]
     version = heads[0].group(1)
     entry = log[heads[0].end():heads[1].start() if len(heads) > 1 else len(log)]
     older = log[heads[1].start():] if len(heads) > 1 else ""
@@ -97,10 +97,19 @@ def check(root):
         if not miss:
             out.append("ok (e) docs/index.html features")
     want = re.search(r'^version = "([^"]+)"', pyproject or "", re.M)
-    if not want or want.group(1) != version:
+    if heads[0].group(2) == "unreleased":  # the version pins move at release time, not while the entry is written
+        out.append(f"note: (f) CHANGELOG {version} is unreleased, version pin check skipped")
+    elif not want or want.group(1) != version:
         bad.append(f"(f) pyproject.toml: version {want and want.group(1)} but newest CHANGELOG entry is {version}")
     else:
         out.append(f"ok (f) CHANGELOG {version} = pyproject (the other pins: version-init and version-pins steps)")
+    # (h) the generated pages carry pyproject's version; llms.txt is built from install and security only, no version
+    if want and heads[0].group(2) != "unreleased":
+        stale = [p for p in ("docs/commands.html", "docs/releases.html")
+                 if not re.search(rf"(?<![\d.]){re.escape(want.group(1))}(?![\d.])", read(p) or "")]
+        bad.extend(f"(h) {p}: no {want.group(1)}; run: python scripts/gen_pages.py --local" for p in stale)
+        if not stale:
+            out.append(f"ok (h) generated pages show {want.group(1)}")
     limit_bullets = [b for b in re.split(r"\n(?=- )", entry) if b.lstrip("- ").lower().startswith("known limit")]
     ok = True
     for b in limit_bullets:

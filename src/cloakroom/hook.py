@@ -15,7 +15,7 @@ import re
 import sys
 import time
 
-from . import client, config, crypto, decode, engine, events, filelog, handoff, history, media, money, shell
+from . import client, config, crypto, decode, egress, engine, events, filelog, handoff, history, media, money, shell
 from .hookentry import STRUCTURAL, _withhold, closed
 from .vault import ANY_PLACEHOLDER, OLD_FORMAT, PLACEHOLDER, Vault
 
@@ -1008,7 +1008,72 @@ def _pending(data: dict, paths: list[str], text: str, vault: Vault):
         filelog.pending(str(data["tool_use_id"]), paths, restored)
 
 
+_KIND_WORDS = {"EMAIL": "an email address", "PHONE": "a phone number", "PERSON": "a person's name",
+               "USERNAME": "your username"}
+
+
+def _outbound(tool: str, args: dict, cwd: str, powershell: bool) -> tuple[list[str], str]:
+    """(where it goes, the key a cr: allow covers) for a call that sends data off this machine, else ([], "")."""
+    if tool in SHELL_TOOLS:
+        command = args.get("command", "")
+        return (egress.command_hosts(command, powershell, cwd), command) if shell.egress(command, powershell) else ([], "")
+    return egress.tool_hosts(tool, args, cwd), tool + "\0" + json.dumps(args, sort_keys=True)
+
+
+def _site_hold(hosts: list[str], key: str, tool: str, args: dict, session: str, cwd: str) -> dict | None:
+    """Hold an outbound call that goes to a site not on your approved list (egress "allowlist"), or whose address or
+    headers carry your email, phone, name or username (the header guard). One hold names both; cr: allow covers it."""
+    cfg = config.load()
+    why, hint, holds = [], "", []
+    off = [h for h in hosts if cfg["egress"] == "allowlist" and not egress.listed(h, cfg["allowed_hosts"])]
+    if off:
+        named = [h for h in off if h != egress.UNRESOLVED]
+        why.append(("it would send data to " + ", ".join(named) + ", which is not on your approved sites list") if named
+                   else "Cloakroom can't tell where it would send data, and your approved sites list is on")
+        hint = " To approve a site for good, run cloakroom allow-host NAME in a terminal." if named else ""
+        holds.append("approved-sites")
+    parts = egress.sent_parts(key) if tool in SHELL_TOOLS else egress.tool_parts(args)
+    if parts:
+        kinds = set()
+        if tool in SHELL_TOOLS:  # a web or MCP call's person kinds are already denied below; only the username is new
+            found, _ = engine.detect(parts, "rules", cfg["allow"], cfg["always"])  # no vault: nothing is stored
+            kinds |= {f.kind for f in found} & egress.PERSON_KINDS
+        if egress.has_username(parts):
+            kinds.add("USERNAME")
+        if kinds:
+            _FOUND.extend(("", k) for k in sorted(kinds))
+            why.append("its address or headers carry " + ", ".join(_KIND_WORDS[k] for k in sorted(kinds)))
+            holds.append("header-guard")
+    if not why:
+        return None
+    _NOTE[0], _EXTRA["hold"] = "egress: " + " + ".join(holds), "+".join(holds)
+    if _allowed_once(key):
+        _ACTION[0] = "allowed once"
+        return None
+    if _dry("pre", f"egress ({'+'.join(holds)}): would hold"):
+        return None
+    _write_held({"mac": _command_mac(key), "until": time.time() + 60 * HOLD_MINUTES, "armed": False})
+    _ACTION[0] = "held"
+    return _deny(f"Cloakroom held this call: {'; '.join(why)}. To run it anyway, type cr: allow, then ask Claude to run "
+                 f"the same call again: it passes once, within {HOLD_MINUTES} min.{hint} Claude: don't change the call "
+                 "to get past this; ask the user.")
+
+
 def on_pre(data: dict) -> dict | None:
+    """Before a tool runs: the outgoing-data control (where it goes: logged, held when not approved or when it names
+    you), then the checks in _on_pre."""
+    tool, args, session = data.get("tool_name", ""), data.get("tool_input") or {}, data.get("session_id", "default")
+    cwd = data.get("cwd") or os.getcwd()
+    hosts, key = _outbound(tool, args, cwd, tool == "PowerShell")
+    if hosts:
+        _EXTRA["dest"] = hosts
+    out = (_site_hold(hosts, key, tool, args, session, cwd) if hosts else None) or _on_pre(data)
+    if hosts:
+        _EXTRA["carries"] = egress.carried(json.dumps(args), _FOUND)
+    return out
+
+
+def _on_pre(data: dict) -> dict | None:
     tool, args, session = data.get("tool_name", ""), data.get("tool_input") or {}, data.get("session_id", "default")
     if _touches_home(tool, args):
         return _deny("Cloakroom: its own settings (~/.cloakroom) are changed only by you, from the dashboard or "

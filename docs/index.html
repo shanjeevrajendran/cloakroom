@@ -134,6 +134,14 @@ cloakroom install gemini</code></pre><button type="button" class="copy">Copy</bu
     <p><code>cloakroom give NAME</code> asks for the value in a hidden terminal prompt and gives you a placeholder to paste. When the agent writes that placeholder into a local file or command, the real value goes back in. The AI never sees it.</p>
   </article>
   <article class="feat">
+    <h3>Shows where your agent sends data</h3>
+    <p><code>cloakroom report --destinations</code> lists the hosts your agent’s commands, web fetches and MCP calls went to, with the kinds of data they carried, and the dashboard shows the same in “Where data went”. <code>cloakroom allow-host example.com</code> builds an approved-sites list; once it is on, a call to any other site is held. An email, phone number, name or your username in a web address or header is held too.</p>
+  </article>
+  <article class="feat">
+    <h3>Points any tool at Cloakroom</h3>
+    <p><code>cloakroom proxy</code> is a small server on your own machine for tools that let you set their API address, such as Claude Code, Codex CLI and Gemini CLI. Point the tool at it and every request is masked before it goes to the AI company, with streaming left alone. Off until you start it; Mac, Linux and Windows.</p>
+  </article>
+  <article class="feat">
     <h3>Updates with one command</h3>
     <p>Run <code>cloakroom update</code> in a terminal. It updates Cloakroom with the installer you used (uv, pipx or pip) and keeps the optional parts you had. Then it sets up Cloakroom’s checks again for Codex, Gemini CLI and git commits, only where they were set up before.</p>
   </article>

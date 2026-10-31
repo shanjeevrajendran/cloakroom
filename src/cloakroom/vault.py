@@ -61,11 +61,12 @@ class Vault:
             self.load_given()
 
     def load_given(self):
-        """Read the values handed over for this session's project, fresh (the service keeps vaults for hours)."""
+        """Read the values handed over for this session's project and the ones the proxy masked, fresh (the service keeps
+        vaults for hours)."""
         from . import handoff
         for ph in self.given:
             self.by_value.pop(self.by_placeholder.pop(ph, None), None)
-        self.given = handoff.values(self.session)
+        self.given = {**handoff.values(self.session), **handoff.proxy_values()}
         self.by_placeholder.update(self.given)
         self.by_value.update({v: ph for ph, v in self.given.items()})
 

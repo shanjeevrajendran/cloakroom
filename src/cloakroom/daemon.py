@@ -15,7 +15,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from threading import Lock
 from urllib.parse import parse_qs, urlsplit
 
-from . import __version__, config, crypto, dashboard, engine, filelog
+from . import __version__, config, crypto, dashboard, engine, filelog, handoff
 from .vault import Vault
 
 LOCK = Lock()  # one model instance; calls are serialized
@@ -24,7 +24,7 @@ VAULTS: dict[str, Vault] = {}
 
 def _vault(session: str) -> Vault:
     if session not in VAULTS:
-        VAULTS[session] = Vault(config.vault_path(session))
+        VAULTS[session] = handoff.vault_for(session)
     VAULTS[session].load_given()
     return VAULTS[session]
 

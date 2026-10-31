@@ -24,6 +24,8 @@ FILES = {
     ),
     "docs/index.html": '<section class="features"><h3>Waving</h3><code>cloakroom wave</code></section>',
     "docs-LIMITS.md": "# Limits\n- Fading waves: they fade.\n",
+    "docs/commands.html": "<p>Every command in Cloakroom 1.2.0</p>",
+    "docs/releases.html": "<h2>1.2.0</h2><h2>1.1.0</h2>",
     "llms.txt": "# x\nRun `cloakroom wave` or `cloakroom report`.\n",
 }
 
@@ -55,6 +57,8 @@ def test_complete_tree_passes(tmp_path):
     ("(d)", {"llms.txt": "# x\nRun `cloakroom other`.\n"}, "cloakroom wave"),
     ("(e)", {"docs/index.html": '<section class="features"><h3>Other</h3></section>'}, "cloakroom wave"),
     ("(f)", {"pyproject.toml": 'version = "1.1.0"\n'}, "newest CHANGELOG entry is 1.2.0"),
+    ("(h)", {"docs/releases.html": "<h2>1.1.0</h2><h2>11.2.0</h2>"}, "gen_pages.py --local"),
+    ("(h)", {"docs/commands.html": "<p>Every command in Cloakroom 1.1.0</p>"}, "docs/commands.html"),
     ("(g)", {"docs-LIMITS.md": "# Limits\n"}, "Fading waves"),
     ("(g)", {"CHANGELOG.md": FILES["CHANGELOG.md"].replace(" (see docs-LIMITS, \"Fading waves\")", "")}, "pointer"),
 ])
@@ -71,3 +75,11 @@ def test_missing_landing_features_list_and_llms_commands_are_skipped(tmp_path):
 def test_main_exit_code(tmp_path, capsys, monkeypatch):
     monkeypatch.setattr("sys.argv", ["x", "--root", str(tree(tmp_path, **{"docs-LIMITS.md": "#\n"}))])
     assert rc.main() == 1 and "docs-LIMITS.md" in capsys.readouterr().out
+
+
+def test_unreleased_entry_is_checked_but_its_version_pin_waits(tmp_path):
+    log = FILES["CHANGELOG.md"].replace("## 1.2.0 (2026-11-01)", "## 1.2.0 (unreleased)")
+    out, bad = rc.check(tree(tmp_path, **{"CHANGELOG.md": log, "pyproject.toml": 'version = "1.1.0"\n'}))
+    assert bad == [] and any("unreleased" in l for l in out)
+    readme = FILES["README.md"].replace("`cloakroom wave NAME`, ", "")
+    assert any(b.startswith("(d)") for b in failures(tmp_path, **{"CHANGELOG.md": log, "README.md": readme}))

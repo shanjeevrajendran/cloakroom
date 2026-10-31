@@ -4,14 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Cloakroom commands</title>
-<meta name="description" content="Every cloakroom command in release 0.9.0: what it does, when to run it and the release it arrived in.">
+<meta name="description" content="Every cloakroom command in release 1.0.0: what it does, when to run it and the release it arrived in.">
 <meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#0a100c">
 <link rel="canonical" href="https://cloakroom.sh/commands.html">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Cloakroom">
 <meta property="og:title" content="Cloakroom commands">
-<meta property="og:description" content="Every cloakroom command in release 0.9.0: what it does, when to run it and the release it arrived in.">
+<meta property="og:description" content="Every cloakroom command in release 1.0.0: what it does, when to run it and the release it arrived in.">
 <meta property="og:url" content="https://cloakroom.sh/commands.html">
 <meta property="og:image" content="https://raw.githubusercontent.com/shanjeevrajendran/cloakroom/main/assets/social-card.png">
 <meta name="twitter:card" content="summary_large_image">
@@ -46,7 +46,7 @@
 <main id="main">
 <section class="hero page-hero page-hero--short container" aria-labelledby="page-title">
   <h1 id="page-title">Commands</h1>
-  <p class="lead">Every command in Cloakroom 0.9.0, from its own help text.</p>
+  <p class="lead">Every command in Cloakroom 1.0.0, from its own help text.</p>
 </section>
 
 <section class="sec container" id="typed" aria-labelledby="typed-title">
@@ -64,9 +64,11 @@
         <tr><td><code>cloakroom uninstall <span class="arg"><span class="tok">{codex,gemini,git-hook}</span></span></code></td><td data-label="What it does">remove Cloakroom's hooks from another coding agent (Codex, Gemini CLI), or this repo's git hooks (git-hook)</td><td data-label="When"></td><td class="rel" data-label="First in the changelog">0.7.0</td></tr>
         <tr><td><code>cloakroom scan <span class="arg"><span class="tok">[dir]</span></span></code></td><td data-label="What it does">list the commands this repo's agent config would run (Claude Code, Codex, Gemini CLI, VS Code tasks) and flag the npm-worm shape</td><td data-label="When"></td><td class="rel" data-label="First in the changelog">0.8.0</td></tr>
         <tr><td><code>cloakroom give <span class="arg"><span class="tok">[--list]</span> <span class="tok">[--forget NAME]</span> <span class="tok">[--hours HOURS]</span> <span class="tok">[name]</span></span></code></td><td data-label="What it does">hand the agent a key without typing it into a prompt: you type it hidden here, the agent gets a placeholder, local files and commands get the real value</td><td data-label="When">When the agent needs a key (a Stripe key, a database password), don't paste it into a prompt.</td><td class="rel" data-label="First in the changelog">0.9.0</td></tr>
+        <tr><td><code>cloakroom proxy <span class="arg"><span class="tok">[--print]</span> <span class="tok">[--port PORT]</span> <span class="tok">[--background]</span> <span class="tok">[{install,uninstall}]</span> <span class="tok">[{claude,codex,gemini}]</span></span></code></td><td data-label="What it does">run the local proxy that masks what a tool sends to its AI company (base-URL mode), or point Claude Code, Codex CLI or Gemini CLI at it</td><td data-label="When"></td><td class="rel" data-label="First in the changelog">1.0.0</td></tr>
         <tr><td><code>cloakroom doctor <span class="arg"><span class="tok">[--retry-key]</span></span></code></td><td data-label="What it does">check this machine: Python, vault key store, model, service</td><td data-label="When">Every line should say <code>ok</code>, except <code>service: down</code>, which is normal before the first use.</td><td class="rel" data-label="First in the changelog">0.1.0 - 0.1.6</td></tr>
         <tr><td><code>cloakroom dashboard <span class="arg"><span class="tok">[--print]</span></span></code></td><td data-label="What it does">open the local dashboard in your browser (alerts, labels)</td><td data-label="When">when it masks something harmless (a false alarm), mark it once in the dashboard and a rule stops it next time.</td><td class="rel" data-label="First in the changelog">0.2.0</td></tr>
-        <tr><td><code>cloakroom report <span class="arg"><span class="tok">[--since SINCE]</span> <span class="tok">[--format {csv,json}]</span> <span class="tok">[--verify]</span></span></code></td><td data-label="What it does">counts per day and session from the event log (no values); --verify checks it</td><td data-label="When"></td><td class="rel" data-label="First in the changelog">0.6.0</td></tr>
+        <tr><td><code>cloakroom report <span class="arg"><span class="tok">[--since SINCE]</span> <span class="tok">[--format {csv,json}]</span> <span class="tok">[--verify]</span> <span class="tok">[--destinations]</span></span></code></td><td data-label="What it does">counts per day and session from the event log (no values); --verify checks it</td><td data-label="When"></td><td class="rel" data-label="First in the changelog">0.6.0</td></tr>
+        <tr><td><code>cloakroom allow-host <span class="arg"><span class="tok">[--remove]</span> <span class="tok">[--list]</span> <span class="tok">[host]</span></span></code></td><td data-label="What it does">add a site to the approved-sites list (*.example.com allowed); the list is used when config.json has "egress": "allowlist"</td><td data-label="When"></td><td class="rel" data-label="First in the changelog">1.0.0</td></tr>
         <tr><td><code>cloakroom update <span class="arg"><span class="tok">[--check]</span></span></code></td><td data-label="What it does">update Cloakroom with the installer you used (uv, pipx or pip), keeping its optional parts, then set up its checks again for Codex, Gemini CLI and git commits where they were set up</td><td data-label="When">Codex, Gemini CLI, git commits, or a <code>cloakroom</code> you installed yourself: run <code>cloakroom update</code> in a terminal.</td><td class="rel" data-label="First in the changelog">0.8.1</td></tr>
         <tr><td><code>cloakroom exposure <span class="arg"><span class="tok">[--since SINCE]</span> <span class="tok">[--format {text,json}]</span></span></code></td><td data-label="What it does">which keys and passwords your agents saw (Cloakroom's log and old agent transcripts), with a rotate list; hints only, never values</td><td data-label="When">lists the keys and passwords your coding agents saw, so you know what to rotate.</td><td class="rel" data-label="First in the changelog">0.8.0</td></tr>
       </tbody>
@@ -92,7 +94,7 @@
       </tbody>
     </table>
   </div>
-  <p class="src-note">Generated from <code>cloakroom --help</code> of release 0.9.0, <a href="https://github.com/shanjeevrajendran/cloakroom/blob/v0.9.0/docs-HANDBOOK.md">the handbook</a> and <a href="https://github.com/shanjeevrajendran/cloakroom/blob/v0.9.0/CHANGELOG.md">CHANGELOG.md</a>.</p>
+  <p class="src-note">Generated from <code>cloakroom --help</code> of release 1.0.0, <a href="https://github.com/shanjeevrajendran/cloakroom/blob/v1.0.0/docs-HANDBOOK.md">the handbook</a> and <a href="https://github.com/shanjeevrajendran/cloakroom/blob/v1.0.0/CHANGELOG.md">CHANGELOG.md</a>.</p>
   </div>
 </section>
 

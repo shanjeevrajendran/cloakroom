@@ -7,10 +7,14 @@
   cloakroom status                               mode, service health, vault sessions
   cloakroom dashboard                            open the local dashboard in your browser, signed in
   cloakroom report [--since DATE] [--format csv|json] [--verify]   counts from the event log, no values
+  cloakroom report --destinations [--since DATE]   where outgoing calls went, per host (no values)
+  cloakroom allow-host HOST [--remove|--list]    approve a site for the approved-sites list ("egress": "allowlist")
   cloakroom clean-history [--dry-run]            find and replace keys in old Claude Code transcripts
   cloakroom exposure [--since DATE] [--format text|json]   which keys and passwords your agents saw, to rotate
   cloakroom install git-hook                     check your own commits and pushes in this repo for keys
   cloakroom give NAME [--hours N]                type a key hidden, get a placeholder for the agent (--list, --forget NAME)
+  cloakroom proxy [install|uninstall claude|codex|gemini] [--print]   mask requests to the AI company for tools that let
+                                                 you set the API address (off until you start it)
   cloakroom scan [DIR]                           the commands this repo's agent config would run
   cloakroom update [--check]                     update Cloakroom with the installer you used, redo its setup
 """
@@ -36,6 +40,26 @@ def _utf8_stdio():
     for stream in (sys.stdout, sys.stderr):
         if hasattr(stream, "reconfigure") and (stream.encoding or "").lower().replace("-", "") != "utf8":
             stream.reconfigure(encoding="utf-8", errors="replace")
+
+
+def _allow_host(a) -> int:
+    from . import egress
+    cfg = config.load()
+    hosts = list(cfg["allowed_hosts"])
+    if a.list or not a.host:
+        state = "on" if cfg["egress"] == "allowlist" else 'off: set "egress": "allowlist" in config.json'
+        print(f"approved sites ({state}):")
+        print("\n".join(f"  {h}" for h in hosts) or "  none yet")
+        return 0
+    host = egress.normalize(a.host)
+    if not host:
+        print(f"Not a host name: {a.host!r}. Use example.com or *.example.com.", file=sys.stderr)
+        return 2
+    hosts = [h for h in hosts if h != host] + ([] if a.remove else [host])
+    config.set_allowed_hosts(hosts)
+    print(f"{host} {'removed from' if a.remove else 'added to'} the approved sites list" +
+          ("" if cfg["egress"] == "allowlist" else ' (the list is off: set "egress": "allowlist" in config.json to use it)'))
+    return 0
 
 
 def main(argv=None):
@@ -67,6 +91,13 @@ def main(argv=None):
     gv.add_argument("--list", action="store_true", help="names and hints for this project (never values)")
     gv.add_argument("--forget", metavar="NAME", help="remove one")
     gv.add_argument("--hours", type=float, default=24, help="how long it stays (default 24)")
+    px = sub.add_parser("proxy", help="run the local proxy that masks what a tool sends to its AI company (base-URL "
+                                      "mode), or point Claude Code, Codex CLI or Gemini CLI at it")
+    px.add_argument("action", nargs="?", choices=["install", "uninstall"])
+    px.add_argument("agent", nargs="?", choices=["claude", "codex", "gemini"])
+    px.add_argument("--print", action="store_true", help="install: only show the change, write nothing")
+    px.add_argument("--port", type=int, help="listen here (default: proxy_port in config, else a free port kept for next time)")
+    px.add_argument("--background", action="store_true", help="start it detached (output in ~/.cloakroom/serve.log)")
     dr = sub.add_parser("doctor", help="check this machine: Python, vault key store, model, service")
     dr.add_argument("--retry-key", action="store_true", help="forget a refused vault-key read and try the key store again")
     x = sub.add_parser("export-onnx", help="export the model to ONNX for fast CPU inference (needs cloakroom[torch] once)")
@@ -81,6 +112,12 @@ def main(argv=None):
     r.add_argument("--since", default="", help="first day, YYYY-MM-DD")
     r.add_argument("--format", choices=["csv", "json"], default="csv")
     r.add_argument("--verify", action="store_true", help="check the log's hash chain and print the head hash")
+    r.add_argument("--destinations", action="store_true", help="per host: calls, held, and the data kinds carried")
+    ah = sub.add_parser("allow-host", help="add a site to the approved-sites list (*.example.com allowed); the list is "
+                                           "used when config.json has \"egress\": \"allowlist\"")
+    ah.add_argument("host", nargs="?", help="example.com or *.example.com")
+    ah.add_argument("--remove", action="store_true", help="take it off the list")
+    ah.add_argument("--list", action="store_true", help="show the list and whether it is on")
     u = sub.add_parser("update", help="update Cloakroom with the installer you used (uv, pipx or pip), keeping "
                                       "its optional parts, then set up its checks again for Codex, Gemini CLI and "
                                       "git commits where they were set up")
@@ -100,8 +137,13 @@ def main(argv=None):
             print(report.verify_text())
             from . import events
             return 0 if events.verify()["ok"] else 1
-        sys.stdout.write(report.export(a.format, a.since))
+        sys.stdout.write(report.destinations_text(a.format, a.since) if a.destinations else report.export(a.format, a.since))
         return 0
+    if a.cmd == "allow-host":
+        return _allow_host(a)
+    if a.cmd == "proxy":
+        from . import proxy
+        return proxy.run(a)
     if a.cmd == "exposure":
         from . import exposure
         sys.stdout.write(exposure.render(exposure.build(a.since), a.format))
@@ -311,6 +353,16 @@ def _doctor() -> int:
              "not protected; to protect it: cloakroom install gemini")
         for problem in agents.gemini_problems(os.getcwd()) if on else []:
             line(None, "gemini", problem)
+    from . import proxy
+    up, pointed = proxy.running(), proxy.pointing()
+    if up or pointed:  # off by default: say nothing until it is in use
+        if pointed and not up:
+            line(False, "proxy", f"not running, but these point at it, so their requests fail: "
+                 f"{', '.join(proxy.NAMES[k] for k in pointed)}. Start it (cloakroom proxy) or undo (cloakroom "
+                 "proxy uninstall NAME)")
+        else:
+            line(True, "proxy", f"running on port {proxy.port()}; pointing at it: "
+                 + (", ".join(proxy.NAMES[k] for k in pointed) or "no tool yet (cloakroom proxy install claude)"))
     found = find_program()
     line(found is not None or None, "program", found or "the plugin can't find the cloakroom program, so Claude Code "
          "tool calls are denied: reinstall (uv tool install 'cloakroom[model,torch]', or let the plugin do it by "
