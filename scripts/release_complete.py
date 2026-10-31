@@ -73,6 +73,12 @@ def check(root):
         newest = m.group(0) if m else ""
         if not newest.startswith(f"- **{version}**"):
             bad.append(f"(b) README Recent releases: newest entry is not {version}")
+        n = len(re.findall(r"^- \*\*\d+\.\d+\.\d+\*\*", recent, re.M))
+        if n > 5:  # the list is a window, not a history: CHANGELOG.md keeps everything
+            bad.append(f"(b) README Recent releases: {n} entries, keep the last five")
+    news = [tuple(int(x) for x in v.split(".")) for v in re.findall(r"^New in (\d+\.\d+)", readme, re.M)]
+    if news != sorted(news, reverse=True):
+        bad.append("(a) README 'New in' blocks are not newest first: " + ", ".join(".".join(map(str, v)) for v in news))
     need("(b)", "README Recent releases newest entry", newest, feats)
     heads_md = {slug(h) for h in re.findall(r"^## (.+)$", readme, re.M)}
     miss = [f"## heading for (#{a})" for a in anchors if a not in heads_md]

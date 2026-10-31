@@ -67,6 +67,17 @@ def test_each_check_fails_when_its_place_loses_the_name(tmp_path, tag, edits, mi
     assert any(b.startswith(tag) and missing in b for b in bad), bad
 
 
+def test_recent_releases_keeps_five_and_new_in_blocks_run_newest_first(tmp_path):
+    assert not [b for b in failures(tmp_path) if "keep the last five" in b or "newest first" in b]
+    six = FILES["README.md"].replace("- **1.1.0** (2026-10-01): old.\n",
+                                     "".join(f"- **1.{i}.0** (2026-09-0{i}): old.\n" for i in range(1, 7)))
+    assert any(b.startswith("(b)") and "keep the last five" in b for b in failures(tmp_path, **{"README.md": six}))
+    ordered = FILES["README.md"].replace("Intro\n\n", "Intro\n\nNew in 1.2:\n\n- x\n\nNew in 1.1:\n\n- y\n\n")
+    assert not [b for b in failures(tmp_path, **{"README.md": ordered}) if "newest first" in b]
+    backwards = FILES["README.md"].replace("Intro\n\n", "Intro\n\nNew in 1.1:\n\n- y\n\nNew in 1.2:\n\n- x\n\n")
+    assert any(b.startswith("(a)") and "newest first" in b for b in failures(tmp_path, **{"README.md": backwards}))
+
+
 def test_missing_landing_features_list_and_llms_commands_are_skipped(tmp_path):
     out, bad = rc.check(tree(tmp_path, **{"docs/index.html": "<p>none</p>", "llms.txt": "# x\n"}))
     assert bad == [] and sum("skipped" in l for l in out) == 2
