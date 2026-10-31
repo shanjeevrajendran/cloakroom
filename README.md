@@ -6,7 +6,7 @@
   <img src="https://raw.githubusercontent.com/shanjeevrajendran/cloakroom/main/assets/title-card-light.svg" alt="Cloakroom: your secrets stay on your machine. A coat-check ticket shows a masked API key on the part that stays on your disk and the placeholder PII_SECRET_1 on the stub the model sees." width="880">
 </picture>
 
-**Cloakroom is free and open source. It masks API keys, passwords and personal data (names, emails, addresses and the like) on your machine before your AI coding agent sees them. Works with Claude Code, Codex CLI and Gemini CLI.**
+**Cloakroom is free and open source. It masks API keys, passwords and personal data (names, emails, addresses and the like) on your machine before your AI coding agent sees them. Works with Claude Code, Codex CLI, Gemini CLI and Cursor's command-line agent.**
 
 <p>
   <a href="https://www.youtube.com/shorts/U9lN4emgeE0">▶ 40-second demo (Claude Code)</a> ·
@@ -25,7 +25,7 @@
   <a href="https://pypi.org/project/cloakroom/"><img src="https://img.shields.io/pypi/pyversions/cloakroom" alt="Python versions"></a>
   <a href="https://github.com/shanjeevrajendran/cloakroom/actions/workflows/test.yml"><img src="https://github.com/shanjeevrajendran/cloakroom/actions/workflows/test.yml/badge.svg" alt="Tests"></a>
   <a href="https://github.com/shanjeevrajendran/cloakroom/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-blue" alt="License: Apache-2.0"></a>
-  <img src="https://img.shields.io/badge/works%20with-Claude%20Code%20%C2%B7%20Codex%20CLI%20%C2%B7%20Gemini%20CLI-d97757" alt="Works with Claude Code, Codex CLI and Gemini CLI">
+  <img src="https://img.shields.io/badge/works%20with-Claude%20Code%20%C2%B7%20Codex%20CLI%20%C2%B7%20Gemini%20CLI%20%C2%B7%20Cursor-d97757" alt="Works with Claude Code, Codex CLI, Gemini CLI and Cursor">
 </p>
 
 </div>
@@ -253,7 +253,7 @@ the detection model and OCR, which reads text out of pictures), then add the plu
 - **Codex, Gemini CLI, git commits, or a `cloakroom` you installed yourself:** run `cloakroom update` in a
   terminal. It updates Cloakroom with the installer you used (uv, pipx or pip) and keeps the optional parts you had
   (the detection model and OCR, the reading of text in scans and photos). Then it sets up Cloakroom's checks again
-  for Codex, Gemini CLI and git commits in the current folder, only where they were set up before, so they match
+  for Codex, Gemini CLI, Cursor and git commits in the current folder, only where they were set up before, so they match
   the new version. If Codex's checks changed, Codex asks you to approve them once more: start `codex`, type
   `/hooks` and trust each Cloakroom entry. To see what it would do without changing anything:
   `cloakroom update --check`. It never changes the Claude Code plugin; Claude Code does that.
@@ -363,7 +363,7 @@ Git saves versions of your code, and those versions are often shared online.
   Claude Code transcripts (saved records of past chats) and your prompt history, and replaces them on your yes, with a backup you delete.
 - **See which keys your agent saw:** `cloakroom exposure` lists the keys and passwords your coding agents saw, so you
   know what to rotate. It reads Cloakroom's own log (per session and agent: where the key was seen and what Cloakroom
-  did) and scans old Claude Code, Codex CLI and Gemini CLI transcripts for keys from before Cloakroom. It ends with a
+  did) and scans old Claude Code, Codex CLI, Gemini CLI and Cursor's command-line agent transcripts for keys from before Cloakroom. It ends with a
   "Rotate these" checklist. It shows a hint (`ghp_…LmPq`), never the key, and only reads the transcripts. It lists
   only what Cloakroom detected: a key it missed has no line, so no line is not proof a key is safe.
 
@@ -474,7 +474,7 @@ When the agent needs a key (a Stripe key, a database password), don't paste it i
 cloakroom give STRIPE_KEY
 ```
 
-You type the value hidden. Cloakroom keeps it on your machine and prints a placeholder; tell the agent `STRIPE_KEY is PII_SECRET_1_k7q2ab`. When the agent writes that placeholder into a local file or command, Cloakroom puts the real value back, and masks it again in anything the agent reads. The agent never sees the value. It works in Claude Code, Codex CLI and Gemini CLI, for every session in that project.
+You type the value hidden. Cloakroom keeps it on your machine and prints a placeholder; tell the agent `STRIPE_KEY is PII_SECRET_1_k7q2ab`. When the agent writes that placeholder into a local file or command, Cloakroom puts the real value back, and masks it again in anything the agent reads. The agent never sees the value. It works in Claude Code, Codex CLI, Gemini CLI and Cursor's command-line agent, for every session in that project.
 
 | Command | What it does |
 |---|---|
