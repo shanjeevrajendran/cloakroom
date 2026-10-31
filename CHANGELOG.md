@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.0.0 (unreleased)
+## 1.0.0 (2026-10-30)
 - Where your agent sends data, and a way to limit it ([details](#see-where-your-agent-sends-data)). Every command that
   sends data (`curl`, `wget`, `ssh`, `scp`, `git push`, network one-liners), every WebFetch and WebSearch, and every
   MCP call to a remote server now logs where it went: the host and the kinds of data it carried (`EMAIL x1`), never a
@@ -23,9 +23,14 @@
   shows whether it runs. Off until you start it; Mac, Linux and Windows.
 - Known limit: the proxy covers tools that let you set the API address. Cursor and Copilot send through their own
   servers and are not covered; headers are not scanned; the agent's own traffic that doesn't go through the proxy is
-  not seen (see docs-LIMITS, "Cloakroom proxy").
+  not seen; a body compressed with zstd or brotli goes through unchecked; Codex CLI and Gemini CLI signed in with
+  ChatGPT or a Google account are not covered (see docs-LIMITS, "Cloakroom proxy").
+- Known limit: the proxy's placeholder store is machine-wide and kept for 24 hours, so any session on the same machine
+  can restore a placeholder the proxy made (see docs-LIMITS, "Cloakroom proxy").
 - Known limit: the ledger and the approved-sites list only see calls that pass through Cloakroom's checks, not the
   agent's own calls to its model provider or a tool that runs no check (see docs-LIMITS, "Outgoing data").
+- Known limit: the error output of a failed command can still reach the model unmasked, carried over from 0.9.0 (see
+  docs-LIMITS, "Failed commands").
 
 ## 0.9.0 (2026-10-30)
 - `cloakroom give NAME`: hand the agent a key without pasting it into a prompt. You type the value hidden in a

@@ -136,7 +136,7 @@ else: [Known limits](https://github.com/shanjeevrajendran/cloakroom/blob/main/do
 
 ## Recent releases
 
-- **1.0.0** (unreleased): the ledger of where your agent sends data (`cloakroom report --destinations`), an opt-in
+- **1.0.0** (2026-10-30): the ledger of where your agent sends data (`cloakroom report --destinations`), an opt-in
   approved-sites list (`cloakroom allow-host`), and a hold on a web address or header that carries your email, phone,
   name or username. See [See where your agent sends data](#see-where-your-agent-sends-data). `cloakroom proxy` masks the
   requests of any tool that lets you set its API address, on Mac, Linux and Windows. See

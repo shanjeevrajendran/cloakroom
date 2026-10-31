@@ -222,6 +222,8 @@ Cloakroom can't check, the action is blocked rather than let through.
 - While the proxy isn't running, a tool pointed at it fails (it never goes around it). `cloakroom proxy uninstall NAME`
   undoes the setting.
 - A restored placeholder needs a Cloakroom hook in the agent that writes the file or command, and works for 24 hours.
+- The placeholder store is machine-wide: for those 24 hours any session on the same machine, under your account, can
+  restore a placeholder the proxy made, not only the session that sent it.
 
 ## Codex
 
