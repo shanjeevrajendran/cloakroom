@@ -118,7 +118,7 @@ explained under the table.
 | Command output | ✓ | ✓ Masked (sent as a block message); ✗ long-running commands | ✓ Masked (sent as a block message) | ✓ Masked (the command runs inside Cloakroom, which prints only masked output) |
 | MCP tool output | ✓ | ✓ Masked (sent as a block message) | ✓ Masked (sent as a block message) | ✓ |
 | Images and PDFs | ✓ | ✗ Not covered: pictures opened with `view_image` | ✓ Masked: the text in pictures is read on your machine; ⛔ PDFs held back | ✓ Masked when read as a file: the text in pictures is read on your machine, and PDFs by their text layer; ✗ pictures in a prompt |
-| Real values put back in commands and edits | ✓ | ✓; ⛔ unknown commands are refused, not asked about | ✓ | ✓; ⛔ unknown commands are refused, not asked about |
+| Real values put back in commands and edits | ✓ | ✓; ⛔ unknown commands are refused, not asked about | ✓ | ✓ in shell commands; ⛔ a Write or edit that carries a placeholder is refused (Cursor ignores the restored input) and the agent is told to write through the shell; ⛔ unknown commands are refused, not asked about |
 | Real values kept out of web and MCP calls | ✓ | ✓; ✗ Codex's own web search (runs on OpenAI's servers) | ✓ | ✓; ✗ Cursor's own web search (no hook sees it) |
 | Keys written into files git would commit | ✓ | ✓ | ✓ | ✓ |
 | The agent's `git commit` / `git push` check | ✓ | ✓ | ✓ | ✓ |

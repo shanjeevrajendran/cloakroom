@@ -1106,6 +1106,8 @@ def _cursor_pre(data: dict) -> tuple[bool, dict | None]:
         return True, cursor.masked_read(data)
     if tool.startswith("mcp__"):  # checked at beforeMCPExecution, which knows the server
         return True, None
+    if tool in ("Write", "Edit") and ANY_PLACEHOLDER.search(_written_text(tool, args)):
+        return True, _deny(agents.WRITE_DENY)  # Cursor ignores updated_input on Write (live-tested 2026-10-31)
     if tool == "Grep" and args.get("output_mode") not in ("files_with_matches", "count"):
         return True, _deny(agents.GREP_DENY)
     if tool == "Delete":

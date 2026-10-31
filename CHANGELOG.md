@@ -5,8 +5,9 @@
   (`uninstall` removes only its own). Cursor can't swap a tool's output for a masked copy, so Cloakroom changes the
   input: a file read goes to a masked copy of the file, a shell command runs inside Cloakroom,
   which prints only masked output, and a command that skipped the check is refused. MCP tool output is masked, real
-  values are kept out of MCP and subagent calls and out of files git would commit, and placeholders in commands and
-  file writes get their real values back. `cloakroom doctor` shows whether the hooks are installed and warns about
+  values are kept out of MCP and subagent calls and out of files git would commit, and placeholders in commands get
+  their real values back. A file write that carries a placeholder is refused and the agent is told to write through
+  the shell, since Cursor ignores a hook's rewritten input on its Write tool. `cloakroom doctor` shows whether the hooks are installed and warns about
   another hook on Cursor's tool calls. Mac and Linux.
 - `cloakroom allow` lets the command Cloakroom last held run once, for agents with no prompt to type `cr: allow` in.
 - `bench/live_cursor.sh`: a live check of the Cursor adapter with your own Cursor login.

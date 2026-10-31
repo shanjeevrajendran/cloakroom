@@ -58,12 +58,17 @@ NOT_CHECKED = ("cloakroom: not working, so this message was not checked. Tool ca
 ASK_NOTE = " Codex can't ask you from a hook, so the call was stopped; run it yourself if it's what you want."
 CURSOR_ASK_NOTE = " Cursor can't ask you from this hook, so the call was stopped; run it yourself if it's what you want."
 CURSOR_GUIDE = ("Cloakroom note: values like PII_EMAIL_1_k7q2ab are placeholders for real data kept on this machine. Use "
-                "them verbatim in Write and in local shell commands (cat, grep, sed, python...): Cloakroom puts the "
-                "real values back before the tool runs and masks them again in the output. When you edit part of a "
-                "file, the text you replace must not contain a placeholder (the file holds the real value, so it "
-                "won't match): anchor on nearby text, or rewrite the file with Write. Search file contents with a "
-                "shell command (rg, grep), not the Grep tool. Copy placeholders exactly, tag included: Cloakroom "
-                "restores only the ones it issued in this session. Don't try to recover the real values.")
+                "them verbatim in local shell commands (cat, grep, sed, python...): Cloakroom puts the real values "
+                "back before the command runs and masks them again in the output. Cursor's Write and edit tools "
+                "can't get the real values back, so a Write or edit that carries a placeholder is refused: write "
+                "that file with a shell command instead (printf, cat <<'EOF', python). When you edit part of a file, "
+                "the text you replace must not contain a placeholder (the file holds the real value, so it won't "
+                "match): anchor on nearby text. Search file contents with a shell command (rg, grep), not the Grep "
+                "tool. Copy placeholders exactly, tag included: Cloakroom restores only the ones it issued in this "
+                "session. Don't try to recover the real values.")
+WRITE_DENY = ("Cloakroom: this write carries a placeholder, and Cursor's Write tool can't take the real value back "
+              "from Cloakroom. Write the file with a shell command instead (printf, cat <<'EOF', python), keeping "
+              "the placeholder as it is: Cloakroom restores it there.")
 GREP_DENY = ("Cloakroom: Cursor's Grep tool shows file contents that can't be masked. Search with a shell command "
              "instead (rg or grep): Cloakroom masks its output. Grep that lists only file names (files_with_matches "
              "or count) is fine.")

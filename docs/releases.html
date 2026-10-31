@@ -51,35 +51,6 @@
 
 <section class="sec container" aria-label="Changelog">
   <div class="rel-list">
-  <article class="release" id="v1-1-0" aria-labelledby="v1-1-0-t">
-    <div><h2 id="v1-1-0-t">1.1.0</h2>
-    <p>unreleased</p></div>
-    <div class="release-body">
-    <ul>
-      <li>Cursor's command-line agent: <code>cloakroom install cursor</code> adds Cloakroom's hooks to <code>~/.cursor/hooks.json</code>, next to yours (<code>uninstall</code> removes only its own). Cursor can't swap a tool's output for a masked copy, so Cloakroom changes the input: a file read goes to a masked copy of the file, a shell command runs inside Cloakroom, which prints only masked output, and a command that skipped the check is refused. MCP tool output is masked, real values are kept out of MCP and subagent calls and out of files git would commit, and placeholders in commands and file writes get their real values back. <code>cloakroom doctor</code> shows whether the hooks are installed and warns about another hook on Cursor's tool calls. Mac and Linux.</li>
-      <li><code>cloakroom allow</code> lets the command Cloakroom last held run once, for agents with no prompt to type <code>cr: allow</code> in.</li>
-      <li><code>bench/live_cursor.sh</code>: a live check of the Cursor adapter with your own Cursor login.</li>
-      <li>Known limit: Cursor's command-line agent doesn't run its prompt hook, so typed prompts aren't checked; its own web search isn't seen; Cursor's Grep tool is refused when it would show file contents; the editor hasn't been checked (see docs-LIMITS, "Cursor").</li>
-    </ul>
-    </div>
-  </article>
-  <article class="release" id="v1-0-0" aria-labelledby="v1-0-0-t">
-    <div><h2 id="v1-0-0-t">1.0.0</h2>
-    <p><time datetime="2026-10-30">2026-10-30</time></p></div>
-    <div class="release-body">
-    <ul>
-      <li>Where your agent sends data, and a way to limit it (<a href="https://github.com/shanjeevrajendran/cloakroom/blob/main/#see-where-your-agent-sends-data">details</a>). Every command that sends data (<code>curl</code>, <code>wget</code>, <code>ssh</code>, <code>scp</code>, <code>git push</code>, network one-liners), every WebFetch and WebSearch, and every MCP call to a remote server now logs where it went: the host and the kinds of data it carried (<code>EMAIL x1</code>), never a value. <code>cloakroom report --destinations</code> prints the calls, holds and kinds per host, and the dashboard has a "Where data went" list. Calls to <code>localhost</code> are not logged.</li>
-      <li><code>cloakroom allow-host HOST</code> builds an approved-sites list (<code>*.example.com</code> is allowed, <code>*</code> alone is not). It does nothing until you set <code>"egress": "allowlist"</code> in <code>~/.cloakroom/config.json</code>; then a call to any other site is held, whatever it carries, and <code>cr: allow</code> lets that one call through. A call whose destination Cloakroom can't read (<code>aws s3 ls</code>) is held too. Off by default: nothing changes until you turn it on.</li>
-      <li>A command, WebFetch or MCP call whose address, query string or headers carry your email address, phone number, name or your computer's username is now held, naming the kind (<code>cr: allow</code> lets it through once). The username comes from the operating system, not from <code>$USER</code>.</li>
-      <li><code>cloakroom proxy</code>: point any tool that lets you set its API address (Claude Code, Codex CLI, Gemini CLI) at a small server on your machine (<a href="https://github.com/shanjeevrajendran/cloakroom/blob/main/#point-any-tool-at-cloakroom">details</a>). It masks the text in every request body the way file reads are masked, forwards the request with the same headers (never read, logged or changed), and passes the reply back as a stream. <code>cloakroom proxy install claude|codex|gemini</code> writes the address into that tool's own config (<code>--print</code> only shows it, <code>uninstall</code> puts back what was there). Values it masks are restored when a hook writes their placeholder to a local file or command; they are kept encrypted for 24 hours. Each request goes into the where-it-went ledger (host and kinds), the approved-sites list applies to its upstreams, and <code>cloakroom doctor</code> shows whether it runs. Off until you start it; Mac, Linux and Windows.</li>
-      <li>Known limit: the proxy covers tools that let you set the API address. Cursor and Copilot send through their own servers and are not covered; headers are not scanned; the agent's own traffic that doesn't go through the proxy is not seen; a body the proxy can't read (compressed with zstd or brotli, not JSON, over <code>proxy_max_mb</code>) is refused with an error and never sent; Codex CLI and Gemini CLI signed in with ChatGPT or a Google account are not covered, and Codex with a ChatGPT sign-in is refused because it compresses with zstd; <code>proxy install codex</code> warns about it (see docs-LIMITS, "Cloakroom proxy").</li>
-      <li>Known limit: the proxy's placeholder store is machine-wide and kept for 24 hours, so any session on the same machine can restore a placeholder the proxy made (see docs-LIMITS, "Cloakroom proxy").</li>
-      <li>Known limit: the ledger and the approved-sites list only see calls that pass through Cloakroom's checks, not the agent's own calls to its model provider or a tool that runs no check (see docs-LIMITS, "Outgoing data").</li>
-      <li>Known limit: the error output of a failed command can still reach the model unmasked, carried over from 0.9.0 (see docs-LIMITS, "Failed commands").</li>
-      <li>Release gate: <code>scripts/release_check.sh</code> also runs the test suite under the oldest Python <code>pyproject.toml</code> allows (3.10), and fails on generated site pages that show an older version (<code>python scripts/gen_pages.py --local</code> regenerates them).</li>
-    </ul>
-    </div>
-  </article>
   <article class="release" id="v0-9-0" aria-labelledby="v0-9-0-t">
     <div><h2 id="v0-9-0-t">0.9.0</h2>
     <p><time datetime="2026-10-30">2026-10-30</time></p></div>

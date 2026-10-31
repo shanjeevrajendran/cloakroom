@@ -347,13 +347,21 @@ def test_runner_passes_the_signal_exit_code(cur, ws):
 
 # --- Write ---
 
-def test_write_input_is_restored(cur, ws):
+def test_write_with_a_placeholder_is_refused_toward_the_shell(cur, ws):
+    # Cursor ignores a hook's updated_input on Write (live probe 2026-10-31), so the real value can't be put back
     ph = placeholder(cur)
     f = ws / "notes.txt"
-    out = cur("pre", "preToolUse", {"tool_name": "Write", "tool_input": {"file_path": str(f),
-                                                                       "content": f"mail {ph}\n"}})
-    assert out["permission"] == "allow"
-    assert out["updated_input"] == {"file_path": str(f), "content": f"mail {EMAIL}\n"}
+    for args in ({"file_path": str(f), "content": f"mail {ph}\n"},
+                 {"file_path": str(f), "old_string": "mail", "new_string": f"mail {ph}"}):
+        out = cur("pre", "preToolUse", {"tool_name": "Write", "tool_input": args})
+        assert out["permission"] == "deny" and "shell command" in out["user_message"]
+        assert EMAIL not in json.dumps(out)
+
+
+def test_write_without_a_placeholder_passes(cur, ws):
+    out = cur("pre", "preToolUse", {"tool_name": "Write", "tool_input": {"file_path": str(ws / "notes.txt"),
+                                                                       "content": "plain text\n"}})
+    assert out == {}
 
 
 def test_write_putting_a_key_into_a_committed_file_is_denied(cur, repo):
