@@ -100,6 +100,13 @@ def test_update_knows_cursor(home, monkeypatch, capsys):
     assert "for Cursor's command-line agent again: cloakroom install cursor" in capsys.readouterr().out
 
 
+def test_cursor_home_follows_the_home_env(tmp_path, monkeypatch):
+    # Windows' expanduser ignores HOME; without this, the tests above would write into the real ~/.cursor there
+    monkeypatch.setenv("HOME", str(tmp_path))
+    monkeypatch.setattr(agents.os.path, "expanduser", lambda p: "/elsewhere")
+    assert agents.cursor_home() == str(tmp_path / ".cursor")
+
+
 def test_a_failed_upgrade_refreshes_nothing(home, monkeypatch, capsys):
     agents.install_gemini("/old/cloakroom")
     monkeypatch.setattr(update, "route", lambda: ("pip", ["python", "-m", "pip", "install", "-U", "cloakroom"], None))

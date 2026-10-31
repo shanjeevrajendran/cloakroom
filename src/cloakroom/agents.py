@@ -465,7 +465,8 @@ def codex_installed():
 # --- install / uninstall into Cursor's hooks.json (flat lists of entries, not Codex's groups) ---
 
 def cursor_home():
-    return os.path.join(os.path.expanduser("~"), ".cursor")
+    # HOME first: Windows' expanduser ignores it, and tests point HOME at a temp folder (never the real ~/.cursor)
+    return os.path.join(os.environ.get("HOME") or os.path.expanduser("~"), ".cursor")
 
 
 def cursor_command(program, event):
