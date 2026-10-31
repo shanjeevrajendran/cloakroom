@@ -67,11 +67,6 @@ whole step. And it learns from your corrections.
 It runs on your machine, sets itself up on first start, and works on Mac, Windows and Linux. Free and open source.
 It's new, so expect rough edges.
 
-New in 0.7, it also protects two other AI coding agents that run in a terminal (Mac and Linux):
-
-- **OpenAI's Codex CLI:** run `cloakroom install codex` ([Codex](#codex)).
-- **Google's Gemini CLI:** run `cloakroom install gemini` ([Gemini CLI](#gemini-cli)).
-
 New in 1.1:
 
 - **Cursor's command-line agent:** run `cloakroom install cursor` ([Cursor](#cursor)).
@@ -100,6 +95,11 @@ New in 0.8:
   back in. The AI never sees it ([details](#hand-the-agent-a-key-safely)).
 - **Stopped prompts leave no copy behind:** a prompt Cloakroom stops is taken out of the session's saved Claude Code
   transcript, right after the stop and again at session end ([details](#extra-protections)).
+
+New in 0.7, it also protects two other AI coding agents that run in a terminal (Mac and Linux):
+
+- **OpenAI's Codex CLI:** run `cloakroom install codex` ([Codex](#codex)).
+- **Google's Gemini CLI:** run `cloakroom install gemini` ([Gemini CLI](#gemini-cli)).
 
 ## What works where
 
@@ -161,12 +161,6 @@ else: [Known limits](https://github.com/shanjeevrajendran/cloakroom/blob/main/do
 - **0.8.0** (2026-10-27): `cloakroom exposure` shows which keys your agents saw, with a rotate list; `cloakroom scan`
   and a git-hook warning when a pull changes the commands a repo's agent config would run; three fixes found by a
   live agent test ([Results](#results)).
-- **0.7.2** (2026-10-25): the check on commits you make yourself works on Windows too; clearer README and docs.
-- **0.7.1** (2026-10-25): when a check is skipped and an action goes through unchecked, it's logged and counted in `cloakroom report`;
-  `cloakroom install git-hook` checks the commits you make yourself; Codex can hold long-running commands.
-- **0.7.0** (2026-10-24): Cloakroom also protects Codex CLI and Gemini CLI, on Mac and Linux.
-- **0.6.6** (2026-10-24): a secret Cloakroom has already seen is still caught when a command scrambles it (hashed,
-  hex-encoded or written backwards).
 
 Claude Code plugin updates arrive a few days after each PyPI release (PyPI is the Python package site), once the release has settled
 ([how updates reach you](#updates)). All changes:
