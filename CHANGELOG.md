@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.1.0 (unreleased)
+- Cursor's command-line agent: `cloakroom install cursor` adds Cloakroom's hooks to `~/.cursor/hooks.json`, next to yours
+  (`uninstall` removes only its own). Cursor can't swap a tool's output for a masked copy, so Cloakroom changes the
+  input: a file read goes to a masked copy of the file, a shell command runs inside Cloakroom,
+  which prints only masked output, and a command that skipped the check is refused. MCP tool output is masked, real
+  values are kept out of MCP and subagent calls and out of files git would commit, and placeholders in commands get
+  their real values back. A file write that carries a placeholder is refused and the agent is told to write through
+  the shell, since Cursor ignores a hook's rewritten input on its Write tool. `cloakroom doctor` shows whether the hooks are installed and warns about
+  another hook on Cursor's tool calls. Mac and Linux.
+- `cloakroom allow` lets the command Cloakroom last held run once, for agents with no prompt to type `cr: allow` in.
+- `bench/live_cursor.sh`: a live check of the Cursor adapter with your own Cursor login.
+- Known limit: Cursor's command-line agent doesn't run its prompt hook, so typed prompts aren't checked; its own web
+  search isn't seen; Cursor's Grep tool is refused when it would show file contents; the editor hasn't been checked
+  (see docs-LIMITS, "Cursor").
+
 ## 1.0.0 (2026-10-30)
 - Where your agent sends data, and a way to limit it ([details](#see-where-your-agent-sends-data)). Every command that
   sends data (`curl`, `wget`, `ssh`, `scp`, `git push`, network one-liners), every WebFetch and WebSearch, and every

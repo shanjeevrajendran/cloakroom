@@ -28,7 +28,7 @@ def _text(data):
 
 @pytest.fixture
 def no_history(tmp_path, monkeypatch):
-    for var in ("CLAUDE_CONFIG_DIR", "CODEX_HOME", "GEMINI_CLI_HOME"):
+    for var in ("CLAUDE_CONFIG_DIR", "CODEX_HOME", "GEMINI_CLI_HOME", "HOME"):
         monkeypatch.setenv(var, str(tmp_path / ("empty-" + var)))
 
 
@@ -91,6 +91,7 @@ def agent_homes(tmp_path, monkeypatch):
     monkeypatch.setenv("CLAUDE_CONFIG_DIR", str(claude))
     monkeypatch.setenv("CODEX_HOME", str(codex))
     monkeypatch.setenv("GEMINI_CLI_HOME", str(tmp_path / "ghome"))
+    monkeypatch.setenv("HOME", str(tmp_path / "chome"))
     return files
 
 
@@ -110,6 +111,17 @@ def test_history_scan_finds_keys_in_each_agent_and_reads_only(agent_homes):
     for value in (KEY, KEY2, PASSWORD, KEY[4:20], KEY2[7:24]):
         assert value not in text
     assert "cloakroom clean-history" in text
+
+
+def test_history_files_lists_cursor_transcripts(tmp_path, monkeypatch, no_history):
+    from cloakroom import exposure
+    home = tmp_path / "chome"
+    t = home / ".cursor" / "projects" / "Users-x-app" / "agent-transcripts" / "s1"
+    t.mkdir(parents=True)
+    (t / "s1.jsonl").write_text(json.dumps({"role": "user", "message": {"content": f"key {KEY}"}}) + "\n")
+    (t.parent.parent / "other.txt").write_text("not a transcript")
+    monkeypatch.setenv("HOME", str(home))
+    assert exposure.history_files() == [("cursor", t / "s1.jsonl")]
 
 
 def test_since_skips_older_files(agent_homes):

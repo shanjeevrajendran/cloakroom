@@ -12,6 +12,9 @@
   cloakroom clean-history [--dry-run]            find and replace keys in old Claude Code transcripts
   cloakroom exposure [--since DATE] [--format text|json]   which keys and passwords your agents saw, to rotate
   cloakroom install git-hook                     check your own commits and pushes in this repo for keys
+  cloakroom install cursor                       mask what Cursor's command-line agent reads and runs (uninstall: remove)
+  cloakroom allow                                let the command Cloakroom last held run once (Cursor has no prompt to type cr: allow in)
+  cloakroom cursor-run ID                        internal: Cursor's hook runs a command through this and masks its output
   cloakroom give NAME [--hours N]                type a key hidden, get a placeholder for the agent (--list, --forget NAME)
   cloakroom proxy [install|uninstall claude|codex|gemini] [--print]   mask requests to the AI company for tools that let
                                                  you set the API address (off until you start it)
@@ -73,11 +76,15 @@ def main(argv=None):
         s.add_argument("--mode", choices=["full", "rules"])
     h = sub.add_parser("hook", help="Claude Code hook entry point (reads hook JSON on stdin)")
     h.add_argument("event", choices=["start", "prompt", "pre", "post", "scrub"])
-    h.add_argument("--agent", choices=["claude", "codex", "gemini"], default="claude",
+    h.add_argument("--agent", choices=["claude", "codex", "gemini", "cursor"], default="claude",
                    help="whose hook JSON (default: Claude Code)")
     for name, what in (("install", "add Cloakroom's hooks to"), ("uninstall", "remove Cloakroom's hooks from")):
-        sub.add_parser(name, help=f"{what} another coding agent (Codex, Gemini CLI), or this repo's git hooks "
-                                  "(git-hook)").add_argument("agent", choices=["codex", "gemini", "git-hook"])
+        sub.add_parser(name, help=f"{what} another coding agent (Codex, Gemini CLI, Cursor), or this repo's git hooks "
+                                  "(git-hook)").add_argument("agent", choices=["codex", "gemini", "cursor", "git-hook"])
+    cr = sub.add_parser("cursor-run", help="internal: runs a command for Cursor's hook and masks its output")
+    cr.add_argument("id")
+    cr.add_argument("shown", nargs=argparse.REMAINDER, help=argparse.SUPPRESS)  # only shows what runs; the record holds it
+    sub.add_parser("allow", help="let the command Cloakroom last held run once")
     g = sub.add_parser("git-check", help="the git hook's check (cloakroom install git-hook): keys and passwords a "
                                          "commit or push adds")
     g.add_argument("kind", choices=["commit", "push", "checkout", "merge"])
@@ -158,6 +165,13 @@ def main(argv=None):
     if a.cmd == "hook":
         from . import hookentry
         return hookentry.run(a.event, a.agent)
+    if a.cmd == "cursor-run":
+        from . import cursor
+        return cursor.run(a.id)
+    if a.cmd == "allow":
+        from . import agents, hook
+        print(agents._words(hook._arm_held(), "the agent"))
+        return 0
     if a.cmd in ("install", "uninstall") and a.agent == "git-hook":
         from . import githook
         return githook.install(remove=a.cmd == "uninstall")
@@ -353,6 +367,13 @@ def _doctor() -> int:
              "not protected; to protect it: cloakroom install gemini")
         for problem in agents.gemini_problems(os.getcwd()) if on else []:
             line(None, "gemini", problem)
+    if os.path.isdir(agents.cursor_home()):  # Cursor is on this machine
+        on = agents.cursor_installed()
+        line(on or None, "cursor", "Cloakroom's hooks installed (command-line agent; the editor isn't checked yet)"
+             if on else "not protected; to protect it: cloakroom install cursor")
+        for path in agents.cursor_other_hooks(os.getcwd()) if on else []:
+            line(None, "cursor", f"another hook also runs on Cursor's tool calls ({path}); if it changes commands or "
+                 "file reads, Cloakroom's masking may not apply")
     from . import proxy
     up, pointed = proxy.running(), proxy.pointing()
     if up or pointed:  # off by default: say nothing until it is in use

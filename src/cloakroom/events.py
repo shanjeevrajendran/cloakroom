@@ -1,6 +1,6 @@
 """Event log for the dashboard and `cloakroom report`: one JSON line per hook call. Never values or text.
 
-Each event: id, ts, session, agent (claude, codex, gemini; absent on older lines), event, tool, target,
+Each event: id, ts, session, agent (claude, codex, gemini, cursor; absent on older lines), event, tool, target,
   kinds ({kind: count}), placeholders, action, ms, prev.
   target is set only when something was found: the file path for file tools (masked like any output), the program
   name for shell commands (never its arguments), else "". placeholders (PII_EMAIL_1...) let the dashboard look the

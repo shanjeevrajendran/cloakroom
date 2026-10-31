@@ -263,6 +263,27 @@ Checked against Codex CLI 0.164 (hooks docs: https://developers.openai.com/codex
 - Windows isn't supported yet (`cloakroom install codex` refuses there).
 
 
+## Cursor
+
+Checked against Cursor's command-line agent (`agent` 2026.10.22) and its hooks docs (https://cursor.com/docs/hooks).
+
+- **Prompts aren't checked in the command-line agent:** Cursor doesn't run its prompt hook (`beforeSubmitPrompt`) there, so a key or personal data you type goes to Cursor as it is. Put such details in a file and ask the agent to read it: Cloakroom masks it on the way in.
+- **Cursor's own web search isn't seen:** it runs inside Cursor with no hook, so what the agent searches for isn't checked. Web fetch wasn't seen in testing either.
+- **Pictures and PDFs:** opened as files, a picture's text is read on your machine and a PDF's text layer is used; the picture itself is not sent, and a scan without text is held back. Pictures pasted into a prompt aren't checked.
+- **Cloud agents aren't covered:** Cursor runs no user-level hooks there, and no MCP hooks at all.
+- **How masking works here:** Cursor can't swap a tool's output, so Cloakroom changes the input instead. A file read gets a masked copy of the file, and a command runs inside Cloakroom, which prints only masked output. The agent's transcript shows the command it wrote. Line numbers after a multi-line value such as a PEM key shift by the lines it took. Command output and error output are masked separately, so their order can shift slightly.
+- **Grep:** Cursor's Grep tool is refused when it would show file contents, which can't be masked; the agent searches with a shell command, whose output is masked. Grep that lists only file names works.
+- **Write and edits:** Cursor ignores a hook's rewritten input on its Write tool (checked live 2026-10-31), so Cloakroom can't put real values back there. A Write or edit that carries a placeholder is refused, and the agent is told to write the file with a shell command, where the values are restored.
+- **Files Cursor keeps from the agent** (git-ignored, `.cursorignore`) get no masked copy; Cursor's own rules decide, and a read that still happens is stopped if it holds private data.
+- **Commands Cloakroom would ask about are refused:** a command with placeholders that could send data off the machine, or one Cloakroom doesn't know, is stopped. Run it yourself if you want it. To let a held command through once, run `cloakroom allow` in a terminal (prompts aren't hooked, so `cr: allow` can't be typed here).
+- **Commands that need a terminal** (an editor, `top`, a password prompt) don't work: their output goes through Cloakroom.
+- A shell command's `cd` or `export` lasts only for that command.
+- With Cursor's command sandbox on, Cloakroom may be unable to check output; it then withholds it.
+- Cursor's transcripts aren't cleaned of stopped values.
+- A missing or broken `cloakroom` program makes tool calls fail closed (`failClosed`); prompts and session starts go on.
+- Windows isn't supported yet (`cloakroom install cursor` refuses there).
+
+
 ## Git hook (`cloakroom install git-hook`)
 
 - Checks keys and passwords only (the rules and your always-mask values), in the lines a commit adds or the
@@ -329,5 +350,6 @@ Checked 2026-10-25 against the VS Code extensions of Claude Code (2.1.310), Code
 - **Gemini Code Assist in VS Code:** its agent mode runs a cut-down Gemini CLI server that loads extensions without
   their hooks and doesn't read hooks from `settings.json` (read from its source). Cloakroom's checks don't run there,
   so nothing is masked. The Gemini CLI in a terminal, with or without the Gemini CLI Companion extension, runs them.
+- **Cursor (editor):** Cursor's editor reads the same hooks file, but Cloakroom hasn't been checked there yet: treat the editor as not covered until it is.
 - **Antigravity:** it has hooks of its own (`hooks.json` in `~/.gemini/config/` or `.agents/`), but Cloakroom
   doesn't install any, so it doesn't protect you there.
