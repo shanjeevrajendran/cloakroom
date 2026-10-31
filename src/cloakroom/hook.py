@@ -349,6 +349,9 @@ def on_scrub(data: dict) -> dict | None:
         _skip("failed-command", "error output of a failed tool call", "the error output of this failed tool call")
         return None
     end = data.get("hook_event_name") == "SessionEnd"
+    if end and data.get("_cloakroom_agent") == "cursor":
+        from . import cursor
+        cursor.cleanup(data.get("session_id", "default"))
     line = _scrub(data, full=end)
     if end:
         history.clear_stopped(data.get("session_id", "default"))
@@ -368,6 +371,8 @@ def _stop_reason(kinds: str, r: dict | None = None) -> str:
 
 
 def on_post(data: dict) -> dict | None:
+    if data.get("_cursor_event") == "postToolUse" and not str(data.get("tool_name", "")).startswith("mcp__"):
+        return None  # Cursor: only an MCP tool's output can be replaced (cursor.py masks the rest before it runs)
     session, kinds = data.get("session_id", "default"), []
     if data.get("tool_use_id"):  # a restoring write ran: log where its real values landed (filelog.py)
         filelog.complete(str(data["tool_use_id"]), Vault(config.vault_path(session)))
@@ -517,6 +522,8 @@ def _deny(reason: str) -> dict:
                                    "permissionDecisionReason": reason}}
 
 
+HOME_DENY = ("Cloakroom: its own settings (~/.cloakroom) are changed only by you, from the dashboard or "
+             "by typing cr: pause / cr: resume. Claude can't change them.")
 WRITE_TOOLS = {"Write", "Edit", "MultiEdit", "NotebookEdit", "apply_patch"}
 _PATCH_FILE = re.compile(r"^\*\*\* (?:Add File|Update File|Move to): (.+?)\s*$", re.M)
 
@@ -1064,20 +1071,58 @@ def on_pre(data: dict) -> dict | None:
     you), then the checks in _on_pre."""
     tool, args, session = data.get("tool_name", ""), data.get("tool_input") or {}, data.get("session_id", "default")
     cwd = data.get("cwd") or os.getcwd()
+    is_cursor = data.get("_cloakroom_agent") == "cursor"
+    if is_cursor:
+        done, early = _cursor_pre(data)
+        if done:
+            return early
     hosts, key = _outbound(tool, args, cwd, tool == "PowerShell")
     if hosts:
         _EXTRA["dest"] = hosts
     out = (_site_hold(hosts, key, tool, args, session, cwd) if hosts else None) or _on_pre(data)
     if hosts:
         _EXTRA["carries"] = egress.carried(json.dumps(args), _FOUND)
+    if is_cursor and tool == "Bash":  # the command runs inside Cloakroom, which prints only masked output
+        from . import cursor as cursor_mod
+        return cursor_mod.wrap(data, out)
     return out
+
+
+CURSOR_TOOLS = {"Bash", "Write", "Edit", "Grep", "Delete", "Task"}  # Cursor tools the checks below know
+
+
+def _cursor_pre(data: dict) -> tuple[bool, dict | None]:
+    """Cursor's own events and tools (design section 2): (True, the answer) when handled here, else (False, None)
+    and on_pre goes on with the normal checks."""
+    from . import agents, cursor
+    event, tool, args = data.get("_cursor_event"), data.get("tool_name", ""), data.get("tool_input") or {}
+    if event == "beforeShellExecution":
+        return True, cursor.gate(data)
+    if event == "beforeReadFile":
+        return True, cursor.read_gate(data)
+    if event != "preToolUse":
+        return False, None
+    if tool == "Read":
+        return True, cursor.masked_read(data)
+    if tool.startswith("mcp__"):  # checked at beforeMCPExecution, which knows the server
+        return True, None
+    if tool == "Grep" and args.get("output_mode") not in ("files_with_matches", "count"):
+        return True, _deny(agents.GREP_DENY)
+    if tool == "Delete":
+        home = os.path.realpath(str(config.HOME))
+        under = any(isinstance(v, str) and os.path.realpath(os.path.join(data.get("cwd") or os.getcwd(),
+                    os.path.expanduser(v))).startswith(home) for v in args.values())
+        return True, _deny(HOME_DENY) if under else None
+    if tool not in CURSOR_TOOLS:
+        _skip("cursor-tool", f"output of Cursor's {tool} tool", say=False)
+        return True, None
+    return False, None
 
 
 def _on_pre(data: dict) -> dict | None:
     tool, args, session = data.get("tool_name", ""), data.get("tool_input") or {}, data.get("session_id", "default")
     if _touches_home(tool, args):
-        return _deny("Cloakroom: its own settings (~/.cloakroom) are changed only by you, from the dashboard or "
-                     "by typing cr: pause / cr: resume. Claude can't change them.")
+        return _deny(HOME_DENY)
     blob = json.dumps(args)
     has_ph = bool(ANY_PLACEHOLDER.search(blob))
     vault = Vault(config.vault_path(session))
@@ -1203,6 +1248,9 @@ def on_start(data: dict) -> dict | None:
     cfg = config.load()
     _ACTION[0] = "session-start"
     _EXTRA.update(version=_version(), mode=cfg["mode"], hooks=_hooks_installed())
+    if data.get("_cloakroom_agent") == "cursor":
+        from . import cursor
+        cursor.sweep()
     note = _install_note(cfg) or crypto.denial_notice()
     if note:
         return {"systemMessage": note}
