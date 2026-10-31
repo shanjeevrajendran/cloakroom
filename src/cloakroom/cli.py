@@ -7,6 +7,8 @@
   cloakroom status                               mode, service health, vault sessions
   cloakroom dashboard                            open the local dashboard in your browser, signed in
   cloakroom report [--since DATE] [--format csv|json] [--verify]   counts from the event log, no values
+  cloakroom report --destinations [--since DATE]   where outgoing calls went, per host (no values)
+  cloakroom allow-host HOST [--remove|--list]    approve a site for the approved-sites list ("egress": "allowlist")
   cloakroom clean-history [--dry-run]            find and replace keys in old Claude Code transcripts
   cloakroom exposure [--since DATE] [--format text|json]   which keys and passwords your agents saw, to rotate
   cloakroom install git-hook                     check your own commits and pushes in this repo for keys
@@ -36,6 +38,25 @@ def _utf8_stdio():
     for stream in (sys.stdout, sys.stderr):
         if hasattr(stream, "reconfigure") and (stream.encoding or "").lower().replace("-", "") != "utf8":
             stream.reconfigure(encoding="utf-8", errors="replace")
+
+
+def _allow_host(a) -> int:
+    from . import egress
+    cfg = config.load()
+    hosts = list(cfg["allowed_hosts"])
+    if a.list or not a.host:
+        print(f"approved sites ({'on' if cfg['egress'] == 'allowlist' else 'off: set \"egress\": \"allowlist\" in config.json'}):")
+        print("\n".join(f"  {h}" for h in hosts) or "  none yet")
+        return 0
+    host = egress.normalize(a.host)
+    if not host:
+        print(f"Not a host name: {a.host!r}. Use example.com or *.example.com.", file=sys.stderr)
+        return 2
+    hosts = [h for h in hosts if h != host] + ([] if a.remove else [host])
+    config.set_allowed_hosts(hosts)
+    print(f"{host} {'removed from' if a.remove else 'added to'} the approved sites list" +
+          ("" if cfg["egress"] == "allowlist" else ' (the list is off: set "egress": "allowlist" in config.json to use it)'))
+    return 0
 
 
 def main(argv=None):
@@ -81,6 +102,12 @@ def main(argv=None):
     r.add_argument("--since", default="", help="first day, YYYY-MM-DD")
     r.add_argument("--format", choices=["csv", "json"], default="csv")
     r.add_argument("--verify", action="store_true", help="check the log's hash chain and print the head hash")
+    r.add_argument("--destinations", action="store_true", help="per host: calls, held, and the data kinds carried")
+    ah = sub.add_parser("allow-host", help="add a site to the approved-sites list (*.example.com allowed); the list is "
+                                           "used when config.json has \"egress\": \"allowlist\"")
+    ah.add_argument("host", nargs="?", help="example.com or *.example.com")
+    ah.add_argument("--remove", action="store_true", help="take it off the list")
+    ah.add_argument("--list", action="store_true", help="show the list and whether it is on")
     u = sub.add_parser("update", help="update Cloakroom with the installer you used (uv, pipx or pip), keeping "
                                       "its optional parts, then set up its checks again for Codex, Gemini CLI and "
                                       "git commits where they were set up")
@@ -100,8 +127,10 @@ def main(argv=None):
             print(report.verify_text())
             from . import events
             return 0 if events.verify()["ok"] else 1
-        sys.stdout.write(report.export(a.format, a.since))
+        sys.stdout.write(report.destinations_text(a.format, a.since) if a.destinations else report.export(a.format, a.since))
         return 0
+    if a.cmd == "allow-host":
+        return _allow_host(a)
     if a.cmd == "exposure":
         from . import exposure
         sys.stdout.write(exposure.render(exposure.build(a.since), a.format))

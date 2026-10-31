@@ -72,6 +72,14 @@ New in 0.7, it also protects two other AI coding agents that run in a terminal (
 - **OpenAI's Codex CLI:** run `cloakroom install codex` ([Codex](#codex)).
 - **Google's Gemini CLI:** run `cloakroom install gemini` ([Gemini CLI](#gemini-cli)).
 
+New in 1.0:
+
+- **See where your agent sends data, and limit it to sites you approve:** `cloakroom report --destinations` lists the
+  hosts your agent's commands, web fetches and MCP calls went to, with the kinds of data they carried.
+  `cloakroom allow-host example.com` builds an approved-sites list; once you turn it on, a call to any other site is
+  held. An email, phone number, name or your username in a web address or header is held too
+  ([details](#see-where-your-agent-sends-data)).
+
 New in 0.8:
 
 - **See which keys your agents saw:** `cloakroom exposure` lists the keys and passwords Claude Code, Codex CLI and
@@ -125,6 +133,9 @@ else: [Known limits](https://github.com/shanjeevrajendran/cloakroom/blob/main/do
 
 ## Recent releases
 
+- **1.0.0** (unreleased): the ledger of where your agent sends data (`cloakroom report --destinations`), an opt-in
+  approved-sites list (`cloakroom allow-host`), and a hold on a web address or header that carries your email, phone,
+  name or username. See [See where your agent sends data](#see-where-your-agent-sends-data).
 - **0.9.0** (2026-10-30): `cloakroom give NAME` hands the agent a key through a hidden prompt, so you never paste it
   into a chat; a prompt Cloakroom stops is taken out of the session's saved Claude Code transcript; a failed command is
   counted as not checked in `cloakroom report`. See [Hand the agent a key safely](#hand-the-agent-a-key-safely).
@@ -460,6 +471,37 @@ You type the value hidden. Cloakroom keeps it on your machine and prints a place
 | `cloakroom give NAME --hours 2` | keep it 2 hours instead of the 24 default |
 
 If you type `cr: give NAME` into a prompt, Cloakroom stops it and tells you to use the terminal command.
+
+## See where your agent sends data
+
+Cloakroom writes down where your agent sends data and can limit it to sites you approve. It sees the commands that
+send data (`curl`, `wget`, `ssh`, `scp`, `git push`, network one-liners), WebFetch and WebSearch, and MCP calls to remote
+servers. Each is logged with the host and the kinds of data it carried (`EMAIL x2`, never a value). Calls to `localhost`
+aren't logged.
+
+```bash
+cloakroom report --destinations            # per host: calls, held, kinds carried (--since DATE, --format json)
+cloakroom allow-host example.com           # approve a site; *.example.com approves its subdomains
+cloakroom allow-host --list                # the list, and whether it is on
+```
+
+The approved-sites list is off until you add `"egress": "allowlist"` to `~/.cloakroom/config.json`. Then a call to a host
+that isn't on the list is held, whatever it carries, with the same message and `cr: allow` as any held command: type
+`cr: allow` in the chat, then ask the agent to run the same call again. A call whose destination Cloakroom can't read
+(`aws s3 ls`, `npm publish`) is held too. WebSearch counts as the host `web-search`, and an MCP server your config
+doesn't name as `mcp:NAME`; approve those with `cloakroom allow-host web-search` or `cloakroom allow-host mcp:NAME`.
+
+Always on, with or without the list: a command or web call whose address, query string or headers carry an email
+address, a phone number, a name or your computer's username is held, and the message says which. The username comes
+from the operating system, not from `$USER`. A placeholder in the address is fine.
+
+| Command | What it does |
+|---|---|
+| `cloakroom report --destinations` | hosts, calls, holds and kinds carried; the dashboard shows the same as "Where data went" |
+| `cloakroom allow-host HOST` | add a site to the approved-sites list (`--remove` takes it off, `--list` shows it) |
+
+It doesn't see the agent's own calls to its model provider, or a tool that runs no Cloakroom check
+([Known limits](https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-LIMITS.md)).
 
 ## Why Cloakroom
 

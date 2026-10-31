@@ -105,6 +105,10 @@ DATABASE_URL=postgres://admin:<mark class="ph">PII_SECRET_1</mark>@10.0.4.12/pro
     <h3>Hand the agent a key safely</h3>
     <p><code>cloakroom give NAME</code> asks for the value in a hidden terminal prompt and gives you a placeholder to paste. When the agent writes that placeholder into a local file or command, the real value goes back in. The AI never sees it.</p>
   </article>
+  <article class="card">
+    <h3>See where your agent sends data</h3>
+    <p><code>cloakroom report --destinations</code> lists the hosts your agent's commands, web fetches and MCP calls went to, with the kinds of data they carried. <code>cloakroom allow-host example.com</code> builds an approved-sites list; once it is on, a call to any other site is held. An email, phone number, name or your username in a web address or header is held too.</p>
+  </article>
 </section>
 
 <section class="install" id="install" aria-labelledby="install-title">

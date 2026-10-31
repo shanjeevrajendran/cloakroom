@@ -189,6 +189,7 @@ header.top { position: sticky; top: 0; z-index: 5; background: var(--bg); paddin
         <div class="kv mono"><span>median <b id="p50">-</b></span><span>slowest 5% <b id="p95">-</b></span></div>
         <svg class="chart" id="spark" viewBox="0 0 300 54" role="img" aria-label="Recent check times"></svg>
       </section>
+      <section class="card" aria-labelledby="destTitle"><h2 id="destTitle">Where data went</h2><div class="bars" id="dests"></div></section>
       <section class="card" aria-labelledby="toolTitle"><h2 id="toolTitle">By tool</h2><div class="bars" id="tools"></div></section>
     </aside>
   </div>
@@ -311,8 +312,9 @@ header.top { position: sticky; top: 0; z-index: 5; background: var(--bg); paddin
   }
 
   function renderStats(evs) {
-    const kinds = {}, hot = {}, tools = {};
+    const kinds = {}, hot = {}, tools = {}, dests = {};
     evs.forEach(e => {
+      (e.dest || []).forEach(h => dests[h] = (dests[h] || 0) + 1);
       Object.entries(e.kinds || {}).forEach(([k, n]) => kinds[k] = (kinds[k] || 0) + n);
       if (isAlert(e)) {
         const t = e.target ? (e.target.includes("/") ? e.target.replace(/[^/]*$/, "") || "/" : e.target) : (e.event === "prompt" ? "(prompts)" : "(other)");
@@ -322,6 +324,7 @@ header.top { position: sticky; top: 0; z-index: 5; background: var(--bg); paddin
     });
     renderBars($("#kinds"), Object.entries(kinds).sort((a, b) => b[1] - a[1]).slice(0, 8).map(([k, n]) => [k, n, sev(k)]));
     renderBars($("#hot"), Object.entries(hot).sort((a, b) => b[1][0] - a[1][0]).slice(0, 6).map(([k, v]) => [k, v[0], v[1]]));
+    renderBars($("#dests"), Object.entries(dests).sort((a, b) => b[1] - a[1]).slice(0, 8).map(([k, n]) => [k, n, "low"]));
     renderBars($("#tools"), Object.entries(tools).sort((a, b) => b[1] - a[1]).slice(0, 6).map(([k, n]) => [k, n, "low"]));
     const ms = evs.filter(e => e.event !== "start" && e.event !== "log" && e.event !== "skipped").map(e => e.ms).sort((a, b) => a - b), q = p => ms.length ? ms[Math.min(ms.length - 1, Math.floor(p * ms.length))] : null;
     $("#p50").textContent = ms.length ? Math.round(q(.5)) + " ms" : "-"; $("#p95").textContent = ms.length ? Math.round(q(.95)) + " ms" : "-";

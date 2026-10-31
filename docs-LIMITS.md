@@ -188,6 +188,22 @@ Cloakroom can't check, the action is blocked rather than let through.
   isn't protection against your own account being taken over. Entries expire after 24 hours; `--forget` removes one now.
 - A value typed into a prompt anyway is caught only if it has a key shape; a plain password or a name goes through.
 
+## Outgoing data (`cloakroom report --destinations`, approved sites)
+
+- The ledger and the approved-sites list cover only calls that pass through Cloakroom's checks: commands, WebFetch,
+  WebSearch and MCP calls. They don't see the agent's own calls to its model provider, or any tool or agent that runs
+  no Cloakroom check (see Codex and Gemini CLI for what those two check).
+- The host of a command is read from its web addresses, `user@host` words, the first host-like word of `ssh`, `scp`,
+  `nc` and similar, and the remote of `git push`, `fetch` and `pull`. A program that sends data without naming a host
+  (`aws`, `npm publish`, `docker pull`) is logged as `(unresolved)` and, with the list on, held. A host built by the
+  shell at run time (`curl "$URL"`) can't be read either.
+- The header guard checks the address, query string and headers with the rules only (emails, phone numbers, names in a
+  name field), not the model, so a bare name in a web address can pass. It doesn't read a request body. A
+  username that is also a public handle (a repository owner in a web address) is held as well; `cr: allow` passes it.
+- An MCP server that isn't in `.mcp.json` or `~/.claude.json` (a plugin or connector) is logged as `mcp:NAME`: Cloakroom
+  can't tell whether it is remote. With the list on it is held until you approve that name.
+- The list is global (one `allowed_hosts` for every project); Cloakroom has no per-project settings.
+
 ## Codex
 
 Checked against Codex CLI 0.164 (hooks docs: https://developers.openai.com/codex/hooks, and its source).

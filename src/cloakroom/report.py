@@ -20,6 +20,11 @@ ABOUT = [
      "ready), counted by check and reason."),
     "It is a record of this tool's actions, not a compliance attestation.",
 ]
+DEST_ABOUT = [
+    "Cloakroom destinations: where the commands and web or MCP calls Cloakroom checked sent data, counted per host.",
+    "Kinds are the data kinds those calls carried (placeholders and anything held); no values, no addresses beyond the host.",
+    "It does not see the agent's own calls to its model provider, or tools that run no Cloakroom check.",
+]
 ACTIONS = {"deny": "denied", "block": "denied"}  # the rest keep their own name (masked, withheld, held, allowed once...)
 SKIP = {"pass"}  # a tool call checked with nothing found
 
@@ -70,6 +75,37 @@ def skipped(since: str = "") -> list[dict]:
         counts[key] = counts.get(key, 0) + 1
     return [{"check": c, "reason": r, "why": w, "count": n}
             for (c, r, w), n in sorted(counts.items(), key=lambda x: (-x[1], x[0]))]
+
+
+def destinations(since: str = "") -> list[dict]:
+    """Where outgoing calls went: per host, the calls, how many were held, and the data kinds they carried (counts).
+    Most calls first. Hosts and kinds only, never values or addresses."""
+    hosts: dict[str, dict] = {}
+    for ev in events.all_events():
+        if not ev.get("dest") or (since and str(ev.get("ts", ""))[:10] < since):
+            continue
+        for host in ev["dest"]:
+            row = hosts.setdefault(str(host), {"host": str(host), "calls": 0, "held": 0, "kinds": {}})
+            row["calls"] += 1
+            row["held"] += ev.get("action") == "held"
+            for kind, n in (ev.get("carries") or {}).items():
+                row["kinds"][kind] = row["kinds"].get(kind, 0) + int(n)
+    return sorted(hosts.values(), key=lambda r: (-r["calls"], r["host"]))
+
+
+def destinations_text(fmt: str = "csv", since: str = "") -> str:
+    data = destinations(since)
+    if fmt == "json":
+        return json.dumps({"about": DEST_ABOUT, "version": __version__, "since": since or None, "destinations": data},
+                          indent=1) + "\n"
+    out = io.StringIO()
+    for line in DEST_ABOUT:
+        out.write(f"# {line}\n")
+    w = csv.writer(out, lineterminator="\n")
+    w.writerow(["host", "calls", "held", "kinds"])
+    for r in data:
+        w.writerow([r["host"], r["calls"], r["held"], " ".join(f"{k}x{n}" for k, n in sorted(r["kinds"].items()))])
+    return out.getvalue()
 
 
 def export(fmt: str = "csv", since: str = "") -> str:

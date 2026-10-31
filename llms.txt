@@ -4,6 +4,8 @@
 
 Install: `/plugin marketplace add shanjeevrajendran/cloakroom`, then `/plugin install cloakroom@cloakroom`. The plugin installs the Python package (`cloakroom` on PyPI) itself on first start. Prompts that contain a secret are blocked (Claude Code hooks cannot rewrite a prompt); `cr!` sends one anyway, `cr: pause 10m` / `cr: resume` pause and resume checks.
 
+Where data goes: `cloakroom report --destinations` lists the hosts commands, web fetches and MCP calls sent data to, with the kinds of data carried (never values). `cloakroom allow-host example.com` builds an opt-in approved-sites list; a call to any other site is held. See the README section "See where your agent sends data".
+
 ## Docs
 
 - [README](https://github.com/shanjeevrajendran/cloakroom/blob/main/README.md): what it does, install, results, FAQ

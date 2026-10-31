@@ -71,3 +71,11 @@ def test_missing_landing_features_list_and_llms_commands_are_skipped(tmp_path):
 def test_main_exit_code(tmp_path, capsys, monkeypatch):
     monkeypatch.setattr("sys.argv", ["x", "--root", str(tree(tmp_path, **{"docs-LIMITS.md": "#\n"}))])
     assert rc.main() == 1 and "docs-LIMITS.md" in capsys.readouterr().out
+
+
+def test_unreleased_entry_is_checked_but_its_version_pin_waits(tmp_path):
+    log = FILES["CHANGELOG.md"].replace("## 1.2.0 (2026-11-01)", "## 1.2.0 (unreleased)")
+    out, bad = rc.check(tree(tmp_path, **{"CHANGELOG.md": log, "pyproject.toml": 'version = "1.1.0"\n'}))
+    assert bad == [] and any("unreleased" in l for l in out)
+    readme = FILES["README.md"].replace("`cloakroom wave NAME`, ", "")
+    assert any(b.startswith("(d)") for b in failures(tmp_path, **{"CHANGELOG.md": log, "README.md": readme}))
