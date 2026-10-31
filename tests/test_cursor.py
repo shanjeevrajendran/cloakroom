@@ -10,7 +10,6 @@ import io
 import json
 import os
 import re
-import shutil
 import signal
 import subprocess
 import sys
@@ -92,8 +91,6 @@ def git(repo, *args):
 
 @pytest.fixture
 def repo(ws):
-    if not shutil.which("git"):
-        pytest.skip("git is not installed")
     git(ws, "init", "-q", "-b", "main")
     (ws / "README.md").write_text("hello\n")
     git(ws, "add", ".")
