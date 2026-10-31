@@ -29,9 +29,11 @@ HOOKS="$HOME/.cursor/hooks.json"
 BACKUP="$W/hooks.json.backup"; HAD=0
 unset CLOAKROOM_BIN
 
-stop_service() {  # only the service on our test port
-  local pids; pids="$(lsof -ti "tcp:$CLOAKROOM_PORT" -sTCP:LISTEN 2>/dev/null || true)"
-  [[ -n "$pids" ]] && kill $pids 2>/dev/null || true
+stop_service() {  # only a Cloakroom service on our test port; anything else on it is left alone
+  local pid
+  for pid in $(lsof -ti "tcp:$CLOAKROOM_PORT" -sTCP:LISTEN 2>/dev/null || true); do
+    ps -p "$pid" -o command= 2>/dev/null | grep -q "cloakroom serve" && kill "$pid" 2>/dev/null || true
+  done
 }
 restore_hooks() {
   if [[ $HAD == 1 ]]; then cp "$BACKUP" "$HOOKS"; else rm -f "$HOOKS"; fi
@@ -47,6 +49,17 @@ if [[ $CONTROL == 1 ]]; then
 else
   cloakroom install cursor >/dev/null
 fi
+
+# Pre-flight: the service must be up in the test home before the first run, or every hook fails closed and the checks
+# say nothing. The installed model files are linked in so the test home needs no download.
+mkdir -p "$W/home"
+[[ -d "$HOME/.cloakroom/onnx" && ! -e "$W/home/onnx" ]] && ln -s "$HOME/.cloakroom/onnx" "$W/home/onnx"
+python - <<'PY' || { echo "the Cloakroom service did not start in the test home: see $W/home/serve.log (model extra missing? run: uv pip install -e '.[model]' in $REPO; or CLOAKROOM_MODE=rules)"; KEEP=1; exit 2; }
+import sys
+from cloakroom import client, config
+client.start_background()
+sys.exit(0 if client._wait_until_up(config.load()["port"], 300) else 1)
+PY
 
 # Fake workspace: a git repo with a secret file, a committed config.py and a fake MCP server that returns a key.
 P="$W/proj"; mkdir -p "$P/.cursor"
