@@ -22,7 +22,8 @@ KEY = "ghp_" + "Z3kQ9mLp2Rt7Vw4Xy8Bc1Df5Gh6Jk0LmPqAa"  # a GitHub-token shape, n
 PROGRAM = "/usr/local/bin/cloakroom"
 PNG = bytes.fromhex("89504e470d0a1a0a0000000d49484452000000010000000108060000001f15c4890000000d49444154789c6360f8ff"
                     "ff3f0005fe02fea7d6c9b30000000049454e44ae426082")  # a 1x1 picture
-HANDLERS = (signal.SIGTERM, signal.SIGINT, signal.SIGHUP)
+pytestmark = pytest.mark.skipif(os.name == "nt", reason="Cursor support is Mac and Linux (install is refused on Windows)")
+HANDLERS = tuple(getattr(signal, n) for n in ("SIGTERM", "SIGINT", "SIGHUP") if hasattr(signal, n))  # no SIGHUP on Windows
 
 
 @pytest.fixture
