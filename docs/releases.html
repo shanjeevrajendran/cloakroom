@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cloakroom releases</title>
+<meta name="description" content="Every Cloakroom release, newest first, with its date and changes, from CHANGELOG.md.">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#0a100c">
+<link rel="canonical" href="https://cloakroom.sh/releases.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Cloakroom">
+<meta property="og:title" content="Cloakroom releases">
+<meta property="og:description" content="Every Cloakroom release, newest first, with its date and changes, from CHANGELOG.md.">
+<meta property="og:url" content="https://cloakroom.sh/releases.html">
+<meta property="og:image" content="https://raw.githubusercontent.com/shanjeevrajendran/cloakroom/main/assets/social-card.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 44 44'%3E%3Crect width='44' height='44' rx='9' fill='%230d1117'/%3E%3Cg fill='%2356d364' stroke='%2356d364' stroke-width='2.6' stroke-linejoin='round' stroke-linecap='round' transform='translate(4 4) scale(.82)'%3E%3Cpath d='M4 6H40V16A6 6 0 0 0 40 28V38H4V28A6 6 0 0 0 4 16Z'/%3E%3Cpath d='M14 22H30' stroke='%230d1117' stroke-dasharray='3 3'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Martian+Mono:wdth,wght@75..112.5,400..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<script>document.documentElement.classList.add('js')</script>
+</head>
+<body class="t-terminal">
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="bar">
+  <div class="container bar-inner">
+    <a class="brand" href="./" aria-label="Cloakroom, home">
+      <svg viewBox="0 0 44 44" width="26" height="26" aria-hidden="true"><rect width="44" height="44" rx="9" fill="#0d1117"/><g fill="#56d364" stroke="#56d364" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round" transform="translate(4 4) scale(.82)"><path d="M4 6H40V16A6 6 0 0 0 40 28V38H4V28A6 6 0 0 0 4 16Z"/><path d="M14 22H30" stroke="#0d1117" stroke-dasharray="3 3"/></g></svg>
+      <span>Cloakroom</span>
+    </a>
+    <nav aria-label="Site">
+      <a href="install.html">Install</a>
+      <a href="commands.html">Commands</a>
+      <a href="how-it-works.html">How it works</a>
+      <a href="security.html">Security</a>
+      <a href="releases.html" aria-current="page">Releases</a>
+      <a href="writing.html">Writing</a>
+      <a href="https://github.com/shanjeevrajendran/cloakroom">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<section class="hero page-hero page-hero--short container" aria-labelledby="page-title">
+  <h1 id="page-title">Releases</h1>
+  <p class="lead">Every release, newest first, from CHANGELOG.md.</p>
+</section>
+
+<section class="sec container" aria-label="Changelog">
+  <div class="rel-list">
+  <article class="release" id="v0-9-0" aria-labelledby="v0-9-0-t">
+    <div><h2 id="v0-9-0-t">0.9.0</h2>
+    <p><time datetime="2026-10-30">2026-10-30</time></p></div>
+    <div class="release-body">
+    <ul>
+      <li><code>cloakroom give NAME</code>: hand the agent a key without pasting it into a prompt. You type the value hidden in a terminal and get a placeholder to paste; when the agent writes the placeholder into a local file or command, Cloakroom's restore puts the real value back, and tool output that shows it is masked again. Works in Claude Code, Codex CLI and Gemini CLI, for every session in that project. <code>--list</code> shows names and hints (<code>sk-…Q4z</code>), <code>--forget NAME</code> removes one, entries expire after 24 hours (<code>--hours N</code>). A prompt containing <code>cr: give NAME</code> is stopped with the terminal command. The value is stored encrypted and never reaches a log, event, the dashboard or the session vault.</li>
+      <li>A prompt Cloakroom stops no longer stays in the session's saved transcript. Claude Code keeps every chat in a file on disk; the same code as <code>cloakroom clean-history</code> now takes the stopped values (keys, passwords and any personal data that made it stop) out of the current session's transcript only, right after the stop, after the next reply and when the session ends. At session end it also replaces any key or password it finds in that file. The usual report line is shown, and <code>cloakroom report</code> counts these as "scrubbed". No backup is kept (it would keep the values). Turn it off with <code>"scrub_transcript": false</code> in <code>~/.cloakroom/config.json</code>. Claude Code only: Codex and Gemini transcripts are not touched (see docs-LIMITS).</li>
+      <li>The plugin registers Cloakroom for Claude Code's <code>Stop</code>, <code>SessionEnd</code> and <code>PostToolUseFailure</code> events (the hook command takes a new <code>scrub</code> event).</li>
+      <li>A tool call that fails in Claude Code (for example a command with a non-zero exit) is now counted as "not checked": it shows in the event log, in "Checks skipped" in <code>cloakroom report</code>, on the dashboard, and as one note per session.</li>
+      <li>Known limit: the error output of a failed call still can't be masked, because Claude Code lets this hook add notes but not change the text, so it may reach the model with a key in it (see docs-LIMITS, "Failed commands").</li>
+    </ul>
+    </div>
+  </article>
+  <article class="release" id="v0-8-1" aria-labelledby="v0-8-1-t">
+    <div><h2 id="v0-8-1-t">0.8.1</h2>
+    <p><time datetime="2026-10-30">2026-10-30</time></p></div>
+    <div class="release-body">
+    <ul>
+      <li>A stopped prompt gives you your message back with placeholders to send instead (Claude Code, Codex, Gemini CLI): the stop message says why in one line, then "Send this instead:" with your text, each key or personal value swapped for a placeholder (<code>PII_EMAIL_1_k7q2ab</code>), then the <code>cr!</code> line. The session keeps the real values, so when the agent writes a placeholder into a file or a local command, the real value goes back in on your machine. Over 10,000 characters, or when only the rules could check the prompt, the message gives the old advice instead. The event for a stopped prompt is unchanged (kinds only). Gemini CLI: a note Cloakroom adds to a stop now shows under the stop message instead of replacing it.</li>
+      <li><code>cloakroom update</code>: updates Cloakroom with the installer you used (uv, pipx or pip) and keeps the optional parts you had (the detection model and OCR). Then it sets up Cloakroom's checks again for Codex, Gemini CLI and git commits in the current folder, only where they were set up before, so they match the new version, and says when Codex needs you to approve them again (<code>/hooks</code>). When it can't tell which installer you used, on Windows, or for a copy installed from Cloakroom's source code, it changes nothing and prints the commands to run. <code>--check</code> shows what it would do without changing anything. It leaves the Claude Code plugin to Claude Code.</li>
+      <li><code>cloakroom doctor</code> shows the program's version and, when Claude Code has the Cloakroom plugin, the plugin's version, with one line on what to do when they differ. It reads this from Claude Code's own files, offline.</li>
+      <li>README: a new "Updates" section: how updates reach you in Claude Code (and how to switch on automatic updates), and <code>cloakroom update</code> for Codex, Gemini CLI, git commits and copies you installed yourself.</li>
+      <li>Windows: writing a restored key to a file on another drive than the folder Claude was started in (for example a project on D: and a file under C:) was refused as "couldn't check"; it now works as on one drive.</li>
+      <li>Known limit: In Claude Code, output from a command that fails (non-zero exit) goes through a different hook event that Cloakroom does not yet handle, so it may reach the model unmasked. A fix is planned.</li>
+    </ul>
+    </div>
+  </article>
+  <article class="release" id="v0-8-0" aria-labelledby="v0-8-0-t">
+    <div><h2 id="v0-8-0-t">0.8.0</h2>
+    <p><time datetime="2026-10-27">2026-10-27</time></p></div>
+    <div class="release-body">
+    <h3>Added</h3>
+    <ul>
+      <li><code>cloakroom exposure [--since DATE] [--format text|json]</code>: which keys and passwords your coding agents saw, so you know what to rotate. Part one reads Cloakroom's own log (per session and agent: where the key was seen and what Cloakroom did); part two scans old Claude Code, Codex CLI and Gemini CLI transcripts for keys from before Cloakroom, read-only. It ends with a "Rotate these" checklist and shows a hint (<code>ghp_…LmPq</code>), never the key. It lists only what Cloakroom detected: no line is not proof a key is safe.</li>
+      <li><code>cloakroom scan [folder]</code>: lists every command a repo's agent and editor config would run (<code>.claude/settings.json</code>, <code>.mcp.json</code>, <code>.codex/</code>, <code>.gemini/settings.json</code>, <code>.vscode/tasks.json</code>) and flags the npm worm's shape (an agent hook running a file in <code>.vscode/</code>, a folder-open task running a file in <code>.claude/</code>).</li>
+      <li><code>bench/black-october/</code>: the same Claude Code task on a repo of dummy secrets, with and without Cloakroom, then gitleaks and trufflehog on what each run left behind.</li>
+    </ul>
+    <h3>Changed</h3>
+    <ul>
+      <li><code>cloakroom install git-hook</code> also adds <code>post-checkout</code> and <code>post-merge</code> hooks: after a pull, checkout or merge, Cloakroom prints each new or changed command in the agent config files above, with its file and line. It only warns; nothing is blocked or edited. Run it again in a repo that already has the hook to get the new ones.</li>
+      <li>The event log records which agent made each call (Claude Code, Codex CLI, Gemini CLI), so <code>cloakroom exposure</code> can name it. Older lines say "unknown".</li>
+    </ul>
+    <h3>Fixed</h3>
+    <ul>
+      <li>A config file holding a short known value as typed (a database user like <code>litellm</code>, under 8 characters) is no longer withheld as "encoded or spaced-out"; the agent gets it masked as usual. Trade-off: a known value under 8 characters that appears as typed in a later output stays visible there, as the masking engine already leaves values that short alone (too likely to turn up by chance). Spaced-out and decoded copies of it are still withheld.</li>
+      <li><code>git add &lt;paths&gt; &amp;&amp; git commit</code> held by the agent's commit check now looks only at the paths <code>git add</code> stages, not every untracked file and unstaged change in the repo, so a key in an unrelated <code>.env</code> no longer holds the commit.</li>
+      <li>A placeholder in angle brackets with spaces (<code>"apiKey": "&lt;LITELLM_API_KEY from .env&gt;"</code>) is no longer taken for a real key, so writing a setup file that uses one isn't denied. A real key inside the brackets is still masked.</li>
+    </ul>
+    </div>
+  </article>
+  <article class="release" id="v0-7-2" aria-labelledby="v0-7-2-t">
+    <div><h2 id="v0-7-2-t">0.7.2</h2>
+    <p><time datetime="2026-10-25">2026-10-25</time></p></div>
+    <div class="release-body">
+    <ul>
+      <li><code>cloakroom install git-hook</code> works on Windows: your commits and pushes are checked whether you commit from Git Bash, PowerShell or cmd, also when Cloakroom is installed in a folder with a space in its name. The git hook's tests now run on Windows too.</li>
+      <li>Clearer README and docs: plain English for a first-time user, and "placeholder" for the label the AI sees in place of a real value.</li>
+    </ul>
+    </div>
+  </article>
+  <article class="release" id="v0-7-1" aria-labelledby="v0-7-1-t">
+    <div><h2 id="v0-7-1-t">0.7.1</h2>
+    <p><time datetime="2026-10-25">2026-10-25</time></p></div>
+    <div class="release-body">
+    <ul>
+      <li>Skipped checks are visible: when a check lets a call through without running in full (a commit or push over 4 MB or slower than 2 s, a git error, git too slow to say whether a written key would be committed, a new file over 2 MB in a commit, or the model not ready so only the rules checked), the event log gets a "skipped" line (reason, check, size and time; never values), you're told once per session per reason ("Cloakroom didn't check this git push: it was larger than 4 MB") in Claude Code, Codex and Gemini CLI, and <code>cloakroom report</code> has a "Checks skipped" section. The dashboard counts them on the "Tool calls checked" tile. A file over 512 KB that a command names is logged too, without a note: the command's output is still masked.</li>
+      <li><code>cloakroom install git-hook</code>: also checks commits you make yourself, with the same rules and your own known secrets. Adds <code>pre-commit</code> and <code>pre-push</code> hooks to the current repo (<code>core.hooksPath</code> respected), leaves another tool's hook alone, and is safe to run twice. Skip once with <code>--no-verify</code>; <code>cloakroom uninstall git-hook</code> removes it. A stopped commit or push is logged as held, and one it couldn't check (too large, too slow, git error) as skipped ("git commit (git hook)"), with the same line on the terminal.</li>
+      <li>Codex: <code>"codex_hold_long_running": true</code> in <code>~/.cloakroom/config.json</code> holds commands that obviously keep running (<code>tail -f</code>, <code>watch</code>, dev servers, <code>docker logs -f</code>, <code>ping</code> without <code>-c</code>, <code>--watch</code>...), whose later output Codex never shows a hook, with one line saying why; <code>cr: allow</code> lets one run once. Off by default; holds are counted as events (<code>"hold": "long-running"</code>) so false holds can be measured.</li>
+      <li>Gemini CLI: a call answered on the rules while the model starts is logged as a skipped model check and noted once per session (it was noted on every call). <code>cloakroom doctor</code> warns when Cloakroom's extension is disabled (<code>gemini extensions disable</code>) or Gemini's hooks are off (<code>hooksConfig.enabled: false</code>, or ours in <code>hooksConfig.disabled</code>), and says "can't tell" when it can't read those files.</li>
+    </ul>
+    </div>
+  </article>
+  <article class="release" id="v0-7-0" aria-labelledby="v0-7-0-t">
+    <div><h2 id="v0-7-0-t">0.7.0</h2>
+    <p><time datetime="2026-10-24">2026-10-24</time></p></div>
+    <div class="release-body">
+    <ul>
+      <li>Codex: Cloakroom also protects OpenAI's Codex CLI (Mac and Linux). <code>cloakroom install codex</code> adds its hooks to <code>~/.codex/hooks.json</code> (your own hooks stay), <code>cloakroom uninstall codex</code> takes them out, and <code>cloakroom doctor</code> says whether they are there. Shell output and MCP results are masked, placeholders in shell commands and patches get their real values back, real values are kept out of MCP calls, and a prompt holding a secret is stopped with what to do next. Trust the hooks once in Codex (<code>/hooks</code>). Open gap: output of a command still running when Codex stops waiting isn't masked (<a href="https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-LIMITS.md#codex">limits</a>).</li>
+      <li>Gemini CLI: Cloakroom also protects Google's Gemini CLI (Mac and Linux). <code>cloakroom install gemini</code> writes a Gemini extension of its own to <code>~/.gemini/extensions/cloakroom/</code> (nothing else is changed), <code>cloakroom uninstall gemini</code> deletes it, and <code>cloakroom doctor</code> says whether it is there. Every tool's output is masked (pictures read by OCR or held back, PDFs held back), placeholders in shell commands, <code>write_file</code> and <code>replace</code> get their real values back, real values are kept out of MCP and web tools, and a prompt holding a secret is stopped. The hooks never wait for the model to load: Gemini would let the call through on a timeout (<a href="https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-LIMITS.md#gemini-cli">limits</a>).</li>
+      <li>Windows: the event log is written with plain line ends, so its hash chain checks out (a log from 0.6.6 with Windows line ends still reads), and file names in it start with <code>~</code> for your home folder whichever slash the path uses, so <code>cloakroom report</code> keeps the folder class.</li>
+      <li>Git Bash on Windows: the commit hold follows <code>cd /c/...</code> and <code>git -C /c/...</code> to the right repository.</li>
+      <li>Fail-closed hooks: the plugin's launchers (<code>hook.sh</code> for bash and Git Bash, <code>hook.ps1</code> for PowerShell) now stop a tool call when the cloakroom program answers nothing or something that isn't JSON: output is withheld, the call is denied, a prompt still goes through with a warning (<code>cloakroom doctor</code> says what is wrong). The program answers <code>{}</code> on a clean pass; a program older than the plugin, still waiting for its upgrade, may answer nothing.</li>
+    </ul>
+    </div>
+  </article>
+  <article class="release" id="v0-6-6" aria-labelledby="v0-6-6-t">
+    <div><h2 id="v0-6-6-t">0.6.6</h2>
+    <p><time datetime="2026-10-24">2026-10-24</time></p></div>
+    <div class="release-body">
+    <ul>
+      <li>Disguised copies of known values: a secret Cloakroom has seen is also caught as an MD5, SHA-1 or SHA-256 hash, as hex (plain, <code>0x</code>, spaced, colon or <code>\x</code> escapes, also hex of <code>user:secret</code>), and reversed (keys and passwords of 12+ characters). A known email is caught as its hash; a known card or account number's last 4 digits after "ending in", "last 4" or <code>****</code>; a known email's distinctive local part on its own. Each copy keeps its source's kind with its own placeholder, so restore returns the exact form, and copies never seed further copies.</li>
+      <li>Fix: an encoded copy glued to a letter or digit (<code>0x...</code>, <code>%3D...</code>) is masked with the word around it, so restore finds its placeholder.</li>
+    </ul>
+    </div>
+  </article>
+  <article class="release" id="v0-6-5" aria-labelledby="v0-6-5-t">
+    <div><h2 id="v0-6-5-t">0.6.5</h2>
+    <p><time datetime="2026-10-24">2026-10-24</time></p></div>
+    <div class="release-body">
+    <ul>
+      <li>Bank numbers: US routing numbers (ABA checksum and a routing word or field) and bank account numbers (an account word or field, a CSV column of that name, a NACHA entry line, or a routing number in the same record) are masked as a new kind, <code>PII_BANK_n</code>. Bare digits are never matched. Known bank numbers are also looked for encoded, like cards and IBANs.</li>
+      <li>Money-movement hold: a tool call that would move money (a write to a listed payment, payout or transfer API from a shell command or payment CLI, or an MCP tool named for it) is held with one line naming the endpoint or tool; <code>cr: allow</code> lets it run once and the log records both. On by default; <code>"money_hold": false</code> turns it off, and <code>"money_hosts"</code> / <code>"money_tools"</code> in <code>~/.cloakroom/config.json</code> extend the lists. A call that trips both this and the egress hold shows one hold and needs one <code>cr: allow</code>.</li>
+      <li>Bank numbers leave the benchmarks where 0.6.2 put them (CredData, the 200 safe samples, Gretel, ai4privacy, TAB): counting placeholders like <code>Account Number: 123456789</code> are left alone, as for cards, and a bank word inside a git commit hash or a hex key is not read as a label.</li>
+    </ul>
+    </div>
+  </article>
+  <article class="release" id="v0-6-4" aria-labelledby="v0-6-4-t">
+    <div><h2 id="v0-6-4-t">0.6.4</h2>
+    <p><time datetime="2026-10-24">2026-10-24</time></p></div>
+    <div class="release-body">
+    <ul>
+      <li>0.6.3 was tagged but never released (an install message set a failing exit status on Linux); its changes ship here.</li>
+      <li>Keychain: a refused read of the vault key (you clicked Deny, or the Keychain is locked, as over SSH) is now remembered until <code>cloakroom serve</code> restarts or you run <code>cloakroom doctor --retry-key</code>, so macOS asks once instead of on every call. You see one message saying your own rules are off and how to turn them back on (built-in checks keep running). Installs and upgrades on a Mac now say in advance to click Always Allow.</li>
+    </ul>
+    </div>
+  </article>
+  <article class="release" id="v0-6-2" aria-labelledby="v0-6-2-t">
+    <div><h2 id="v0-6-2-t">0.6.2</h2>
+    <p><time datetime="2026-10-24">2026-10-24</time></p></div>
+    <div class="release-body">
+    <ul>
+      <li>Fewer false alarms: Cloakroom now leaves alone harmless text it used to mask in code and config. That covers package versions (<code>minipass-flush: ^1.0.5</code>), short numbers on code constants whose name has no secret word in it (<code>SYS_FUTEX_WAIT = 5323</code>), GPG key ids, translation and UI strings under message or label keys (<code>"incorrectPassword": "Wrong user name or password"</code>), variable names under a password key (<code>password: req.body.password</code>), AWS's documentation account and key ids, XAML resource names and ChangeLog file entries. On the CredData public-code set false alarms drop from 3,903 to 3,457 with the same 9,353 real secrets caught; holdout leaks, the 200 safe samples (20 false alarms) and the public datasets are unchanged. Levers and numbers: <code>bench/false-alarms-0.6.2/levers.md</code>.</li>
+      <li><code>cloakroom report</code> keeps the folder class when your home folder's name is masked.</li>
+    </ul>
+    </div>
+  </article>
+  <article class="release" id="v0-6-1" aria-labelledby="v0-6-1-t">
+    <div><h2 id="v0-6-1-t">0.6.1</h2>
+    <p><time datetime="2026-10-23">2026-10-23</time></p></div>
+    <div class="release-body">
+    <ul>
+      <li>Signed placeholders: each placeholder now ends in a short tag only your machine can make (<code>PII_EMAIL_1_k7q2ab</code>). Cloakroom restores a real value only for a placeholder it issued in this session. A guessed number, a wrong tag or a placeholder from another session stays as text, Claude is told so, and the activity log counts a refused restore (no values). After three in one session you see one line: "cloakroom: 3 placeholder guesses refused this session". This closes the route where a planted file names <code>PII_SECRET_1</code> without ever seeing it.</li>
+      <li>Deliberate change on upgrade: placeholders from before this version (<code>PII_EMAIL_1</code>) are no longer restored. In a session you resume after upgrading, Claude is told the old placeholder wasn't restored and to ask you for the value again, and you see "cloakroom: left 1 placeholder from before 0.6.1 as text". The values that session already knew keep their numbers under signed placeholders. Files on disk are not touched.</li>
+      <li>File log: when Cloakroom puts real values into a file Claude writes (Write, Edit, MultiEdit, NotebookEdit or a local shell command), it records where they sit: path, position, a hash of the value and of the file, kind and placeholder, encrypted like the vault and never the value itself. Later output from that file (Read, cat, grep, git diff, a test echoing it) is masked again before detection runs, in the same session (same placeholder) and in new ones (a new placeholder), even where detection alone would miss a name. An entry ends when the file is deleted or no longer holds the value there. The log keeps at most 5,000 positions or 10 MB, oldest files first, and is searched only for files under the session's working folder and the file being read.</li>
+    </ul>
+    </div>
+  </article>
+  <article class="release" id="v0-6-0" aria-labelledby="v0-6-0-t">
+    <div><h2 id="v0-6-0-t">0.6.0</h2>
+    <p><time datetime="2026-10-23">2026-10-23</time></p></div>
+    <div class="release-body">
+    <ul>
+      <li>Commit and push check: before <code>git commit</code> or <code>git push</code> runs from Claude, Cloakroom reads the staged change (with <code>-a</code>, paths or a <code>git add</code> in the same command, the working tree and new files too) or the commits no remote has yet. A key or password there (known values, your always-mask entries, encoded forms, the key rules; sample keys and <code>allow_secret_paths</code> excepted) holds the command like the egress hold: one line names the file and the placeholder or kind, and <code>cr: allow</code> lets it run once. Git errors, a change set over 4 MB or a check over two seconds let the command run as before.</li>
+      <li>Interpreter one-liners that can open a connection are network commands: <code>python -c</code>, <code>node -e</code>/<code>-p</code>, <code>ruby -e</code>, <code>perl -e</code>, <code>php -r</code> and <code>deno eval</code> when the code mentions a socket, http, urllib, requests, fetch, net or a URL, and <code>bash -c</code>/<code>sh -c</code> around a network command. Real values are not restored into them and known secrets in them are held.</li>
+      <li>Agent config files: a live token written into <code>.mcp.json</code>, <code>.claude/settings.json</code>, <code>.cursor/mcp.json</code> or <code>claude_desktop_config.json</code> inside a repo (and not git-ignored) is denied, with a note to use an environment reference such as <code>${GITHUB_TOKEN}</code>.</li>
+      <li>Fewer false denies from 0.5.2: <code>-&gt;</code>, <code>=&gt;</code> and <code>&gt;=</code> in a shell command are no longer read as a redirect, and an edit that keeps a key the file already holds is allowed (only a newly added key is denied).</li>
+      <li>Tamper-evident log: each line of the event log carries the SHA-256 of the line before it. New lines for <code>cr: pause</code> / <code>cr: resume</code>, <code>cr: allow</code>, <code>cr!</code>, fail-closed calls, dry runs and session start (version, mode, hooks). One file per month, kept <code>"log_months"</code> months (default 12), with a line when a month is deleted. Files from earlier versions are still read and never rewritten; the chain starts with the first new line.</li>
+      <li><code>cloakroom report [--since DATE] [--format csv|json] [--verify]</code>: counts per day and session by data kind and action, no values, no placeholder ids, paths reduced to extension and top folder, with a plain statement of what it covers and what it doesn't. <code>--verify</code> checks the chain and prints the head hash. The dashboard has an Export button for the same CSV.</li>
+      <li><code>cloakroom clean-history [--dry-run]</code>: finds keys and passwords in old Claude Code transcripts and the prompt history, counts them per project, and on your yes replaces them, keeping a backup you delete. The first run is always a dry run; files changed in the last 10 minutes (an open session) are skipped.</li>
+    </ul>
+    </div>
+  </article>
+  <article class="release" id="v0-5-2" aria-labelledby="v0-5-2-t">
+    <div><h2 id="v0-5-2-t">0.5.2</h2>
+    <p><time datetime="2026-10-23">2026-10-23</time></p></div>
+    <div class="release-body">
+    <ul>
+      <li>A key or password is no longer written into a file git would commit. When Write, Edit, MultiEdit, NotebookEdit or a local shell redirect (<code>&gt;</code>, <code>&gt;&gt;</code>, <code>tee</code>) would put one into a file that is in a git repo and not git-ignored, the call is denied and Claude is told to put the value in <code>.env</code> and read it from the environment. This covers values Cloakroom would restore from a placeholder and keys Claude types itself. Files outside a repo, ignored files and <code>.env*</code>, <code>.envrc</code>, <code>*.pem</code>, <code>*.key</code>, <code>*.p12</code>, <code>credentials*</code> files are written as before; personal data (names, emails, phone numbers) is not checked. Fixtures and docs with sample keys: list them in <code>"allow_secret_paths"</code>. If git can't answer within a second, the write goes through as before.</li>
+    </ul>
+    </div>
+  </article>
+  <article class="release" id="v0-5-1" aria-labelledby="v0-5-1-t">
+    <div><h2 id="v0-5-1-t">0.5.1</h2>
+    <p><time datetime="2026-10-21">2026-10-21</time></p></div>
+    <div class="release-body">
+    <ul>
+      <li>Fix: a hex <code>CLOAKROOM_VAULT_KEY</code> (<code>openssl rand -hex 32</code>) is now accepted and a wrong-length key gets a clear error, instead of a vault write failing with ValueError. When an MCP result can't be checked, each image becomes a text block with the reason, in both <code>updatedToolOutput</code> and <code>updatedMCPToolOutput</code>.</li>
+      <li>Updates itself when the plugin updates: an install made by the plugin, uv or pipx that is older than the plugin's release is upgraded in the background, with the same extras, and the running service restarts on the new version. The old version keeps protecting until the new one is in place. A newer, dev or editable install is never touched; an older one installed another way (Homebrew, system pip, conda) gets the upgrade steps once, at the next session start. <code>/health</code> now reports the version.</li>
+    </ul>
+    </div>
+  </article>
+  <article class="release" id="v0-5-0" aria-labelledby="v0-5-0-t">
+    <div><h2 id="v0-5-0-t">0.5.0</h2>
+    <p><time datetime="2026-10-20">2026-10-20</time></p></div>
+    <div class="release-body">
+    <ul>
+      <li>Egress hold: a shell command that would send a known secret off this machine (curl, wget, ssh, scp, rsync, nc, git push or remote with credentials, a literal token in an <code>Authorization</code> / <code>X-Api-Key</code> / <code>token=</code> header) is held. The reason names the placeholder or rule, never the value. Type <code>cr: allow</code>, then rerun the same command, to send it once.</li>
+      <li>Secrets Cloakroom has seen are also caught base64-encoded (standard or URL-safe, any padding), URL-encoded or JSON-escaped, in prompts, tool inputs and tool output.</li>
+      <li>MCP tools: screenshots and other images in an MCP tool's result are read by local OCR and passed on as masked text, like pictures read with Read; the pixels are not sent. Without OCR (no <code>ocr</code> extra, Intel Mac), or when OCR fails or finds no text, the image is held back with a one-line reason. <code>"allow_images": true</code> still lets pictures through with a warning. Claude gets the text, not the picture, and small text can be missed.</li>
+      <li>Fewer false alarms: filler placeholders (a key or ID that is one repeated character, or cut short with <code>...</code>), standard and spec numbers right after RFC, ISO, IEC, IEEE, ICAO, ECMA or PEP, and the default dates 1970-01-01 and 1900-01-01 are no longer masked. Holdout false alarms 26 to 22, leaks unchanged.</li>
+      <li>A failed model install now shows numbered steps in Claude's message (what happened, how to retry, the log, Intel Macs), like the installer's other failure messages.</li>
+    </ul>
+    </div>
+  </article>
+  <article class="release" id="v0-4-4" aria-labelledby="v0-4-4-t">
+    <div><h2 id="v0-4-4-t">0.4.4</h2>
+    <p><time datetime="2026-10-19">2026-10-19</time></p></div>
+    <div class="release-body">
+    <ul>
+      <li>macOS and Linux: the plugin installs Cloakroom on a machine with nothing on it, like Windows. When neither uv nor pipx is there it fetches uv (with curl, else wget) before trying a virtualenv, and uv brings its own Python 3.12, so no system Python or <code>python3-venv</code> is needed.</li>
+      <li>The uv fetch is pinned on every system: the uv 0.13.1 installer from astral.sh, run only when its SHA-256 matches the one in the plugin; on a mismatch it isn't run, the log says so, and the install falls back.</li>
+      <li>Every install route puts <code>~/.local/bin</code> on the PATH of new terminals (<code>uv tool update-shell</code>, <code>pipx ensurepath</code>, or the same profile line for the virtualenv route), and logs which files it changed.</li>
+      <li>When the install needs you, the plugin's message and <code>~/.cloakroom/bootstrap.log</code> give numbered steps for the cause (no curl or wget, offline, uv checksum mismatch, model download failed), each ending with restarting Claude Code. <code>bootstrap.sh --check</code> now also counts curl or wget as something to install with.</li>
+      <li>Intel Mac: rules-only protection, said plainly (PyTorch and ONNX Runtime have no Intel Mac builds); the install uses prebuilt wheels only there, so the rules-only program installs without a compiler.</li>
+    </ul>
+    </div>
+  </article>
+  <article class="release" id="v0-4-3" aria-labelledby="v0-4-3-t">
+    <div><h2 id="v0-4-3-t">0.4.3</h2>
+    <p><time datetime="2026-10-19">2026-10-19</time></p></div>
+    <div class="release-body">
+    <ul>
+      <li>Windows: the plugin installs Cloakroom on a machine with nothing on it. When neither uv nor pipx is there, it fetches uv first, and every install route puts <code>cloakroom</code> in <code>%USERPROFILE%\.local\bin</code> and adds that folder to your user PATH, so <code>cloakroom</code> works in a new terminal.</li>
+      <li>Windows: the plugin's install adds the Microsoft Visual C++ runtime (the <code>msvc-runtime</code> package), and Cloakroom finds it before the model libraries load, so a machine without it works, no admin rights needed. If it is still missing, <code>cloakroom doctor</code> says so in one line instead of printing a traceback, and the installer no longer reports full protection when the model can't load.</li>
+      <li>The plugin's installs through uv use Python 3.12 on every system (a newer Python had no wheels for the model runtime).</li>
+      <li>macOS and Linux: when the plugin installs into its own virtual environment, it links <code>~/.local/bin/cloakroom</code>, so the command is found like the other routes.</li>
+      <li><code>scripts/release_check.sh</code> runs every pre-publish check in order (versions, generated hooks, polyglot, tests, live test, bare-venv suite) and stops at the first failure; <code>--quick</code> skips the last two.</li>
+      <li>A damaged <code>~/.cloakroom/rules.bin</code> no longer crashes every command and hook: your rules are skipped with one warning (as with a locked Keychain) and masking runs on the built-in rules.</li>
+    </ul>
+    </div>
+  </article>
+  <article class="release" id="v0-4-2" aria-labelledby="v0-4-2-t">
+    <div><h2 id="v0-4-2-t">0.4.2</h2>
+    <p><time datetime="2026-10-15">2026-10-15</time></p></div>
+    <div class="release-body">
+    <ul>
+      <li>Windows hooks start <code>powershell</code> with the same line as 0.2.3, the form the Claude plugin directory accepts (0.4.0 and 0.4.1 were held back by its launcher check). No behaviour change; Python code is the same as 0.4.1.</li>
+    </ul>
+    </div>
+  </article>
+  <article class="release" id="v0-4-1" aria-labelledby="v0-4-1-t">
+    <div><h2 id="v0-4-1-t">0.4.1</h2>
+    <p><time datetime="2026-10-15">2026-10-15</time></p></div>
+    <div class="release-body">
+    <ul>
+      <li>Masking: when one model span swallows several rule findings, the rule labels are kept, so <code>Priya Raman 415-820-4471 SSN 529-31-8846</code> masks as person, phone, "SSN", SSN instead of one long span. A model finding on the same span as a rule finding is judged by the rule's kind, so fictional 555-01xx numbers stay unmasked. The "Loading weights" progress bar no longer prints.</li>
+      <li>Locked Keychain (for example over SSH): no crash. User rules are skipped with one warning, Cloakroom never mints a new vault.key when the OS secure store refuses access, and <code>cloakroom doctor</code> shows the real error.</li>
+      <li>Windows hooks start <code>pwsh</code> or <code>powershell</code> by name (whichever runs the hook) instead of computing the program path.</li>
+    </ul>
+    </div>
+  </article>
+  <article class="release" id="v0-4-0" aria-labelledby="v0-4-0-t">
+    <div><h2 id="v0-4-0-t">0.4.0</h2>
+    <p><time datetime="2026-10-14">2026-10-14</time></p></div>
+    <div class="release-body">
+    <ul>
+      <li>Scanned PDFs and photos are now read and masked instead of held back: with the new optional <code>ocr</code> extra (<code>cloakroom[ocr]</code>: RapidOCR on ONNX Runtime, pdfium to render pages; models inside the wheel, no system programs, no network), pages without a text layer and png/jpg pictures read with Read are OCR'd locally and the text is masked like any file. Mixed PDFs keep their text layer for typed pages. In OCR text, any run of 10+ digits is masked as an account number, since OCR drops or adds spaces inside numbers. Up to 20 pages and 30 seconds per Read (<code>ocr_max_pages</code>, <code>ocr_timeout</code>; <code>"ocr": false</code> turns it off); the hook log notes <code>ocr pages=N ms=M</code>.</li>
+      <li>Held back as before: encrypted PDFs, unsupported pictures, notebook figures, and any OCR failure or timeout. Without the extra, behaviour is exactly 0.3.0.</li>
+      <li>The plugin's first-start install adds the <code>ocr</code> extra to stage 2 (about 100 MB more); if it fails to install, stage 2 is retried without it, so OCR never blocks the model.</li>
+    </ul>
+    </div>
+  </article>
+  <article class="release" id="v0-3-0" aria-labelledby="v0-3-0-t">
+    <div><h2 id="v0-3-0-t">0.3.0</h2>
+    <p><time datetime="2026-10-14">2026-10-14</time></p></div>
+    <div class="release-body">
+    <ul>
+      <li>Fewer false alarms on code and config: Cloakroom now leaves alone values that say they were scrubbed (<code>login_and_password_removed</code>, <code>REDACTED_TOKEN</code>), template values (<code>$t(label)</code>, <code>{{ var }}</code>, <code>${var}</code>), and variable names under a secret key that end in the secret word (<code>token: opts.AccessToken</code>, <code>secret = "NATS_SECRET"</code>). Literal values, quoted values and anything with digits are still masked, and the benchmark secrets caught before are still caught. Details: <code>bench/precision-2026-10/levers.md</code>.</li>
+    </ul>
+    </div>
+  </article>
+  <article class="release" id="v0-2-4" aria-labelledby="v0-2-4-t">
+    <div><h2 id="v0-2-4-t">0.2.4</h2>
+    <p><time datetime="2026-10-14">2026-10-14</time></p></div>
+    <div class="release-body">
+    <ul>
+      <li>PDFs that Claude reads with its Read tool now arrive as masked text: Cloakroom extracts the text locally (pypdf, pure Python, now a core dependency), normalises it and masks it like any other file. Before, the PDF went to the model unchecked as a document. Pictures, scanned or encrypted or damaged PDFs, notebook figures and unknown Read types are held back with a note (scans: run <code>pdftotext file -</code>, whose output is masked); <code>"allow_images": true</code> lets pictures through with a warning. Not covered: pictures returned by MCP and other non-Read tools (see LIMITS).</li>
+      <li>Full mode: a model span that started at a key name or on <code>=</code> (<code>STRIPE_KEY=sk_...</code>) is trimmed to the value, so the key name is no longer dropped on write-back. Credential pairs, URLs and base64 padding stay whole.</li>
+      <li>A crash while checking a non-text read now holds the read back instead of letting it through.</li>
+    </ul>
+    </div>
+  </article>
+  <article class="release" id="v0-2-3" aria-labelledby="v0-2-3-t">
+    <div><h2 id="v0-2-3-t">0.2.3</h2>
+    <p><time datetime="2026-10-12">2026-10-12</time></p></div>
+    <div class="release-body">
+    <ul>
+      <li>The plugin's hooks now run fixed scripts inside the plugin (<code>scripts/hook.sh</code>, <code>scripts/hook.ps1</code>) instead of long inline commands, so the Claude plugin directory can read what each hook runs. No behaviour change: the same lookup, the same messages when Cloakroom isn't installed yet, the same first-start install and 10-minute retry. The hooks no longer ask uv for its tool folder; they look in <code>~/.local/bin</code>, where uv and pipx put the program by default (a custom <code>UV_TOOL_BIN_DIR</code> needs <code>cloakroom</code> on your PATH).</li>
+      <li><code>cloakroom --version</code> prints the installed version.</li>
+    </ul>
+    </div>
+  </article>
+  <article class="release" id="v0-2-2" aria-labelledby="v0-2-2-t">
+    <div><h2 id="v0-2-2-t">0.2.2</h2>
+    <p><time datetime="2026-10-12">2026-10-12</time></p></div>
+    <div class="release-body">
+    <ul>
+      <li>Linux and other CPU-only machines with 8 GB: the first-start CPU model build no longer runs out of memory (it skips the opt-in int8 copy), and a build that is cut short can no longer leave a half model behind. In 0.2.1 such a machine kept withholding tool output because the half-built model failed to load. Cloakroom now uses the CPU model only when its tokenizer is there too.</li>
+      <li>Ubuntu/Debian without <code>python3-venv</code> (the default install): the first-start installer says so and how to fix it (<code>sudo apt install python3-venv</code>, or install uv) instead of a bare "install failed".</li>
+    </ul>
+    </div>
+  </article>
+  <article class="release" id="v0-2-1" aria-labelledby="v0-2-1-t">
+    <div><h2 id="v0-2-1-t">0.2.1</h2>
+    <p><time datetime="2026-10-12">2026-10-12</time></p></div>
+    <div class="release-body">
+    <ul>
+      <li>Windows with Git Bash: the hooks now find Cloakroom where the installer puts it (<code>venv\Scripts\cloakroom.exe</code>) and start the PowerShell installer. In 0.2.0 they reported "not installed" even after the install, so every tool call stayed blocked for Windows users who have Git (Claude Code runs hooks in Git Bash when it is there).</li>
+      <li>The first-start install note also appears on your first prompt of the session: Claude Code can show only one plugin's start-up message, so ours could be hidden behind another plugin's.</li>
+    </ul>
+    </div>
+  </article>
+  <article class="release" id="v0-2-0" aria-labelledby="v0-2-0-t">
+    <div><h2 id="v0-2-0-t">0.2.0</h2>
+    <p><time datetime="2026-10-12">2026-10-12</time></p></div>
+    <div class="release-body">
+    <h3>Install</h3>
+    <ul>
+      <li>The plugin installs Cloakroom itself on first start: rules-only protection within seconds, the model in the background, then full protection switches on by itself. It uses uv, else pipx, else a private virtualenv in <code>~/.cloakroom</code> (Python 3.10+), and builds the fast CPU model on machines without an Apple Silicon or NVIDIA GPU. A failed install is reported and retried after 10 minutes. <code>cloakroom export-onnx --if-no-gpu</code> skips on a GPU. The service starts as soon as the install finishes, so the first prompt doesn't wait for the model to load.</li>
+      <li><code>cloakroom doctor</code> looks for the program where the plugin does (PATH, uv's tool folder, ~/.local/bin, ~/.cloakroom/venv) instead of warning when it isn't on PATH.</li>
+    </ul>
+    <h3>Dashboard and learning</h3>
+    <ul>
+      <li><code>cloakroom dashboard</code>: a local page (127.0.0.1, one-time sign-in link) with every alert, the kinds found and the check time. Real values show only when you click Reveal.</li>
+      <li>Label alerts correct, false alarm or missed. A false alarm suggests a "never mask" rule, a miss an "always mask" rule; you approve, dismiss or undo each one.</li>
+      <li>Learn quietly (after 10 decisions): new rules apply by themselves only after a replay test on your past labels and a set of sample secrets. Rules for keys, passwords, cards and IDs always wait for you.</li>
+      <li>Value-free activity log; labels and rules are encrypted like the vault.</li>
+    </ul>
+    <h3>Fewer blocked prompts</h3>
+    <ul>
+      <li>A blocked prompt now says how to get past it: <code>cr!</code> at the start sends that prompt as it is, <code>cr: pause 10m</code> pauses prompt checks, <code>cr: resume</code> ends the pause. Tool output stays masked throughout, and Claude can't change Cloakroom's settings.</li>
+      <li>Prompts holding only names go through (a name next to an email, phone, key or ID still blocks).</li>
+      <li>Plain dates are no longer masked: only birth / death / age dates and dates in someone's record (<code>"mask_all_dates": true</code> brings back the old behaviour).</li>
+      <li>Your own login name in a home-folder path is no longer masked (<code>"mask_own_username": true</code> to change it); other usernames are labelled USERNAME instead of ACCOUNT.</li>
+      <li>File listings pass as they are: your login and its group in <code>ls -l</code>'s owner column, link counts and the lower-case word <code>claude</code> (the command, the <code>.claude</code> folder) are not names, and a listing whose dates repeat is no longer withheld as encoded output.</li>
+    </ul>
+    <h3>Detection</h3>
+    <ul>
+      <li>Values under address keys, birth dates in ISO date-time and written forms, short passwords and PINs under their keys are caught.</li>
+      <li>SWIFT / FIX message field tags are no longer read as account numbers; job titles such as "Support Agent" are no longer read as names.</li>
+      <li>Model matches that ran across CSV rows are split back (rows no longer vanish from what Claude sees), and matches are widened to whole words.</li>
+      <li>Benchmarked on public datasets for the first time: TAB court rulings recall 0.95 / precision 0.81, Gretel finance documents 0.85 / 0.52 (<code>bench/public/RESULTS.md</code>).</li>
+    </ul>
+    </div>
+  </article>
+  <article class="release" id="v0-1-7" aria-labelledby="v0-1-7-t">
+    <div><h2 id="v0-1-7-t">0.1.7</h2>
+    <p>not released on its own; included in 0.2.0</p></div>
+    <div class="release-body">
+    <ul>
+      <li>The plugin page's install hint installs a model (<code>cloakroom[model,torch]</code>; <code>[model]</code> alone has no model file).</li>
+      <li>plugin.json gains author, homepage and repository.</li>
+      <li>CSV rows no longer merge in masked output; dates are no longer cut mid-word.</li>
+    </ul>
+    </div>
+  </article>
+  <article class="release" id="v0-1-0-0-1-6" aria-labelledby="v0-1-0-0-1-6-t">
+    <div><h2 id="v0-1-0-0-1-6-t">0.1.0 - 0.1.6</h2></div>
+    <div class="release-body">
+    <p>First public releases: rules plus a local detection model, encrypted vault, restore for local tools, encoded-dump checks, fail-closed hooks for bash and PowerShell, <code>cloakroom doctor</code>. See the git history for details.</p>
+    </div>
+  </article>
+  </div>
+</section>
+
+</main>
+
+<footer class="foot">
+  <div class="container foot-inner">
+    <nav aria-label="Project links">
+      <a href="https://github.com/shanjeevrajendran/cloakroom">GitHub</a>
+      <a href="https://pypi.org/project/cloakroom/">PyPI</a>
+      <a href="https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-LIMITS.md">Known limits</a>
+      <a href="https://github.com/shanjeevrajendran/cloakroom/blob/main/LICENSE">Apache-2.0</a>
+    </nav>
+    <p>Made by <a href="https://shanjeevrajendran.github.io/">Shanjeev Rajendran</a>.</p>
+  </div>
+</footer>
+
+</body>
+</html>

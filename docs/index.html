@@ -24,7 +24,7 @@
 {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Cloakroom","description":"Free and open source. Cloakroom masks API keys, secrets and personal data on your own machine before your AI coding agent sees them. Works with Claude Code, Codex CLI and Gemini CLI.","applicationCategory":"SecurityApplication","operatingSystem":"macOS, Windows, Linux","license":"https://opensource.org/licenses/MIT","url":"https://cloakroom.sh/","codeRepository":"https://github.com/shanjeevrajendran/cloakroom","author":{"@type":"Person","name":"Shanjeev Rajendran","url":"https://shanjeevrajendran.github.io/"},"sameAs":["https://github.com/shanjeevrajendran/cloakroom","https://pypi.org/project/cloakroom/"],"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
 </script>
 <script type="application/ld+json">
-{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Does Cloakroom send my data anywhere?", "acceptedAnswer": {"@type": "Answer", "text": "No. It downloads the detection model once from Hugging Face, and everything else runs on your own machine."}}, {"@type": "Question", "name": "What does it mask?", "acceptedAnswer": {"@type": "Answer", "text": "API keys, secrets and personal data such as names, emails and addresses. Scanned pages and photos are read on your machine and masked like any other file."}}, {"@type": "Question", "name": "Does Claude still work normally?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Claude works with placeholders like PII_PERSON_1, and the real values are put back, locally, in the files Claude writes."}}, {"@type": "Question", "name": "What happens when my prompt contains a secret?", "acceptedAnswer": {"@type": "Answer", "text": "A prompt can be blocked but not rewritten, so Cloakroom stops it and tells you what it found. Put the detail in a file and ask Claude to read it instead."}}, {"@type": "Question", "name": "Does Cloakroom work with Codex or Gemini CLI?", "acceptedAnswer": {"@type": "Answer", "text": "Yes, on Mac and Linux: run cloakroom install codex or cloakroom install gemini. Claude Code works on Mac, Linux and Windows."}}, {"@type": "Question", "name": "What doesn't it protect?", "acceptedAnswer": {"@type": "Answer", "text": "It stops accidental leaks, like a key in a file the AI happened to open. It isn't a sandbox that walls the AI off. Out of scope: hidden instructions in a file (a prompt injection) that trick the AI into leaking data piece by piece; what you type into a prompt, which Cloakroom can stop but not rewrite; and Claude Code's own logs on your disk."}}]}
+{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Does Cloakroom send my data anywhere?", "acceptedAnswer": {"@type": "Answer", "text": "No. It downloads the detection model once from Hugging Face, and everything else runs on your own machine."}}, {"@type": "Question", "name": "What does it mask?", "acceptedAnswer": {"@type": "Answer", "text": "API keys, secrets and personal data such as names, emails and addresses. Scanned pages and photos are read on your machine and masked like any other file."}}, {"@type": "Question", "name": "Does Claude still work normally?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Claude works with placeholders like PII_PERSON_1, and the real values are put back, locally, in the files Claude writes."}}, {"@type": "Question", "name": "What happens when my prompt contains a secret?", "acceptedAnswer": {"@type": "Answer", "text": "A prompt can be blocked but not rewritten, so Cloakroom stops it and tells you what it found. Put the detail in a file and ask Claude to read it instead."}}, {"@type": "Question", "name": "Does Cloakroom work with Codex or Gemini CLI?", "acceptedAnswer": {"@type": "Answer", "text": "Yes, on Mac and Linux: run cloakroom install codex or cloakroom install gemini. Claude Code works on Mac, Linux and Windows."}}, {"@type": "Question", "name": "What is stored and what leaves my machine?", "acceptedAnswer": {"@type": "Answer", "text": "The Security model page at https://cloakroom.sh/security.html lists what is stored, where, what leaves your machine and what it cannot catch."}}, {"@type": "Question", "name": "What doesn't it protect?", "acceptedAnswer": {"@type": "Answer", "text": "It stops accidental leaks, like a key in a file the AI happened to open. It isn't a sandbox that walls the AI off. Out of scope: hidden instructions in a file (a prompt injection) that trick the AI into leaking data piece by piece; what you type into a prompt, which Cloakroom can stop but not rewrite; and Claude Code's own logs on your disk."}}]}
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -41,10 +41,13 @@
       <svg viewBox="0 0 44 44" width="26" height="26" aria-hidden="true"><rect width="44" height="44" rx="9" fill="#0d1117"/><g fill="#56d364" stroke="#56d364" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round" transform="translate(4 4) scale(.82)"><path d="M4 6H40V16A6 6 0 0 0 40 28V38H4V28A6 6 0 0 0 4 16Z"/><path d="M14 22H30" stroke="#0d1117" stroke-dasharray="3 3"/></g></svg>
       <span>Cloakroom</span>
     </a>
-    <nav aria-label="Page">
-      <a href="#install">Install</a>
-      <a href="#faq">Questions</a>
-      <a href="#writeup">Write-up</a>
+    <nav aria-label="Site">
+      <a href="install.html">Install</a>
+      <a href="commands.html">Commands</a>
+      <a href="how-it-works.html">How it works</a>
+      <a href="security.html">Security</a>
+      <a href="releases.html">Releases</a>
+      <a href="writing.html">Writing</a>
       <a href="https://github.com/shanjeevrajendran/cloakroom">GitHub</a>
     </nav>
   </div>
@@ -130,6 +133,26 @@ cloakroom install gemini</code></pre><button type="button" class="copy">Copy</bu
     <h3>Hand the agent a key safely</h3>
     <p><code>cloakroom give NAME</code> asks for the value in a hidden terminal prompt and gives you a placeholder to paste. When the agent writes that placeholder into a local file or command, the real value goes back in. The AI never sees it.</p>
   </article>
+  <article class="feat">
+    <h3>Updates with one command</h3>
+    <p>Run <code>cloakroom update</code> in a terminal. It updates Cloakroom with the installer you used (uv, pipx or pip) and keeps the optional parts you had. Then it sets up Cloakroom’s checks again for Codex, Gemini CLI and git commits, only where they were set up before.</p>
+  </article>
+  <article class="feat">
+    <h3>Takes stopped prompts out of the saved chat</h3>
+    <p>Claude Code also saves every chat on your disk. A prompt Cloakroom stops is taken out of that saved copy for the current session (right away, after the next reply and when the session ends), so the key you typed doesn’t stay behind. Claude Code only.</p>
+  </article>
+  <article class="feat">
+    <h3>Counts failed tool calls as not checked</h3>
+    <p>A tool call that fails in Claude Code (for example a command with a non-zero exit) is counted as “not checked”: it shows in the event log, in “Checks skipped” in <code>cloakroom report</code>, on the dashboard, and as one note per session.</p>
+  </article>
+  <article class="feat">
+    <h3><a href="commands.html">Every command</a></h3>
+    <p>What each <code>cloakroom</code> command does, when to run it and the release it first appeared in.</p>
+  </article>
+  <article class="feat">
+    <h3><a href="writing.html">Writing</a></h3>
+    <p>The write-up and what Cloakroom would and wouldn’t have done in October’s incidents.</p>
+  </article>
   </div>
 </section>
 
@@ -165,6 +188,8 @@ cloakroom dashboard</code></pre>
   <p>A prompt can be blocked but not rewritten, so Cloakroom stops it and tells you what it found. Put the detail in a file and ask Claude to read it instead.</p>
   <h3>Does Cloakroom work with Codex or Gemini CLI?</h3>
   <p>Yes, on Mac and Linux: run cloakroom install codex or cloakroom install gemini. Claude Code works on Mac, Linux and Windows.</p>
+  <h3>What is stored and what leaves my machine?</h3>
+  <p>The <a href="security.html">Security model</a> lists what is stored, where, what leaves your machine and what it cannot catch.</p>
   <h3>What doesn't it protect?</h3>
   <p>It stops accidental leaks, like a key in a file the AI happened to open. It isn’t a sandbox that walls the AI off. Out of scope: hidden instructions in a file (a prompt injection) that trick the AI into leaking data piece by piece; what you type into a prompt, which Cloakroom can stop but not rewrite; and Claude Code’s own logs on your disk.</p>
   </div>

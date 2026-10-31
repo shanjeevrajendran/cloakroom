@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cloakroom settings and fixes</title>
+<meta name="description" content="Your own exceptions, the dashboard rules, every setting, and what to do when something is wrong.">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#0a100c">
+<link rel="canonical" href="https://cloakroom.sh/settings.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Cloakroom">
+<meta property="og:title" content="Cloakroom settings and fixes">
+<meta property="og:description" content="Your own exceptions, the dashboard rules, every setting, and what to do when something is wrong.">
+<meta property="og:url" content="https://cloakroom.sh/settings.html">
+<meta property="og:image" content="https://raw.githubusercontent.com/shanjeevrajendran/cloakroom/main/assets/social-card.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 44 44'%3E%3Crect width='44' height='44' rx='9' fill='%230d1117'/%3E%3Cg fill='%2356d364' stroke='%2356d364' stroke-width='2.6' stroke-linejoin='round' stroke-linecap='round' transform='translate(4 4) scale(.82)'%3E%3Cpath d='M4 6H40V16A6 6 0 0 0 40 28V38H4V28A6 6 0 0 0 4 16Z'/%3E%3Cpath d='M14 22H30' stroke='%230d1117' stroke-dasharray='3 3'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Martian+Mono:wdth,wght@75..112.5,400..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<script>document.documentElement.classList.add('js')</script>
+</head>
+<body class="t-terminal">
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="bar">
+  <div class="container bar-inner">
+    <a class="brand" href="./" aria-label="Cloakroom, home">
+      <svg viewBox="0 0 44 44" width="26" height="26" aria-hidden="true"><rect width="44" height="44" rx="9" fill="#0d1117"/><g fill="#56d364" stroke="#56d364" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round" transform="translate(4 4) scale(.82)"><path d="M4 6H40V16A6 6 0 0 0 40 28V38H4V28A6 6 0 0 0 4 16Z"/><path d="M14 22H30" stroke="#0d1117" stroke-dasharray="3 3"/></g></svg>
+      <span>Cloakroom</span>
+    </a>
+    <nav aria-label="Site">
+      <a href="install.html">Install</a>
+      <a href="commands.html">Commands</a>
+      <a href="how-it-works.html">How it works</a>
+      <a href="security.html">Security</a>
+      <a href="releases.html">Releases</a>
+      <a href="writing.html">Writing</a>
+      <a href="https://github.com/shanjeevrajendran/cloakroom">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+<section class="hero page-hero page-hero--short container" aria-labelledby="page-title">
+  <h1 id="page-title">Settings and fixes</h1>
+  <p class="lead">Fewer false alarms, every setting, and what to do when something’s wrong.</p>
+</section>
+
+<section class="sec container" id="exceptions" aria-labelledby="exceptions-title">
+  <h2 id="exceptions-title">Fewer false alarms: your own exceptions</h2>
+  <div class="sec-body">
+    <p>Cloakroom already leaves documented examples alone (published test cards and keys, <code>example.com</code>, fictional 555 numbers, loopback addresses, UUIDs and hashes). To add your own, list them under <code>allow</code> in <code>~/.cloakroom/config.json</code>, either as exact values or as <code>re:</code> regular expressions matched against the whole value:</p>
+<pre class="cmd"><code>{
+  "mode": "full",
+  "allow": ["Ada Lovelace", "support@mycompany.com", "re:ACME-[0-9]{6}"]
+}</code></pre>
+    <p><code>cloakroom explain FILE</code> shows “on your allowlist” next to anything an entry let through.</p>
+    <p><strong>From the dashboard.</strong> Mark an alert as a false alarm and Cloakroom suggests a “never mask” rule for the values you tick; type what it missed and it suggests an “always mask” rule (a value with digits covers its shape). In <em>Suggest</em> mode nothing changes until you click Approve. After 10 decisions (labels, approvals, dismissals) you can switch to <em>Learn quietly</em>: each new rule is first replayed against your past labels and a built-in set of sample secrets, and applies by itself only if it unmasks nothing you wanted hidden and masks nothing you called safe. Rules for keys, passwords, cards and ID numbers always wait for your Approve, and every rule has Undo.</p>
+  </div>
+</section>
+
+<section class="sec container" id="reference" aria-labelledby="reference-title">
+  <h2 id="reference-title">Settings reference</h2>
+  <div class="ref-body">
+    <div class="table-wrap ref">
+      <table>
+        <thead><tr><th scope="col">Setting</th><th scope="col">Where</th><th scope="col">Default</th><th scope="col">Values</th></tr></thead>
+        <tbody>
+          <tr><td>mode</td><td data-label="Where"><code>config.json</code> <code>mode</code>, <code>CLOAKROOM_MODE</code>, <code>--mode</code></td><td data-label="Default"><code>full</code></td><td data-label="Values"><code>full</code>, <code>rules</code></td></tr>
+          <tr><td>allow</td><td data-label="Where"><code>config.json</code> <code>allow</code></td><td data-label="Default">none</td><td data-label="Values">exact values, <code>re:&lt;regex&gt;</code></td></tr>
+          <tr><td>mask_all_dates</td><td data-label="Where"><code>config.json</code></td><td data-label="Default"><code>false</code></td><td data-label="Values"><code>true</code> masks every date, not only birth dates and dates in someone’s record</td></tr>
+          <tr><td>mask_own_username</td><td data-label="Where"><code>config.json</code></td><td data-label="Default"><code>false</code></td><td data-label="Values"><code>true</code> masks your own login name in home-folder paths too</td></tr>
+          <tr><td>allow_images</td><td data-label="Where"><code>config.json</code></td><td data-label="Default"><code>false</code></td><td data-label="Values"><code>true</code> lets pictures from Read through unchecked, with a warning (by default they are held back)</td></tr>
+          <tr><td>port</td><td data-label="Where"><code>config.json</code> <code>port</code>, <code>CLOAKROOM_PORT</code></td><td data-label="Default"><code>37787</code></td><td data-label="Values">any free local port</td></tr>
+          <tr><td>backend</td><td data-label="Where"><code>CLOAKROOM_BACKEND</code></td><td data-label="Default"><code>auto</code></td><td data-label="Values"><code>auto</code>, <code>torch</code>, <code>onnx</code></td></tr>
+          <tr><td>ONNX variant</td><td data-label="Where"><code>CLOAKROOM_ONNX</code></td><td data-label="Default"><code>fp32</code></td><td data-label="Values"><code>fp32</code>, <code>int8</code></td></tr>
+          <tr><td>ONNX folder</td><td data-label="Where"><code>CLOAKROOM_ONNX_DIR</code></td><td data-label="Default"><code>~/.cloakroom/onnx/&lt;model version&gt;</code></td><td data-label="Values">a path</td></tr>
+          <tr><td>home</td><td data-label="Where"><code>CLOAKROOM_HOME</code></td><td data-label="Default"><code>~/.cloakroom</code></td><td data-label="Values">a path</td></tr>
+          <tr><td>vault key</td><td data-label="Where"><code>CLOAKROOM_VAULT_KEY</code></td><td data-label="Default">OS secure store</td><td data-label="Values">256-bit key, base64 or hex</td></tr>
+          <tr><td>dry run</td><td data-label="Where"><code>CLOAKROOM_DRY_RUN</code></td><td data-label="Default">off</td><td data-label="Values">any value turns it on</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>More settings (<code>allow_secret_paths</code>, <code>log_months</code>, <code>scrub_transcript</code>, the money hold) are under <a href="https://github.com/shanjeevrajendran/cloakroom#ways-to-run">Ways to run</a>.</p>
+  </div>
+</section>
+
+<section class="sec container" id="wrong" aria-labelledby="wrong-title">
+  <h2 id="wrong-title">When something’s wrong</h2>
+  <div class="qa">
+    <h3>“NOT protecting this session” and every tool call is denied</h3>
+    <p>The plugin is on but the <code>cloakroom</code> program isn’t installed, or isn’t on the PATH Claude Code sees. Install it (<code>uv tool install "cloakroom[model,torch]"</code>) and restart Claude Code; on Windows also run <code>uv tool update-shell</code> (or <code>pipx ensurepath</code>) and open a new terminal. Or turn the plugin off with <code>/plugin disable cloakroom@cloakroom</code>. Your prompts still go through meanwhile, so you can ask Claude for help.</p>
+    <h3>“port ... is used by another program, not Cloakroom”</h3>
+    <p>Another local tool owns Cloakroom’s port (for example a proxy). Pick a free one in <code>~/.cloakroom/config.json</code>, e.g. <code>{"port": 37788}</code>, and restart Claude Code. <code>cloakroom doctor</code> shows the port in use.</p>
+    <h3><code>model: FAIL</code></h3>
+    <p>Install the extra it names, or switch to rules mode.</p>
+    <h3>Windows, PyTorch won’t load</h3>
+    <p>Install the <a href="https://aka.ms/vs/17/release/vc_redist.x64.exe">Microsoft Visual C++ Redistributable</a>.</p>
+    <h3>Too much gets masked</h3>
+    <p>Mark it a false alarm on the dashboard, or run <code>cloakroom explain</code> on the file to see which rule fired and add an <code>allow</code> entry.</p>
+    <h3>A prompt keeps getting blocked</h3>
+    <p>Start it with <code>cr!</code>, or type <code>cr: pause 10m</code>; <code>cr: resume</code> ends the pause.</p>
+    <h3>Dashboard says “signed out”</h3>
+    <p>The service restarted; run <code>cloakroom dashboard</code> again.</p>
+    <h3>Something got through</h3>
+    <p>Please <a href="https://github.com/shanjeevrajendran/cloakroom/issues">open an issue</a> with the kind of value (not the value itself) and where it appeared.</p>
+  </div>
+</section>
+
+</main>
+
+<footer class="foot">
+  <div class="container foot-inner">
+    <nav aria-label="Project links">
+      <a href="https://github.com/shanjeevrajendran/cloakroom">GitHub</a>
+      <a href="https://pypi.org/project/cloakroom/">PyPI</a>
+      <a href="https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-LIMITS.md">Known limits</a>
+      <a href="https://github.com/shanjeevrajendran/cloakroom/blob/main/LICENSE">Apache-2.0</a>
+    </nav>
+    <p>Made by <a href="https://shanjeevrajendran.github.io/">Shanjeev Rajendran</a>.</p>
+  </div>
+</footer>
+
+</body>
+</html>

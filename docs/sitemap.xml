@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://cloakroom.sh/</loc></url>
-  <url><loc>https://cloakroom.sh/october-2026.html</loc></url>
+  <url><loc>https://cloakroom.sh/install.html</loc></url>
+  <url><loc>https://cloakroom.sh/commands.html</loc></url>
+  <url><loc>https://cloakroom.sh/how-it-works.html</loc></url>
+  <url><loc>https://cloakroom.sh/security.html</loc></url>
+  <url><loc>https://cloakroom.sh/settings.html</loc></url>
+  <url><loc>https://cloakroom.sh/releases.html</loc></url>
+  <url><loc>https://cloakroom.sh/writing.html</loc></url>
   <url><loc>https://cloakroom.sh/writeup.html</loc></url>
+  <url><loc>https://cloakroom.sh/october-2026.html</loc></url>
 </urlset>

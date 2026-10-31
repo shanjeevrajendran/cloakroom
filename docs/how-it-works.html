@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How Cloakroom works</title>
+<meta name="description" content="How Cloakroom finds values, swaps them for placeholders, keeps them in an encrypted vault and puts them back on your machine; the two modes and the model backends.">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#0a100c">
+<link rel="canonical" href="https://cloakroom.sh/how-it-works.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Cloakroom">
+<meta property="og:title" content="How Cloakroom works">
+<meta property="og:description" content="How Cloakroom finds values, swaps them for placeholders, keeps them in an encrypted vault and puts them back on your machine; the two modes and the model backends.">
+<meta property="og:url" content="https://cloakroom.sh/how-it-works.html">
+<meta property="og:image" content="https://raw.githubusercontent.com/shanjeevrajendran/cloakroom/main/assets/social-card.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 44 44'%3E%3Crect width='44' height='44' rx='9' fill='%230d1117'/%3E%3Cg fill='%2356d364' stroke='%2356d364' stroke-width='2.6' stroke-linejoin='round' stroke-linecap='round' transform='translate(4 4) scale(.82)'%3E%3Cpath d='M4 6H40V16A6 6 0 0 0 40 28V38H4V28A6 6 0 0 0 4 16Z'/%3E%3Cpath d='M14 22H30' stroke='%230d1117' stroke-dasharray='3 3'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Martian+Mono:wdth,wght@75..112.5,400..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<script>document.documentElement.classList.add('js')</script>
+</head>
+<body class="t-terminal">
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="bar">
+  <div class="container bar-inner">
+    <a class="brand" href="./" aria-label="Cloakroom, home">
+      <svg viewBox="0 0 44 44" width="26" height="26" aria-hidden="true"><rect width="44" height="44" rx="9" fill="#0d1117"/><g fill="#56d364" stroke="#56d364" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round" transform="translate(4 4) scale(.82)"><path d="M4 6H40V16A6 6 0 0 0 40 28V38H4V28A6 6 0 0 0 4 16Z"/><path d="M14 22H30" stroke="#0d1117" stroke-dasharray="3 3"/></g></svg>
+      <span>Cloakroom</span>
+    </a>
+    <nav aria-label="Site">
+      <a href="install.html">Install</a>
+      <a href="commands.html">Commands</a>
+      <a href="how-it-works.html" aria-current="page">How it works</a>
+      <a href="security.html">Security</a>
+      <a href="releases.html">Releases</a>
+      <a href="writing.html">Writing</a>
+      <a href="https://github.com/shanjeevrajendran/cloakroom">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+<section class="hero page-hero page-hero--short container" aria-labelledby="page-title">
+  <h1 id="page-title">How it works</h1>
+  <p class="lead">Cloakroom checks what goes to the AI and swaps real values for placeholders.</p>
+</section>
+
+<section class="sec container" id="trip" aria-labelledby="trip-title">
+  <h2 id="trip-title">In short</h2>
+  <div class="sec-body">
+    <p>Every time the AI reads a file, runs a command or uses an add-on, Cloakroom checks what goes to the AI and swaps real values for placeholders. When the AI writes or runs something that holds a placeholder, Cloakroom puts the real value back on your machine. Commands that would send a secret off your machine, or move money, wait for your OK.</p>
+<pre class="cmd diagram" aria-label="Diagram: a file read goes through Cloakroom, the model sees placeholders, and the real value is put back in the file on disk"><code>  Claude Code reads a file or runs a tool
+        |   "Nadia Petrov called about..."    sk_live_51Hx9Q...
+        v
+  +--------------------------------------------+
+  | Cloakroom  (on your machine)               |
+  |   rules + local model  ->  find the values |
+  |   encrypted vault      ->  remember them   |
+  +--------------------------------------------+
+        |   "PII_PERSON_1 called about..."    PII_SECRET_1
+        v
+  the model works with placeholders only
+        |   Write reply.md: "Hi PII_PERSON_1,"
+        v
+  Cloakroom puts the real value back, locally
+        |
+        v
+  reply.md on your disk: "Hi Nadia Petrov,"</code></pre>
+    <p>Hooks are small checks the agent runs before and after each action (a “tool call”). PII is personal data such as names, emails and addresses. MCP tools are add-ons that give the AI extra abilities, such as a browser. OCR reads text out of pictures.</p>
+  </div>
+</section>
+
+<section class="sec container" id="modes" aria-labelledby="modes-title">
+  <h2 id="modes-title">The two modes</h2>
+  <div class="sec-body">
+    <dl class="defs defs--2">
+      <div><dt>Full (the default)</dt><dd>Runs pattern rules and a local detection model (PII-Tracer). It catches keys, passwords, card numbers, government IDs, and also names, addresses and other personal details written as plain text.</dd></div>
+      <div><dt>Rules</dt><dd>Runs the pattern rules only. It still catches keys with a known shape (AWS, GitHub, Stripe, Slack, OpenAI, Google, JWTs, private keys), checksummed numbers (cards, IBANs, SSNs) and emails or names that sit next to obvious context, but it misses most free-text personal data. Use it when you can’t install the model, or when you only care about secrets.</dd></div>
+    </dl>
+    <p>Set the mode for everything in <code>~/.cloakroom/config.json</code>, or for one shell with <code>CLOAKROOM_MODE=rules</code>, or for one command with <code>--mode rules</code>.</p>
+<pre class="cmd"><code>{ "mode": "rules" }</code></pre>
+    <h3>Backends (full mode only)</h3>
+    <p><code>CLOAKROOM_BACKEND</code> picks how the model runs. The default, <code>auto</code>, uses PyTorch when there’s a GPU (Apple Silicon or CUDA), otherwise the ONNX export if you’ve made one, otherwise PyTorch on the CPU.</p>
+    <ul class="plain">
+      <li><code>cloakroom export-onnx</code> writes the CPU model under <code>~/.cloakroom/onnx/</code>. It needs PyTorch once and takes a few minutes (about 4 on a 2-core cloud machine).</li>
+      <li><code>CLOAKROOM_ONNX=int8</code> uses a smaller quantized export: a little faster, a few more false alarms.</li>
+      <li><code>CLOAKROOM_BACKEND=torch</code> or <code>onnx</code> forces one.</li>
+    </ul>
+    <p><code>cloakroom doctor</code> prints the backend in use and how long one check takes.</p>
+  </div>
+</section>
+
+<section class="sec container" id="steps" aria-labelledby="steps-title">
+  <h2 id="steps-title">Each step</h2>
+  <div class="qa">
+    <h3>Hide</h3>
+    <p>Hooks on every tool input and tool output run the detectors (a prompt with sensitive data is blocked instead, since prompts can’t be rewritten): pattern rules for secrets with known shapes, checksummed PII, context rules, and the PII-Tracer model for names, addresses and other free-text personal data. A value found once is masked everywhere it repeats.</p>
+    <h3>Filter</h3>
+    <p>A known-safe filter leaves harmless look-alikes alone, such as documented examples: published test cards and keys, sandbox IDs, reserved domains, bot and role mailboxes, loopback addresses, UUIDs and hashes, redaction markers, filler placeholders (<code>AC000…</code>, <code>sk-...</code>), standard numbers after RFC / ISO / ICAO / IEEE / PEP, and default dates (1970-01-01, 1900-01-01).</p>
+    <h3>Pictures</h3>
+    <p>PDFs become their text layer; scans, Read pictures and images in MCP tool results are read by local OCR (the <code>ocr</code> extra) and only the masked text goes to Claude. Without OCR they are held back.</p>
+    <h3>Put back (restore)</h3>
+    <p>Values go into the vault, an encrypted file kept per session (AES-GCM, key in the OS secure store). When Claude writes a file or runs a command with a placeholder, the real value is put back locally. The model never sees it.</p>
+    <h3>Placeholders that can’t be guessed</h3>
+    <p>A placeholder is <code>PII_&lt;KIND&gt;_&lt;n&gt;_&lt;tag&gt;</code>. A value comes back only when the tag checks out and the placeholder is in this session’s vault. Anything else in placeholder shape stays as text. Three refused guesses in one session show you one line.</p>
+    <h3>Files Claude wrote stay masked</h3>
+    <p>When real values are put back into a file, the hook records per file its path, its SHA-256, size and time, and per value the byte position, the value’s SHA-256, kind and placeholder. The log (<code>~/.cloakroom/filelog.bin</code>) is encrypted like the vault and holds no values: they are read back from the file when needed.</p>
+    <h3>Encoded dumps and secrets</h3>
+    <p><code>od</code>, <code>xxd</code>, <code>base64</code> and spaced-out output are turned back into text and checked; a hit withholds the output (it isn’t passed on). Each secret already in the session vault is also looked for in its encoded forms (base64, URL-encoded and JSON-escaped), and as an MD5, SHA-1 or SHA-256 hash, as hex, and reversed.</p>
+    <h3>Sending-data hold</h3>
+    <p>Before a shell command runs, Cloakroom checks whether it can send data off the machine. If it does and it holds a known secret, a key the rules recognise, or a literal token of 16+ characters in a credential header, the command is denied. To send it anyway, type <code>cr: allow</code> as your prompt (Claude never sees it), then ask Claude to run the same command again: it passes once, within 10 minutes.</p>
+    <h3>Money-movement hold</h3>
+    <p>Before any tool call runs, Cloakroom checks whether it would move money: a write to a listed payment endpoint, a payment CLI command, or an MCP tool whose name carries a money verb. Such a call is held with one line naming the endpoint or tool; <code>cr: allow</code> lets the same call run once.</p>
+    <h3>Write-time and commit check</h3>
+    <p>When a key or password would land in a file that is in a git repo and not git-ignored, the call is denied and Claude is told to put the value in <code>.env</code>. Before Claude runs <code>git commit</code> or <code>git push</code>, a key or password in what would be committed holds the command.</p>
+    <h3>If the program is missing, nothing gets through</h3>
+    <p>If the <code>cloakroom</code> command is missing, the plugin blocks prompts and denies tool calls instead of letting data through.</p>
+  </div>
+</section>
+
+<section class="sec container" id="agents" aria-labelledby="agents-title">
+  <h2 id="agents-title">Other coding agents</h2>
+  <div class="sec-body">
+    <p>Codex and Gemini CLI can’t swap a tool’s output for a masked copy, so Cloakroom blocks the original and the AI reads the masked text in the block message.</p>
+    <dl class="defs defs--2">
+      <div><dt>Codex</dt><dd><code>cloakroom hook &lt;event&gt; --agent codex</code> reads Codex’s hook input and turns the answer into Codex’s. Codex’s file edits (<code>apply_patch</code>) are restored and checked like Write. <code>cloakroom install codex</code> writes the four hooks into <code>~/.codex/hooks.json</code>.</dd></div>
+      <div><dt>Gemini CLI</dt><dd>Gemini CLI uses its own tool names with Claude Code’s argument names, so <code>--agent gemini</code> first renames the tool. Gemini lets a call through when a hook times out, so with the model not loaded yet the hook doesn’t wait: it checks with the rules in-process. <code>cloakroom install gemini</code> writes these hooks as an extension of its own.</dd></div>
+    </dl>
+    <p>What it protects against, and what it doesn’t: <a href="security.html">Security model</a>. Every detail: <a href="https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-HOW-IT-WORKS.md">docs-HOW-IT-WORKS.md</a>.</p>
+  </div>
+</section>
+
+</main>
+
+<footer class="foot">
+  <div class="container foot-inner">
+    <nav aria-label="Project links">
+      <a href="https://github.com/shanjeevrajendran/cloakroom">GitHub</a>
+      <a href="https://pypi.org/project/cloakroom/">PyPI</a>
+      <a href="https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-LIMITS.md">Known limits</a>
+      <a href="https://github.com/shanjeevrajendran/cloakroom/blob/main/LICENSE">Apache-2.0</a>
+    </nav>
+    <p>Made by <a href="https://shanjeevrajendran.github.io/">Shanjeev Rajendran</a>.</p>
+  </div>
+</footer>
+
+</body>
+</html>
