@@ -235,20 +235,43 @@ def test_gzip_body_is_masked_and_sent_plain(stack):
     assert "content-encoding" not in {k.lower() for k in seen["headers"]}
 
 
-def test_unreadable_bodies_go_through_unchanged_and_are_logged_as_not_checked(stack):
-    cases = [(b"\x00\x01 not json " + KEY.encode(), {}, "not-json"),
-             (b"zzzz", {"Content-Encoding": "zstd"}, "encoding")]
-    for raw, h, why in cases:
-        send(stack, "POST", "/fake/v1/messages", raw, h)
-        assert stack.seen[-1]["body"] == raw
-        assert rows("skipped")[-1]["reason"] == why and rows("skipped")[-1]["check"] == "proxy request"
+def test_unreadable_bodies_are_refused_and_never_forwarded(stack):
+    cases = [(b"\x00\x01 not json " + KEY.encode(), {}, "not-json", b"not JSON"),
+             (b"zzzz" + KEY.encode(), {"Content-Encoding": "zstd"}, "encoding", b"zstd"),
+             (b"zzzz" + KEY.encode(), {"Content-Encoding": "br"}, "encoding", b"brotli")]
+    for raw, h, why, said in cases:
+        status, _, body = send(stack, "POST", "/fake/v1/messages", raw, h)
+        assert status == 503 and said in body and b"docs-LIMITS.md" in body and KEY.encode() not in body
+        assert stack.seen == []  # the upstream received nothing
+        ev = rows("proxy")[-1]
+        assert ev["action"] == "deny" and ev["reason"] == why and ev["check"] == "proxy request"
     from cloakroom import config
     (config.HOME / "config.json").write_text(json.dumps({"proxy_max_mb": 0.0001, "proxy_upstreams": {"/fake": f"http://127.0.0.1:{stack.port}"}}))
     big = json.dumps({"messages": [{"role": "user", "content": "x " * 400}]}).encode()
-    send(stack, "POST", "/fake/v1/messages", big)
-    assert stack.seen[-1]["body"] == big and rows("skipped")[-1]["reason"] == "too-large"
+    status, _, body = send(stack, "POST", "/fake/v1/messages", big)
+    assert status == 503 and b"proxy_max_mb" in body and stack.seen == [] and rows("proxy")[-1]["reason"] == "too-large"
     from cloakroom import report
-    assert report.skipped()  # "Checks skipped" in the report counts them
+    assert not report.skipped()  # refused, not "not checked"
+    assert any(r["session"] == "proxy" and r["action"] == "denied" for r in report.rows())  # `cloakroom report` shows it
+
+
+def test_zstd_body_is_refused_with_the_secret_inside(stack):
+    # what Codex signed in with ChatGPT sends: a compressed JSON body holding a key
+    raw = b"\x28\xb5\x2f\xfd" + json.dumps({"input": [{"role": "user", "content": KEY}]}).encode()
+    status, _, _ = send(stack, "POST", "/fake/v1/responses", raw, {"Content-Encoding": "zstd"})
+    assert status == 503 and stack.seen == []
+
+
+def test_empty_bodies_and_gets_still_pass(stack):
+    for method in ("GET", "POST"):
+        status, _, _ = send(stack, method, "/fake/v1/models", None)
+        assert status == 200
+    assert [s["method"] for s in stack.seen] == ["GET", "POST"] and all(s["body"] == b"" for s in stack.seen)
+
+
+def test_plain_json_is_still_masked_and_forwarded(stack):
+    status, _, _ = send(stack, "POST", "/fake/v1/messages", {"messages": [{"role": "user", "content": f"k {KEY}"}]})
+    assert status == 200 and KEY.encode() not in stack.seen[-1]["body"] and b"PII_SECRET_" in stack.seen[-1]["body"]
 
 
 def test_a_body_with_nothing_to_mask_is_forwarded_byte_for_byte(stack):
@@ -439,3 +462,30 @@ def test_doctor_is_silent_until_the_proxy_is_in_use(monkeypatch, tmp_path, capsy
     cli.main(["doctor"])
     out = capsys.readouterr().out
     assert "FAIL  proxy: not running, but these point at it" in out and "Claude Code" in out
+
+
+
+# --- the install warning for a ChatGPT sign-in ---
+
+@pytest.mark.parametrize("mode,warns", [("chatgpt", True), ("apikey", False), (None, False)])
+def test_codex_install_warns_on_a_chatgpt_sign_in(monkeypatch, tmp_path, capsys, mode, warns):
+    from cloakroom import cli
+    home = tmp_path / "x"
+    home.mkdir()
+    fake = {"OPENAI_API_KEY": None, "tokens": {"access_token": "fake-access-value-1234"}}
+    if mode:
+        fake["auth_mode"] = mode
+    (home / "auth.json").write_text(json.dumps(fake))
+    monkeypatch.setenv("CODEX_HOME", str(home))
+    for extra in (["--print"], []):
+        assert cli.main(["proxy", "install", "codex", *extra]) == 0
+        out = capsys.readouterr()
+        assert ("signed in with ChatGPT" in out.err) is warns
+        assert "fake-access-value-1234" not in out.out + out.err  # no value from the file is printed
+
+
+def test_codex_install_without_an_auth_file_does_not_warn(monkeypatch, tmp_path, capsys):
+    from cloakroom import cli
+    monkeypatch.setenv("CODEX_HOME", str(tmp_path / "none"))
+    assert cli.main(["proxy", "install", "codex", "--print"]) == 0
+    assert "ChatGPT" not in capsys.readouterr().err

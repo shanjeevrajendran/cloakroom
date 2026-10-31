@@ -11,8 +11,9 @@ Headers are forwarded untouched, never logged or scanned (Authorization is your 
 the ledger gets the host and the data kinds, like the hooks' where-it-went rows.
 
 shortcut: one JSON walk over every string except structural keys (no per-vendor parser), so a new body shape fails
-toward masking; an unreadable body (not JSON, zstd, over proxy_max_mb) goes through unchanged and is logged as not
-checked. Upgrade when a vendor needs a field the walk can't tell from text.
+toward masking; an unreadable body (not JSON, zstd or brotli, over proxy_max_mb) is refused with a 503 and logged as
+denied, never forwarded, so nothing leaves unchecked. Upgrade when a vendor needs a field the walk can't tell from text,
+or to decode zstd (1.0.1).
 """
 from __future__ import annotations
 
@@ -129,7 +130,7 @@ def _decode(raw: bytes, encoding: str) -> bytes:
 
 def mask_body(raw: bytes, encoding: str = "", limit: int = 16 * 1024 * 1024) -> tuple[bytes, bool, list, str]:
     """(body to send, whether it changed, [(placeholder, kind)] found, the masked text for counting placeholders).
-    A body that can't be read raises Unchecked; the caller sends the original. Unchanged means the original bytes
+    A body that can't be read raises Unchecked; the caller refuses the request. Unchanged means the original bytes
     (and its Content-Encoding) go out exactly as they came."""
     if len(raw) > limit:
         raise Unchecked("too-large", size=len(raw), limit=limit)
@@ -174,6 +175,11 @@ def _route(path: str, table: dict) -> tuple[str, str] | None:
 
 # --- the server ---
 
+WHY = {"encoding": "is compressed in a way Cloakroom 1.0 cannot read (for example zstd or brotli)",
+       "not-json": "is not JSON, so Cloakroom cannot check it",
+       "too-large": "is larger than proxy_max_mb, so Cloakroom did not check it"}
+
+
 def _error(kind: str, message: str) -> bytes:
     return json.dumps({"type": "error", "error": {"type": kind, "message": message}}).encode()
 
@@ -216,10 +222,7 @@ class Handler(BaseHTTPRequestHandler):
         extra = {"dest": [host], "carries": egress.carried(body, found), **(extra or {})}
         try:
             extra["via"] = prefix
-            if action == "skipped":
-                events.record("skipped", data, "skipped", [], ms, "", extra)
-            else:
-                events.record("proxy", data, action, found, ms, "", extra)
+            events.record("proxy", data, action, found, ms, "", extra)
         except OSError as e:  # a full disk must not stop the call; the next row is written when it clears
             print(f"cloakroom proxy: could not write the ledger ({e.__class__.__name__})", file=sys.stderr)
 
@@ -244,24 +247,24 @@ class Handler(BaseHTTPRequestHandler):
         except (ValueError, OSError):
             return self._reply(400, _error("invalid_request_error", "Cloakroom proxy could not read the request body."))
         body, found, text, t0 = raw, [], "", time.perf_counter()
-        unchecked, changed = None, False
+        changed = False
         if raw:
             try:
                 body, changed, found, text = mask_body(raw, self.headers.get("Content-Encoding") or "",
                                                        int(cfg["proxy_max_mb"] * 1048576))
-            except Unchecked as u:
-                unchecked, body = u, raw
+            except Unchecked as u:  # fail closed: a body Cloakroom can't read never reaches the upstream
+                self._log(host, prefix, "deny", [], (time.perf_counter() - t0) * 1000,
+                          extra={"reason": u.reason, "check": "proxy request", **u.numbers})
+                return self._reply(503, _error("api_error", f"Cloakroom did not send this request: its body "
+                                               f"{WHY.get(u.reason, 'cannot be read')}. See docs-LIMITS.md, "
+                                               "\"Cloakroom proxy\"."))
             except Exception as e:  # anything at all
                 # fail closed, like the hooks: nothing leaves when it can't be checked
                 self._log(host, prefix, "deny", [], (time.perf_counter() - t0) * 1000, extra={"why": e.__class__.__name__})
                 return self._reply(503, _error("api_error", "Cloakroom is not working, so this request was not sent. "
                                                "Run: cloakroom doctor"))
         ms = (time.perf_counter() - t0) * 1000
-        if unchecked:
-            self._log(host, prefix, "skipped", [], ms, extra={"reason": unchecked.reason, "check": "proxy request",
-                                                                **unchecked.numbers})
-        else:
-            self._log(host, prefix, "masked" if found else "pass", found, ms, text)
+        self._log(host, prefix, "masked" if found else "pass", found, ms, text)
         self._forward(base, rest, body, changed, raw is not None)
 
     def _forward(self, base: str, rest: str, body: bytes | None, changed: bool, has_body: bool):
@@ -416,6 +419,21 @@ def _read_text(path: str) -> str | None:
         return None
 
 
+def codex_signin_warning() -> str | None:
+    """A warning when Codex's auth.json says it is signed in with ChatGPT (it compresses its requests with zstd, which
+    the proxy refuses). Reads only the auth_mode field; no other value from the file is kept or printed."""
+    try:
+        with open(os.path.join(agents.codex_home(), "auth.json"), encoding="utf-8") as f:
+            mode = json.load(f).get("auth_mode")
+    except (OSError, ValueError, AttributeError):
+        return None
+    if not isinstance(mode, str) or mode.lower().replace("-", "").replace("_", "") == "apikey":
+        return None
+    return ("cloakroom: warning: Codex is signed in with ChatGPT. It compresses its requests in a way Cloakroom 1.0 "
+            "cannot read, so the proxy will refuse them (503). Use an API key (CODEX_API_KEY) with the proxy, or wait for "
+            "1.0.1.")
+
+
 def install(agent: str, p: int | None = None, show: bool = False) -> str:
     """Point the agent's own config at the proxy. Returns the message. show: print what it would write, change nothing."""
     addr = address(agent, p)
@@ -534,8 +552,11 @@ def run(a) -> int:
             return 2
         name = NAMES[a.agent]
         try:
+            warn = codex_signin_warning() if a.action == "install" and a.agent == "codex" else None
             if a.action == "install" and a.print:
                 print(install(a.agent, a.port, show=True))
+                if warn:
+                    print(warn, file=sys.stderr)
                 return 0
             if a.action == "uninstall":
                 print(f"cloakroom: {name} no longer points at the proxy ({uninstall(a.agent)})")
@@ -548,6 +569,8 @@ def run(a) -> int:
               "Start the proxy with: cloakroom proxy   (while it isn't running, the tool's requests fail rather than "
               "go around it)\n"
               f"To undo: cloakroom proxy uninstall {a.agent}")
+        if warn:
+            print(warn, file=sys.stderr)
         return 0
     p = a.port or port()
     if a.background:

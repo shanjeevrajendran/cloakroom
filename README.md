@@ -518,7 +518,7 @@ unchanged, as a stream. It works on Mac, Linux and Windows and is off until you 
 ```bash
 cloakroom proxy                      # run it (Ctrl+C stops it); --background starts it detached
 cloakroom proxy install claude       # Claude Code: sets ANTHROPIC_BASE_URL in ~/.claude/settings.json
-cloakroom proxy install codex        # Codex CLI: sets openai_base_url in ~/.codex/config.toml (API-key sign-in only)
+cloakroom proxy install codex        # Codex CLI: sets openai_base_url in ~/.codex/config.toml (API-key sign-in only; a ChatGPT sign-in is refused)
 cloakroom proxy install gemini       # Gemini CLI: sets GOOGLE_GEMINI_BASE_URL in ~/.gemini/.env (API-key sign-in)
 cloakroom proxy install claude --print   # show the change, write nothing
 cloakroom proxy uninstall claude     # put back what was there before
@@ -533,13 +533,13 @@ in the text passes through as it is.
 Each request is logged in the where-it-went ledger with the host and the kinds masked, never a value, so
 `cloakroom report --destinations` shows the proxy's traffic next to the commands. With the approved-sites list on, a
 request to an upstream that isn't on it is refused. A body Cloakroom can't read (not JSON, a compression it doesn't know,
-over `proxy_max_mb`, 16 by default) goes through unchanged and is counted as not checked. If the check can't run, the
-request is refused, not sent. `cloakroom doctor` shows whether the proxy runs and which tools point at it.
+over `proxy_max_mb`, 16 by default) is refused with a 503 and a plain reason, not sent, and shows as denied in
+`cloakroom report`. If the check can't run, the request is refused too. `cloakroom doctor` shows whether the proxy runs and which tools point at it.
 
 | Setting in `~/.cloakroom/config.json` | What it does |
 |---|---|
 | `proxy_port` | the port; 0 (default) picks a free one the first time and keeps it |
-| `proxy_max_mb` | bigger bodies go through unchecked (default 16) |
+| `proxy_max_mb` | bigger bodies are refused, not sent (default 16) |
 | `proxy_upstreams` | more routes, for example `{"/mistral": "https://api.mistral.ai"}`; `https` only (a loopback address may use `http`) |
 
 Cursor and Copilot are not covered: their requests go through the vendor's own servers, so there is no address on your

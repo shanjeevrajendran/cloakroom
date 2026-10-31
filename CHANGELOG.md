@@ -23,9 +23,10 @@
   shows whether it runs. Off until you start it; Mac, Linux and Windows.
 - Known limit: the proxy covers tools that let you set the API address. Cursor and Copilot send through their own
   servers and are not covered; headers are not scanned; the agent's own traffic that doesn't go through the proxy is
-  not seen; a body compressed with zstd or brotli goes through unchecked; Codex CLI and Gemini CLI signed in with
-  ChatGPT or a Google account are not covered; Codex with a ChatGPT sign-in sends zstd-compressed bodies through the
-  proxy unchecked (see docs-LIMITS, "Cloakroom proxy").
+  not seen; a body the proxy can't read (compressed with zstd or brotli, not JSON, over `proxy_max_mb`) is refused with
+  an error and never sent; Codex CLI and Gemini CLI signed in with ChatGPT or a Google account are not covered, and
+  Codex with a ChatGPT sign-in is refused because it compresses with zstd; `proxy install codex` warns about it (see
+  docs-LIMITS, "Cloakroom proxy").
 - Known limit: the proxy's placeholder store is machine-wide and kept for 24 hours, so any session on the same machine
   can restore a placeholder the proxy made (see docs-LIMITS, "Cloakroom proxy").
 - Known limit: the ledger and the approved-sites list only see calls that pass through Cloakroom's checks, not the

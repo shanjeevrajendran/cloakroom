@@ -15,7 +15,7 @@ DEFAULTS = {"mode": "full", "port": 37787,  # not 8787: Headroom's proxy default
             "allowed_hosts": [],  # hosts you approve, or *.example.com; `cloakroom allow-host` edits it
             "scrub_transcript": True,
             "proxy_port": 0,  # `cloakroom proxy`: 0 = pick a free port once and keep it (proxy.json)
-            "proxy_max_mb": 16,  # a request body bigger than this goes through unchecked (logged as not checked)
+            "proxy_max_mb": 16,  # a request body bigger than this is refused, not sent (logged as denied)
             "proxy_upstreams": {}}  # more prefixes for the proxy: {"/mistral": "https://api.mistral.ai"}  # take a stopped prompt out of the session's saved transcript (history.py)
 
 
