@@ -35,6 +35,7 @@
   docs-LIMITS, "Failed commands").
 - Release gate: `scripts/release_check.sh` also runs the test suite under the oldest Python `pyproject.toml` allows (3.10), and
   fails on generated site pages that show an older version (`python scripts/gen_pages.py --local` regenerates them).
+- Dashboard: new Console look, solid icon in the header and as favicon, refreshed preview.
 
 ## 0.9.0 (2026-10-30)
 - `cloakroom give NAME`: hand the agent a key without pasting it into a prompt. You type the value hidden in a
