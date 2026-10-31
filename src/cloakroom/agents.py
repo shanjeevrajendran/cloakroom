@@ -332,7 +332,8 @@ def cursor_answer(event, out, data=None):
         return {"permission": "allow", "updated_input": h["updatedInput"]} if "updatedInput" in h else {}
     if event == "post":
         res = {}
-        if "updatedToolOutput" in h and str(data.get("tool_name", "")).startswith(("mcp__", "MCP:")):
+        tool = str(data.get("tool_name", ""))
+        if "updatedToolOutput" in h and (not tool or tool.startswith(("mcp__", "MCP:"))):  # unreadable input: no name
             res["updated_mcp_tool_output"] = _as_text(h["updatedToolOutput"]) or "[Cloakroom: empty output]"
         if h.get("additionalContext"):
             from .hook import GUIDE  # only imported once the hook ran, so it can be imported
