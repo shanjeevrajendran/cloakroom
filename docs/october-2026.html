@@ -5,9 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>What Cloakroom would and wouldn't have done in October's incidents</title>
 <meta name="description" content="Four October 2026 incidents (LiteLLM, Tensorlake, Railway, OpenCode), step by step: what Cloakroom stops, reduces or can't touch, plus a test you can rerun.">
-<meta name="color-scheme" content="light dark">
-<meta name="theme-color" content="#fbfbfd" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0b0d10" media="(prefers-color-scheme: dark)">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#0a100c">
 <link rel="canonical" href="https://cloakroom.sh/october-2026.html">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="Cloakroom">
@@ -20,32 +19,28 @@
 <meta name="twitter:description" content="Four October 2026 incidents (LiteLLM, Tensorlake, Railway, OpenCode), step by step: what Cloakroom stops, reduces or can't touch, plus a test you can rerun.">
 <meta name="twitter:image" content="https://raw.githubusercontent.com/shanjeevrajendran/cloakroom/main/assets/social-card.png">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 44 44'%3E%3Crect width='44' height='44' rx='9' fill='%230d1117'/%3E%3Cg fill='%2356d364' stroke='%2356d364' stroke-width='2.6' stroke-linejoin='round' stroke-linecap='round' transform='translate(4 4) scale(.82)'%3E%3Cpath d='M4 6H40V16A6 6 0 0 0 40 28V38H4V28A6 6 0 0 0 4 16Z'/%3E%3Cpath d='M14 22H30' stroke='%230d1117' stroke-dasharray='3 3'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Martian+Mono:wdth,wght@75..112.5,400..700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
-<style>
-/* Tables and h2 for this page; style.css has no table rules */
-.writeup h2 {
-  margin: 2.5rem 0 0.75rem;
-  font-size: 1.375rem; line-height: 1.25; letter-spacing: -0.015em; font-weight: 650;
-}
-.table-wrap { overflow-x: auto; margin: 0 0 1.25rem; }
-.writeup table { width: 100%; border-collapse: collapse; font-size: 0.9375rem; }
-.writeup th, .writeup td { text-align: left; vertical-align: top; padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--line); }
-.writeup th { font-weight: 650; }
-</style>
+<script>document.documentElement.classList.add('js')</script>
 </head>
-<body>
+<body class="t-terminal">
 <a class="skip" href="#main">Skip to content</a>
 
 <header class="bar">
-  <div class="bar-inner">
+  <div class="container bar-inner">
     <a class="brand" href="./" aria-label="Cloakroom, home">
-      <svg viewBox="0 0 44 44" width="22" height="22" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"><path d="M4 6H40V16A6 6 0 0 0 40 28V38H4V28A6 6 0 0 0 4 16Z"/><path d="M14 22H30" stroke-dasharray="3 3"/></g></svg>
+      <svg viewBox="0 0 44 44" width="26" height="26" aria-hidden="true"><rect width="44" height="44" rx="9" fill="#0d1117"/><g fill="#56d364" stroke="#56d364" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round" transform="translate(4 4) scale(.82)"><path d="M4 6H40V16A6 6 0 0 0 40 28V38H4V28A6 6 0 0 0 4 16Z"/><path d="M14 22H30" stroke="#0d1117" stroke-dasharray="3 3"/></g></svg>
       <span>Cloakroom</span>
     </a>
-    <nav aria-label="Page">
-      <a href="./#install">Install</a>
-      <a href="./#faq">FAQ</a>
-      <a href="./#writeup">Write-up</a>
+    <nav aria-label="Site">
+      <a href="install.html">Install</a>
+      <a href="commands.html">Commands</a>
+      <a href="how-it-works.html">How it works</a>
+      <a href="security.html">Security</a>
+      <a href="releases.html">Releases</a>
+      <a href="writing.html">Writing</a>
       <a href="https://github.com/shanjeevrajendran/cloakroom">GitHub</a>
     </nav>
   </div>
@@ -53,12 +48,15 @@
 
 <main id="main">
 
-<article class="writeup" aria-labelledby="writeup-title">
+<article class="writeup writeup--page container" aria-labelledby="writeup-title">
+<header class="doc-hero">
   <p>Disclosure: I built Cloakroom, an open-source tool that masks secrets before AI coding agents see them.</p>
   <h1 id="writeup-title" class="article-title">What Cloakroom would and wouldn't have done in October's incidents</h1>
 
-  <p>An API key is a password that also pays the bill: hold a copy and you can run up charges on someone else's account until they revoke it. In October, developers' keys leaked four different ways in one month.</p>
-  <p>LiteLLM 1.107.0, a popular AI gateway, shipped an update that copied its users' keys every time Python started; the attacker got in through a master key that had been committed to a public repo. Tensorlake's npm package 0.5.144 carried code that copied developers' keys, used them to spread into their other packages, and planted agent config in repos. Railway, a cloud hosting company, was breached and some stored settings were decrypted. OpenCode's hosted Console exposed the provider keys users had saved in it. I checked which steps Cloakroom touches.</p>
+  <p>An API key is a password that also pays the bill: hold a copy and you can run up charges on someone else’s account until they revoke it. In October, developers’ keys leaked four different ways in one month.</p>
+  <p>LiteLLM 1.107.0, a popular AI gateway, shipped an update that copied its users’ keys every time Python started; the attacker got in through a master key that had been committed to a public repo. Tensorlake’s npm package 0.5.144 carried code that copied developers’ keys, used them to spread into their other packages, and planted agent config in repos. Railway, a cloud hosting company, was breached and some stored settings were decrypted. OpenCode’s hosted Console exposed the provider keys users had saved in it. I checked which steps Cloakroom touches.</p>
+</header>
+<div class="doc">
 
   <h2>Step by step</h2>
   <p><strong>stops</strong> means Cloakroom, as shipped, prevents the step. <strong>reduces</strong> means it removes one copy or one path but not the step. <strong>none</strong> means it is outside what a local agent hook can see.</p>
@@ -66,7 +64,7 @@
   <table>
     <thead><tr><th>Incident, step</th><th>Cloakroom</th></tr></thead>
     <tbody>
-      <tr><td>LiteLLM: master key in an agent config file, committed to a public repo, never revoked</td><td>reduces (only if the commit went through an agent or Cloakroom's git hook; unknown)</td></tr>
+      <tr><td>LiteLLM: master key in an agent config file, committed to a public repo, never revoked</td><td>reduces (only if the commit went through an agent or Cloakroom’s git hook; unknown)</td></tr>
       <tr><td>LiteLLM: key used on their agent API, which returned a GitHub token</td><td>none</td></tr>
       <tr><td>LiteLLM: stolen token sends repo secrets to a webhook through CI</td><td>none</td></tr>
       <tr><td>LiteLLM: release workflow pointed at a lookalike fork</td><td>none</td></tr>
@@ -75,10 +73,10 @@
       <tr><td>LiteLLM: encrypted archive sent out</td><td>none</td></tr>
       <tr><td>LiteLLM: Claude Code puts a GitHub token in a response body</td><td>reduces if it passed through a tool result; none if Claude Code added it to its own API request</td></tr>
       <tr><td>Tensorlake: admin account commits the payload</td><td>none</td></tr>
-      <tr><td>Tensorlake: <code>npm install</code> runs the payload</td><td>reduces (narrow: only if the agent runs the install; it masks output, doesn't block)</td></tr>
+      <tr><td>Tensorlake: <code>npm install</code> runs the payload</td><td>reduces (narrow: only if the agent runs the install; it masks output, doesn’t block)</td></tr>
       <tr><td>Tensorlake: reads credential files and <code>.env*</code> files</td><td>none</td></tr>
       <tr><td>Tensorlake: plants <code>.claude/settings.json</code> in repos</td><td>none</td></tr>
-      <tr><td>Tensorlake: republishes the victim's packages</td><td>none</td></tr>
+      <tr><td>Tensorlake: republishes the victim’s packages</td><td>none</td></tr>
       <tr><td>Railway: privilege escalation in build infrastructure</td><td>none</td></tr>
       <tr><td>Railway: encrypted variables pulled, some decrypted</td><td>none</td></tr>
       <tr><td>Railway: search for AI provider key names</td><td>none</td></tr>
@@ -89,7 +87,7 @@
   </div>
 
   <h2>The test</h2>
-  <p>I built a git repo with 11 random dummy secrets in the places the stealers look: a <code>.env</code>, a gateway config file, an MCP config, npm, AWS and SSH files, and a script that prints a <code>gho_</code> token the way <code>gh auth status --show-token</code> does. Claude Code ran the same task twice, plain and with Cloakroom 0.8.0: read the configs, run the script, write a setup file, commit. Then I scanned the model's input, the local session file and git history for the exact dummy values.</p>
+  <p>I built a git repo with 11 random dummy secrets in the places the stealers look: a <code>.env</code>, a gateway config file, an MCP config, npm, AWS and SSH files, and a script that prints a <code>gho_</code> token the way <code>gh auth status --show-token</code> does. Claude Code ran the same task twice, plain and with Cloakroom 0.8.0: read the configs, run the script, write a setup file, commit. Then I scanned the model’s input, the local session file and git history for the exact dummy values.</p>
   <div class="table-wrap">
   <table>
     <thead><tr><th>Where</th><th>Without Cloakroom</th><th>With Cloakroom</th></tr></thead>
@@ -100,36 +98,39 @@
     </tbody>
   </table>
   </div>
-  <p>The agent's final answer held none in either run. Cloakroom withheld the script's whole output, so the token never reached the model.</p>
-  <p>Cloakroom refused the agent's write of the gateway key into the setup file. The agent used a placeholder and committed that file alone; the commit check rightly passed it, so it never had a key to stop. Read it as "the key didn't get committed", not as a test of the commit check.</p>
+  <p>The agent’s final answer held none in either run. Cloakroom withheld the script’s whole output, so the token never reached the model.</p>
+  <p>Cloakroom refused the agent’s write of the gateway key into the setup file. The agent used a placeholder and committed that file alone; the commit check rightly passed it, so it never had a key to stop. Read it as “the key didn’t get committed”, not as a test of the commit check.</p>
   <p>To rerun it (two short runs on your own login): <a href="https://github.com/shanjeevrajendran/cloakroom/blob/main/bench/black-october/run.sh"><code>bench/black-october/run.sh</code></a></p>
 
   <h2>Honest limits</h2>
   <ul>
     <li>Cloakroom would not have stopped any of the four incidents. Every theft step reads disk, a server or CI directly.</li>
-    <li>The only steps it touches are upstream copies: a key committed through the agent, and a token passing through tool output into model context and gateway logs. Even the commit step depends on how it was made, which LiteLLM didn't say.</li>
-    <li>Neither stealer read agent session transcripts, so keeping secrets out of transcripts would not have changed these thefts either. Both took agent credentials straight from disk, which Cloakroom's placeholders never touch.</li>
-    <li>Placeholders are restored to real values in files the agent writes, by design, and Claude Code's session log records what was written (a known limit in the repo's limits file). In this run the agent wrote no values into the setup file, so that path wasn't exercised. A task that copies a key into a new file would put it back on disk and in the transcript.</li>
+    <li>The only steps it touches are upstream copies: a key committed through the agent, and a token passing through tool output into model context and gateway logs. Even the commit step depends on how it was made, which LiteLLM didn’t say.</li>
+    <li>Neither stealer read agent session transcripts, so keeping secrets out of transcripts would not have changed these thefts either. Both took agent credentials straight from disk, which Cloakroom’s placeholders never touch.</li>
+    <li>Placeholders are restored to real values in files the agent writes, by design, and Claude Code’s session log records what was written (a known limit in the repo’s limits file). In this run the agent wrote no values into the setup file, so that path wasn’t exercised. A task that copies a key into a new file would put it back on disk and in the transcript.</li>
     <li>The Tensorlake payload is mostly encoded, so what I know about what it reads comes from the plain strings only.</li>
-    <li>I found no first-hand statement from OpenCode, only users' issues. Railway's report is preliminary.</li>
+    <li>I found no first-hand statement from OpenCode, only users’ issues. Railway’s report is preliminary.</li>
     <li>One machine, one model, one prompt: counts can move a little between runs.</li>
   </ul>
 
   <h2>In 0.8.0</h2>
-  <p>Two features shipped today (2026-10-27) in Cloakroom 0.8.0 on <a href="https://pypi.org/project/cloakroom/">PyPI</a>. <code>cloakroom exposure</code> reports which secrets your agents saw. <code>cloakroom scan</code> checks a repo's agent and editor config (<code>.claude/settings.json</code> hooks, <code>.mcp.json</code>, <code>.vscode/tasks.json</code>) for commands that were added or changed, and a git hook runs it after checkout and merge and warns. Both report; neither blocks.</p>
-  <p>The commands are in the <a href="https://github.com/shanjeevrajendran/cloakroom/blob/main/README.md">README's command reference</a>.</p>
+  <p>Two features shipped today (2026-10-27) in Cloakroom 0.8.0 on <a href="https://pypi.org/project/cloakroom/">PyPI</a>. <code>cloakroom exposure</code> reports which secrets your agents saw. <code>cloakroom scan</code> checks a repo’s agent and editor config (<code>.claude/settings.json</code> hooks, <code>.mcp.json</code>, <code>.vscode/tasks.json</code>) for commands that were added or changed, and a git hook runs it after checkout and merge and warns. Both report; neither blocks.</p>
+  <p>The commands are in the <a href="https://github.com/shanjeevrajendran/cloakroom/blob/main/README.md">README’s command reference</a>.</p>
+</div>
 </article>
 
 </main>
 
 <footer class="foot">
-  <nav aria-label="Project links">
-    <a href="https://github.com/shanjeevrajendran/cloakroom">GitHub</a>
-    <a href="https://pypi.org/project/cloakroom/">PyPI</a>
-    <a href="https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-LIMITS.md">Known limits</a>
-    <a href="https://github.com/shanjeevrajendran/cloakroom/blob/main/LICENSE">Apache-2.0</a>
-  </nav>
-  <p>Made by <a href="https://github.com/shanjeevrajendran">Shanjeev Rajendran</a>.</p>
+  <div class="container foot-inner">
+    <nav aria-label="Project links">
+      <a href="https://github.com/shanjeevrajendran/cloakroom">GitHub</a>
+      <a href="https://pypi.org/project/cloakroom/">PyPI</a>
+      <a href="https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-LIMITS.md">Known limits</a>
+      <a href="https://github.com/shanjeevrajendran/cloakroom/blob/main/LICENSE">Apache-2.0</a>
+    </nav>
+    <p>Made by <a href="https://github.com/shanjeevrajendran">Shanjeev Rajendran</a>.</p>
+  </div>
 </footer>
 </body>
 </html>

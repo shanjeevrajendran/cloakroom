@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Install Cloakroom</title>
+<meta name="description" content="Install Cloakroom for Claude Code, Codex CLI or Gemini CLI, pick the right install for your machine, and run it on headless machines and CI.">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#0a100c">
+<link rel="canonical" href="https://cloakroom.sh/install.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Cloakroom">
+<meta property="og:title" content="Install Cloakroom">
+<meta property="og:description" content="Install Cloakroom for Claude Code, Codex CLI or Gemini CLI, pick the right install for your machine, and run it on headless machines and CI.">
+<meta property="og:url" content="https://cloakroom.sh/install.html">
+<meta property="og:image" content="https://raw.githubusercontent.com/shanjeevrajendran/cloakroom/main/assets/social-card.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 44 44'%3E%3Crect width='44' height='44' rx='9' fill='%230d1117'/%3E%3Cg fill='%2356d364' stroke='%2356d364' stroke-width='2.6' stroke-linejoin='round' stroke-linecap='round' transform='translate(4 4) scale(.82)'%3E%3Cpath d='M4 6H40V16A6 6 0 0 0 40 28V38H4V28A6 6 0 0 0 4 16Z'/%3E%3Cpath d='M14 22H30' stroke='%230d1117' stroke-dasharray='3 3'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Martian+Mono:wdth,wght@75..112.5,400..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<script>document.documentElement.classList.add('js')</script>
+</head>
+<body class="t-terminal">
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="bar">
+  <div class="container bar-inner">
+    <a class="brand" href="./" aria-label="Cloakroom, home">
+      <svg viewBox="0 0 44 44" width="26" height="26" aria-hidden="true"><rect width="44" height="44" rx="9" fill="#0d1117"/><g fill="#56d364" stroke="#56d364" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round" transform="translate(4 4) scale(.82)"><path d="M4 6H40V16A6 6 0 0 0 40 28V38H4V28A6 6 0 0 0 4 16Z"/><path d="M14 22H30" stroke="#0d1117" stroke-dasharray="3 3"/></g></svg>
+      <span>Cloakroom</span>
+    </a>
+    <nav aria-label="Site">
+      <a href="install.html" aria-current="page">Install</a>
+      <a href="commands.html">Commands</a>
+      <a href="how-it-works.html">How it works</a>
+      <a href="security.html">Security</a>
+      <a href="releases.html">Releases</a>
+      <a href="writing.html">Writing</a>
+      <a href="https://github.com/shanjeevrajendran/cloakroom">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+<section class="hero page-hero container" aria-labelledby="page-title">
+  <h1 id="page-title">Install Cloakroom</h1>
+  <p class="lead">Works with Claude Code, Codex CLI and Gemini CLI.</p>
+  <div class="tabs" data-tabs>
+    <div class="tablist" role="tablist" aria-label="Install for your agent">
+      <button type="button" role="tab" id="tab-claude" aria-controls="panel-claude" aria-selected="true">Claude Code</button>
+      <button type="button" role="tab" id="tab-codex" aria-controls="panel-codex" aria-selected="false">Codex CLI</button>
+      <button type="button" role="tab" id="tab-gemini" aria-controls="panel-gemini" aria-selected="false">Gemini CLI</button>
+    </div>
+    <div class="tabpanel" role="tabpanel" id="panel-claude" aria-labelledby="tab-claude">
+      <p class="tab-note">Mac, Windows and Linux. You need Claude Code, installed and signed in.</p>
+      <ol class="steps">
+        <li><p><strong>Add Cloakroom.</strong> Inside Claude Code, type these two lines, one at a time. If it asks where to install, pick the option for all your projects (user scope).</p>
+          <div class="cmd-row"><pre><code>/plugin marketplace add shanjeevrajendran/cloakroom
+/plugin install cloakroom@cloakroom</code></pre><button type="button" class="copy">Copy</button></div></li>
+        <li><p><strong>Restart Claude Code.</strong> Type <code>/exit</code>, then <code>claude</code> again. Cloakroom now installs itself.</p></li>
+        <li><p><strong>Check it.</strong> Open a new terminal window and run:</p>
+          <div class="cmd-row"><pre><code>cloakroom doctor       <span class="c"># every line should say ok</span>
+cloakroom dashboard    <span class="c"># opens your alerts in the browser</span></code></pre><button type="button" class="copy">Copy</button></div></li>
+      </ol>
+    </div>
+    <div class="tabpanel" role="tabpanel" id="panel-codex" aria-labelledby="tab-codex">
+      <p class="tab-note">Mac and Linux (tested with Codex 0.164).</p>
+      <ol class="steps">
+        <li><p><strong>Install the program by hand.</strong></p>
+          <div class="cmd-row"><pre><code>uv tool install "cloakroom[model,torch,ocr]"</code></pre><button type="button" class="copy">Copy</button></div></li>
+        <li><p><strong>Run <code>cloakroom install codex</code>.</strong> It adds four hooks to <code>~/.codex/hooks.json</code> and leaves your own hooks alone.</p>
+          <div class="cmd-row"><pre><code>cloakroom install codex</code></pre><button type="button" class="copy">Copy</button></div></li>
+        <li><p>Start Codex (<code>codex</code>), type <code>/hooks</code>, open each of the four Cloakroom hooks and trust it. Until you do, Codex skips them. <code>cloakroom doctor</code> shows whether they’re installed.</p></li>
+      </ol>
+    </div>
+    <div class="tabpanel" role="tabpanel" id="panel-gemini" aria-labelledby="tab-gemini">
+      <p class="tab-note">Mac and Linux (built against Gemini CLI 0.65).</p>
+      <ol class="steps">
+        <li><p><strong>Install the program by hand.</strong></p>
+          <div class="cmd-row"><pre><code>uv tool install "cloakroom[model,torch,ocr]"</code></pre><button type="button" class="copy">Copy</button></div></li>
+        <li><p><strong>Run <code>cloakroom install gemini</code>.</strong> It writes one thing: a Gemini extension named <code>cloakroom</code> in <code>~/.gemini/extensions/cloakroom/</code>. Your <code>settings.json</code> and your own hooks and extensions aren’t touched.</p>
+          <div class="cmd-row"><pre><code>cloakroom install gemini</code></pre><button type="button" class="copy">Copy</button></div></li>
+        <li><p>Gemini runs the hooks from its next start, in every folder; <code>gemini extensions list</code> shows it, <code>cloakroom doctor</code> too.</p></li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<section class="sec container" id="pick" aria-labelledby="pick-title">
+  <h2 id="pick-title">Pick how you’ll run it</h2>
+  <div class="sec-body">
+    <p>Easiest: add the plugin (above) and let it install Cloakroom on the next start. It uses uv or pipx if either is installed, otherwise a private Python environment in <code>~/.cloakroom/venv</code> (needs Python 3.10+). If the install fails, Claude Code says so and it retries after 10 minutes. The table is for installing by hand.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th scope="col">Your machine</th><th scope="col">Install</th><th scope="col">What you get</th></tr></thead>
+        <tbody>
+          <tr><td>Apple Silicon Mac, or an NVIDIA GPU</td><td><code>uv tool install "cloakroom[model,torch]"</code></td><td>Full mode on the GPU, about 20 ms per check</td></tr>
+          <tr><td>Any other machine (Intel Mac, most Windows and Linux)</td><td><code>uv tool install "cloakroom[model,torch]"</code>, then once: <code>cloakroom export-onnx</code></td><td>Full mode on the CPU. Before the export it works but is slow (about 0.5 s per check); after it, about 60 ms on a modern CPU</td></tr>
+          <tr><td>Just trying it, or a CI box</td><td><code>uv tool install cloakroom</code> and <code>CLOAKROOM_MODE=rules</code></td><td>Rules only: instant, no model download, but misses names and free-text personal data</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p><code>pipx install ...</code> works the same way as <code>uv tool install ...</code>. The model extras need about 1 GB of disk on a Mac and up to about 4 GB elsewhere (mostly PyTorch). Python 3.10 or newer.</p>
+    <p>To try it on one project first, install the plugin for that folder only. From inside the folder:</p>
+<pre class="cmd"><code>claude plugin marketplace add shanjeevrajendran/cloakroom --scope local
+claude plugin install cloakroom@cloakroom --scope local</code></pre>
+    <p>Other projects stay untouched.</p>
+  </div>
+</section>
+
+<section class="sec container" id="outside" aria-labelledby="outside-title">
+  <h2 id="outside-title">Using it outside Claude Code</h2>
+  <div class="sec-body">
+    <p>The same engine works on any file or pipe, which is handy for checking what it would do:</p>
+<pre class="cmd"><code>cloakroom check config.py        <span class="c"># what would be masked, by kind; never prints the values</span>
+cloakroom explain config.py      <span class="c"># every finding with the rule that found it, and what was skipped as safe</span>
+cloakroom mask config.py         <span class="c"># the masked text, as Claude would see it</span>
+cat app.log | cloakroom check -  <span class="c"># read from stdin</span>
+cloakroom check --mode rules .env</code></pre>
+    <p>Other commands: <a href="commands.html">Commands</a>.</p>
+  </div>
+</section>
+
+<section class="sec container" id="ci" aria-labelledby="ci-title">
+  <h2 id="ci-title">Headless machines, CI and testing</h2>
+  <div class="sec-body">
+<pre class="cmd"><code><span class="c"># just trying it, or a CI box: rules only, no model download</span>
+uv tool install cloakroom
+CLOAKROOM_MODE=rules</code></pre>
+    <dl class="defs">
+      <div><dt>Vault key</dt><dd>The vault key lives in the OS secure store (Keychain, Credential Manager, Secret Service). On a machine without one, set <code>CLOAKROOM_VAULT_KEY</code> (a 256-bit key, base64 or 64 hex characters), or Cloakroom falls back to a key file readable only by you, and <code>doctor</code> says so.</dd></div>
+      <div><dt>Dry run</dt><dd><code>CLOAKROOM_DRY_RUN=1</code> lets everything through and logs what Cloakroom would have done to <code>~/.cloakroom/dry-run.log</code>. Useful for trying it on a real project before trusting it.</dd></div>
+      <div><dt>Separate homes</dt><dd><code>CLOAKROOM_HOME</code> moves the config, vault and model files; <code>CLOAKROOM_PORT</code> moves the local service (default 37787).</dd></div>
+    </dl>
+  </div>
+</section>
+
+<section class="sec container" id="wrong" aria-labelledby="wrong-title">
+  <h2 id="wrong-title">If something looks wrong</h2>
+  <div class="qa">
+    <h3><code>cloakroom</code> not found</h3>
+    <p>Open a new terminal. The program lives in <code>~/.local/bin</code> (on Windows, <code>%USERPROFILE%\.local\bin</code>); the installer adds that folder to your shell profile (<code>~/.zshenv</code> for zsh, <code>~/.bashrc</code> and <code>~/.profile</code> or <code>~/.bash_profile</code> for bash) or, on Windows, to your user PATH.</p>
+    <h3>Still setting up, or it failed</h3>
+    <p>Progress, and numbered steps when something needs you, are written to <code>~/.cloakroom/bootstrap.log</code>. More in <a href="https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-SETUP.md">Setup</a>.</p>
+    <h3>A Linux machine without curl</h3>
+    <p>When neither uv nor pipx is there, Cloakroom fetches uv, which needs <code>curl</code> or <code>wget</code>. If a Linux machine has neither, Cloakroom tells you the steps: <code>sudo apt install curl</code> (Ubuntu/Debian) or <code>sudo dnf install curl</code> (Fedora/RHEL), then restart Claude Code.</p>
+    <h3>Intel Mac</h3>
+    <p>Only the pattern rules run, so keys, cards and ID numbers are caught but most names and addresses are not. The detection model for names and addresses needs PyTorch or ONNX Runtime, and neither is built for Intel Macs.</p>
+    <h3>More fixes</h3>
+    <p>Blocked prompts, ports, <code>model: FAIL</code> and too much masking: <a href="settings.html">Settings and fixes</a>.</p>
+  </div>
+</section>
+
+</main>
+
+<footer class="foot">
+  <div class="container foot-inner">
+    <nav aria-label="Project links">
+      <a href="https://github.com/shanjeevrajendran/cloakroom">GitHub</a>
+      <a href="https://pypi.org/project/cloakroom/">PyPI</a>
+      <a href="https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-LIMITS.md">Known limits</a>
+      <a href="https://github.com/shanjeevrajendran/cloakroom/blob/main/LICENSE">Apache-2.0</a>
+    </nav>
+    <p>Made by <a href="https://shanjeevrajendran.github.io/">Shanjeev Rajendran</a>.</p>
+  </div>
+</footer>
+
+<script src="install.js"></script>
+</body>
+</html>

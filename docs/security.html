@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cloakroom security model</title>
+<meta name="description" content="What Cloakroom stores and where, what leaves your machine, what it cannot catch, and how to report a way around it.">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#0a100c">
+<link rel="canonical" href="https://cloakroom.sh/security.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Cloakroom">
+<meta property="og:title" content="Cloakroom security model">
+<meta property="og:description" content="What Cloakroom stores and where, what leaves your machine, what it cannot catch, and how to report a way around it.">
+<meta property="og:url" content="https://cloakroom.sh/security.html">
+<meta property="og:image" content="https://raw.githubusercontent.com/shanjeevrajendran/cloakroom/main/assets/social-card.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 44 44'%3E%3Crect width='44' height='44' rx='9' fill='%230d1117'/%3E%3Cg fill='%2356d364' stroke='%2356d364' stroke-width='2.6' stroke-linejoin='round' stroke-linecap='round' transform='translate(4 4) scale(.82)'%3E%3Cpath d='M4 6H40V16A6 6 0 0 0 40 28V38H4V28A6 6 0 0 0 4 16Z'/%3E%3Cpath d='M14 22H30' stroke='%230d1117' stroke-dasharray='3 3'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Martian+Mono:wdth,wght@75..112.5,400..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<script>document.documentElement.classList.add('js')</script>
+</head>
+<body class="t-terminal">
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="bar">
+  <div class="container bar-inner">
+    <a class="brand" href="./" aria-label="Cloakroom, home">
+      <svg viewBox="0 0 44 44" width="26" height="26" aria-hidden="true"><rect width="44" height="44" rx="9" fill="#0d1117"/><g fill="#56d364" stroke="#56d364" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round" transform="translate(4 4) scale(.82)"><path d="M4 6H40V16A6 6 0 0 0 40 28V38H4V28A6 6 0 0 0 4 16Z"/><path d="M14 22H30" stroke="#0d1117" stroke-dasharray="3 3"/></g></svg>
+      <span>Cloakroom</span>
+    </a>
+    <nav aria-label="Site">
+      <a href="install.html">Install</a>
+      <a href="commands.html">Commands</a>
+      <a href="how-it-works.html">How it works</a>
+      <a href="security.html" aria-current="page">Security</a>
+      <a href="releases.html">Releases</a>
+      <a href="writing.html">Writing</a>
+      <a href="https://github.com/shanjeevrajendran/cloakroom">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+<section class="hero page-hero page-hero--short container" aria-labelledby="page-title">
+  <h1 id="page-title">Security model</h1>
+  <p class="lead">Cloakroom’s job is to keep secrets and personal data away from the model, so a way around it is a security bug.</p>
+</section>
+
+<section class="sec container" id="stored" aria-labelledby="stored-title">
+  <h2 id="stored-title">What is stored</h2>
+  <div class="sec-body">
+    <dl class="defs">
+      <div><dt>The vault</dt><dd>Values go into the vault, an encrypted file kept per session (AES-GCM, key in the OS secure store).</dd></div>
+      <div><dt>The file log</dt><dd>The log (<code>~/.cloakroom/filelog.bin</code>) is encrypted like the vault and holds no values: they are read back from the file when needed.</dd></div>
+      <div><dt>Your rules</dt><dd>These rules are stored encrypted in <code>~/.cloakroom/rules.bin</code>; the <code>allow</code> list stays yours to edit by hand.</dd></div>
+      <div><dt>The activity log</dt><dd>Tamper-evident, not tamper-proof. The activity log keeps no values or text, but it does keep file paths (masked like any output) and the program name of shell commands.</dd></div>
+      <div><dt>Held commands</dt><dd>Only a keyed hash of the held command is stored (<code>~/.cloakroom/held.json</code>).</dd></div>
+      <div><dt>Keys you hand over</dt><dd>Entries from <code>cloakroom give</code> expire after 24 hours; <code>--forget</code> removes one now.</dd></div>
+    </dl>
+  </div>
+</section>
+
+<section class="sec container" id="where" aria-labelledby="where-title">
+  <h2 id="where-title">Where</h2>
+  <div class="qa">
+    <h3>The vault key</h3>
+    <p>Vault files are AES-GCM encrypted; the key lives in the OS secure store (macOS Keychain, Windows Credential Manager, Linux Secret Service), or <code>CLOAKROOM_VAULT_KEY</code>, or a 0600 key file when no store exists (doctor warns).</p>
+    <h3>Cloakroom’s own folder</h3>
+    <p>Claude’s own tool calls can’t change <code>~/.cloakroom</code> (writes there, or shell commands naming it, are denied), so it can’t pause Cloakroom or edit its rules.</p>
+    <h3>The dashboard</h3>
+    <p>The dashboard (<code>cloakroom dashboard</code>) is reachable only on 127.0.0.1, with a one-time sign-in link; restarting the service signs the browser out.</p>
+    <h3>Claude Code’s own records</h3>
+    <p>Claude Code’s local session log (<code>~/.claude/projects/...</code>) records the hook’s rewritten tool input, so values put back into a file also appear in that log on your disk. They are not sent to the model.</p>
+  </div>
+</section>
+
+<section class="sec container" id="leaves" aria-labelledby="leaves-title">
+  <h2 id="leaves-title">What leaves your machine</h2>
+  <div class="sec-body">
+    <dl class="defs">
+      <div><dt>The model, once</dt><dd>First run downloads the detection model (PII-Tracer, pinned revision) from Hugging Face; offline machines need it cached first.</dd></div>
+      <div><dt>Sending data</dt><dd>Commands that would send a secret off your machine, or move money, wait for your OK. A web fetch, an MCP tool call or a prompt to a subagent that holds a real value is stopped before it runs.</dd></div>
+      <div><dt>Not covered</dt><dd>Codex’s own web search (runs on OpenAI’s servers).</dd></div>
+    </dl>
+  </div>
+</section>
+
+<section class="sec container" id="cannot" aria-labelledby="cannot-title">
+  <h2 id="cannot-title">What it cannot catch</h2>
+  <div class="sec-body">
+    <p>It stops <strong>accidental</strong> exposure: secrets and personal data in files, logs and command output an agent reads while working. It is not a sandbox (a sealed-off space the AI can’t get out of). Out of scope: an AI, or hidden instructions in a file that steer it (a prompt injection), determined to sneak data out through custom encodings or values built piece by piece; data you paste into prompts on purpose (prompts can be blocked, not rewritten); what other tools on your machine send elsewhere.</p>
+  </div>
+  <div class="qa">
+    <h3>Prompts</h3>
+    <p>Prompts can only be blocked, not masked. A blocked prompt never reaches the model, but Claude Code keeps it in its local session records on disk.</p>
+    <h3>Failed commands</h3>
+    <p>In Claude Code, the error output of a tool call that fails goes through a hook event that lets a hook add notes but not change the text. So it can’t be masked and may reach the model with a key or personal value in it. Keep keys out of commands that print them.</p>
+    <h3>Secrets it has never seen</h3>
+    <p>Disguised copies are computed from values Cloakroom already knows, so a secret it has never seen isn’t caught in any form. Not covered: salted or keyed hashes (HMAC, bcrypt, scrypt), other hashes (SHA-512, CRC), base32, upper/lower case changes of a key, and values shorter than 8 characters.</p>
+    <h3>Keys written by scripts</h3>
+    <p>A key split into pieces, or one with no known pattern and not seen earlier in the session, isn’t caught when a file is written.</p>
+    <h3>Money moved by programs</h3>
+    <p>The money-movement hold sees the command or tool call, not what a program does once it runs. A script or app that calls a payment API isn’t held.</p>
+    <h3>The exposure list</h3>
+    <p><code>cloakroom exposure</code> lists only what Cloakroom detected: a key it missed leaves no line, so an empty list is not proof nothing leaked.</p>
+  </div>
+  <div class="sec-body">
+    <p>Every limit found in live tests, per agent: <a href="https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-LIMITS.md">Known limits</a>.</p>
+  </div>
+</section>
+
+<section class="sec container" id="report" aria-labelledby="report-title">
+  <h2 id="report-title">Report a way around it</h2>
+  <div class="sec-body">
+    <dl class="defs">
+      <div><dt>Privately</dt><dd>Please report privately through GitHub: the <strong>Security</strong> tab of the repo, then <strong>Report a vulnerability</strong>. Don’t open a public issue for a bypass; it would teach everyone the trick before there’s a fix.</dd></div>
+      <div><dt>What to include</dt><dd>The Cloakroom version (<code>uv tool list</code> or <code>pip show cloakroom</code>), your OS, the mode (<code>full</code> or <code>rules</code>), and a minimal example with <strong>fake</strong> values that shows the problem.</dd></div>
+      <div><dt>Response</dt><dd>This is a one-person project. I aim to reply within a week and to ship a fix, with credit if you want it, before the details are public.</dd></div>
+    </dl>
+    <ul class="links"><li><a href="https://github.com/shanjeevrajendran/cloakroom/security">Report a vulnerability</a></li><li><a href="https://github.com/shanjeevrajendran/cloakroom/blob/main/SECURITY.md">SECURITY.md</a></li></ul>
+  </div>
+</section>
+
+</main>
+
+<footer class="foot">
+  <div class="container foot-inner">
+    <nav aria-label="Project links">
+      <a href="https://github.com/shanjeevrajendran/cloakroom">GitHub</a>
+      <a href="https://pypi.org/project/cloakroom/">PyPI</a>
+      <a href="https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-LIMITS.md">Known limits</a>
+      <a href="https://github.com/shanjeevrajendran/cloakroom/blob/main/LICENSE">Apache-2.0</a>
+    </nav>
+    <p>Made by <a href="https://shanjeevrajendran.github.io/">Shanjeev Rajendran</a>.</p>
+  </div>
+</footer>
+
+</body>
+</html>
