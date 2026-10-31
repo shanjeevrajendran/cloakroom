@@ -218,7 +218,11 @@ Cloakroom can't check, the action is blocked rather than let through.
   over `proxy_max_mb` (16) goes through unchanged and is counted as not checked. Text inside an image or a signed
   "thinking" block is not checked.
 - Codex CLI signed in with ChatGPT and Gemini CLI signed in with a Google account talk to other addresses than the API
-  ones; `openai_base_url` and `GOOGLE_GEMINI_BASE_URL` apply to API-key sign-in only.
+  ones; `openai_base_url` and `GOOGLE_GEMINI_BASE_URL` apply to API-key sign-in only. Tested on Codex CLI 0.166.0 and
+  Gemini CLI 0.66.0: with an API key both go through the proxy and a key is masked. Codex with a ChatGPT sign-in does
+  send its requests to the proxy once `openai_base_url` is set, but compressed with zstd, so nothing in them is masked
+  (counted as not checked); don't run `cloakroom proxy install codex` for a ChatGPT sign-in. Codex first tries a
+  WebSocket, which the proxy doesn't carry; it falls back to ordinary requests after about ten seconds of retries.
 - While the proxy isn't running, a tool pointed at it fails (it never goes around it). `cloakroom proxy uninstall NAME`
   undoes the setting.
 - A restored placeholder needs a Cloakroom hook in the agent that writes the file or command, and works for 24 hours.
