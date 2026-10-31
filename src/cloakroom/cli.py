@@ -47,7 +47,8 @@ def _allow_host(a) -> int:
     cfg = config.load()
     hosts = list(cfg["allowed_hosts"])
     if a.list or not a.host:
-        print(f"approved sites ({'on' if cfg['egress'] == 'allowlist' else 'off: set \"egress\": \"allowlist\" in config.json'}):")
+        state = "on" if cfg["egress"] == "allowlist" else 'off: set "egress": "allowlist" in config.json'
+        print(f"approved sites ({state}):")
         print("\n".join(f"  {h}" for h in hosts) or "  none yet")
         return 0
     host = egress.normalize(a.host)
