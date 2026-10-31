@@ -33,6 +33,8 @@
   agent's own calls to its model provider or a tool that runs no check (see docs-LIMITS, "Outgoing data").
 - Known limit: the error output of a failed command can still reach the model unmasked, carried over from 0.9.0 (see
   docs-LIMITS, "Failed commands").
+- Release gate: `scripts/release_check.sh` also runs the test suite under the oldest Python `pyproject.toml` allows (3.10), and
+  fails on generated site pages that show an older version (`python scripts/gen_pages.py --local` regenerates them).
 
 ## 0.9.0 (2026-10-30)
 - `cloakroom give NAME`: hand the agent a key without pasting it into a prompt. You type the value hidden in a
