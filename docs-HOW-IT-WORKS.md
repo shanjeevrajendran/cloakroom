@@ -116,7 +116,9 @@ finding with its rule), `cloakroom status`. Add your own exceptions to `allow` i
 ## Other coding agents
 
 In short: Codex and Gemini CLI can't swap a tool's output for a masked copy, so Cloakroom blocks the original and
-the AI reads the masked text in the block message. The rest of this section is how the answers are translated.
+the AI reads the masked text in the block message. Cursor's command-line agent can't swap output either, so Cloakroom
+changes the input instead: a file read goes to a masked copy of the file, and a shell command runs inside Cloakroom,
+which prints only masked output. The rest of this section is how the answers are translated.
 
 The hooks speak Claude Code's JSON. For Codex, `cloakroom hook <event> --agent codex` reads Codex's hook input (the
 same field names) and turns the answer into Codex's: a masked tool result becomes a block whose reason is the
@@ -137,6 +139,12 @@ back. Gemini lets a call through when a hook times out, so with the model not lo
 checks with the rules in-process and starts the service for the next call. `cloakroom install gemini` writes these
 hooks as an extension of its own, `~/.gemini/extensions/cloakroom/`, because Gemini skips the hooks in
 `settings.json` in a folder you haven't trusted, but runs an extension's hooks everywhere.
+
+Cursor's command-line agent sends its own tool names (Shell, Read, Write) with its own events, so `--agent cursor`
+first maps them. A read is redirected to a masked copy kept in Cloakroom's home; a command is wrapped in
+`cloakroom cursor-run`, which runs it and masks what it prints; MCP output is replaced with a masked copy. A write
+that carries a placeholder is refused, because Cursor ignores a hook's rewritten input there, and the agent is told
+to write through the shell. Cursor's Grep tool is refused when it would show file contents.
 
 ## Threat model
 

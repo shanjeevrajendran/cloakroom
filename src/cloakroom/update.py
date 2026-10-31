@@ -3,7 +3,7 @@
 The route comes from the program's own environment: a uv tool (uv-receipt.toml), a pipx venv (pipx_metadata.json)
 or pip (the INSTALLER record). Anything else, a source checkout, or Windows (a running program can't replace its own
 files there) gets the command printed instead. The extras whose packages are present are kept. Then Codex's hooks,
-Gemini CLI's extension and this repo's git hook are written again by the new program, only where already installed.
+Gemini CLI's extension, Cursor's hooks and this repo's git hook are written again by the new program, only where already installed.
 Claude Code's plugin is never touched: Claude Code updates it.
 """
 from __future__ import annotations
@@ -19,7 +19,7 @@ from importlib import metadata, util
 from . import __version__, agents
 
 EXTRAS = (("model", ("onnxruntime", "tokenizers")), ("torch", ("torch",)), ("ocr", ("rapidocr",)))  # as upgrade_probe
-NAMES = {"codex": "Codex", "gemini": "Gemini CLI", "git-hook": "git commits in this project"}
+NAMES = {"codex": "Codex", "gemini": "Gemini CLI", "cursor": "Cursor's command-line agent", "git-hook": "git commits in this project"}
 CLAUDE_NOTE = ("Claude Code: nothing changed there. Claude Code updates its Cloakroom plugin itself (to switch that "
                "on: type /plugin in Claude Code, go to Marketplaces, choose cloakroom, then Enable auto-update), and "
                "the plugin then updates this program.")
@@ -129,7 +129,8 @@ def _git_hook_here() -> bool:
 
 def installed() -> list[str]:
     """What Cloakroom installed for other agents on this machine (and this repo's git hook)."""
-    return ([a for a, on in (("codex", agents.codex_installed()), ("gemini", agents.gemini_installed())) if on]
+    return ([a for a, on in (("codex", agents.codex_installed()), ("gemini", agents.gemini_installed()),
+                         ("cursor", agents.cursor_installed())) if on]
             + (["git-hook"] if _git_hook_here() else []))
 
 
@@ -152,7 +153,7 @@ def run(check: bool = False) -> int:
         for a in redo:
             print(f"  then set up Cloakroom's checks for {NAMES[a]} again: cloakroom install {a}")
         if not redo:
-            print("  nothing more: Cloakroom isn't set up for Codex, Gemini CLI or git commits in this folder")
+            print("  nothing more: Cloakroom isn't set up for Codex, Gemini CLI, Cursor's command-line agent or git commits in this folder")
         print(CLAUDE_NOTE)
         return 0
     print(f"Updating Cloakroom with {name}, the installer you used: {_show(cmd)}", flush=True)

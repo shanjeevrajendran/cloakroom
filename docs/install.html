@@ -53,6 +53,7 @@
       <button type="button" role="tab" id="tab-claude" aria-controls="panel-claude" aria-selected="true">Claude Code</button>
       <button type="button" role="tab" id="tab-codex" aria-controls="panel-codex" aria-selected="false">Codex CLI</button>
       <button type="button" role="tab" id="tab-gemini" aria-controls="panel-gemini" aria-selected="false">Gemini CLI</button>
+      <button type="button" role="tab" id="tab-cursor" aria-controls="panel-cursor" aria-selected="false">Cursor</button>
     </div>
     <div class="tabpanel" role="tabpanel" id="panel-claude" aria-labelledby="tab-claude">
       <p class="tab-note">Mac, Windows and Linux. You need Claude Code, installed and signed in.</p>
@@ -84,6 +85,16 @@ cloakroom dashboard    <span class="c"># opens your alerts in the browser</span>
         <li><p><strong>Run <code>cloakroom install gemini</code>.</strong> It writes one thing: a Gemini extension named <code>cloakroom</code> in <code>~/.gemini/extensions/cloakroom/</code>. Your <code>settings.json</code> and your own hooks and extensions aren’t touched.</p>
           <div class="cmd-row"><pre><code>cloakroom install gemini</code></pre><button type="button" class="copy">Copy</button></div></li>
         <li><p>Gemini runs the hooks from its next start, in every folder; <code>gemini extensions list</code> shows it, <code>cloakroom doctor</code> too.</p></li>
+      </ol>
+    </div>
+    <div class="tabpanel" role="tabpanel" id="panel-cursor" aria-labelledby="tab-cursor">
+      <p class="tab-note">Mac and Linux (checked against Cursor’s command-line agent 2026.10.22).</p>
+      <ol class="steps">
+        <li><p><strong>Install the program by hand.</strong></p>
+          <div class="cmd-row"><pre><code>uv tool install "cloakroom[model,torch,ocr]"</code></pre><button type="button" class="copy">Copy</button></div></li>
+        <li><p><strong>Run <code>cloakroom install cursor</code>.</strong> It adds nine hooks to <code>~/.cursor/hooks.json</code> and leaves your own hooks alone.</p>
+          <div class="cmd-row"><pre><code>cloakroom install cursor</code></pre><button type="button" class="copy">Copy</button></div></li>
+        <li><p>Cursor’s command-line agent (<code>agent</code>) runs them from its next start. The editor reads the same file but hasn’t been checked with Cloakroom yet. <code>cloakroom doctor</code> shows whether they’re installed.</p></li>
       </ol>
     </div>
   </div>
