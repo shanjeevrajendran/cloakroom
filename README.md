@@ -72,6 +72,10 @@ New in 0.7, it also protects two other AI coding agents that run in a terminal (
 - **OpenAI's Codex CLI:** run `cloakroom install codex` ([Codex](#codex)).
 - **Google's Gemini CLI:** run `cloakroom install gemini` ([Gemini CLI](#gemini-cli)).
 
+New in 1.1:
+
+- **Cursor's command-line agent:** run `cloakroom install cursor` ([Cursor](#cursor)).
+
 New in 1.0:
 
 - **See where your agent sends data, and limit it to sites you approve:** `cloakroom report --destinations` lists the
@@ -107,24 +111,26 @@ change it. So Cloakroom stops a message holding a key or personal data before it
 MCP tools are add-ons that give the AI extra abilities, such as a browser or a database. "Block message" is
 explained under the table.
 
-| Protection | Claude Code | Codex CLI | Gemini CLI |
-|---|---|---|---|
-| Prompts you type | ⛔ Stopped before sending (the AI never sees it); Cloakroom gives you a copy with placeholders to send instead | ⛔ Stopped before sending (the AI never sees it); Cloakroom gives you a copy with placeholders to send instead | ⛔ Stopped before sending (the AI never sees it); Cloakroom gives you a copy with placeholders to send instead; ✗ pictures in a prompt aren't checked |
-| File reads | ✓ | ✓ Masked when read through the shell (sent as a block message) | ✓ Masked (sent as a block message) |
-| Command output | ✓ | ✓ Masked (sent as a block message); ✗ long-running commands | ✓ Masked (sent as a block message) |
-| MCP tool output | ✓ | ✓ Masked (sent as a block message) | ✓ Masked (sent as a block message) |
-| Images and PDFs | ✓ | ✗ Not covered: pictures opened with `view_image` | ✓ Masked: the text in pictures is read on your machine; ⛔ PDFs held back |
-| Real values put back in commands and edits | ✓ | ✓; ⛔ unknown commands are refused, not asked about | ✓ |
-| Real values kept out of web and MCP calls | ✓ | ✓; ✗ Codex's own web search (runs on OpenAI's servers) | ✓ |
-| Keys written into files git would commit | ✓ | ✓ | ✓ |
-| The agent's `git commit` / `git push` check | ✓ | ✓ | ✓ |
-| Commands that send secrets or placeholders over the internet | ✓ | ⛔ Stopped: refused, not asked about | ✓ |
-| Calls that move money | ✓ | ✓ | ✓ |
-| Check on commits you make yourself | ✓ | ✓ | ✓ |
-| Systems | Mac, Linux, Windows | Mac, Linux | Mac, Linux |
+| Protection | Claude Code | Codex CLI | Gemini CLI | Cursor (command-line agent) |
+|---|---|---|---|---|
+| Prompts you type | ⛔ Stopped before sending (the AI never sees it); Cloakroom gives you a copy with placeholders to send instead | ⛔ Stopped before sending (the AI never sees it); Cloakroom gives you a copy with placeholders to send instead | ⛔ Stopped before sending (the AI never sees it); Cloakroom gives you a copy with placeholders to send instead; ✗ pictures in a prompt aren't checked | ✗ Not covered: Cursor's command-line agent doesn't run its prompt hook |
+| File reads | ✓ | ✓ Masked when read through the shell (sent as a block message) | ✓ Masked (sent as a block message) | ✓ Masked (Cloakroom hands Cursor a masked copy of the file); ⛔ Cursor's Grep tool is refused when it would show file contents (a shell search is masked) |
+| Command output | ✓ | ✓ Masked (sent as a block message); ✗ long-running commands | ✓ Masked (sent as a block message) | ✓ Masked (the command runs inside Cloakroom, which prints only masked output) |
+| MCP tool output | ✓ | ✓ Masked (sent as a block message) | ✓ Masked (sent as a block message) | ✓ |
+| Images and PDFs | ✓ | ✗ Not covered: pictures opened with `view_image` | ✓ Masked: the text in pictures is read on your machine; ⛔ PDFs held back | ✓ Masked when read as a file: the text in pictures is read on your machine, and PDFs by their text layer; ✗ pictures in a prompt |
+| Real values put back in commands and edits | ✓ | ✓; ⛔ unknown commands are refused, not asked about | ✓ | ✓; ⛔ unknown commands are refused, not asked about |
+| Real values kept out of web and MCP calls | ✓ | ✓; ✗ Codex's own web search (runs on OpenAI's servers) | ✓ | ✓; ✗ Cursor's own web search (no hook sees it) |
+| Keys written into files git would commit | ✓ | ✓ | ✓ | ✓ |
+| The agent's `git commit` / `git push` check | ✓ | ✓ | ✓ | ✓ |
+| Commands that send secrets or placeholders over the internet | ✓ | ⛔ Stopped: refused, not asked about | ✓ | ⛔ Stopped: refused, not asked about |
+| Calls that move money | ✓ | ✓ | ✓ | ✓ (to let one through: run `cloakroom allow` in a terminal) |
+| Check on commits you make yourself | ✓ | ✓ | ✓ | ✓ |
+| Systems | Mac, Linux, Windows | Mac, Linux | Mac, Linux | Mac, Linux |
 
 Cloakroom works through hooks: small checks the agent runs before and after each action, such as reading a file or
 running a command.
+
+Cursor's editor reads the same hooks file, but Cloakroom hasn't been checked there yet: treat the editor as not covered until it is.
 
 - **Block message:** Codex and Gemini CLI can't swap a tool's output for a masked copy. So Cloakroom blocks the
   original, and the AI reads the masked text in the block message instead.
@@ -136,6 +142,8 @@ else: [Known limits](https://github.com/shanjeevrajendran/cloakroom/blob/main/do
 
 ## Recent releases
 
+- **1.1.0** (unreleased): Cloakroom also protects Cursor's command-line agent, on Mac and Linux: run
+  `cloakroom install cursor`. `cloakroom allow` lets a command Cloakroom held run once. See [Cursor](#cursor).
 - **1.0.0** (2026-10-30): the ledger of where your agent sends data (`cloakroom report --destinations`), an opt-in
   approved-sites list (`cloakroom allow-host`), and a hold on a web address or header that carries your email, phone,
   name or username. See [See where your agent sends data](#see-where-your-agent-sends-data). `cloakroom proxy` masks the
@@ -709,6 +717,32 @@ secret is stopped, with a copy to send instead. What's different:
 
 To remove it: `cloakroom uninstall gemini` (deletes that folder, nothing else). More in
 [Known limits](https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-LIMITS.md#gemini-cli).
+
+## Cursor
+
+Cloakroom also works with Cursor's command-line agent (`agent`), on Mac and Linux (checked against `agent` 2026.10.22).
+
+1. Install the program by hand: `uv tool install "cloakroom[model,torch,ocr]"`.
+2. Run `cloakroom install cursor`. It adds nine hooks to `~/.cursor/hooks.json` and leaves your own hooks alone.
+   Cursor's command-line agent runs them from its next start; `cloakroom doctor` shows whether they're installed.
+
+What works as in Claude Code: file contents, command output and MCP results are masked before the model sees them,
+placeholders in shell commands and file writes get their real values back on your machine, real values are kept out
+of MCP calls, and keys are kept out of files git would commit. What's different:
+
+- Cursor can't swap a tool's output for a masked copy, so Cloakroom changes the input instead. A file read gets a
+  masked copy of the file, and a command runs inside Cloakroom, which prints only masked output. The agent's
+  transcript shows the command it wrote.
+- **Prompts aren't checked in the command-line agent:** Cursor doesn't run its prompt hook there. Put such details in
+  a file and ask the agent to read it: Cloakroom masks it on the way in.
+- Cursor's Grep tool is refused when it would show file contents, which can't be masked; the agent searches with a
+  shell command, whose output is masked.
+- Commands Cloakroom would ask about are refused: a command with placeholders that could send data off the machine,
+  or one Cloakroom doesn't know, is stopped. To let a held command through once, run `cloakroom allow` in a terminal.
+- Cursor's own web search isn't seen: it runs inside Cursor with no hook.
+
+To remove it: `cloakroom uninstall cursor`. More in
+[Known limits](https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-LIMITS.md#cursor).
 
 ## In an editor
 

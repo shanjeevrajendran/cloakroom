@@ -70,6 +70,23 @@ cloakroom install gemini
 
 - Gemini runs the hooks from its next start, in every folder; gemini extensions list shows it, cloakroom doctor too.
 
+#### Cursor
+
+Mac and Linux (checked against Cursor’s command-line agent 2026.10.22).
+- Install the program by hand.
+
+```
+uv tool install "cloakroom[model,torch,ocr]"
+```
+
+- Run cloakroom install cursor. It adds nine hooks to ~/.cursor/hooks.json and leaves your own hooks alone.
+
+```
+cloakroom install cursor
+```
+
+- Cursor’s command-line agent (agent) runs them from its next start. The editor reads the same file but hasn’t been checked with Cloakroom yet. cloakroom doctor shows whether they’re installed.
+
 ### Pick how you’ll run it
 Easiest: add the plugin (above) and let it install Cloakroom on the next start. It uses uv or pipx if either is installed, otherwise a private Python environment in ~/.cloakroom/venv (needs Python 3.10+). If the install fails, Claude Code says so and it retries after 10 minutes. The table is for installing by hand.
 | Your machine | Install | What you get
