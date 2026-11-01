@@ -384,6 +384,8 @@ def _doctor() -> int:
         else:
             line(True, "proxy", f"running on port {proxy.port()}; pointing at it: "
                  + (", ".join(proxy.NAMES[k] for k in pointed) or "no tool yet (cloakroom proxy install claude)"))
+        if "codex" in pointed and proxy.codex_chatgpt() and proxy._zstd() is None:
+            line(False, "proxy", f"Codex is signed in with ChatGPT, but {proxy.NO_ZSTD}")
     found = find_program()
     line(found is not None or None, "program", found or "the plugin can't find the cloakroom program, so Claude Code "
          "tool calls are denied: reinstall (uv tool install 'cloakroom[model,torch]', or let the plugin do it by "

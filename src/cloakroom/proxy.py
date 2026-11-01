@@ -11,9 +11,9 @@ Headers are forwarded untouched, never logged or scanned (Authorization is your 
 the ledger gets the host and the data kinds, like the hooks' where-it-went rows.
 
 shortcut: one JSON walk over every string except structural keys (no per-vendor parser), so a new body shape fails
-toward masking; an unreadable body (not JSON, zstd or brotli, over proxy_max_mb) is refused with a 503 and logged as
-denied, never forwarded, so nothing leaves unchecked. Upgrade when a vendor needs a field the walk can't tell from text,
-or to decode zstd (1.0.1).
+toward masking; an unreadable body (not JSON, brotli, bad zstd, over proxy_max_mb once decompressed) is refused with
+a 503 and logged as denied, never forwarded, so nothing leaves unchecked. Upgrade when a vendor needs a field the walk
+can't tell from text. A WebSocket upgrade gets a 426, so the tool falls back to plain HTTPS at once.
 """
 from __future__ import annotations
 
@@ -35,7 +35,10 @@ from . import agents, client, config, egress, events, handoff
 
 SESSION = handoff.PROXY_SESSION
 UPSTREAMS = {"/anthropic": "https://api.anthropic.com", "/openai": "https://api.openai.com",
-             "/gemini": "https://generativelanguage.googleapis.com"}
+             "/gemini": "https://generativelanguage.googleapis.com",
+             # Codex signed in with ChatGPT. The tool-side address must not end in /backend-api/codex: Codex then
+             # turns on workspace routing, which can swap the address for another and go around the proxy.
+             "/chatgpt": "https://chatgpt.com/backend-api/codex"}
 # What each tool is told to use. Codex's own default already ends in /v1; the other two add their paths themselves.
 ADDRESS = {"claude": "/anthropic", "codex": "/openai/v1", "gemini": "/gemini"}
 NAMES = {"claude": "Claude Code", "codex": "Codex CLI", "gemini": "Gemini CLI"}
@@ -112,15 +115,43 @@ class Masker:
         return r["text"]
 
 
-def _decode(raw: bytes, encoding: str) -> bytes:
+def _zstd():
+    """compression.zstd (3.14+) or its backport; None when neither imports, and zstd bodies are then refused."""
+    try:
+        import compression.zstd as zstd
+    except ImportError:
+        try:
+            import backports.zstd as zstd
+        except ImportError:
+            return None
+    return zstd
+
+
+def _decode(raw: bytes, encoding: str, limit: int = HARD_LIMIT) -> bytes:
+    """The body decompressed, never more than limit bytes of it (a small bomb can't fill memory)."""
     enc = encoding.strip().lower()
     if enc in ("", "identity"):
         return raw
+    if enc == "zstd":
+        zstd = _zstd()
+        if zstd is None:
+            raise Unchecked("no-zstd")
+        try:
+            # window_log_max 24: a frame can't make the decoder reserve more than 16 MB up front
+            d = zstd.ZstdDecompressor(options={zstd.DecompressionParameter.window_log_max: 24})
+            out = d.decompress(raw, limit)
+        except zstd.ZstdError as e:
+            raise Unchecked("encoding") from e
+        if not d.eof and not d.needs_input:
+            raise Unchecked("too-large")
+        if not d.eof or d.unused_data:  # cut short, or a second frame
+            raise Unchecked("encoding")
+        return out
     if enc not in ("gzip", "x-gzip", "deflate"):
         raise Unchecked("encoding")
     try:
         d = zlib.decompressobj(47 if enc != "deflate" else 15)  # 47: gzip or zlib header, whichever it is
-        out = d.decompress(raw, HARD_LIMIT)
+        out = d.decompress(raw, limit)
         if d.unconsumed_tail:
             raise Unchecked("too-large")
         return out
@@ -134,7 +165,7 @@ def mask_body(raw: bytes, encoding: str = "", limit: int = 16 * 1024 * 1024) -> 
     (and its Content-Encoding) go out exactly as they came."""
     if len(raw) > limit:
         raise Unchecked("too-large", size=len(raw), limit=limit)
-    data = _decode(raw, encoding)
+    data = _decode(raw, encoding, limit)
     try:
         obj = json.loads(data.decode("utf-8-sig"))
     except (ValueError, UnicodeDecodeError, RecursionError) as e:
@@ -175,7 +206,8 @@ def _route(path: str, table: dict) -> tuple[str, str] | None:
 
 # --- the server ---
 
-WHY = {"encoding": "is compressed in a way Cloakroom 1.0 cannot read (for example zstd or brotli)",
+WHY = {"encoding": "is compressed in a way Cloakroom cannot read (for example brotli, or damaged zstd)",
+       "no-zstd": "is compressed with zstd and this Python has no zstd library (install it: pip install backports.zstd)",
        "not-json": "is not JSON, so Cloakroom cannot check it",
        "too-large": "is larger than proxy_max_mb, so Cloakroom did not check it"}
 
@@ -229,6 +261,9 @@ class Handler(BaseHTTPRequestHandler):
     def do_request(self):
         if (self.headers.get("Host") or "").rsplit(":", 1)[0] not in ("127.0.0.1", "localhost"):
             return self._reply(403, _error("permission_error", "Cloakroom proxy answers on this machine only."))
+        if "websocket" in (self.headers.get("Upgrade") or "").lower():  # Codex reads 426 as "use HTTPS now"
+            return self._reply(426, _error("invalid_request_error", "Cloakroom proxy takes HTTP requests only, not "
+                                           "WebSockets."))
         table = upstreams()
         if self.path == "/health":
             return self._reply(200, json.dumps({"ok": True, "service": "cloakroom-proxy", "routes": sorted(table)}).encode())
@@ -374,7 +409,8 @@ def running(p: int | None = None) -> bool:
 
 
 def address(agent: str, p: int | None = None) -> str:
-    return f"http://127.0.0.1:{p or port()}{ADDRESS[agent]}"
+    path = "/chatgpt" if agent == "codex" and codex_chatgpt() else ADDRESS[agent]
+    return f"http://127.0.0.1:{p or port()}{path}"
 
 
 def _path(agent: str) -> str:
@@ -427,19 +463,28 @@ def _read_text(path: str) -> str | None:
         return None
 
 
-def codex_signin_warning() -> str | None:
-    """A warning when Codex's auth.json says it is signed in with ChatGPT (it compresses its requests with zstd, which
-    the proxy refuses). Reads only the auth_mode field; no other value from the file is kept or printed."""
+def codex_chatgpt() -> bool:
+    """Whether Codex's auth.json says it is signed in with ChatGPT. Reads only the auth_mode field; no other value from
+    the file is kept or printed."""
     try:
         with open(os.path.join(agents.codex_home(), "auth.json"), encoding="utf-8") as f:
             mode = json.load(f).get("auth_mode")
     except (OSError, ValueError, AttributeError):
+        return False
+    return isinstance(mode, str) and mode.lower().replace("-", "").replace("_", "") != "apikey"
+
+
+NO_ZSTD = ("this Python has no zstd library, so the proxy refuses Codex's ChatGPT requests (503). Install it: "
+           "pip install backports.zstd")
+
+
+def codex_signin_warning() -> str | None:
+    if not codex_chatgpt():
         return None
-    if not isinstance(mode, str) or mode.lower().replace("-", "").replace("_", "") == "apikey":
-        return None
-    return ("cloakroom: warning: Codex is signed in with ChatGPT. It compresses its requests in a way Cloakroom 1.0 "
-            "cannot read, so the proxy will refuse them (503). Use an API key (CODEX_API_KEY) with the proxy, or wait for "
-            "1.0.1.")
+    if _zstd() is None:
+        return f"cloakroom: warning: Codex is signed in with ChatGPT, and {NO_ZSTD}"
+    return ("cloakroom: Codex is signed in with ChatGPT, so the proxy sends its requests on to chatgpt.com. If you "
+            "switch Codex's sign-in, run cloakroom proxy install codex again.")
 
 
 def install(agent: str, p: int | None = None, show: bool = False) -> str:

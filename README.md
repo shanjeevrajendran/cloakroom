@@ -523,7 +523,7 @@ unchanged, as a stream. It works on Mac, Linux and Windows and is off until you 
 ```bash
 cloakroom proxy                      # run it (Ctrl+C stops it); --background starts it detached
 cloakroom proxy install claude       # Claude Code: sets ANTHROPIC_BASE_URL in ~/.claude/settings.json
-cloakroom proxy install codex        # Codex CLI: sets openai_base_url in ~/.codex/config.toml (API-key sign-in only; a ChatGPT sign-in is refused)
+cloakroom proxy install codex        # Codex CLI: sets openai_base_url in ~/.codex/config.toml (API key or ChatGPT sign-in)
 cloakroom proxy install gemini       # Gemini CLI: sets GOOGLE_GEMINI_BASE_URL in ~/.gemini/.env (API-key sign-in)
 cloakroom proxy install claude --print   # show the change, write nothing
 cloakroom proxy uninstall claude     # put back what was there before
