@@ -39,9 +39,9 @@ def test_environment_key_still_wins_on_a_borrowed_home(tmp_path, monkeypatch):
 
 def test_scripts_that_set_a_data_folder_set_a_vault_key():
     scripts = [p for d in ("bench", "scripts") for p in ROOT.glob(f"{d}/**/*.sh")]
-    setters = [p for p in scripts if "CLOAKROOM_HOME" in p.read_text()]
+    setters = [p for p in scripts if "CLOAKROOM_HOME" in p.read_text(encoding="utf-8")]
     assert {p.name for p in setters} >= {"live_test.sh", "live_cursor.sh", "run.sh"}
-    assert [p.name for p in setters if "CLOAKROOM_VAULT_KEY" not in p.read_text()] == []
+    assert [p.name for p in setters if "CLOAKROOM_VAULT_KEY" not in p.read_text(encoding="utf-8")] == []
 
 
 def test_cursor_wrapper_carries_home_and_port_but_no_key(monkeypatch, tmp_path):
