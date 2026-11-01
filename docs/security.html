@@ -36,6 +36,7 @@
       <a href="commands.html">Commands</a>
       <a href="how-it-works.html">How it works</a>
       <a href="security.html" aria-current="page">Security</a>
+      <a href="settings.html">Settings</a>
       <a href="releases.html">Releases</a>
       <a href="writing.html">Writing</a>
       <a href="https://github.com/shanjeevrajendran/cloakroom">GitHub</a>
@@ -47,7 +48,8 @@
 
 <section class="hero page-hero page-hero--short container" aria-labelledby="page-title">
   <h1 id="page-title">Security model</h1>
-  <p class="lead">Cloakroom’s job is to keep secrets and personal data away from the model, so a way around it is a security bug.</p>
+  <p class="lead">What Cloakroom stores stays on your machine and is not sent anywhere. The values it hides are encrypted. Its job is to keep secrets and personal data away from the model, so a way around it is a security bug.</p>
+  <p class="lead">For auditors: vault files are AES-GCM encrypted with a key in the OS secure store; the file log (<code>~/.cloakroom/filelog.bin</code>) is encrypted the same way; the activity log is tamper-evident, not tamper-proof.</p>
 </section>
 
 <section class="sec container" id="stored" aria-labelledby="stored-title">

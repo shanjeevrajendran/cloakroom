@@ -4,14 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Install Cloakroom</title>
-<meta name="description" content="Install Cloakroom for Claude Code, Codex CLI or Gemini CLI, pick the right install for your machine, and run it on headless machines and CI.">
+<meta name="description" content="Install Cloakroom for Claude Code, Codex CLI, Gemini CLI or Cursor’s terminal agent, pick the right install for your machine, and run it on headless machines and CI.">
 <meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#0a100c">
 <link rel="canonical" href="https://cloakroom.sh/install.html">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Cloakroom">
 <meta property="og:title" content="Install Cloakroom">
-<meta property="og:description" content="Install Cloakroom for Claude Code, Codex CLI or Gemini CLI, pick the right install for your machine, and run it on headless machines and CI.">
+<meta property="og:description" content="Install Cloakroom for Claude Code, Codex CLI, Gemini CLI or Cursor’s terminal agent, pick the right install for your machine, and run it on headless machines and CI.">
 <meta property="og:url" content="https://cloakroom.sh/install.html">
 <meta property="og:image" content="https://raw.githubusercontent.com/shanjeevrajendran/cloakroom/main/assets/social-card.png">
 <meta name="twitter:card" content="summary_large_image">
@@ -36,6 +36,7 @@
       <a href="commands.html">Commands</a>
       <a href="how-it-works.html">How it works</a>
       <a href="security.html">Security</a>
+      <a href="settings.html">Settings</a>
       <a href="releases.html">Releases</a>
       <a href="writing.html">Writing</a>
       <a href="https://github.com/shanjeevrajendran/cloakroom">GitHub</a>
@@ -47,7 +48,7 @@
 
 <section class="hero page-hero container" aria-labelledby="page-title">
   <h1 id="page-title">Install Cloakroom</h1>
-  <p class="lead">Works with Claude Code, Codex CLI and Gemini CLI.</p>
+  <p class="lead">Works with Claude Code, Codex CLI, Gemini CLI and Cursor’s terminal agent.</p>
   <div class="tabs" data-tabs>
     <div class="tablist" role="tablist" aria-label="Install for your agent">
       <button type="button" role="tab" id="tab-claude" aria-controls="panel-claude" aria-selected="true">Claude Code</button>
@@ -63,15 +64,29 @@
 /plugin install cloakroom@cloakroom</code></pre><button type="button" class="copy">Copy</button></div></li>
         <li><p><strong>Restart Claude Code.</strong> Type <code>/exit</code>, then <code>claude</code> again. Cloakroom now installs itself.</p></li>
         <li><p><strong>Check it.</strong> Open a new terminal window and run:</p>
-          <div class="cmd-row"><pre><code>cloakroom doctor       <span class="c"># every line should say ok</span>
-cloakroom dashboard    <span class="c"># opens your alerts in the browser</span></code></pre><button type="button" class="copy">Copy</button></div></li>
+          <div class="cmd-row"><pre><code>cloakroom doctor       <span class="c"># see the example below</span>
+cloakroom dashboard    <span class="c"># opens your alerts in the browser</span></code></pre><button type="button" class="copy">Copy</button></div>
+          <p>Example result:</p>
+          <pre class="cmd"><code>ok   python: 3.14.7 on Darwin arm64
+ok   version: cloakroom 1.1.0
+ok   mode: full
+ok   vault key: OS secure store
+...   model: loading (the first run downloads it once, about 1 GB; that can take a minute or two)
+ok   model: torch, loaded in 1.3 s, one check 17 ms (first check 704 ms, a one-time warm-up)
+ok   service: up on port 37787, model loaded
+warn  codex: not protected; to protect it: cloakroom install codex
+warn  gemini: not protected; to protect it: cloakroom install gemini
+warn  cursor: not protected; to protect it: cloakroom install cursor
+ok   program: ~/.local/bin/cloakroom</code></pre>
+          <p>Every line should say <code>ok</code>, except <code>warn</code> lines for agents you have not set up; each line says what to fix.</p></li>
       </ol>
     </div>
     <div class="tabpanel" role="tabpanel" id="panel-codex" aria-labelledby="tab-codex">
       <p class="tab-note">Mac and Linux (tested with Codex 0.164).</p>
       <ol class="steps">
         <li><p><strong>Install the program by hand.</strong></p>
-          <div class="cmd-row"><pre><code>uv tool install "cloakroom[model,torch,ocr]"</code></pre><button type="button" class="copy">Copy</button></div></li>
+          <div class="cmd-row"><pre><code>uv tool install "cloakroom[model,torch,ocr]"</code></pre><button type="button" class="copy">Copy</button></div>
+          <p class="tab-note">The part in brackets adds the local detection model and reading text in pictures.</p></li>
         <li><p><strong>Run <code>cloakroom install codex</code>.</strong> It adds four hooks to <code>~/.codex/hooks.json</code> and leaves your own hooks alone.</p>
           <div class="cmd-row"><pre><code>cloakroom install codex</code></pre><button type="button" class="copy">Copy</button></div></li>
         <li><p>Start Codex (<code>codex</code>), type <code>/hooks</code>, open each of the four Cloakroom hooks and trust it. Until you do, Codex skips them. <code>cloakroom doctor</code> shows whether they’re installed.</p></li>
@@ -81,20 +96,22 @@ cloakroom dashboard    <span class="c"># opens your alerts in the browser</span>
       <p class="tab-note">Mac and Linux (built against Gemini CLI 0.65).</p>
       <ol class="steps">
         <li><p><strong>Install the program by hand.</strong></p>
-          <div class="cmd-row"><pre><code>uv tool install "cloakroom[model,torch,ocr]"</code></pre><button type="button" class="copy">Copy</button></div></li>
+          <div class="cmd-row"><pre><code>uv tool install "cloakroom[model,torch,ocr]"</code></pre><button type="button" class="copy">Copy</button></div>
+          <p class="tab-note">The part in brackets adds the local detection model and reading text in pictures.</p></li>
         <li><p><strong>Run <code>cloakroom install gemini</code>.</strong> It writes one thing: a Gemini extension named <code>cloakroom</code> in <code>~/.gemini/extensions/cloakroom/</code>. Your <code>settings.json</code> and your own hooks and extensions aren’t touched.</p>
           <div class="cmd-row"><pre><code>cloakroom install gemini</code></pre><button type="button" class="copy">Copy</button></div></li>
         <li><p>Gemini runs the hooks from its next start, in every folder; <code>gemini extensions list</code> shows it, <code>cloakroom doctor</code> too.</p></li>
       </ol>
     </div>
     <div class="tabpanel" role="tabpanel" id="panel-cursor" aria-labelledby="tab-cursor">
-      <p class="tab-note">Mac and Linux (checked against Cursor’s command-line agent 2026.10.22).</p>
+      <p class="tab-note">Cursor’s terminal agent (<code>agent</code>), not the editor. Mac and Linux.</p>
       <ol class="steps">
         <li><p><strong>Install the program by hand.</strong></p>
-          <div class="cmd-row"><pre><code>uv tool install "cloakroom[model,torch,ocr]"</code></pre><button type="button" class="copy">Copy</button></div></li>
+          <div class="cmd-row"><pre><code>uv tool install "cloakroom[model,torch,ocr]"</code></pre><button type="button" class="copy">Copy</button></div>
+          <p class="tab-note">The part in brackets adds the local detection model and reading text in pictures.</p></li>
         <li><p><strong>Run <code>cloakroom install cursor</code>.</strong> It adds nine hooks to <code>~/.cursor/hooks.json</code> and leaves your own hooks alone.</p>
           <div class="cmd-row"><pre><code>cloakroom install cursor</code></pre><button type="button" class="copy">Copy</button></div></li>
-        <li><p>Cursor’s command-line agent (<code>agent</code>) runs them from its next start. The editor reads the same file but hasn’t been checked with Cloakroom yet. <code>cloakroom doctor</code> shows whether they’re installed.</p></li>
+        <li><p>Cursor’s terminal agent (<code>agent</code>) runs them from its next start. The editor reads the same file but hasn’t been checked with Cloakroom yet. <code>cloakroom doctor</code> shows whether they’re installed.</p></li>
       </ol>
     </div>
   </div>

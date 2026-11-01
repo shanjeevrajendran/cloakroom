@@ -1,6 +1,6 @@
 # Cloakroom
 
-> Free and open source. Cloakroom masks API keys, secrets and personal data on your own machine before your AI coding agent sees them. Works with Claude Code, Codex CLI, Gemini CLI and Cursor’s command-line agent.
+> Free and open source. Cloakroom masks API keys, secrets and personal data on your own machine before your AI coding agent sees them. Works with Claude Code, Codex CLI, Gemini CLI and Cursor’s terminal agent.
 
 ## Pages
 
@@ -9,14 +9,14 @@
 - [Commands](https://cloakroom.sh/commands.html)
 - [How it works](https://cloakroom.sh/how-it-works.html)
 - [Security](https://cloakroom.sh/security.html)
+- [Settings](https://cloakroom.sh/settings.html)
 - [Releases](https://cloakroom.sh/releases.html)
 - [Writing](https://cloakroom.sh/writing.html)
-- [Settings and fixes](https://cloakroom.sh/settings.html)
 - [Source code](https://github.com/shanjeevrajendran/cloakroom)
 
 <!-- https://cloakroom.sh/install.html -->
 ## Install Cloakroom
-Works with Claude Code, Codex CLI and Gemini CLI.
+Works with Claude Code, Codex CLI, Gemini CLI and Cursor’s terminal agent.
 
 #### Claude Code
 
@@ -32,9 +32,27 @@ Mac, Windows and Linux. You need Claude Code, installed and signed in.
 - Check it. Open a new terminal window and run:
 
 ```
-cloakroom doctor       # every line should say ok
+cloakroom doctor       # see the example below
 cloakroom dashboard    # opens your alerts in the browser
 ```
+
+Example result:
+
+```
+ok   python: 3.14.7 on Darwin arm64
+ok   version: cloakroom 1.1.0
+ok   mode: full
+ok   vault key: OS secure store
+...   model: loading (the first run downloads it once, about 1 GB; that can take a minute or two)
+ok   model: torch, loaded in 1.3 s, one check 17 ms (first check 704 ms, a one-time warm-up)
+ok   service: up on port 37787, model loaded
+warn  codex: not protected; to protect it: cloakroom install codex
+warn  gemini: not protected; to protect it: cloakroom install gemini
+warn  cursor: not protected; to protect it: cloakroom install cursor
+ok   program: ~/.local/bin/cloakroom
+```
+
+Every line should say ok, except warn lines for agents you have not set up; each line says what to fix.
 
 #### Codex CLI
 
@@ -45,6 +63,7 @@ Mac and Linux (tested with Codex 0.164).
 uv tool install "cloakroom[model,torch,ocr]"
 ```
 
+The part in brackets adds the local detection model and reading text in pictures.
 - Run cloakroom install codex. It adds four hooks to ~/.codex/hooks.json and leaves your own hooks alone.
 
 ```
@@ -62,6 +81,7 @@ Mac and Linux (built against Gemini CLI 0.65).
 uv tool install "cloakroom[model,torch,ocr]"
 ```
 
+The part in brackets adds the local detection model and reading text in pictures.
 - Run cloakroom install gemini. It writes one thing: a Gemini extension named cloakroom in ~/.gemini/extensions/cloakroom/. Your settings.json and your own hooks and extensions aren’t touched.
 
 ```
@@ -72,20 +92,21 @@ cloakroom install gemini
 
 #### Cursor
 
-Mac and Linux (checked against Cursor’s command-line agent 2026.10.22).
+Cursor’s terminal agent (agent), not the editor. Mac and Linux.
 - Install the program by hand.
 
 ```
 uv tool install "cloakroom[model,torch,ocr]"
 ```
 
+The part in brackets adds the local detection model and reading text in pictures.
 - Run cloakroom install cursor. It adds nine hooks to ~/.cursor/hooks.json and leaves your own hooks alone.
 
 ```
 cloakroom install cursor
 ```
 
-- Cursor’s command-line agent (agent) runs them from its next start. The editor reads the same file but hasn’t been checked with Cloakroom yet. cloakroom doctor shows whether they’re installed.
+- Cursor’s terminal agent (agent) runs them from its next start. The editor reads the same file but hasn’t been checked with Cloakroom yet. cloakroom doctor shows whether they’re installed.
 
 ### Pick how you’ll run it
 Easiest: add the plugin (above) and let it install Cloakroom on the next start. It uses uv or pipx if either is installed, otherwise a private Python environment in ~/.cloakroom/venv (needs Python 3.10+). If the install fails, Claude Code says so and it retries after 10 minutes. The table is for installing by hand.
@@ -150,7 +171,8 @@ Blocked prompts, ports, model: FAIL and too much masking: Settings and fixes.
 
 <!-- https://cloakroom.sh/security.html -->
 ## Security model
-Cloakroom’s job is to keep secrets and personal data away from the model, so a way around it is a security bug.
+What Cloakroom stores stays on your machine and is not sent anywhere. The values it hides are encrypted. Its job is to keep secrets and personal data away from the model, so a way around it is a security bug.
+For auditors: vault files are AES-GCM encrypted with a key in the OS secure store; the file log (~/.cloakroom/filelog.bin) is encrypted the same way; the activity log is tamper-evident, not tamper-proof.
 
 ### What is stored
 - The vault
