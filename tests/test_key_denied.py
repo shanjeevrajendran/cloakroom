@@ -27,6 +27,7 @@ def store(monkeypatch):
     monkeypatch.delenv("CLOAKROOM_VAULT_KEY")
     s = FakeStore(deny=True)
     monkeypatch.setattr(crypto, "_secure_store", lambda: s)
+    monkeypatch.setattr(crypto, "_borrowed_home", lambda: False)  # CI may run with a HOME of its own
     return s
 
 

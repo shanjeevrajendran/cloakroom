@@ -203,7 +203,9 @@ def wrap(data: dict, out: dict | None) -> dict | None:
     if not program:
         return hook._deny(NO_PROGRAM)
     shown, ident = str(args.get("command", "")), "r" + secrets.token_urlsafe(11)  # 16 characters; a leading "-" would read as an option
-    wrapper = f"{shlex.quote(program)} cursor-run {ident} {shlex.quote(shown)}"
+    # the shell Cursor runs this in has no CLOAKROOM_* of its own; never the vault key: the agent sees this command
+    env = "".join(f"{k}={shlex.quote(os.environ[k])} " for k in ("CLOAKROOM_HOME", "CLOAKROOM_PORT") if os.environ.get(k))
+    wrapper = f"{'env ' + env if env else ''}{shlex.quote(program)} cursor-run {ident} {shlex.quote(shown)}"
     # no real values: the runner restores placeholders from the session's encrypted vault when it runs
     record = {"session": data.get("session_id", "default"), "cwd": data.get("cwd") or os.getcwd(), "shown": shown,
               "restore": "updatedInput" in h, "created": time.time(), "wrapper": wrapper}

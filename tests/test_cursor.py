@@ -216,7 +216,7 @@ def test_shell_is_wrapped_and_the_record_has_no_real_value(cur, ws):
     assert out["permission"] == "allow" and EMAIL not in json.dumps(out)
     new = out["updated_input"]
     assert new["cwd"] == "" and new["timeout"] == 30000
-    assert re.fullmatch(rf"{PROGRAM} cursor-run \S{{16}} 'grep {ph} notes.txt'", new["command"])
+    assert re.fullmatch(rf"env CLOAKROOM_HOME=\S+ {PROGRAM} cursor-run \S{{16}} 'grep {ph} notes.txt'", new["command"])
     records = list((config.HOME / "cursor-run").glob("*.json"))
     assert len(records) == 1 and EMAIL not in records[0].read_text()
     rec = json.loads(records[0].read_text())
@@ -226,7 +226,7 @@ def test_shell_is_wrapped_and_the_record_has_no_real_value(cur, ws):
 def test_clean_shell_is_wrapped_too(cur):
     from cloakroom import config
     out = shell(cur, "ls -la")
-    assert out["permission"] == "allow" and out["updated_input"]["command"].startswith(f"{PROGRAM} cursor-run ")
+    assert out["permission"] == "allow" and f" {PROGRAM} cursor-run " in out["updated_input"]["command"]
     assert json.loads(next((config.HOME / "cursor-run").glob("*.json")).read_text())["restore"] is False
 
 

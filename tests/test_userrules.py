@@ -83,6 +83,7 @@ def test_locked_keychain_skips_rules_with_a_warning(monkeypatch, capsys):
     userrules.decide(r["id"], "approve")
     monkeypatch.delenv("CLOAKROOM_VAULT_KEY")
     monkeypatch.setattr(crypto, "_secure_store", lambda: _LockedStore())
+    monkeypatch.setattr(crypto, "_borrowed_home", lambda: False)
     crypto._KEY = None
     cfg = config.load()  # no crash
     assert cfg["always"] == []

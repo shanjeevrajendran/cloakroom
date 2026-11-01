@@ -12,6 +12,8 @@ set -euo pipefail
 HERE="$(cd "$(dirname "$0")" && pwd)"
 REPO="$(cd "$HERE/../.." && pwd)"
 OUT="$HERE/out"
+# a per-run vault key: the test never reaches the OS secure store (no Keychain dialog)
+CLOAKROOM_VAULT_KEY="$(openssl rand -base64 32 2>/dev/null || python3 -c 'import base64,secrets;print(base64.b64encode(secrets.token_bytes(32)).decode())')"
 SCAN_ONLY=0; [[ "${1:-}" == "--scan-only" ]] && SCAN_ONLY=1
 for c in claude gitleaks trufflehog; do command -v $c >/dev/null || { echo "missing $c"; exit 2; }; done
 [[ -x "$REPO/.venv/bin/cloakroom" ]] || { echo "missing $REPO/.venv/bin/cloakroom (uv sync first)"; exit 2; }
@@ -33,7 +35,7 @@ run_arm() {  # $1 = with|without
   local plugin=(); [[ "$arm" == with ]] && plugin=(--plugin-dir "$REPO/plugin")
   stop_service
   echo "[$arm] claude -p in $W/proj"
-  (cd "$W/proj" && CLOAKROOM_HOME="$W/cloakroom-home" PATH="$REPO/.venv/bin:$PATH" \
+  (cd "$W/proj" && CLOAKROOM_HOME="$W/cloakroom-home" CLOAKROOM_VAULT_KEY="$CLOAKROOM_VAULT_KEY" PATH="$REPO/.venv/bin:$PATH" \
      claude -p "$PROMPT" ${plugin[@]+"${plugin[@]}"} --setting-sources project \
        --allowedTools "Read,Write,Edit,Bash(./bin/gh-status.sh),Bash(git add:*),Bash(git commit:*),Bash(git status:*),Bash(cat:*)" \
        --output-format json < /dev/null > "$W/result.json" 2> "$W/run.err") || true
