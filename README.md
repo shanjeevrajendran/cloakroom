@@ -145,7 +145,7 @@ else: [Known limits](https://github.com/shanjeevrajendran/cloakroom/blob/main/do
 
 ## Recent releases
 
-- **1.1.0** (unreleased): Cloakroom also protects Cursor's command-line agent, on Mac and Linux: run
+- **1.1.0** (2026-10-31): Cloakroom also protects Cursor's command-line agent, on Mac and Linux: run
   `cloakroom install cursor`. `cloakroom allow` lets a command Cloakroom held run once. See [Cursor](#cursor).
 - **1.0.0** (2026-10-30): the ledger of where your agent sends data (`cloakroom report --destinations`), an opt-in
   approved-sites list (`cloakroom allow-host`), and a hold on a web address or header that carries your email, phone,

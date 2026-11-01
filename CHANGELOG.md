@@ -1,6 +1,10 @@
 # Changelog
 
-## 1.1.0 (unreleased)
+## 1.1.0 (2026-10-31)
+- Detects more keys on their own, without a `token =` label: GitLab, npm, PyPI, DigitalOcean, xAI and Groq tokens, Slack and Discord webhook links, Telegram bot tokens, and PGP private key blocks.
+- Commit, tag and git-notes messages now keep placeholders instead of real values, so a key typed into a commit message is no longer written into history.
+- Cursor: if the git ignore check can't run, the file is treated as ignored, so no masked copy is made of a file Cursor may be hiding.
+- Proxy: a request whose Content-Length is over `proxy_max_mb` is refused with a 503 before its body is read into memory.
 - `max_output_tokens` and similar parameter names are no longer treated as secrets (the keyed-secret rule was matching
   `token` and `pass` inside longer names, which showed up in Codex tool descriptions).
 - Passport numbers after a "Passport:" label are masked by their own rule (rules mode used to catch them only by accident).
