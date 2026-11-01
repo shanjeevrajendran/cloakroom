@@ -84,6 +84,29 @@ def test_password_literal_still_masked(text, value):
     assert _masked(text, value)
 
 
+@pytest.mark.parametrize("text,value", [
+    ('"max_output_tokens": 128000', "128000"),
+    ("max_output_tokens: 128000", "128000"),
+    ("MAX_TOKENS: 128000", "128000"),
+    ("passenger_count: 1234567", "1234567"),
+])
+def test_token_substring_in_a_parameter_name_is_safe(text, value):
+    """keyed-secret used to fire on 'token' inside max_output_tokens (Codex tool descriptions)."""
+    assert not _masked(text, value)
+
+
+@pytest.mark.parametrize("text,value", [
+    ("token = Zq8vT3mW9xK2pL7n", "Zq8vT3mW9xK2pL7n"),
+    ("auth_token: Zq8vT3mW9xK2pL7n", "Zq8vT3mW9xK2pL7n"),
+    ("authtoken=Zq8vT3mW9xK2pL7n", "Zq8vT3mW9xK2pL7n"),
+    ("api_key=hunter2Password99", "hunter2Password99"),
+    ("secretkey=hunter2Password99", "hunter2Password99"),
+    ('"accessToken": "Zq8vT3mW9xK2pL7n"', "Zq8vT3mW9xK2pL7n"),
+])
+def test_real_secret_keys_still_masked_when_token_is_a_segment(text, value):
+    assert _masked(text, value)
+
+
 # 4. AWS documentation ids
 @pytest.mark.parametrize("value", ["111122223333", "arn:aws:kms:us-west-2:111122223333:key/1234abcd-12ab-34cd-56ef-1234567890ab",
                                    "arn:aws:iam::123456789012:role/DeployRole", "11111111-1111-1111-1111-111111111111"])
