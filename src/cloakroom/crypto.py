@@ -3,9 +3,10 @@
 One random 256-bit key per user, kept in the OS secure store through `keyring` (macOS Keychain, Windows Credential
 Manager/DPAPI, Linux Secret Service). Vault files are AES-GCM encrypted with it. Key lookup order:
   1. CLOAKROOM_VAULT_KEY (base64, or 64 hex characters), for CI and headless machines
-  2. the OS secure store
-  3. a key file readable only by you, when no secure store exists (headless Linux, some WSL); `cloakroom doctor`
-     says so. Vaults are never written in plain text.
+  2. the OS secure store, unless HOME is not the account's own home (a test, a kit, a sandbox): the store would
+     answer for the wrong user and macOS would pop a Keychain dialog
+  3. a key file readable only by you, when no secure store exists (headless Linux, some WSL) or HOME is borrowed;
+     `cloakroom doctor` says so. Vaults are never written in plain text.
 A secure store that exists but refuses access (a locked macOS Keychain in an SSH shell) raises KeyUnavailable: a
 new key file then would orphan everything sealed with the stored key. The refusal is remembered in a marker file
 (~/.cloakroom/key-denied, no secret in it) so no process asks again, and the macOS prompt doesn't repeat, until
@@ -54,6 +55,17 @@ def _secure_store():
         return None
 
 
+def _borrowed_home() -> bool:
+    """HOME points somewhere other than this account's home. POSIX only; an unset HOME is not borrowed."""
+    try:
+        import pwd
+        real = pwd.getpwuid(os.getuid()).pw_dir
+    except (ImportError, KeyError):
+        return False
+    home = os.environ.get("HOME")
+    return bool(home) and os.path.realpath(home) != os.path.realpath(real)
+
+
 def _marker():
     return config.HOME / "key-denied"
 
@@ -93,7 +105,7 @@ def key() -> bytes:
     if env:
         _KEY, KEY_SOURCE = _env_key(env.strip()), "environment"
         return _KEY
-    store = _secure_store()
+    store = None if _borrowed_home() else _secure_store()
     if store:
         if denied():  # asked and refused: don't ask again (and don't prompt again) until cleared
             raise KeyUnavailable(DENIED)
