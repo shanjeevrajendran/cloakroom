@@ -155,6 +155,15 @@ def test_git_ignored_file_is_not_redirected(cur, repo):
     assert read(cur, repo / "secret.txt") == {}  # Cursor's own rules decide; beforeReadFile still checks the read
 
 
+def test_check_ignore_failure_counts_as_ignored(monkeypatch, ws):
+    from cloakroom import cursor
+
+    def boom(*a, **k):
+        raise subprocess.TimeoutExpired("git", 2)
+    monkeypatch.setattr(cursor.subprocess, "run", boom)
+    assert cursor._ignored(str(ws / "a.txt"), [str(ws)]) is True  # unsure: no copy of a file Cursor may hide
+
+
 def test_large_file_is_denied(cur, ws):
     f = ws / "big.log"
     f.write_text("x" * (1024 * 1024 + 1))
@@ -279,6 +288,16 @@ def test_runner_restores_placeholders_before_running(cur, ws):
     r = runner(shell(cur, f"grep {ph} notes.txt")["updated_input"]["command"], ws)
     assert r.returncode == 0  # grep found the real value: the placeholder was restored
     assert r.stdout == f"owner: {ph}\n"
+
+
+def test_runner_keeps_placeholders_in_a_commit_message(cur, repo):
+    git(repo, "config", "user.name", "t")
+    git(repo, "config", "user.email", "t@example.com")
+    ph = placeholder(cur)
+    r = runner(shell(cur, f'git commit -q --allow-empty -m "rotate {ph}"')["updated_input"]["command"], repo)
+    assert r.returncode == 0
+    subject = subprocess.run(["git", "-C", str(repo), "log", "-1", "--format=%s"], capture_output=True, text=True).stdout
+    assert EMAIL not in subject and ph in subject
 
 
 def test_runner_never_prints_raw_output_when_masking_fails(cur, ws, monkeypatch, capsys):
