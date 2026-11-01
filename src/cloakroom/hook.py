@@ -425,7 +425,11 @@ def on_post(data: dict) -> dict | None:
     # Encoded output (od -c, xxd, base64, rev...) can carry values the detectors can't read: decode and re-check
     # each text field, and replace only the fields that hit (structural fields must stay as they are).
     # dates are left out: a fragment like "Oct 11 12:16" repeats harmlessly across a file listing or a log
-    known = [v for ph, v in Vault(config.vault_path(session)).by_placeholder.items() if "_DATE_" not in ph]
+    known = {v: ph.split("_")[1] for ph, v in Vault(config.vault_path(session)).by_placeholder.items()
+             if "_DATE_" not in ph}
+    # in the output as typed, a 10-character run counts for keys and numbers (head, cut); an email's or a name's run
+    # sits in plain text the engine already judged ("sam.x@quillmere.net" known, "sam.x@example.com" shown)
+    secrets = [v for v, k in known.items() if k in engine.KNOWN_KINDS]
     cmd = (data.get("tool_input") or {}).get("command", "")
     reverse = bool(re.search(r"\brev\b|\[array\]::Reverse|-join\s*\(.*\[-1", cmd))
     msg = ("[Cloakroom withheld this output: it holds secrets or personal data in an encoded or spaced-out "
@@ -435,7 +439,8 @@ def on_post(data: dict) -> dict | None:
     def check(t):
         if len(t) < 6:
             return t
-        hit = decode.known_value_hit(t, known, as_typed=True)
+        hit = (decode.known_value_hit(t, secrets, as_typed=True)
+               or decode.known_value_hit(t, known, as_typed=True, runs=False))
         for view in ([] if hit else decode.views(t, reverse=reverse)):
             if decode.known_value_hit(view, known) or client.mask(view, session, roots=roots)["masked"]:
                 hit = True

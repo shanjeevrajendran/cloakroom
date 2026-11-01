@@ -79,6 +79,22 @@ def test_clean_bash_output_passes(monkeypatch, capsys):
     assert bash_post("3 files changed, 12 insertions(+)", monkeypatch, capsys) is None
 
 
+def test_example_email_sharing_a_known_emails_name_passes(monkeypatch, capsys):
+    """Graded run 2026-11-01: a known email's local part inside a safe example address read as an encoded copy."""
+    bash_post("owner: sam.fakeperson@quillmere.net", monkeypatch, capsys)
+    assert bash_post("contact: sam.fakeperson@example.com", monkeypatch, capsys, command="echo contact") is None
+
+
+def test_known_key_encoded_or_cut_short_still_never_reaches_codex(monkeypatch, capsys):
+    import base64
+    bash_post(f"TOKEN={KEY}", monkeypatch, capsys)
+    encoded = base64.b64encode(KEY.encode()).decode()
+    out = bash_post(f"TOKEN={encoded}", monkeypatch, capsys, command="base64 .env")
+    assert out["decision"] == "block" and encoded not in out["reason"] and "PII_SECRET_" in out["reason"]
+    out = bash_post(f"token starts {KEY[6:20]}", monkeypatch, capsys, command="cut -c 7-20 .env")
+    assert out["decision"] == "block" and out["reason"].startswith("[Cloakroom withheld this output")
+
+
 def test_mcp_output_is_masked(monkeypatch, capsys):
     resp = {"content": [{"type": "text", "text": f"customer {EMAIL}"}], "isError": False}
     out = codex("post", {"tool_name": "mcp__crm__lookup", "tool_use_id": "c2", "tool_input": {"id": 7},
