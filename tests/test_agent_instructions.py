@@ -60,3 +60,18 @@ def test_dotless_host_address_is_the_known_limit(monkeypatch):
     assert engine.mask(text, mode="rules").text == text
     _model_tags_ids(monkeypatch, text)
     assert engine.detect(text, mode="full")[0] == []
+
+
+def test_cwd_in_environment_context_is_a_path_not_a_url(monkeypatch):
+    """Codex's <cwd>: the model's URL span starts at the tag's '>', which hid the local-path skip."""
+    text = "<environment_context>\n  <cwd>/private/tmp/work/demo-app/proj</cwd>\n</environment_context>"
+    a = text.index(">/private")
+    monkeypatch.setattr(engine, "model_findings", lambda t: [rules.Finding(a, text.index("</cwd>"), "URL", "model:x")])
+    assert engine.detect(text, mode="full")[0] == []
+
+
+def test_username_in_a_tagged_home_path_still_masked(monkeypatch):
+    text = "<cwd>/Users/marisolq/code/demo</cwd>"
+    a = text.index(">/Users")
+    monkeypatch.setattr(engine, "model_findings", lambda t: [rules.Finding(a, text.index("</cwd>"), "URL", "model:x")])
+    assert "marisolq" not in engine.mask(text, mode="full").text

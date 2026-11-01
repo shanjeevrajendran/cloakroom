@@ -235,7 +235,8 @@ def reason(value: str, kind: str, keyed: bool) -> str | None:
         return "public git remote"
     if kind == "PERSON" and BOT_NAME.search(v):
         return "bot account"
-    if kind == "URL" and not re.match(r"^[a-z][a-z0-9+.-]*://", v) and re.match(r"^(?:/|~/|\./|\.\./)", v):
+    # ">": a model span that starts at a tag's end, as in Codex's <cwd>/path</cwd>
+    if kind == "URL" and not re.match(r"^[a-z][a-z0-9+.-]*://", v) and re.match(r"^>?(?:/|~/|\./|\.\./)", v):
         return "local file path"
     if CODE_LOCATION.match(v) and not re.fullmatch(r"\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}(?::\d{2})?", v):
         return "code location"  # (an ISO date-time like 1994-06-18T00:00:00 is not file:line:col)
