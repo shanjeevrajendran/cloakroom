@@ -49,18 +49,18 @@
 <section class="hero page-hero page-hero--short container" aria-labelledby="page-title">
   <h1 id="page-title">Security model</h1>
   <p class="lead">What Cloakroom stores stays on your machine and is not sent anywhere. The values it hides are encrypted. Its job is to keep secrets and personal data away from the model, so a way around it is a security bug.</p>
-  <p class="lead">For auditors: vault files are AES-GCM encrypted with a key in the OS secure store; the file log (<code>~/.cloakroom/filelog.bin</code>) is encrypted the same way; the activity log is tamper-evident, not tamper-proof.</p>
+  <p class="lead">For auditors: vault files (the hidden values) are AES-GCM encrypted with a key in the OS secure store (your system’s password store, such as Keychain); the file log (<code>~/.cloakroom/filelog.bin</code>) is encrypted the same way; the activity log is tamper-evident, not tamper-proof: <code>cloakroom report --verify</code> spots a changed line, but someone who rewrites every later line can hide the change.</p>
 </section>
 
 <section class="sec container" id="stored" aria-labelledby="stored-title">
   <h2 id="stored-title">What is stored</h2>
   <div class="sec-body">
     <dl class="defs">
-      <div><dt>The vault</dt><dd>Values go into the vault, an encrypted file kept per session (AES-GCM, key in the OS secure store).</dd></div>
-      <div><dt>The file log</dt><dd>The log (<code>~/.cloakroom/filelog.bin</code>) is encrypted like the vault and holds no values: they are read back from the file when needed.</dd></div>
-      <div><dt>Your rules</dt><dd>These rules are stored encrypted in <code>~/.cloakroom/rules.bin</code>; the <code>allow</code> list stays yours to edit by hand.</dd></div>
+      <div><dt>The vault</dt><dd>Values go into the vault, an encrypted file kept per session.</dd></div>
+      <div><dt>The file log</dt><dd>A record of where real values were put back into files the agent wrote. The log (<code>~/.cloakroom/filelog.bin</code>) is encrypted like the vault and holds no values: they are read back from the file when needed.</dd></div>
+      <div><dt>Your rules</dt><dd>Rules you make from the dashboard are stored encrypted in <code>~/.cloakroom/rules.bin</code>; the <code>allow</code> list stays yours to edit by hand.</dd></div>
       <div><dt>The activity log</dt><dd>Tamper-evident, not tamper-proof. The activity log keeps no values or text, but it does keep file paths (masked like any output) and the program name of shell commands.</dd></div>
-      <div><dt>Held commands</dt><dd>Only a keyed hash of the held command is stored (<code>~/.cloakroom/held.json</code>).</dd></div>
+      <div><dt>Held commands</dt><dd>Only a keyed hash of the held command is stored (<code>~/.cloakroom/held.json</code>): a fingerprint made with a secret key, not the command itself.</dd></div>
       <div><dt>Keys you hand over</dt><dd>Entries from <code>cloakroom give</code> expire after 24 hours; <code>--forget</code> removes one now.</dd></div>
     </dl>
   </div>
@@ -70,13 +70,13 @@
   <h2 id="where-title">Where</h2>
   <div class="qa">
     <h3>The vault key</h3>
-    <p>Vault files are AES-GCM encrypted; the key lives in the OS secure store (macOS Keychain, Windows Credential Manager, Linux Secret Service), or <code>CLOAKROOM_VAULT_KEY</code>, or a 0600 key file when no store exists (doctor warns).</p>
+    <p>Vault files are AES-GCM encrypted; the key lives in the OS secure store (macOS Keychain, Windows Credential Manager, Linux Secret Service), or <code>CLOAKROOM_VAULT_KEY</code>, or a key file only you can read (permissions 0600) when no store exists (doctor warns).</p>
     <h3>Cloakroom’s own folder</h3>
-    <p>Claude’s own tool calls can’t change <code>~/.cloakroom</code> (writes there, or shell commands naming it, are denied), so it can’t pause Cloakroom or edit its rules.</p>
+    <p>The agent’s own tool calls can’t change <code>~/.cloakroom</code> (writes there, or shell commands naming it, are denied), so it can’t pause Cloakroom or edit its rules.</p>
     <h3>The dashboard</h3>
     <p>The dashboard (<code>cloakroom dashboard</code>) is reachable only on 127.0.0.1, with a one-time sign-in link; restarting the service signs the browser out.</p>
     <h3>Claude Code’s own records</h3>
-    <p>Claude Code’s local session log (<code>~/.claude/projects/...</code>) records the hook’s rewritten tool input, so values put back into a file also appear in that log on your disk. They are not sent to the model.</p>
+    <p>Claude Code’s local session log (<code>~/.claude/projects/...</code>) records the tool input after Cloakroom put the real values back, so those values also appear in that log on your disk. They are not sent to the model.</p>
   </div>
 </section>
 
@@ -84,8 +84,8 @@
   <h2 id="leaves-title">What leaves your machine</h2>
   <div class="sec-body">
     <dl class="defs">
-      <div><dt>The model, once</dt><dd>First run downloads the detection model (PII-Tracer, pinned revision) from Hugging Face; offline machines need it cached first.</dd></div>
-      <div><dt>Sending data</dt><dd>Commands that would send a secret off your machine, or move money, wait for your OK. A web fetch, an MCP tool call or a prompt to a subagent that holds a real value is stopped before it runs.</dd></div>
+      <div><dt>The model, once</dt><dd>First run downloads the AI model that finds names and addresses (PII-Tracer, at one fixed version) from Hugging Face; offline machines need it cached first.</dd></div>
+      <div><dt>Sending data</dt><dd>Commands that would send a secret off your machine, or move money, wait for your OK. A web fetch, an MCP tool call (an add-on tool) or a prompt to a subagent that holds a real value is stopped before it runs.</dd></div>
       <div><dt>Not covered</dt><dd>Codex’s own web search (runs on OpenAI’s servers).</dd></div>
     </dl>
   </div>
@@ -102,7 +102,7 @@
     <h3>Failed commands</h3>
     <p>In Claude Code, the error output of a tool call that fails goes through a hook event that lets a hook add notes but not change the text. So it can’t be masked and may reach the model with a key or personal value in it. Keep keys out of commands that print them.</p>
     <h3>Secrets it has never seen</h3>
-    <p>Disguised copies are computed from values Cloakroom already knows, so a secret it has never seen isn’t caught in any form. Not covered: salted or keyed hashes (HMAC, bcrypt, scrypt), other hashes (SHA-512, CRC), base32, upper/lower case changes of a key, and values shorter than 8 characters.</p>
+    <p>Cloakroom looks for disguised copies (encoded or hashed) of values it already knows, so a secret it has never seen isn’t caught in any form. Not covered: salted or keyed hashes (HMAC, bcrypt, scrypt), other hashes (SHA-512, CRC), base32, upper/lower case changes of a key, and values shorter than 8 characters.</p>
     <h3>Keys written by scripts</h3>
     <p>A key split into pieces, or one with no known pattern and not seen earlier in the session, isn’t caught when a file is written.</p>
     <h3>Money moved by programs</h3>

@@ -78,7 +78,7 @@ warn  codex: not protected; to protect it: cloakroom install codex
 warn  gemini: not protected; to protect it: cloakroom install gemini
 warn  cursor: not protected; to protect it: cloakroom install cursor
 ok   program: ~/.local/bin/cloakroom</code></pre>
-          <p>Every line should say <code>ok</code>, except <code>warn</code> lines for agents you have not set up; each line says what to fix.</p></li>
+          <p>Every line should say <code>ok</code>, except <code>warn</code> lines for agents you have not set up; each line says what to fix. The <code>vault key</code> line: the vault is Cloakroom’s encrypted file of the real values it hid, and “OS secure store” means its key sits in your system’s password store (Keychain on a Mac).</p></li>
       </ol>
     </div>
     <div class="tabpanel" role="tabpanel" id="panel-codex" aria-labelledby="tab-codex">
@@ -86,8 +86,8 @@ ok   program: ~/.local/bin/cloakroom</code></pre>
       <ol class="steps">
         <li><p><strong>Install the program by hand.</strong></p>
           <div class="cmd-row"><pre><code>uv tool install "cloakroom[model,torch,ocr]"</code></pre><button type="button" class="copy">Copy</button></div>
-          <p class="tab-note">The part in brackets adds the local detection model and reading text in pictures.</p></li>
-        <li><p><strong>Run <code>cloakroom install codex</code>.</strong> It adds four hooks to <code>~/.codex/hooks.json</code> and leaves your own hooks alone.</p>
+          <p class="tab-note">The part in brackets adds the AI model that finds names and addresses on your machine, and reading text in screenshots and scans.</p></li>
+        <li><p><strong>Run <code>cloakroom install codex</code>.</strong> It adds four hooks (small checks Codex runs before and after each action) to <code>~/.codex/hooks.json</code> and leaves your own hooks alone.</p>
           <div class="cmd-row"><pre><code>cloakroom install codex</code></pre><button type="button" class="copy">Copy</button></div></li>
         <li><p>Start Codex (<code>codex</code>), type <code>/hooks</code>, open each of the four Cloakroom hooks and trust it. Until you do, Codex skips them. <code>cloakroom doctor</code> shows whether they’re installed.</p></li>
       </ol>
@@ -97,10 +97,10 @@ ok   program: ~/.local/bin/cloakroom</code></pre>
       <ol class="steps">
         <li><p><strong>Install the program by hand.</strong></p>
           <div class="cmd-row"><pre><code>uv tool install "cloakroom[model,torch,ocr]"</code></pre><button type="button" class="copy">Copy</button></div>
-          <p class="tab-note">The part in brackets adds the local detection model and reading text in pictures.</p></li>
+          <p class="tab-note">The part in brackets adds the AI model that finds names and addresses on your machine, and reading text in screenshots and scans.</p></li>
         <li><p><strong>Run <code>cloakroom install gemini</code>.</strong> It writes one thing: a Gemini extension named <code>cloakroom</code> in <code>~/.gemini/extensions/cloakroom/</code>. Your <code>settings.json</code> and your own hooks and extensions aren’t touched.</p>
           <div class="cmd-row"><pre><code>cloakroom install gemini</code></pre><button type="button" class="copy">Copy</button></div></li>
-        <li><p>Gemini runs the hooks from its next start, in every folder; <code>gemini extensions list</code> shows it, <code>cloakroom doctor</code> too.</p></li>
+        <li><p>Gemini runs the hooks (small checks before and after each action) from its next start, in every folder; <code>gemini extensions list</code> shows it, <code>cloakroom doctor</code> too.</p></li>
       </ol>
     </div>
     <div class="tabpanel" role="tabpanel" id="panel-cursor" aria-labelledby="tab-cursor">
@@ -108,8 +108,8 @@ ok   program: ~/.local/bin/cloakroom</code></pre>
       <ol class="steps">
         <li><p><strong>Install the program by hand.</strong></p>
           <div class="cmd-row"><pre><code>uv tool install "cloakroom[model,torch,ocr]"</code></pre><button type="button" class="copy">Copy</button></div>
-          <p class="tab-note">The part in brackets adds the local detection model and reading text in pictures.</p></li>
-        <li><p><strong>Run <code>cloakroom install cursor</code>.</strong> It adds nine hooks to <code>~/.cursor/hooks.json</code> and leaves your own hooks alone.</p>
+          <p class="tab-note">The part in brackets adds the AI model that finds names and addresses on your machine, and reading text in screenshots and scans.</p></li>
+        <li><p><strong>Run <code>cloakroom install cursor</code>.</strong> It adds nine hooks (small checks the agent runs before and after each action) to <code>~/.cursor/hooks.json</code> and leaves your own hooks alone.</p>
           <div class="cmd-row"><pre><code>cloakroom install cursor</code></pre><button type="button" class="copy">Copy</button></div></li>
         <li><p>Cursor’s terminal agent (<code>agent</code>) runs them from its next start. The editor reads the same file but hasn’t been checked with Cloakroom yet. <code>cloakroom doctor</code> shows whether they’re installed.</p></li>
       </ol>
@@ -125,9 +125,9 @@ ok   program: ~/.local/bin/cloakroom</code></pre>
       <table>
         <thead><tr><th scope="col">Your machine</th><th scope="col">Install</th><th scope="col">What you get</th></tr></thead>
         <tbody>
-          <tr><td>Apple Silicon Mac, or an NVIDIA GPU</td><td><code>uv tool install "cloakroom[model,torch]"</code></td><td>Full mode on the GPU, about 20 ms per check</td></tr>
-          <tr><td>Any other machine (Intel Mac, most Windows and Linux)</td><td><code>uv tool install "cloakroom[model,torch]"</code>, then once: <code>cloakroom export-onnx</code></td><td>Full mode on the CPU. Before the export it works but is slow (about 0.5 s per check); after it, about 60 ms on a modern CPU</td></tr>
-          <tr><td>Just trying it, or a CI box</td><td><code>uv tool install cloakroom</code> and <code>CLOAKROOM_MODE=rules</code></td><td>Rules only: instant, no model download, but misses names and free-text personal data</td></tr>
+          <tr><td>Apple Silicon Mac, or an NVIDIA GPU</td><td><code>uv tool install "cloakroom[model,torch]"</code></td><td>Full mode (keys plus names and addresses) on the GPU, about 20 ms per check</td></tr>
+          <tr><td>Any other machine (Intel Mac, most Windows and Linux)</td><td><code>uv tool install "cloakroom[model,torch]"</code>, then once: <code>cloakroom export-onnx</code> (saves a copy of the model that runs fast on a CPU)</td><td>Full mode on the CPU. Before the export it works but is slow (about 0.5 s per check); after it, about 60 ms on a modern CPU</td></tr>
+          <tr><td>Just trying it, or a CI box</td><td><code>uv tool install cloakroom</code> and <code>CLOAKROOM_MODE=rules</code></td><td>Rules only: instant, no model download, but misses names and personal data in ordinary sentences</td></tr>
         </tbody>
       </table>
     </div>
@@ -145,7 +145,7 @@ claude plugin install cloakroom@cloakroom --scope local</code></pre>
     <p>The same engine works on any file or pipe, which is handy for checking what it would do:</p>
 <pre class="cmd"><code>cloakroom check config.py        <span class="c"># what would be masked, by kind; never prints the values</span>
 cloakroom explain config.py      <span class="c"># every finding with the rule that found it, and what was skipped as safe</span>
-cloakroom mask config.py         <span class="c"># the masked text, as Claude would see it</span>
+cloakroom mask config.py         <span class="c"># the masked text, as the agent would see it</span>
 cat app.log | cloakroom check -  <span class="c"># read from stdin</span>
 cloakroom check --mode rules .env</code></pre>
     <p>Other commands: <a href="commands.html">Commands</a>.</p>
@@ -159,7 +159,7 @@ cloakroom check --mode rules .env</code></pre>
 uv tool install cloakroom
 CLOAKROOM_MODE=rules</code></pre>
     <dl class="defs">
-      <div><dt>Vault key</dt><dd>The vault key lives in the OS secure store (Keychain, Credential Manager, Secret Service). On a machine without one, set <code>CLOAKROOM_VAULT_KEY</code> (a 256-bit key, base64 or 64 hex characters), or Cloakroom falls back to a key file readable only by you, and <code>doctor</code> says so.</dd></div>
+      <div><dt>Vault key</dt><dd>The vault is Cloakroom’s encrypted file of the real values it hid. Its key lives in your system’s password store (Keychain, Credential Manager, Secret Service). On a machine without one, set <code>CLOAKROOM_VAULT_KEY</code> (a 256-bit key, base64 or 64 hex characters), or Cloakroom falls back to a key file readable only by you, and <code>doctor</code> says so.</dd></div>
       <div><dt>Dry run</dt><dd><code>CLOAKROOM_DRY_RUN=1</code> lets everything through and logs what Cloakroom would have done to <code>~/.cloakroom/dry-run.log</code>. Useful for trying it on a real project before trusting it.</dd></div>
       <div><dt>Separate homes</dt><dd><code>CLOAKROOM_HOME</code> moves the config, vault and model files; <code>CLOAKROOM_PORT</code> moves the local service (default 37787).</dd></div>
     </dl>
@@ -176,7 +176,7 @@ CLOAKROOM_MODE=rules</code></pre>
     <h3>A Linux machine without curl</h3>
     <p>When neither uv nor pipx is there, Cloakroom fetches uv, which needs <code>curl</code> or <code>wget</code>. If a Linux machine has neither, Cloakroom tells you the steps: <code>sudo apt install curl</code> (Ubuntu/Debian) or <code>sudo dnf install curl</code> (Fedora/RHEL), then restart Claude Code.</p>
     <h3>Intel Mac</h3>
-    <p>Only the pattern rules run, so keys, cards and ID numbers are caught but most names and addresses are not. The detection model for names and addresses needs PyTorch or ONNX Runtime, and neither is built for Intel Macs.</p>
+    <p>Only the pattern rules run, so keys, cards and ID numbers are caught but most names and addresses are not. The AI model for names and addresses needs PyTorch or ONNX Runtime, and neither is built for Intel Macs.</p>
     <h3>More fixes</h3>
     <p>Blocked prompts, ports, <code>model: FAIL</code> and too much masking: <a href="settings.html">Settings and fixes</a>.</p>
   </div>

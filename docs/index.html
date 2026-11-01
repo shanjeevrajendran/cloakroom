@@ -32,16 +32,7 @@
 <link rel="stylesheet" href="style.css">
 <script>document.documentElement.classList.add('js')</script>
 <style>
-/* home hero: compact, so the before/after example shares the first screen */
-.hero { min-height: 0; padding-block: var(--space-xl) var(--space-lg); row-gap: var(--space-md); }
-.hero h1 { font-size: var(--text-3xl); }
-.hero .aud, .hero .lead { grid-column: 1 / span 9; }
-.compare { padding-top: var(--space-xl); }
-.hero .tabpanel { padding: var(--space-md); }
-.hero .cmd-row pre { font-size: var(--text-md); }
-.tab-note--after { margin: var(--space-sm) 0 0; }
-.btn--primary { background: var(--color-accent); border-color: var(--color-accent); color: var(--color-accent-ink); }
-.btn--primary:hover { background: var(--color-ink); border-color: var(--color-ink); color: var(--color-accent-ink); }
+/* home: three feature cards, two across */
 .feats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .feat:nth-child(3n + 1) { border-left: 0; padding-left: 0; }
 .feat:nth-child(2) { border-left: var(--rule-hair) solid var(--color-rule); padding-left: var(--space-lg); }
@@ -75,7 +66,6 @@
 <div class="top container">
 <section class="hero" id="top">
   <h1>Keeps your secrets out of AI coding agents</h1>
-  <p class="aud">For developers who use an AI coding tool in a terminal: Claude Code, Codex CLI, Gemini CLI or Cursor’s terminal agent. It does not cover browser chats or the Cursor editor.</p>
   <p class="lead">Cloakroom swaps your secrets and personal data for placeholders before your AI coding agent sees them, and puts the real values back in the files it writes.</p>
   <div class="tabs" data-tabs>
     <div class="tablist" role="tablist" aria-label="Install for your agent">
@@ -93,24 +83,23 @@
       <p class="tab-note">Mac and Linux. In a terminal:</p>
       <div class="cmd-row"><pre><code>uv tool install "cloakroom[model,torch,ocr]"
 cloakroom install codex</code></pre><button type="button" class="copy">Copy</button></div>
-      <p class="tab-note tab-note--after">The part in brackets adds the local detection model and reading text in pictures.</p>
+      <p class="tab-note">The part in brackets adds the AI model that finds names and addresses on your machine, and reading text in screenshots and scans.</p>
     </div>
     <div class="tabpanel" role="tabpanel" id="panel-gemini" aria-labelledby="tab-gemini">
       <p class="tab-note">Mac and Linux. In a terminal:</p>
       <div class="cmd-row"><pre><code>uv tool install "cloakroom[model,torch,ocr]"
 cloakroom install gemini</code></pre><button type="button" class="copy">Copy</button></div>
-      <p class="tab-note tab-note--after">The part in brackets adds the local detection model and reading text in pictures.</p>
+      <p class="tab-note">The part in brackets adds the AI model that finds names and addresses on your machine, and reading text in screenshots and scans.</p>
     </div>
     <div class="tabpanel" role="tabpanel" id="panel-cursor" aria-labelledby="tab-cursor">
       <p class="tab-note">Cursor’s terminal agent (<code>agent</code>), not the editor. Mac and Linux.</p>
       <div class="cmd-row"><pre><code>uv tool install "cloakroom[model,torch,ocr]"
 cloakroom install cursor</code></pre><button type="button" class="copy">Copy</button></div>
-      <p class="tab-note tab-note--after">The part in brackets adds the local detection model and reading text in pictures.</p>
+      <p class="tab-note">The part in brackets adds the AI model that finds names and addresses on your machine, and reading text in screenshots and scans.</p>
     </div>
   </div>
   <p class="actions">
-    <a class="btn btn--primary" href="install.html">Install</a>
-    <a class="btn btn--quiet" href="https://github.com/shanjeevrajendran/cloakroom">Star on GitHub</a>
+    <a class="btn" href="https://github.com/shanjeevrajendran/cloakroom">Star on GitHub</a>
     <a class="btn btn--quiet" href="https://www.youtube.com/shorts/U9lN4emgeE0">40-second demo (Claude Code)</a>
   </p>
 </section>
@@ -127,7 +116,8 @@ cloakroom install cursor</code></pre><button type="button" class="copy">Copy</bu
 <pre><code><span class="ln"><mark class="ph">PII_PERSON_1</mark> called about a double charge. Reach her at <mark class="ph">PII_EMAIL_1</mark>, <mark class="ph">PII_ADDRESS_1</mark>.</span><span class="ln">DATABASE_URL=postgres://admin:<mark class="ph">PII_SECRET_1</mark>@10.0.4.12/prod</span></code></pre>
     </figure>
   </div>
-  <p class="note">A placeholder is a label like PII_PERSON_1. The AI works with the label; the real value never leaves your machine. First start downloads the detection model once (about 1 GB on a Mac, up to about 4 GB elsewhere). After that, nothing leaves your machine.</p>
+  <p class="note">Secrets means API keys, passwords and tokens. A placeholder is a label like PII_PERSON_1 (PII is short for personal data). The agent works with the label; the real value stays on your machine.</p>
+  <p class="note">The first start downloads a small AI model once, to spot names and addresses (about 1 GB on a Mac, up to about 4 GB elsewhere). After that, nothing leaves your machine.</p>
   <p class="note">The agent can still do the job. It knows there’s a person, an email and a password, and where each one sits. It just doesn’t know the values.</p>
 </section>
 </div>
@@ -136,7 +126,7 @@ cloakroom install cursor</code></pre><button type="button" class="copy">Copy</bu
   <div class="feats">
   <article class="feat">
     <h3>Hides your data before the agent sees it</h3>
-    <p>Keys and passwords with a known pattern, card and ID numbers, and names, emails, addresses and birth dates in ordinary text. A small AI model on your machine finds the ones with no fixed pattern.</p>
+    <p>Keys and passwords with a known pattern, card and ID numbers, and names, emails, addresses and birth dates in ordinary sentences. A small AI model on your machine finds the ones with no fixed pattern.</p>
   </article>
   <article class="feat">
     <h3>Puts the real values back in files it writes</h3>
@@ -145,7 +135,7 @@ cloakroom install cursor</code></pre><button type="button" class="copy">Copy</bu
   <article class="feat feat--lead">
     <div class="feat-text">
       <h3>Learns from your corrections</h3>
-      <p>When it masks something harmless (a false alarm), mark it once in the dashboard and a rule stops it next time. The detection model itself never changes. Your labels become rules that run before it.</p>
+      <p>When it hides something harmless (a false alarm), mark it once in the dashboard and a rule stops it next time. The AI model itself never changes. Your labels become rules that run before it.</p>
     </div>
     <img src="https://raw.githubusercontent.com/shanjeevrajendran/cloakroom/main/assets/dashboard-preview.png" width="2800" height="2000" loading="lazy" decoding="async" alt="The Cloakroom dashboard: a list of recent alerts, each showing the tool, the file and what was masked, with labels like Correct, To review and Missed something, and a panel that turns your labels into suggested rules to approve or dismiss.">
   </article>
@@ -162,19 +152,24 @@ cloakroom install cursor</code></pre><button type="button" class="copy">Copy</bu
   <h2 id="faq-title">Common questions</h2>
   <div class="qa">
   <h3>Does Cloakroom send my data anywhere?</h3>
-  <p>No. It downloads the detection model once from Hugging Face, and everything else runs on your own machine.</p>
+  <p>No. It downloads its AI model once from Hugging Face, and everything else runs on your own machine.</p>
   <h3>What does it mask?</h3>
-  <p>API keys, secrets and personal data such as names, emails and addresses. Scanned pages and photos are read on your machine and masked like any other file.</p>
+  <p>API keys, passwords, tokens and personal data such as names, emails and addresses. Text in scanned pages and photos is read on your machine and hidden like any other file.</p>
   <h3>Does the agent still work normally?</h3>
-  <p>Yes. The agent works with placeholders like PII_PERSON_1, and the real values are put back, locally, in the files Claude writes.</p>
+  <p>Yes. The agent works with placeholders like PII_PERSON_1, and the real values are put back, locally, in the files the agent writes.</p>
   <h3>What happens when my prompt contains a secret?</h3>
-  <p>A prompt can be blocked but not rewritten, so Cloakroom stops it and tells you what it found. Put the detail in a file and ask Claude to read it instead.</p>
+  <p>Cloakroom can stop a prompt but can’t edit it, so it stops it and tells you what it found. Put the detail in a file and ask the agent to read it instead.</p>
   <h3>Does Cloakroom work with Codex, Gemini CLI or Cursor?</h3>
   <p>Yes, on Mac and Linux: run cloakroom install codex, cloakroom install gemini or cloakroom install cursor (Cursor’s terminal agent; the editor isn’t checked yet). Claude Code works on Mac, Linux and Windows.</p>
   <h3>What is stored and what leaves my machine?</h3>
   <p>The <a href="security.html">Security model</a> lists what is stored, where, what leaves your machine and what it cannot catch.</p>
   <h3>What doesn't it protect?</h3>
-  <p>It stops accidental leaks, like a key in a file the AI happened to open. It isn’t a sandbox that walls the AI off. Out of scope: hidden instructions in a file (a prompt injection) that trick the AI into leaking data piece by piece; what you type into a prompt, which Cloakroom can stop but not rewrite; and Claude Code’s own logs on your disk.</p>
+  <p>It stops accidental leaks, like a key in a file the agent happened to open. It isn’t a sandbox that walls the agent off. Out of scope:</p>
+  <ul>
+    <li>hidden instructions in a file (a prompt injection) that trick the agent into leaking data piece by piece</li>
+    <li>what you type into a prompt, which Cloakroom can stop but not edit</li>
+    <li>Claude Code’s own logs on your disk</li>
+  </ul>
   </div>
 </section>
 
@@ -186,7 +181,7 @@ cloakroom install cursor</code></pre><button type="button" class="copy">Copy</bu
   <p>Claude Code lets a plugin run hooks: small checks before and after every action Claude takes, such as reading a file or running a command. Cloakroom runs in those hooks. When Claude reads a file or runs a command, the output goes through Cloakroom first. It looks for:</p>
   <ul>
     <li>secrets with a known shape (cloud keys, tokens, private keys, passwords in URLs and config lines)</li>
-    <li>numbers with a built-in check digit (cards, IBANs, SSNs)</li>
+    <li>numbers with a built-in check digit (cards, IBAN bank account numbers, US Social Security numbers)</li>
     <li>personal data in ordinary text (names, emails, addresses, birth dates), found by a small AI model that runs on your machine</li>
   </ul>
   <p>Each value it finds is swapped for a placeholder. Here’s a support note and a config line, on disk and as Claude gets them:</p>

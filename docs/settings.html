@@ -78,11 +78,11 @@
           <tr><td>allow_images</td><td data-label="Where"><code>config.json</code></td><td data-label="Default"><code>false</code></td><td data-label="Values"><code>true</code> lets pictures from Read through unchecked, with a warning (by default they are held back)</td></tr>
           <tr><td>port</td><td data-label="Where"><code>config.json</code> <code>port</code>, <code>CLOAKROOM_PORT</code></td><td data-label="Default"><code>37787</code></td><td data-label="Values">any free local port</td></tr>
           <tr><td>backend</td><td data-label="Where"><code>CLOAKROOM_BACKEND</code></td><td data-label="Default"><code>auto</code></td><td data-label="Values"><code>auto</code>, <code>torch</code>, <code>onnx</code></td></tr>
-          <tr><td>ONNX variant</td><td data-label="Where"><code>CLOAKROOM_ONNX</code></td><td data-label="Default"><code>fp32</code></td><td data-label="Values"><code>fp32</code>, <code>int8</code></td></tr>
+          <tr><td>ONNX variant (CPU model format)</td><td data-label="Where"><code>CLOAKROOM_ONNX</code></td><td data-label="Default"><code>fp32</code></td><td data-label="Values"><code>fp32</code>, <code>int8</code></td></tr>
           <tr><td>ONNX folder</td><td data-label="Where"><code>CLOAKROOM_ONNX_DIR</code></td><td data-label="Default"><code>~/.cloakroom/onnx/&lt;model version&gt;</code></td><td data-label="Values">a path</td></tr>
           <tr><td>home</td><td data-label="Where"><code>CLOAKROOM_HOME</code></td><td data-label="Default"><code>~/.cloakroom</code></td><td data-label="Values">a path</td></tr>
-          <tr><td>vault key</td><td data-label="Where"><code>CLOAKROOM_VAULT_KEY</code></td><td data-label="Default">OS secure store</td><td data-label="Values">256-bit key, base64 or hex</td></tr>
-          <tr><td>dry run</td><td data-label="Where"><code>CLOAKROOM_DRY_RUN</code></td><td data-label="Default">off</td><td data-label="Values">any value turns it on</td></tr>
+          <tr><td>vault key</td><td data-label="Where"><code>CLOAKROOM_VAULT_KEY</code></td><td data-label="Default">OS secure store (your system’s password store)</td><td data-label="Values">256-bit key, base64 or hex; it locks the vault, the encrypted file of hidden values</td></tr>
+          <tr><td>dry run</td><td data-label="Where"><code>CLOAKROOM_DRY_RUN</code></td><td data-label="Default">off</td><td data-label="Values">any value turns it on: everything goes through and is only logged</td></tr>
         </tbody>
       </table>
     </div>

@@ -55,6 +55,7 @@
   <h2 id="trip-title">In short</h2>
   <div class="sec-body">
     <p>Every time the AI reads a file, runs a command or uses an add-on, Cloakroom checks what goes to the AI and swaps real values for placeholders. When the AI writes or runs something that holds a placeholder, Cloakroom puts the real value back on your machine. Commands that would send a secret off your machine, or move money, wait for your OK.</p>
+    <p>Words used below: hooks are small checks the agent runs before and after each action (a “tool call”). PII is personal data such as names, emails and addresses. MCP tools are add-ons that give the agent extra abilities, such as a browser. OCR reads text out of pictures. The vault is an encrypted file on your machine that holds the real values for one session.</p>
 <pre class="cmd diagram" aria-label="Diagram: a file read goes through Cloakroom, the model sees placeholders, and the real value is put back in the file on disk"><code>  Claude Code reads a file or runs a tool
         |   "Nadia Petrov called about..."    sk_live_51Hx9Q...
         v
@@ -72,7 +73,6 @@
         |
         v
   reply.md on your disk: "Hi Nadia Petrov,"</code></pre>
-    <p>Hooks are small checks the agent runs before and after each action (a “tool call”). PII is personal data such as names, emails and addresses. MCP tools are add-ons that give the AI extra abilities, such as a browser. OCR reads text out of pictures.</p>
   </div>
 </section>
 
@@ -80,16 +80,16 @@
   <h2 id="modes-title">The two modes</h2>
   <div class="sec-body">
     <dl class="defs defs--2">
-      <div><dt>Full (the default)</dt><dd>Runs pattern rules and a local detection model (PII-Tracer). It catches keys, passwords, card numbers, government IDs, and also names, addresses and other personal details written as plain text.</dd></div>
-      <div><dt>Rules</dt><dd>Runs the pattern rules only. It still catches keys with a known shape (AWS, GitHub, Stripe, Slack, OpenAI, Google, JWTs, private keys), checksummed numbers (cards, IBANs, SSNs) and emails or names that sit next to obvious context, but it misses most free-text personal data. Use it when you can’t install the model, or when you only care about secrets.</dd></div>
+      <div><dt>Full (the default)</dt><dd>Runs pattern rules and an AI model on your machine (PII-Tracer). It catches keys, passwords, card numbers, government IDs, and also names, addresses and other personal details written as plain text.</dd></div>
+      <div><dt>Rules</dt><dd>Runs the pattern rules only. It still catches keys with a known shape (AWS, GitHub, Stripe, Slack, OpenAI, Google, JWT login tokens, private keys), numbers with a built-in check digit (cards, IBANs, SSNs) and emails or names next to an obvious label, but it misses most personal data in ordinary sentences. Use it when you can’t install the model, or when you only care about secrets.</dd></div>
     </dl>
     <p>Set the mode for everything in <code>~/.cloakroom/config.json</code>, or for one shell with <code>CLOAKROOM_MODE=rules</code>, or for one command with <code>--mode rules</code>.</p>
 <pre class="cmd"><code>{ "mode": "rules" }</code></pre>
     <h3>Backends (full mode only)</h3>
-    <p><code>CLOAKROOM_BACKEND</code> picks how the model runs. The default, <code>auto</code>, uses PyTorch when there’s a GPU (Apple Silicon or CUDA), otherwise the ONNX export if you’ve made one, otherwise PyTorch on the CPU.</p>
+    <p><code>CLOAKROOM_BACKEND</code> picks how the model runs. The default, <code>auto</code>, uses PyTorch when there’s a GPU (Apple Silicon or an NVIDIA card with CUDA), otherwise the ONNX export if you’ve made one, otherwise PyTorch on the CPU. ONNX is a model format that runs fast on a plain CPU.</p>
     <ul class="plain">
       <li><code>cloakroom export-onnx</code> writes the CPU model under <code>~/.cloakroom/onnx/</code>. It needs PyTorch once and takes a few minutes (about 4 on a 2-core cloud machine).</li>
-      <li><code>CLOAKROOM_ONNX=int8</code> uses a smaller quantized export: a little faster, a few more false alarms.</li>
+      <li><code>CLOAKROOM_ONNX=int8</code> uses a smaller, lower-precision export: a little faster, a few more false alarms.</li>
       <li><code>CLOAKROOM_BACKEND=torch</code> or <code>onnx</code> forces one.</li>
     </ul>
     <p><code>cloakroom doctor</code> prints the backend in use and how long one check takes.</p>
@@ -100,25 +100,25 @@
   <h2 id="steps-title">Each step</h2>
   <div class="qa">
     <h3>Hide</h3>
-    <p>A check before each action (a “hook”) on every tool input and tool output runs the detectors (a prompt with sensitive data is blocked instead, since prompts can’t be rewritten): pattern rules for secrets with known shapes, checksummed personal data, context rules, and the PII-Tracer model for names, addresses and other free-text personal data. A value found once is masked everywhere it repeats.</p>
+    <p>A hook checks what goes into each tool and what comes back out. It runs pattern rules for secrets with known shapes, numbers with a check digit, rules that read the words around a value, and the PII-Tracer model for names, addresses and other personal data in sentences. A prompt with sensitive data is blocked instead, since a prompt can’t be rewritten. A value found once is masked everywhere it repeats.</p>
     <h3>Filter</h3>
-    <p>A known-safe filter leaves harmless look-alikes alone, such as documented examples: published test cards and keys, sandbox IDs, reserved domains, bot and role mailboxes, loopback addresses, UUIDs and hashes, redaction markers, filler placeholders (<code>AC000…</code>, <code>sk-...</code>), standard numbers after RFC / ISO / ICAO / IEEE / PEP, and default dates (1970-01-01, 1900-01-01).</p>
+    <p>A known-safe filter leaves harmless look-alikes alone, such as documented examples: published test cards and keys, IDs from test (sandbox) accounts, reserved domains like <code>example.com</code>, bot and role mailboxes (<code>noreply@</code>, <code>support@</code>), loopback addresses (<code>127.0.0.1</code>), UUIDs and hashes, text that already hides a value (<code>[REDACTED]</code>, <code>***</code>), filler placeholders (<code>AC000…</code>, <code>sk-...</code>), standard numbers after RFC / ISO / ICAO / IEEE / PEP, and default dates (1970-01-01, 1900-01-01).</p>
     <h3>Pictures</h3>
-    <p>PDFs become their text layer; scans, Read pictures and images in add-on tool results are read on your machine (reading text in pictures, the <code>ocr</code> extra) and only the masked text goes to Claude. Without it they are held back.</p>
+    <p>PDFs become their text. Scans, pictures the agent opens and images in add-on tool results are read on your machine (OCR, the <code>ocr</code> extra), and only the masked text goes to the agent. Without the extra they are held back.</p>
     <h3>Put back (restore)</h3>
-    <p>Values go into the vault, an encrypted file kept per session (AES-GCM, key in the OS secure store). When Claude writes a file or runs a command with a placeholder, the real value is put back locally. The model never sees it.</p>
+    <p>Values go into the vault. It is locked with AES-GCM, a standard encryption method, and its key sits in your system’s password store (Keychain on a Mac). When the agent writes a file or runs a command with a placeholder, the real value is put back locally. The AI never sees it.</p>
     <h3>Placeholders that can’t be guessed</h3>
-    <p>A placeholder is <code>PII_&lt;KIND&gt;_&lt;n&gt;_&lt;tag&gt;</code>. A value comes back only when the tag checks out and the placeholder is in this session’s vault. Anything else in placeholder shape stays as text. Three refused guesses in one session show you one line.</p>
-    <h3>Files Claude wrote stay masked</h3>
+    <p>A placeholder is <code>PII_&lt;KIND&gt;_&lt;n&gt;_&lt;tag&gt;</code>. The tag is a short code signed with a key from the vault, so it can’t be guessed. A value comes back only when the tag checks out and the placeholder is in this session’s vault. Anything else in placeholder shape stays as text. Three refused guesses in one session show you one line.</p>
+    <h3>Files the agent wrote stay masked</h3>
     <p>When real values are put back into a file, the hook records per file its path, its SHA-256, size and time, and per value the byte position, the value’s SHA-256, kind and placeholder. The log (<code>~/.cloakroom/filelog.bin</code>) is encrypted like the vault and holds no values: they are read back from the file when needed.</p>
     <h3>Encoded dumps and secrets</h3>
-    <p><code>od</code>, <code>xxd</code>, <code>base64</code> and spaced-out output are turned back into text and checked; a hit withholds the output (it isn’t passed on). Each secret already in the session vault is also looked for in its encoded forms (base64, URL-encoded and JSON-escaped), and as an MD5, SHA-1 or SHA-256 hash, as hex, and reversed.</p>
+    <p><code>od</code>, <code>xxd</code>, <code>base64</code> and spaced-out output are turned back into text and checked; a hit holds the output back (it isn’t passed on). Each secret already in the session vault is also looked for in its encoded forms (base64, URL-encoded and JSON-escaped), and as an MD5, SHA-1 or SHA-256 hash, as hex, and reversed.</p>
     <h3>Sending-data hold</h3>
-    <p>Before a shell command runs, Cloakroom checks whether it can send data off the machine. If it does and it holds a known secret, a key the rules recognise, or a literal token of 16+ characters in a credential header, the command is denied. To send it anyway, type <code>cr: allow</code> as your prompt (Claude never sees it), then ask Claude to run the same command again: it passes once, within 10 minutes.</p>
+    <p>Before a shell command runs, Cloakroom checks whether it can send data off the machine. If it does and it holds a known secret, a key the rules recognise, or a literal token of 16+ characters in a login header (such as <code>Authorization</code>), the command is denied. To send it anyway, type <code>cr: allow</code> as your prompt (the agent never sees it), then ask the agent to run the same command again: it passes once, within 10 minutes.</p>
     <h3>Money-movement hold</h3>
-    <p>Before any tool call runs, Cloakroom checks whether it would move money: a write to a listed payment endpoint, a payment CLI command, or an add-on (MCP) tool whose name carries a money verb. Such a call is held with one line naming the endpoint or tool; <code>cr: allow</code> lets the same call run once.</p>
+    <p>Before any tool call runs, Cloakroom checks whether it would move money: a write to a listed payment endpoint, a payment CLI command, or an MCP tool whose name carries a money verb (such as <code>pay</code> or <code>create_payout</code>). Such a call is held with one line naming the endpoint or tool; <code>cr: allow</code> lets the same call run once.</p>
     <h3>Write-time and commit check</h3>
-    <p>When a key or password would land in a file that is in a git repo and not git-ignored, the call is denied and Claude is told to put the value in <code>.env</code>. Before Claude runs <code>git commit</code> or <code>git push</code>, a key or password in what would be committed holds the command.</p>
+    <p>When a key or password would land in a file that is in a git repo and not git-ignored, the call is denied and the agent is told to put the value in <code>.env</code>. Before the agent runs <code>git commit</code> or <code>git push</code>, a key or password in what would be committed holds the command.</p>
     <h3>If the program is missing, nothing gets through</h3>
     <p>If the <code>cloakroom</code> command is missing, the plugin blocks prompts and denies tool calls instead of letting data through.</p>
   </div>
@@ -130,7 +130,7 @@
     <p>Codex and Gemini CLI can’t swap a tool’s output for a masked copy, so Cloakroom blocks the original and the AI reads the masked text in the block message. Cursor’s terminal agent can’t swap output either, so Cloakroom changes the input instead: a file read goes to a masked copy of the file, and a shell command runs inside Cloakroom, which prints only masked output.</p>
     <dl class="defs defs--2">
       <div><dt>Codex</dt><dd><code>cloakroom hook &lt;event&gt; --agent codex</code> reads Codex’s hook input and turns the answer into Codex’s. Codex’s file edits (<code>apply_patch</code>) are restored and checked like Write. <code>cloakroom install codex</code> writes the four hooks into <code>~/.codex/hooks.json</code>.</dd></div>
-      <div><dt>Gemini CLI</dt><dd>Gemini CLI uses its own tool names with Claude Code’s argument names, so <code>--agent gemini</code> first renames the tool. Gemini lets a call through when a hook times out, so with the model not loaded yet the hook doesn’t wait: it checks with the rules in-process. <code>cloakroom install gemini</code> writes these hooks as an extension of its own.</dd></div>
+      <div><dt>Gemini CLI</dt><dd>Gemini CLI uses its own tool names with Claude Code’s argument names, so <code>--agent gemini</code> first renames the tool. Gemini lets a call through when a hook times out, so with the model not loaded yet the hook doesn’t wait: it checks with the rules inside the hook itself. <code>cloakroom install gemini</code> writes these hooks as an extension of its own.</dd></div>
       <div><dt>Cursor</dt><dd>Cursor’s terminal agent sends its own tool names (Shell, Read, Write) with its own events, so <code>--agent cursor</code> first maps them. A read is redirected to a masked copy kept in Cloakroom’s home; a command is wrapped in <code>cloakroom cursor-run</code>, which runs it and masks what it prints; add-on (MCP) output is replaced with a masked copy. A write that carries a placeholder is refused, because Cursor ignores a hook’s rewritten input there, and the agent is told to write through the shell. Cursor’s Grep tool is refused when it would show file contents.</dd></div>
     </dl>
     <p>What it protects against, and what it doesn’t: <a href="security.html">Security model</a>. Every detail: <a href="https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-HOW-IT-WORKS.md">docs-HOW-IT-WORKS.md</a>.</p>
@@ -142,11 +142,11 @@
   <div class="sec-body"><div class="feats">
   <article class="feat">
     <h3>Shows which keys your agents saw</h3>
-    <p><code>cloakroom exposure</code> lists the keys and passwords Claude Code, Codex CLI, Gemini CLI and Cursor’s command-line agent saw, each as a hint (<code>ghp_…LmPq</code>), never the key, and ends with a “Rotate these” list. It lists only what Cloakroom detected.</p>
+    <p><code>cloakroom exposure</code> lists the keys and passwords Claude Code, Codex CLI, Gemini CLI and Cursor’s terminal agent saw, each as a hint (<code>ghp_…LmPq</code>), never the key, and ends with a “Rotate these” list: keys to replace with new ones. It lists only what Cloakroom detected.</p>
   </article>
   <article class="feat">
     <h3>Warns when a pull changes what your agent runs</h3>
-    <p><code>cloakroom scan</code> lists every command a repo’s agent and editor config would run and flags the npm worm’s shape. After <code>cloakroom install git-hook</code>, each pull, checkout or merge that adds or changes such a command prints it. It warns, never blocks.</p>
+    <p><code>cloakroom scan</code> lists every command a repo’s agent and editor config would run and flags the setup the October 2026 npm worm used: an agent hook and an editor task that run each other’s files. After <code>cloakroom install git-hook</code>, each pull, checkout or merge that adds or changes such a command prints it. It warns, never blocks.</p>
   </article>
   <article class="feat">
     <h3>Hand the agent a key safely</h3>
@@ -154,15 +154,15 @@
   </article>
   <article class="feat">
     <h3>Shows where your agent sends data</h3>
-    <p><code>cloakroom report --destinations</code> lists the hosts your agent’s commands, web fetches and MCP calls went to, with the kinds of data they carried, and the dashboard shows the same in “Where data went”. <code>cloakroom allow-host example.com</code> builds an approved-sites list; once it is on, a call to any other site is held. An email, phone number, name or your username in a web address or header is held too.</p>
+    <p><code>cloakroom report --destinations</code> lists the sites your agent’s commands, web fetches and MCP calls went to, with the kinds of data they carried, and the dashboard shows the same in “Where data went”. <code>cloakroom allow-host example.com</code> builds an approved-sites list; once it is on, a call to any other site is held. An email, phone number, name or your username in a web address or header is held too.</p>
   </article>
   <article class="feat">
     <h3>Points any tool at Cloakroom</h3>
-    <p><code>cloakroom proxy</code> is a small server on your own machine for tools that let you set their API address, such as Claude Code, Codex CLI and Gemini CLI. Point the tool at it and every request is masked before it goes to the AI company, with streaming left alone. Off until you start it; Mac, Linux and Windows.</p>
+    <p><code>cloakroom proxy</code> is a small server on your own machine for tools that let you set their API address, such as Claude Code, Codex CLI and Gemini CLI. Point the tool at it and every request is masked before it goes to the AI company; replies stream back unchanged. Off until you start it; Mac, Linux and Windows.</p>
   </article>
   <article class="feat">
     <h3>Updates with one command</h3>
-    <p>Run <code>cloakroom update</code> in a terminal. It updates Cloakroom with the installer you used (uv, pipx or pip) and keeps the optional parts you had. Then it sets up Cloakroom’s checks again for Codex, Gemini CLI, Cursor’s command-line agent and git commits, only where they were set up before.</p>
+    <p>Run <code>cloakroom update</code> in a terminal. It updates Cloakroom with the installer you used (uv, pipx or pip) and keeps the optional parts you had. Then it sets up Cloakroom’s checks again for Codex, Gemini CLI, Cursor’s terminal agent and git commits, only where they were set up before.</p>
   </article>
   <article class="feat">
     <h3>Takes stopped prompts out of the saved chat</h3>
