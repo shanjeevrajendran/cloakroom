@@ -108,6 +108,9 @@ cloakroom install cursor
 
 - Cursor’s terminal agent (agent) runs them from its next start. The editor reads the same file but hasn’t been checked with Cloakroom yet. cloakroom doctor shows whether they’re installed.
 
+### Updating
+Run cloakroom update in a terminal. It updates Cloakroom with the installer you used (uv, pipx or pip) and keeps the optional parts you had. Then it sets up Cloakroom’s checks again for Codex, Gemini CLI, Cursor’s terminal agent and git commits, only where they were set up before.
+
 ### Pick how you’ll run it
 Easiest: add the plugin (above) and let it install Cloakroom on the next start. It uses uv or pipx if either is installed, otherwise a private Python environment in ~/.cloakroom/venv (needs Python 3.10+). If the install fails, Claude Code says so and it retries after 10 minutes. The table is for installing by hand.
 | Your machine | Install | What you get
@@ -209,6 +212,45 @@ First run downloads the AI model that finds names and addresses (PII-Tracer, at 
 Commands that would send a secret off your machine, or move money, wait for your OK. A web fetch, an MCP tool call (an add-on tool) or a prompt to a subagent that holds a real value is stopped before it runs.
 - Not covered
 Codex’s own web search (runs on OpenAI’s servers).
+
+### What it stops
+Beyond hiding values, Cloakroom holds some actions, watches some things for you and gives you safer ways to hand over a key. Each item links to the limit that goes with it.
+
+#### Holds
+
+#### Sending-data hold
+Stops a shell command that would send a secret off your machine. It checks the command before it runs: if it can send data out and holds a known secret, a key the rules recognise or a literal token of 16+ characters in a login header (such as Authorization), it is denied.Example: a curl call with your API key in its header.To send it anyway, type cr: allow as your prompt (the agent never sees it), then ask the agent to run the same command again. It passes once, within 10 minutes.Limit: Secrets it has never seen.
+
+#### Money-movement hold
+Stops a tool call that would move money: a write to a listed payment endpoint, a payment CLI command, or an MCP tool (an add-on tool) whose name carries a money verb, such as pay or create_payout.Example: an MCP tool called create_payout is held with one line naming it.cr: allow lets the same call run once.Limit: Money moved by programs.
+
+#### Write-time and commit check
+Stops a key or password from landing in a file in a git repo that is not git-ignored. The call is denied and the agent is told to put the value in .env. Before the agent runs git commit or git push, a key or password in what would be committed holds the command.Example: the agent tries to write an API key into config.py.Limit: Keys written by scripts.
+
+#### Nothing gets through when the program is missing
+If the cloakroom command is missing, the plugin blocks prompts and denies tool calls instead of letting data through.Example: you remove the program by mistake; your next prompt is blocked, not passed on.
+
+#### Watches
+
+#### Which keys your agents saw
+Shows the keys and passwords Claude Code, Codex CLI, Gemini CLI and Cursor’s terminal agent saw. Each is a hint, never the key, and the list ends with “Rotate these”: keys to replace with new ones.Example: a line like ghp_…LmPq.Command: cloakroom exposureLimit: The exposure list.
+
+#### Warns when a pull changes what your agent runs
+cloakroom scan lists every command a repo’s agent and editor config would run. It flags the setup the October 2026 npm worm used: an agent hook and an editor task that run each other’s files. After cloakroom install git-hook, each pull, checkout or merge that adds or changes such a command prints it. It warns, never blocks.Example: a pull adds an editor task that runs a file an agent hook also runs.Command: cloakroom scan
+
+#### Where your agent sends data
+Lists the sites your agent’s commands, web fetches and MCP calls went to, with the kinds of data they carried. The dashboard shows the same in “Where data went”. cloakroom allow-host example.com builds an approved-sites list; once it is on, a call to any other site is held. An email, phone number, name or your username in a web address or header is held too.Example: after you allow example.com, a fetch to another site is held.Command: cloakroom report --destinations
+
+#### Failed tool calls counted as not checked
+A tool call that fails in Claude Code is counted as “not checked”. It shows in the event log, in “Checks skipped” in cloakroom report, on the dashboard, and as one note per session.Example: a command with a non-zero exit.Limit: Failed commands.
+
+#### Safer handling
+
+#### Hand the agent a key safely
+Asks for the value in a hidden terminal prompt and gives you a placeholder to paste. When the agent writes that placeholder into a local file or command, the real value goes back in. The AI never sees it.Example: cloakroom give STRIPE_KEY, then paste the placeholder into your prompt.Command: cloakroom give NAME
+
+#### Stopped prompts leave the saved chat
+Claude Code also saves every chat on your disk. A prompt Cloakroom stops is taken out of that saved copy for the current session (right away, after the next reply and when the session ends), so the key you typed doesn’t stay behind. Claude Code only.Example: you paste a key into a prompt and it is stopped; the saved chat doesn’t keep it.Limit: Prompts.
 
 ### What it cannot catch
 It stops accidental exposure: secrets and personal data in files, logs and command output an agent reads while working. It is not a sandbox (a sealed-off space the AI can’t get out of). Out of scope: an AI, or hidden instructions in a file that steer it (a prompt injection), determined to sneak data out through custom encodings or values built piece by piece; data you paste into prompts on purpose (prompts can be blocked, not rewritten); what other tools on your machine send elsewhere.

@@ -49,12 +49,13 @@
 <section class="hero page-hero page-hero--short container" aria-labelledby="page-title">
   <h1 id="page-title">How it works</h1>
   <p class="lead">Cloakroom checks what goes to the AI and swaps real values for placeholders.</p>
+  <p>What it stops beyond hiding values: <a href="security.html#stops">Security</a></p>
 </section>
 
 <section class="sec container" id="trip" aria-labelledby="trip-title">
   <h2 id="trip-title">In short</h2>
   <div class="sec-body">
-    <p>Every time the AI reads a file, runs a command or uses an add-on, Cloakroom checks what goes to the AI and swaps real values for placeholders. When the AI writes or runs something that holds a placeholder, Cloakroom puts the real value back on your machine. Commands that would send a secret off your machine, or move money, wait for your OK.</p>
+    <p>Every time the AI reads a file, runs a command or uses an add-on, Cloakroom checks what goes to the AI and swaps real values for placeholders. When the AI writes or runs something that holds a placeholder, Cloakroom puts the real value back on your machine. Commands that would send a secret off your machine, or move money, wait for your OK (<a href="security.html#stops">what it stops</a>).</p>
     <p>Words used below: hooks are small checks the agent runs before and after each action (a “tool call”). PII is personal data such as names, emails and addresses. MCP tools are add-ons that give the agent extra abilities, such as a browser. OCR reads text out of pictures. The vault is an encrypted file on your machine that holds the real values for one session.</p>
 <pre class="cmd diagram" aria-label="Diagram: a file read goes through Cloakroom, the model sees placeholders, and the real value is put back in the file on disk"><code>  Claude Code reads a file or runs a tool
         |   "Nadia Petrov called about..."    sk_live_51Hx9Q...
@@ -113,14 +114,6 @@
     <p>When real values are put back into a file, the hook records per file its path, its SHA-256, size and time, and per value the byte position, the value’s SHA-256, kind and placeholder. The log (<code>~/.cloakroom/filelog.bin</code>) is encrypted like the vault and holds no values: they are read back from the file when needed.</p>
     <h3>Encoded dumps and secrets</h3>
     <p><code>od</code>, <code>xxd</code>, <code>base64</code> and spaced-out output are turned back into text and checked; a hit holds the output back (it isn’t passed on). Each secret already in the session vault is also looked for in its encoded forms (base64, URL-encoded and JSON-escaped), and as an MD5, SHA-1 or SHA-256 hash, as hex, and reversed.</p>
-    <h3>Sending-data hold</h3>
-    <p>Before a shell command runs, Cloakroom checks whether it can send data off the machine. If it does and it holds a known secret, a key the rules recognise, or a literal token of 16+ characters in a login header (such as <code>Authorization</code>), the command is denied. To send it anyway, type <code>cr: allow</code> as your prompt (the agent never sees it), then ask the agent to run the same command again: it passes once, within 10 minutes.</p>
-    <h3>Money-movement hold</h3>
-    <p>Before any tool call runs, Cloakroom checks whether it would move money: a write to a listed payment endpoint, a payment CLI command, or an MCP tool whose name carries a money verb (such as <code>pay</code> or <code>create_payout</code>). Such a call is held with one line naming the endpoint or tool; <code>cr: allow</code> lets the same call run once.</p>
-    <h3>Write-time and commit check</h3>
-    <p>When a key or password would land in a file that is in a git repo and not git-ignored, the call is denied and the agent is told to put the value in <code>.env</code>. Before the agent runs <code>git commit</code> or <code>git push</code>, a key or password in what would be committed holds the command.</p>
-    <h3>If the program is missing, nothing gets through</h3>
-    <p>If the <code>cloakroom</code> command is missing, the plugin blocks prompts and denies tool calls instead of letting data through.</p>
   </div>
 </section>
 
@@ -133,45 +126,14 @@
       <div><dt>Gemini CLI</dt><dd>Gemini CLI uses its own tool names with Claude Code’s argument names, so <code>--agent gemini</code> first renames the tool. Gemini lets a call through when a hook times out, so with the model not loaded yet the hook doesn’t wait: it checks with the rules inside the hook itself. <code>cloakroom install gemini</code> writes these hooks as an extension of its own.</dd></div>
       <div><dt>Cursor</dt><dd>Cursor’s terminal agent sends its own tool names (Shell, Read, Write) with its own events, so <code>--agent cursor</code> first maps them. A read is redirected to a masked copy kept in Cloakroom’s home; a command is wrapped in <code>cloakroom cursor-run</code>, which runs it and masks what it prints; add-on (MCP) output is replaced with a masked copy. A write that carries a placeholder is refused, because Cursor ignores a hook’s rewritten input there, and the agent is told to write through the shell. Cursor’s Grep tool is refused when it would show file contents.</dd></div>
     </dl>
+    <p>For tools that let you set their API address, such as Claude Code, Codex CLI and Gemini CLI, <code>cloakroom proxy</code> runs a small server on your own machine. Point the tool at it and every request is masked before it goes to the AI company; replies stream back unchanged. It is off until you start it, and works on Mac, Linux and Windows.</p>
     <p>What it protects against, and what it doesn’t: <a href="security.html">Security model</a>. Every detail: <a href="https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-HOW-IT-WORKS.md">docs-HOW-IT-WORKS.md</a>.</p>
   </div>
 </section>
 
 <section class="sec container" id="more" aria-labelledby="more-title">
-  <h2 id="more-title">More features</h2>
+  <h2 id="more-title">Keep reading</h2>
   <div class="sec-body"><div class="feats">
-  <article class="feat">
-    <h3>Shows which keys your agents saw</h3>
-    <p><code>cloakroom exposure</code> lists the keys and passwords Claude Code, Codex CLI, Gemini CLI and Cursor’s terminal agent saw, each as a hint (<code>ghp_…LmPq</code>), never the key, and ends with a “Rotate these” list: keys to replace with new ones. It lists only what Cloakroom detected.</p>
-  </article>
-  <article class="feat">
-    <h3>Warns when a pull changes what your agent runs</h3>
-    <p><code>cloakroom scan</code> lists every command a repo’s agent and editor config would run and flags the setup the October 2026 npm worm used: an agent hook and an editor task that run each other’s files. After <code>cloakroom install git-hook</code>, each pull, checkout or merge that adds or changes such a command prints it. It warns, never blocks.</p>
-  </article>
-  <article class="feat">
-    <h3>Hand the agent a key safely</h3>
-    <p><code>cloakroom give NAME</code> asks for the value in a hidden terminal prompt and gives you a placeholder to paste. When the agent writes that placeholder into a local file or command, the real value goes back in. The AI never sees it.</p>
-  </article>
-  <article class="feat">
-    <h3>Shows where your agent sends data</h3>
-    <p><code>cloakroom report --destinations</code> lists the sites your agent’s commands, web fetches and MCP calls went to, with the kinds of data they carried, and the dashboard shows the same in “Where data went”. <code>cloakroom allow-host example.com</code> builds an approved-sites list; once it is on, a call to any other site is held. An email, phone number, name or your username in a web address or header is held too.</p>
-  </article>
-  <article class="feat">
-    <h3>Points any tool at Cloakroom</h3>
-    <p><code>cloakroom proxy</code> is a small server on your own machine for tools that let you set their API address, such as Claude Code, Codex CLI and Gemini CLI. Point the tool at it and every request is masked before it goes to the AI company; replies stream back unchanged. Off until you start it; Mac, Linux and Windows.</p>
-  </article>
-  <article class="feat">
-    <h3>Updates with one command</h3>
-    <p>Run <code>cloakroom update</code> in a terminal. It updates Cloakroom with the installer you used (uv, pipx or pip) and keeps the optional parts you had. Then it sets up Cloakroom’s checks again for Codex, Gemini CLI, Cursor’s terminal agent and git commits, only where they were set up before.</p>
-  </article>
-  <article class="feat">
-    <h3>Takes stopped prompts out of the saved chat</h3>
-    <p>Claude Code also saves every chat on your disk. A prompt Cloakroom stops is taken out of that saved copy for the current session (right away, after the next reply and when the session ends), so the key you typed doesn’t stay behind. Claude Code only.</p>
-  </article>
-  <article class="feat">
-    <h3>Counts failed tool calls as not checked</h3>
-    <p>A tool call that fails in Claude Code (for example a command with a non-zero exit) is counted as “not checked”: it shows in the event log, in “Checks skipped” in <code>cloakroom report</code>, on the dashboard, and as one note per session.</p>
-  </article>
   <article class="feat">
     <h3><a href="commands.html">Every command</a></h3>
     <p>What each <code>cloakroom</code> command does, when to run it and the release it first appeared in.</p>
