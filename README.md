@@ -145,20 +145,20 @@ else: [Known limits](https://github.com/shanjeevrajendran/cloakroom/blob/main/do
 
 ## Recent releases
 
-- **1.1.0** (2026-10-31): Cloakroom also protects Cursor's command-line agent, on Mac and Linux: run
+- **1.1.0**: Cloakroom also protects Cursor's command-line agent, on Mac and Linux: run
   `cloakroom install cursor`. `cloakroom allow` lets a command Cloakroom held run once. See [Cursor](#cursor).
-- **1.0.0** (2026-10-30): the ledger of where your agent sends data (`cloakroom report --destinations`), an opt-in
+- **1.0.0**: the ledger of where your agent sends data (`cloakroom report --destinations`), an opt-in
   approved-sites list (`cloakroom allow-host`), and a hold on a web address or header that carries your email, phone,
   name or username. See [See where your agent sends data](#see-where-your-agent-sends-data). `cloakroom proxy` masks the
   requests of any tool that lets you set its API address, on Mac, Linux and Windows. See
   [Point any tool at Cloakroom](#point-any-tool-at-cloakroom).
-- **0.9.0** (2026-10-30): `cloakroom give NAME` hands the agent a key through a hidden prompt, so you never paste it
+- **0.9.0**: `cloakroom give NAME` hands the agent a key through a hidden prompt, so you never paste it
   into a chat; a prompt Cloakroom stops is taken out of the session's saved Claude Code transcript; a failed command is
   counted as not checked in `cloakroom report`. See [Hand the agent a key safely](#hand-the-agent-a-key-safely).
-- **0.8.1** (2026-10-30): a stopped prompt comes back with placeholders in place of your private values, ready to
+- **0.8.1**: a stopped prompt comes back with placeholders in place of your private values, ready to
   send instead; `cloakroom update` updates Cloakroom and redoes its setup for Codex, Gemini CLI and git commits;
   `cloakroom doctor` shows the version; a new [Updates](#updates) section.
-- **0.8.0** (2026-10-27): `cloakroom exposure` shows which keys your agents saw, with a rotate list; `cloakroom scan`
+- **0.8.0**: `cloakroom exposure` shows which keys your agents saw, with a rotate list; `cloakroom scan`
   and a git-hook warning when a pull changes the commands a repo's agent config would run; three fixes found by a
   live agent test ([Results](#results)).
 
