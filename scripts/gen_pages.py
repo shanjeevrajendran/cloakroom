@@ -206,9 +206,7 @@ def releases(src):
         if items:
             parts.append("<ul>\n" + "".join(f"      <li>{inline(i)}</li>\n" for i in items) + "    </ul>")
         when = ""
-        if date and re.fullmatch(r"\d{4}-\d\d-\d\d", date):
-            when = f'\n    <p><time datetime="{date}">{date}</time></p>'
-        elif date:
+        if date and not re.fullmatch(r"\d{4}-\d\d-\d\d", date):  # release dates stay in CHANGELOG.md only
             when = f"\n    <p>{inline(date)}</p>"
         vid = "v" + re.sub(r"[^0-9]+", "-", version).strip("-")
         out.append(
@@ -217,7 +215,7 @@ def releases(src):
             '    <div class="release-body">\n    ' + "\n    ".join(parts) + "\n    </div>\n  </article>\n"
         )
     head, foot = chrome("releases.html", "Cloakroom releases",
-                        "Every Cloakroom release, newest first, with its date and changes, from CHANGELOG.md.")
+                        "Every Cloakroom release, newest first, with its changes, from CHANGELOG.md.")
     return (
         head
         + '<section class="hero page-hero page-hero--short container" aria-labelledby="page-title">\n'
