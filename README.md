@@ -72,6 +72,7 @@ New in 1.2:
 - **Cursor's editor:** checked with Cloakroom, along with the command-line agent ([Cursor](#cursor)).
 - **Codex signed in with ChatGPT:** `cloakroom proxy install codex` points it at Cloakroom's proxy ([details](#point-any-tool-at-cloakroom)).
 - **Fewer false alarms:** the plugin list Codex sends about itself is no longer masked as people and email addresses.
+- **Codex app:** checked along with Codex CLI, signed in with ChatGPT or an API key; pictures Codex opens are read on your machine and Codex gets their text, masked.
 
 New in 1.1:
 
