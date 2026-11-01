@@ -42,3 +42,15 @@ def test_scripts_that_set_a_data_folder_set_a_vault_key():
     setters = [p for p in scripts if "CLOAKROOM_HOME" in p.read_text()]
     assert {p.name for p in setters} >= {"live_test.sh", "live_cursor.sh", "run.sh"}
     assert [p.name for p in setters if "CLOAKROOM_VAULT_KEY" not in p.read_text()] == []
+
+
+def test_cursor_wrapper_carries_home_and_port_but_no_key(monkeypatch, tmp_path):
+    from cloakroom import agents, cursor
+    monkeypatch.setattr(agents, "_program", lambda: "/usr/local/bin/cloakroom")
+    monkeypatch.setenv("CLOAKROOM_PORT", "8797")
+    monkeypatch.setenv("CLOAKROOM_VAULT_KEY", base64.b64encode(b"s" * 32).decode())
+    cmd = cursor.wrap({"tool_input": {"command": "ls"}, "cwd": str(tmp_path)}, None)["hookSpecificOutput"][
+        "updatedInput"]["command"]
+    assert re.fullmatch(r"env CLOAKROOM_HOME=\S+ CLOAKROOM_PORT=8797 /usr/local/bin/cloakroom cursor-run \S{16} ls", cmd)
+    assert shlex.split(cmd)[1] == f"CLOAKROOM_HOME={config.HOME}" and "VAULT_KEY" not in cmd and "c3Nz" not in cmd
+    assert cursor.gate({"command": cmd}) is None
