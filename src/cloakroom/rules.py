@@ -33,7 +33,7 @@ def _iban_ok(raw: str) -> bool:
 
 # (id, kind, regex, group holding the value, validator)
 SECRET_RULES = [
-    ("private-key", "SECRET", r"-----BEGIN [A-Z ]*PRIVATE KEY-----[\s\S]+?-----END [A-Z ]*PRIVATE KEY-----", 0, None),
+    ("private-key", "SECRET", r"-----BEGIN [A-Z ]*PRIVATE KEY(?: BLOCK)?-----[\s\S]+?-----END [A-Z ]*PRIVATE KEY(?: BLOCK)?-----", 0, None),
     ("aws-key-id", "SECRET", r"\b(?:AKIA|ASIA|ABIA|ACCA)[A-Z2-7]{16}\b", 0, None),
     ("github-token", "SECRET", r"\b(?:gh[pousr]_[A-Za-z0-9]{36,}|github_pat_[A-Za-z0-9_]{22,})\b", 0, None),
     ("anthropic-key", "SECRET", r"\bsk-ant-[A-Za-z0-9_-]{20,}", 0, None),
@@ -45,6 +45,15 @@ SECRET_RULES = [
     ("slack-token", "SECRET", r"\bxox[abposr]-[A-Za-z0-9-]{10,}", 0, None),
     ("huggingface-token", "SECRET", r"\bhf_[A-Za-z0-9]{30,}\b", 0, None),
     ("google-api-key", "SECRET", r"\bAIza[0-9A-Za-z_-]{35}\b", 0, None),
+    ("gitlab-token", "SECRET", r"\bglpat-[A-Za-z0-9_.-]{20,}", 0, None),
+    ("npm-token", "SECRET", r"\bnpm_[A-Za-z0-9]{36}\b", 0, None),
+    ("pypi-token", "SECRET", r"\bpypi-AgE[A-Za-z0-9_-]{50,}", 0, None),
+    ("digitalocean-token", "SECRET", r"\bdo[por]_v1_[a-f0-9]{64}\b", 0, None),
+    ("xai-key", "SECRET", r"\bxai-[A-Za-z0-9]{70,}", 0, None),
+    ("groq-key", "SECRET", r"\bgsk_[A-Za-z0-9]{48,}", 0, None),
+    ("slack-webhook", "SECRET", r"https://hooks\.slack\.com/(?:services|workflows|triggers)/[A-Za-z0-9/_-]{20,}", 0, None),
+    ("discord-webhook", "SECRET", r"https://(?:ptb\.|canary\.)?discord(?:app)?\.com/api/webhooks/\d{17,20}/[A-Za-z0-9_-]{60,}", 0, None),
+    ("telegram-bot-token", "SECRET", r"\b\d{8,10}:AA[A-Za-z0-9_-]{33}\b", 0, None),
     ("jwt", "SECRET", r"\beyJ[A-Za-z0-9_-]{8,}\.eyJ[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}", 0, None),
     ("url-password", "SECRET", r"\b[a-z][a-z0-9+.-]*://[^\s:/@]+:([^\s@/]{3,})@", 1, None),
     ("url-username", "ACCOUNT", r"\b[a-z][a-z0-9+.-]*://([^\s:/@]+):[^\s@/]{3,}@", 1, lambda v: _personal_user(v)),
@@ -53,14 +62,19 @@ SECRET_RULES = [
     ("keyed-password", "SECRET", r"(?i:\b(?:password|passwd|passcode|passphrase|pin(?:code)?|pwd))" + r"[\"'*_]*\s*[:=]\s*[*_]*\s*"
      r"(?:\"([^\"\n]{4,64})\"|'([^'\n]{4,64})'|([^\s\"]{4,64}))", 0, None),
     ("keyed-secret", "SECRET",
-     r"(?i)(?:pass(?:word|wd|phrase)?|pwd|secret|token|api[_-]?key|access[_-]?key|auth[_-]?token|authorization|bearer|credentials?|private[_-]?key)"
+     # "token" / bare "pass" only as their own segment (max_output_tokens, passenger_count are not secrets)
+     r"(?:(?i:pass(?:word|wd|phrase)|pwd|secret|api[_-]?key|access[_-]?key|access[_-]?token|auth[_-]?token|authorization|bearer|credentials?|private[_-]?key)"
+     r"|(?:(?<![A-Za-z])|(?<=[a-z])(?=[A-Z]))(?i:token|pass)(?![A-Za-z]))"
      # a <bracketed description> is taken whole, spaces and all, so the example check sees its closing ">"
-     r"[\w.-]*[\"']?\s*[:=]\s*[\"']?(?:(?:Bearer|Basic|Token)\s+)?(<[^<>\"'\n]{1,80}>|[^\s\"',;]{6,})", 1, None),
+     r"(?i:[\w.-]*[\"']?\s*[:=]\s*[\"']?(?:(?:Bearer|Basic|Token)\s+)?(<[^<>\"'\n]{1,80}>|[^\s\"',;]{6,}))", 1, None),
 ]
 
 PII_RULES = [
     ("email", "EMAIL", r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b", 0, None),
     ("phone", "PHONE", r"(?<![\w.:-])(?:\+?1[\s.-]?)?\(?\d{3}\)?[\s.-]\d{3}[\s.-]\d{4}(?![\w-])", 0, None),
+    # the label stands alone (not "passport photo"); 6 to 9 letters and digits, at least one digit
+    ("passport", "ACCOUNT", r"(?i:\b(?:passport|passeport|pasaporte|passaporte|reisepass)(?: no\.?| number| #)?\s*[:=]\s*)"
+     r"((?=[A-Za-z]*\d)[A-Za-z0-9]{6,9})\b", 1, None),
     ("ssn", "SSN", r"(?<!\d)(?!000|666|9\d\d)\d{3}-(?!00)\d{2}-(?!0000)\d{4}(?!\d)", 0, None),
     ("card", "CARD", r"(?<![\d-])(?:\d[ -]?){12,18}\d(?![\d-])", 0, lambda v: _luhn(re.sub(r"\D", "", v))),
     ("iban", "IBAN", r"\b[A-Z]{2}\d{2}(?: ?[A-Z0-9]{4}){2,7}(?: ?[A-Z0-9]{1,4})?\b", 0, _iban_ok),
@@ -124,7 +138,7 @@ CONTEXT_RULES = [
 ]
 
 # found under a key that says what the value is: shape-based "looks like a placeholder / a public place" checks don't apply
-_KEYED = {"keyed-secret", "keyed-password", "url-password", "address-field"}  # (birth dates keep the "historical date" check)
+_KEYED = {"keyed-secret", "keyed-password", "url-password", "address-field", "passport"}  # (birth dates keep the "historical date" check)
 _COMPILED = [(i, k, re.compile(rx), g, v) for i, k, rx, g, v in SECRET_RULES + PII_RULES + CONTEXT_RULES + PATH_RULES]
 OWN_PLACEHOLDER = re.compile(r"\bPII_[A-Z]+_\d+(?:_[a-z2-7]{6})?\b")  # issued (signed) or from before 0.6.1
 

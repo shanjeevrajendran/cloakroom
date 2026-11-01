@@ -84,13 +84,14 @@ def _in_copies(path: str) -> bool:
 
 def _ignored(path: str, roots: list) -> bool:
     """Cursor keeps git-ignored and .cursorignore'd files from the agent; a copy outside the workspace would get
-    around that, so those files get no copy (read_gate still checks the original read)."""
+    around that, so those files get no copy (read_gate still checks the original read). A failed git check counts as
+    ignored."""
     try:
         if subprocess.run(["git", "-C", os.path.dirname(path), "check-ignore", "-q", "--", path],
                           capture_output=True, timeout=2).returncode == 0:
             return True
     except Exception:
-        pass
+        return True  # can't tell, so treat it as ignored: no copy of a file Cursor may be hiding
     root = str(roots[0]) if roots else ""
     rel = os.path.relpath(path, root) if root else ""
     if not root or rel.startswith(".."):

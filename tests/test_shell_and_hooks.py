@@ -2,6 +2,7 @@
 import io
 import json
 import os
+import re
 import shutil
 import sys
 
@@ -70,6 +71,27 @@ def test_pre_network_bash_keeps_placeholders(monkeypatch, capsys):
                    monkeypatch, capsys)
     h = pre["hookSpecificOutput"]
     assert h["permissionDecision"] == "ask" and "updatedInput" not in h
+
+
+def _pre_bash(cmd, monkeypatch, capsys):
+    """cmd holds {ph}; it is filled with the placeholder the post hook issued for a real address."""
+    post = run_hook("post", {"session_id": "t", "tool_name": "Bash", "tool_response": {"stdout": "mail jo.smith@fernhill.co"}},
+                    monkeypatch, capsys)
+    ph = re.search(r"PII_EMAIL_1_\w+", json.dumps(post)).group()
+    return run_hook("pre", {"session_id": "t", "tool_name": "Bash", "tool_input": {"command": cmd.format(ph=ph)}},
+                    monkeypatch, capsys)
+
+
+@pytest.mark.parametrize("cmd", ['git commit -m "rotate {ph}"', "git add f && git tag -a v1 -m {ph}",
+                                 "git notes add -m {ph}"])
+def test_history_writing_git_keeps_placeholders(cmd, monkeypatch, capsys):
+    pre = _pre_bash(cmd, monkeypatch, capsys)  # commit, tag and notes messages are saved in history and pushed
+    assert pre is None or "jo.smith@fernhill.co" not in json.dumps(pre)
+
+
+def test_other_local_git_still_restores(monkeypatch, capsys):
+    pre = _pre_bash("git add {ph} && git status", monkeypatch, capsys)
+    assert pre["hookSpecificOutput"]["updatedInput"]["command"] == "git add jo.smith@fernhill.co && git status"
 
 
 def test_pre_outbound_denies_real_values(monkeypatch, capsys):

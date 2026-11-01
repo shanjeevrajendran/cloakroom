@@ -230,8 +230,21 @@ def _quote_for(value: str, state: str, powershell: bool = False) -> str:
     return shlex.quote(value)
 
 
+HISTORY_SUB = {"commit", "tag", "notes"}  # git subcommands whose message is saved in history and pushed
+
+
+def writes_history(command: str, powershell: bool = False) -> bool:
+    for seg in (_PS_SEGMENT_SPLIT if powershell else _SEGMENT_SPLIT).split(command):
+        if _first_words(seg, powershell)[0] == "git" and HISTORY_SUB & set(seg.split()):  # also `git -C d commit`
+            return True
+    return False
+
+
 def restore(command: str, lookup, powershell: bool = False) -> tuple[str, list[str]]:
-    """Swap known placeholders for their values, quoted for where each one sits. Returns (command, unknown)."""
+    """Swap known placeholders for their values, quoted for where each one sits. Returns (command, unknown).
+    A command that writes git history keeps its placeholders: a real value in a commit message would be pushed."""
+    if writes_history(command, powershell):
+        return command, []
     out, unknown, i, state = [], [], 0, ""
     escape = "`" if powershell else "\\"
     while i < len(command):

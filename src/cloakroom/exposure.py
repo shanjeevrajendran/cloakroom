@@ -24,7 +24,7 @@ KINDS = history.KINDS
 SKIP_ACTIONS = {"pass", "restored", "skipped", "pruned", ""}
 # Public prefixes that name a key's issuer; the hint never shows more of the value than these and the last 4
 PREFIX = re.compile(r"^(?:github_pat_|glpat-|sk-ant-|sk-proj-|sk_live_|sk_test_|rk_live_|xox[abprs]-|gh[pousr]_|"
-                    r"sk-|AKIA|ASIA|AIza|hf_|npm_|pypi-|SG\.|dop_v1_)")
+                    r"sk-|AKIA|ASIA|AIza|hf_|npm_|pypi-|SG\.|dop_v1_|xai-|gsk_)")
 TAIL_MIN = 16  # shorter values show no characters at all
 MISSED = ("Lists only what Cloakroom detected. A key or password it missed leaves no line, so a key that is not "
           "listed is not proof it is safe.")
