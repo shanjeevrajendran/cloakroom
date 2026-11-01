@@ -155,6 +155,15 @@ def test_git_ignored_file_is_not_redirected(cur, repo):
     assert read(cur, repo / "secret.txt") == {}  # Cursor's own rules decide; beforeReadFile still checks the read
 
 
+def test_check_ignore_failure_counts_as_ignored(monkeypatch, ws):
+    from cloakroom import cursor
+
+    def boom(*a, **k):
+        raise subprocess.TimeoutExpired("git", 2)
+    monkeypatch.setattr(cursor.subprocess, "run", boom)
+    assert cursor._ignored(str(ws / "a.txt"), [str(ws)]) is True  # unsure: no copy of a file Cursor may hide
+
+
 def test_large_file_is_denied(cur, ws):
     f = ws / "big.log"
     f.write_text("x" * (1024 * 1024 + 1))
