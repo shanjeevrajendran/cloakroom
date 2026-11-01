@@ -223,6 +223,8 @@ def reason(value: str, kind: str, keyed: bool) -> str | None:
         return "loopback or private URL"
     if kind == "EMAIL" and (RESERVED_DOMAINS.search(v) or ROLE_MAILBOX.match(v)):
         return "reserved domain or role mailbox"
+    if kind == "EMAIL" and re.search(r"@[^.@\s]+$", v):  # an agent's plugin id (name@marketplace); limit in docs-LIMITS
+        return "no dot in the domain, not an address"
     if kind == "PHONE" and FICTIONAL_PHONE.search(v):
         return "fictional 555-01xx number"
     if _is_internal_ip(v):
@@ -233,7 +235,8 @@ def reason(value: str, kind: str, keyed: bool) -> str | None:
         return "public git remote"
     if kind == "PERSON" and BOT_NAME.search(v):
         return "bot account"
-    if kind == "URL" and not re.match(r"^[a-z][a-z0-9+.-]*://", v) and re.match(r"^(?:/|~/|\./|\.\./)", v):
+    # ">": a model span that starts at a tag's end, as in Codex's <cwd>/path</cwd>
+    if kind == "URL" and not re.match(r"^[a-z][a-z0-9+.-]*://", v) and re.match(r"^>?(?:/|~/|\./|\.\./)", v):
         return "local file path"
     if CODE_LOCATION.match(v) and not re.fullmatch(r"\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}(?::\d{2})?", v):
         return "code location"  # (an ISO date-time like 1994-06-18T00:00:00 is not file:line:col)

@@ -46,6 +46,9 @@ Cloakroom can't check, the action is blocked rather than let through.
   session's known values (10-character fragments) and the detectors; any hit withholds the whole output. Files a
   Bash command names are scanned first (up to 512 KB). Arbitrary transformations (ROT13, custom ciphers, values
   computed piece by piece) are out of scope: Cloakroom stops accidental leaks, not a model determined to leak.
+- An email address needs a dotted domain (from 1.2.0): an address on a host without a dot, like `jane@intranet`, isn't
+  masked, and nor is a name written next to it. This keeps the plugin ids Codex lists in its own instructions
+  (`Acme Orbit (acme-orbit@curated-remote)`) from being masked as people and addresses.
 - Disguised copies (0.6.6) are computed from values Cloakroom already knows, so a secret it has never seen isn't
   caught in any form. Not covered: salted or keyed hashes (HMAC, bcrypt, scrypt), other hashes (SHA-512, CRC),
   base32, hex grouped in fours (`xxd` without `-p`), upper/lower case changes of a key, a name's case changes or
@@ -214,16 +217,21 @@ Cloakroom can't check, the action is blocked rather than let through.
   header goes through.
 - Replies are not masked. Cloakroom hooks restore placeholders when the agent writes them to a local file or command;
   a reply is shown as the AI company sent it.
-- Only the text of a JSON body is checked. A body that isn't JSON (an upload), is compressed with zstd or brotli, or is
-  over `proxy_max_mb` (16) is refused with a 503 and a plain reason, never sent, and is counted as denied in
-  `cloakroom report`. Text inside an image or a signed "thinking" block is not checked.
-- Codex CLI signed in with ChatGPT and Gemini CLI signed in with a Google account talk to other addresses than the API
-  ones; `openai_base_url` and `GOOGLE_GEMINI_BASE_URL` apply to API-key sign-in only. Tested on Codex CLI 0.166.0 and
-  Gemini CLI 0.66.0: with an API key both go through the proxy and a key is masked. Codex with a ChatGPT sign-in does
-  send its requests to the proxy once `openai_base_url` is set, but compressed with zstd, which 1.0 cannot read, so the
-  proxy refuses every one of them (503) and Codex stops; `cloakroom proxy install codex` warns when it sees a ChatGPT
-  sign-in. Use an API key (`CODEX_API_KEY`) with the proxy. zstd support is planned for 1.0.1. Codex first tries a
-  WebSocket, which the proxy doesn't carry; it falls back to ordinary requests after about ten seconds of retries.
+- Only the text of a JSON body is checked. gzip, deflate and zstd bodies are decompressed first; a masked body goes on
+  uncompressed. A body that isn't JSON (an upload), is compressed with brotli, is damaged zstd, or is over
+  `proxy_max_mb` (16) once decompressed is refused with a 503 and a plain reason, never sent, and is counted as denied in
+  `cloakroom report`. zstd needs Python 3.14 or the `backports.zstd` package (installed with Cloakroom on older Pythons);
+  without either, zstd bodies are refused and `cloakroom doctor` says so. Text inside an image or a signed "thinking"
+  block is not checked.
+- Codex CLI with a ChatGPT sign-in is covered from 1.2.0 (tested on Codex CLI 0.166.0): `cloakroom proxy install codex`
+  sees the sign-in in Codex's `auth.json` and points Codex at the proxy's `/chatgpt` route, which forwards to
+  `chatgpt.com/backend-api/codex`, where Codex sends with that sign-in. If you switch Codex between ChatGPT and an API
+  key, run `cloakroom proxy install codex` again; until you do, requests go to the wrong address and fail, they don't
+  go around the proxy. Codex first tries a WebSocket, which the proxy doesn't carry; the proxy answers 426 and Codex
+  switches to ordinary requests at once.
+- Gemini CLI signed in with a Google account talks to other addresses than the API ones; `GOOGLE_GEMINI_BASE_URL`
+  applies to API-key sign-in only. Tested on Gemini CLI 0.66.0: with an API key it goes through the proxy and a key is
+  masked.
 - While the proxy isn't running, a tool pointed at it fails (it never goes around it). `cloakroom proxy uninstall NAME`
   undoes the setting.
 - A restored placeholder needs a Cloakroom hook in the agent that writes the file or command, and works for 24 hours.
