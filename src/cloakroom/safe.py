@@ -223,6 +223,8 @@ def reason(value: str, kind: str, keyed: bool) -> str | None:
         return "loopback or private URL"
     if kind == "EMAIL" and (RESERVED_DOMAINS.search(v) or ROLE_MAILBOX.match(v)):
         return "reserved domain or role mailbox"
+    if kind == "EMAIL" and re.search(r"@[^.@\s]+$", v):  # an agent's plugin id (name@marketplace); limit in docs-LIMITS
+        return "no dot in the domain, not an address"
     if kind == "PHONE" and FICTIONAL_PHONE.search(v):
         return "fictional 555-01xx number"
     if _is_internal_ip(v):

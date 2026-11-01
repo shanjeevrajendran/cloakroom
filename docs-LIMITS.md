@@ -46,6 +46,9 @@ Cloakroom can't check, the action is blocked rather than let through.
   session's known values (10-character fragments) and the detectors; any hit withholds the whole output. Files a
   Bash command names are scanned first (up to 512 KB). Arbitrary transformations (ROT13, custom ciphers, values
   computed piece by piece) are out of scope: Cloakroom stops accidental leaks, not a model determined to leak.
+- An email address needs a dotted domain (from 1.2.0): an address on a host without a dot, like `jane@intranet`, isn't
+  masked, and nor is a name written next to it. This keeps the plugin ids Codex lists in its own instructions
+  (`Acme Orbit (acme-orbit@curated-remote)`) from being masked as people and addresses.
 - Disguised copies (0.6.6) are computed from values Cloakroom already knows, so a secret it has never seen isn't
   caught in any form. Not covered: salted or keyed hashes (HMAC, bcrypt, scrypt), other hashes (SHA-512, CRC),
   base32, hex grouped in fours (`xxd` without `-p`), upper/lower case changes of a key, a name's case changes or
