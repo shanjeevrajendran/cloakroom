@@ -578,5 +578,5 @@ def test_doctor_names_cursor_and_another_hook(home, tmp_path, monkeypatch, capsy
     agents.install_cursor(PROGRAM)
     cli._doctor()
     out = capsys.readouterr().out
-    assert "cursor: Cloakroom's hooks installed (command-line agent; the editor isn't checked yet)" in out
+    assert "cursor: Cloakroom's hooks installed (editor and command-line agent)" in out
     assert f"another hook also runs on Cursor's tool calls ({project}/.cursor/hooks.json)" in out

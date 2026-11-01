@@ -3,7 +3,7 @@
 Two parts:
   Seen with Cloakroom: from the event log (events.py), per session and agent: kind, where (file read, command,
     prompt), what Cloakroom did, and a hint looked up from the session vault.
-  Found in agent history: a read-only scan of old transcripts (Claude Code, Codex CLI, Gemini CLI, Cursor's command-line agent) with the same
+  Found in agent history: a read-only scan of old transcripts (Claude Code, Codex CLI, Gemini CLI, Cursor) with the same
     rules clean-history uses: keys and passwords sitting there from before Cloakroom, or that it missed.
 Never a value: a hint is a well-known public prefix (sk-, ghp_, AKIA...) and, for values of 16+ characters, the last
 4, which is what key dashboards show. Lists only what Cloakroom detected: a key it missed leaves no line.

@@ -369,7 +369,7 @@ def _doctor() -> int:
             line(None, "gemini", problem)
     if os.path.isdir(agents.cursor_home()):  # Cursor is on this machine
         on = agents.cursor_installed()
-        line(on or None, "cursor", "Cloakroom's hooks installed (command-line agent; the editor isn't checked yet)"
+        line(on or None, "cursor", "Cloakroom's hooks installed (editor and command-line agent)"
              if on else "not protected; to protect it: cloakroom install cursor")
         for path in agents.cursor_other_hooks(os.getcwd()) if on else []:
             line(None, "cursor", f"another hook also runs on Cursor's tool calls ({path}); if it changes commands or "

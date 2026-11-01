@@ -111,9 +111,9 @@ change it. So Cloakroom stops a message holding a key or personal data before it
 MCP tools are add-ons that give the AI extra abilities, such as a browser or a database. "Block message" is
 explained under the table.
 
-| Protection | Claude Code | Codex CLI | Gemini CLI | Cursor (command-line agent) |
+| Protection | Claude Code | Codex CLI | Gemini CLI | Cursor (editor and command-line agent) |
 |---|---|---|---|---|
-| Prompts you type | ⛔ Stopped before sending (the AI never sees it); Cloakroom gives you a copy with placeholders to send instead | ⛔ Stopped before sending (the AI never sees it); Cloakroom gives you a copy with placeholders to send instead | ⛔ Stopped before sending (the AI never sees it); Cloakroom gives you a copy with placeholders to send instead; ✗ pictures in a prompt aren't checked | ✗ Not covered: Cursor's command-line agent doesn't run its prompt hook |
+| Prompts you type | ⛔ Stopped before sending (the AI never sees it); Cloakroom gives you a copy with placeholders to send instead | ⛔ Stopped before sending (the AI never sees it); Cloakroom gives you a copy with placeholders to send instead | ⛔ Stopped before sending (the AI never sees it); Cloakroom gives you a copy with placeholders to send instead; ✗ pictures in a prompt aren't checked | Editor: ⛔ Stopped before sending, with a copy with placeholders to send instead (`cr!` sends it as typed); ✗ command-line agent: not covered, it doesn't run Cursor's prompt hook |
 | File reads | ✓ | ✓ Masked when read through the shell (sent as a block message) | ✓ Masked (sent as a block message) | ✓ Masked (Cloakroom hands Cursor a masked copy of the file); ⛔ Cursor's Grep tool is refused when it would show file contents (a shell search is masked) |
 | Command output | ✓ | ✓ Masked (sent as a block message); ✗ long-running commands | ✓ Masked (sent as a block message) | ✓ Masked (the command runs inside Cloakroom, which prints only masked output) |
 | MCP tool output | ✓ | ✓ Masked (sent as a block message) | ✓ Masked (sent as a block message) | ✓ |
@@ -130,7 +130,7 @@ explained under the table.
 Cloakroom works through hooks: small checks the agent runs before and after each action, such as reading a file or
 running a command.
 
-Cursor's editor reads the same hooks file, but Cloakroom hasn't been checked there yet: treat the editor as not covered until it is.
+Cursor's editor was checked with Cloakroom too (Cursor 3.27.22). Tab completion has no hook, so Cursor's Tab model sees the open file as it is.
 
 - **Block message:** Codex and Gemini CLI can't swap a tool's output for a masked copy. So Cloakroom blocks the
   original, and the AI reads the masked text in the block message instead.
@@ -717,7 +717,7 @@ To remove it: `cloakroom uninstall gemini` (deletes that folder, nothing else). 
 
 ## Cursor
 
-Cloakroom also works with Cursor's command-line agent (`agent`), on Mac and Linux (checked against `agent` 2026.10.22).
+Cloakroom also works with Cursor's editor and its command-line agent (`agent`), on Mac and Linux (checked against `agent` 2026.10.22 and Cursor 3.27.22).
 
 1. Install the program by hand: `uv tool install "cloakroom[model,torch,ocr]"`.
 2. Run `cloakroom install cursor`. It adds nine hooks to `~/.cursor/hooks.json` and leaves your own hooks alone.
@@ -731,7 +731,9 @@ of MCP calls, and keys are kept out of files git would commit. What's different:
   masked copy of the file, and a command runs inside Cloakroom, which prints only masked output. The agent's
   transcript shows the command it wrote.
 - **Prompts aren't checked in the command-line agent:** Cursor doesn't run its prompt hook there. Put such details in
-  a file and ask the agent to read it: Cloakroom masks it on the way in.
+  a file and ask the agent to read it: Cloakroom masks it on the way in. The editor does check them.
+- **Tab completion isn't covered:** it has no hook, so Cursor's Tab model sees the open file as it is. An @-mentioned file
+  isn't sent as an attachment: the agent reads it and gets the masked copy.
 - Cursor's Grep tool is refused when it would show file contents, which can't be masked; the agent searches with a
   shell command, whose output is masked.
 - Commands Cloakroom would ask about are refused: a command with placeholders that could send data off the machine,

@@ -273,9 +273,12 @@ Checked against Codex CLI 0.164 (hooks docs: https://developers.openai.com/codex
 
 ## Cursor
 
-Checked against Cursor's command-line agent (`agent` 2026.10.22) and its hooks docs (https://cursor.com/docs/hooks).
+Checked against Cursor's command-line agent (`agent` 2026.10.22), Cursor's editor (3.27.22) and its hooks docs (https://cursor.com/docs/hooks).
 
-- **Prompts aren't checked in the command-line agent:** Cursor doesn't run its prompt hook (`beforeSubmitPrompt`) there, so a key or personal data you type goes to Cursor as it is. Put such details in a file and ask the agent to read it: Cloakroom masks it on the way in.
+- **Tab completion isn't covered in the editor:** it has no hook, so Cursor's Tab model sees the open file as it is.
+- **@-mentioned files in the editor** aren't sent as attachments: the agent reads them and gets the masked copy.
+
+- **Prompts are checked in the editor but not in the command-line agent:** the command-line agent doesn't run Cursor's prompt hook (`beforeSubmitPrompt`), so a key or personal data you type there goes to Cursor as it is. In the editor a typed key is stopped, with a copy with placeholders to send instead (`cr!` overrides). Put such details in a file and ask the agent to read it: Cloakroom masks it on the way in.
 - **Cursor's own web search isn't seen:** it runs inside Cursor with no hook, so what the agent searches for isn't checked. Web fetch wasn't seen in testing either.
 - **Pictures and PDFs:** opened as files, a picture's text is read on your machine and a PDF's text layer is used; the picture itself is not sent, and a scan without text is held back. Pictures pasted into a prompt aren't checked.
 - **Cloud agents aren't covered:** Cursor runs no user-level hooks there, and no MCP hooks at all.
@@ -358,6 +361,6 @@ Checked 2026-10-25 against the VS Code extensions of Claude Code (2.1.310), Code
 - **Gemini Code Assist in VS Code:** its agent mode runs a cut-down Gemini CLI server that loads extensions without
   their hooks and doesn't read hooks from `settings.json` (read from its source). Cloakroom's checks don't run there,
   so nothing is masked. The Gemini CLI in a terminal, with or without the Gemini CLI Companion extension, runs them.
-- **Cursor (editor):** Cursor's editor reads the same hooks file, but Cloakroom hasn't been checked there yet: treat the editor as not covered until it is.
+- **Cursor (editor):** checked with Cloakroom (Cursor 3.27.22): all nine hooks fire. Tab completion isn't covered. See [Cursor](#cursor).
 - **Antigravity:** it has hooks of its own (`hooks.json` in `~/.gemini/config/` or `.agents/`), but Cloakroom
   doesn't install any, so it doesn't protect you there.
