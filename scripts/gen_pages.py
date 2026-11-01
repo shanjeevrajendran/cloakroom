@@ -43,7 +43,7 @@ WHEN = {
     "explain": "run `cloakroom explain` on the file to see which rule fired and add an `allow` entry.",
     "give": "When the agent needs a key (a Stripe key, a database password), don't paste it into a prompt.",
     "dashboard": "when it masks something harmless (a false alarm), mark it once in the dashboard and a rule stops it next time.",
-    "update": "Codex, Gemini CLI, git commits, or a `cloakroom` you installed yourself: run `cloakroom update` in a terminal.",
+    "update": "Codex, Gemini CLI, Cursor, git commits, or a `cloakroom` you installed yourself: run `cloakroom update` in a terminal.",
     "export-onnx": "Any other machine (Intel Mac, most Windows and Linux)",
     "exposure": "lists the keys and passwords your coding agents saw, so you know what to rotate.",
 }
