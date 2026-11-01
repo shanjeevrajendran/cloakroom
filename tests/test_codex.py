@@ -103,6 +103,50 @@ def test_mcp_output_is_masked(monkeypatch, capsys):
     assert "updatedMCPToolOutput" not in json.dumps(out)  # parsed by Codex but not supported: it would fail open
 
 
+# --- pictures (view_image): their text read locally, never the picture itself ---
+
+def view_image(response, monkeypatch, capsys, path="/tmp/none.png", key="path"):
+    return codex("post", {"tool_name": "view_image", "tool_use_id": "c9", "tool_input": {key: path},
+                          "tool_response": response}, monkeypatch, capsys)
+
+
+def as_codex_rs(png_b64):  # codex-rs view_image: an input_image content item holding a data URL
+    return [{"type": "input_image", "image_url": f"data:image/png;base64,{png_b64}"}]
+
+
+@pytest.mark.skipif(not __import__("cloakroom.ocr").ocr.available(), reason="ocr extra not installed")
+@pytest.mark.parametrize("route", ["shape", "path", "command"])
+def test_view_image_reaches_codex_as_masked_text(route, tmp_path, monkeypatch, capsys):
+    import base64
+    from test_mcp_images import screenshot
+    png = screenshot()
+    pic = tmp_path / "pic.png"
+    pic.write_bytes(base64.b64decode(png))
+    response = as_codex_rs(png) if route == "shape" else {"unknown": "shape"}
+    out = view_image(response, monkeypatch, capsys, path=str(pic), key="command" if route == "command" else "path")
+    assert out["decision"] == "block" and png[:40] not in out["reason"] and "m.ellison@fernhill.co" not in out["reason"]
+    assert "PII_EMAIL_1_" in out["reason"] and "Order total" in out["reason"] and "PII_SECRET" not in out["reason"]
+
+
+@pytest.mark.parametrize("response", [as_codex_rs("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=="),
+                                      "an output Cloakroom doesn't recognise"])
+def test_view_image_it_cannot_read_is_held_back(response, monkeypatch, capsys):
+    from cloakroom import ocr
+    monkeypatch.setattr(ocr, "available", lambda: False)
+    out = view_image(response, monkeypatch, capsys)  # the path doesn't exist
+    assert out["decision"] == "block" and out["reason"].startswith("[Cloakroom held back an image")
+    assert "base64" not in out["reason"] and "PII_SECRET" not in out["reason"]
+
+
+def test_view_image_passes_unchecked_with_allow_images(monkeypatch, capsys):
+    from cloakroom import config
+    config.private_dir()
+    (config.HOME / "config.json").write_text(json.dumps({"allow_images": True}))
+    out = view_image(as_codex_rs("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=="),
+                     monkeypatch, capsys)
+    assert "decision" not in out and "unchecked" in out["systemMessage"]
+
+
 def test_clean_mcp_output_passes(monkeypatch, capsys):
     resp = {"content": [{"type": "text", "text": "issue 42 is closed"}], "isError": False}
     assert codex("post", {"tool_name": "mcp__crm__lookup", "tool_use_id": "c3", "tool_input": {},

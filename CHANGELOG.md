@@ -1,6 +1,8 @@
 # Changelog
 
 ## 1.2.0 (2026-11-01)
+- Codex: a picture opened with `view_image` is read on your machine, and Codex gets its text, masked, instead of the picture. A picture with no readable text is held back with a note, and `"allow_images": true` lets pictures through unchecked with a warning. Before, the picture's data was read as a key, so Codex never saw it.
+- An example address that shares its name with an email masked earlier (`sam@example.com` after `sam@yourcompany.com`) is no longer withheld as encoded output.
 - Cursor's editor: checked with Cloakroom. Shell output, file reads, typed messages, @-mentioned files and MCP output are covered there; Tab completion isn't.
 - `cloakroom proxy` now reads zstd-compressed request bodies, so Codex CLI signed in with ChatGPT is masked instead of refused.
 - `cloakroom proxy install codex` sees a ChatGPT sign-in and points Codex at the new `/chatgpt` route, which forwards to chatgpt.com. Run it again if you switch Codex's sign-in.

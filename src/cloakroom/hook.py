@@ -405,10 +405,18 @@ def on_post(data: dict) -> dict | None:
             return {"hookSpecificOutput": {"hookEventName": "PostToolUse", "updatedToolOutput": raw},
                     "systemMessage": "cloakroom: held back a Read result it can't check (image or PDF without text)"}
     img = ""  # what happened to MCP images, for every message below
-    if str(data.get("tool_name", "")).startswith("mcp__"):  # screenshots and pictures: OCR text, never pixels
+    view = data.get("tool_name") == "view_image"  # Codex's picture tool: the same policy as MCP pictures
+    if str(data.get("tool_name", "")).startswith("mcp__") or view:  # screenshots and pictures: OCR text, never pixels
         cfg = config.load()
         ocr = media.Ocr.from_config(cfg)
+        if view and cfg.get("allow_images"):
+            _ACTION[0] = "image passed"
+            return {"systemMessage": "cloakroom: an image went to Claude unchecked (allow_images is on)"}
         raw, n = media.convert_mcp(raw, allow_images=bool(cfg.get("allow_images")), ocr=ocr)
+        if view and not any(n.values()):  # a result shape Cloakroom doesn't know: read the picture from its path
+            ti = data.get("tool_input") or {}
+            where = str((ti.get("path") or ti.get("command") if isinstance(ti, dict) else ti) or "")
+            raw, n = media.convert_mcp(media.file_image(os.path.join(roots[0], where)), ocr=ocr)
         if ocr.pages or ocr.error:
             _NOTE[0] = f"ocr pages={ocr.pages} ms={ocr.ms:.0f}" + (f" ocr failed ({ocr.error})" if ocr.error else "")
         img = "; ".join(x for x in (

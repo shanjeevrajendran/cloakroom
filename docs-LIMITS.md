@@ -259,7 +259,10 @@ Checked 2026-11-01 against Codex CLI 0.166.0 and the Codex app.
   through a block (`updatedMCPToolOutput` is read but not applied yet).
 - Codex hooks can't ask: a command with placeholders that could send data off the machine, or one Cloakroom
   doesn't know, is denied instead of asked about. Run it yourself if you want it.
-- No hook at all: Codex's own web search (it runs on OpenAI's servers), and pictures from `view_image`. Hooks also stop when they are turned
+- Pictures from `view_image` are read on your machine, as MCP images are (above): Codex gets their masked text in a
+  block, never the picture. One with no readable text, or any picture without the `cloakroom[ocr]` extra, is held
+  back with a note. `"allow_images": true` lets them through unchecked, with a warning.
+- No hook at all: Codex's own web search (it runs on OpenAI's servers). Hooks also stop when they are turned
   off (`[features] hooks = false`) or by an admin policy.
 - A missing or broken `cloakroom` program makes tool calls fail closed: they are blocked (the hook exits with code
   2 and a reason, which Codex treats as a block). Prompts and session starts go on with Codex's error message, so you are never
