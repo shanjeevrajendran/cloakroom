@@ -241,6 +241,7 @@ Cloakroom can't check, the action is blocked rather than let through.
 ## Codex
 
 Checked against Codex CLI 0.164 (hooks docs: https://developers.openai.com/codex/hooks, and its source).
+Checked 2026-11-01 against Codex CLI 0.166.0 and the Codex app.
 
 - **Open gap, background output:** a command still running when Codex stops waiting (10 seconds by default; the
   model can choose a shorter or longer wait) returns its output so far to the model, and Codex runs no after-action
