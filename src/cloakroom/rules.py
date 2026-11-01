@@ -33,7 +33,7 @@ def _iban_ok(raw: str) -> bool:
 
 # (id, kind, regex, group holding the value, validator)
 SECRET_RULES = [
-    ("private-key", "SECRET", r"-----BEGIN [A-Z ]*PRIVATE KEY-----[\s\S]+?-----END [A-Z ]*PRIVATE KEY-----", 0, None),
+    ("private-key", "SECRET", r"-----BEGIN [A-Z ]*PRIVATE KEY(?: BLOCK)?-----[\s\S]+?-----END [A-Z ]*PRIVATE KEY(?: BLOCK)?-----", 0, None),
     ("aws-key-id", "SECRET", r"\b(?:AKIA|ASIA|ABIA|ACCA)[A-Z2-7]{16}\b", 0, None),
     ("github-token", "SECRET", r"\b(?:gh[pousr]_[A-Za-z0-9]{36,}|github_pat_[A-Za-z0-9_]{22,})\b", 0, None),
     ("anthropic-key", "SECRET", r"\bsk-ant-[A-Za-z0-9_-]{20,}", 0, None),
@@ -45,6 +45,15 @@ SECRET_RULES = [
     ("slack-token", "SECRET", r"\bxox[abposr]-[A-Za-z0-9-]{10,}", 0, None),
     ("huggingface-token", "SECRET", r"\bhf_[A-Za-z0-9]{30,}\b", 0, None),
     ("google-api-key", "SECRET", r"\bAIza[0-9A-Za-z_-]{35}\b", 0, None),
+    ("gitlab-token", "SECRET", r"\bglpat-[A-Za-z0-9_.-]{20,}", 0, None),
+    ("npm-token", "SECRET", r"\bnpm_[A-Za-z0-9]{36}\b", 0, None),
+    ("pypi-token", "SECRET", r"\bpypi-AgE[A-Za-z0-9_-]{50,}", 0, None),
+    ("digitalocean-token", "SECRET", r"\bdo[por]_v1_[a-f0-9]{64}\b", 0, None),
+    ("xai-key", "SECRET", r"\bxai-[A-Za-z0-9]{70,}", 0, None),
+    ("groq-key", "SECRET", r"\bgsk_[A-Za-z0-9]{48,}", 0, None),
+    ("slack-webhook", "SECRET", r"https://hooks\.slack\.com/(?:services|workflows|triggers)/[A-Za-z0-9/_-]{20,}", 0, None),
+    ("discord-webhook", "SECRET", r"https://(?:ptb\.|canary\.)?discord(?:app)?\.com/api/webhooks/\d{17,20}/[A-Za-z0-9_-]{60,}", 0, None),
+    ("telegram-bot-token", "SECRET", r"\b\d{8,10}:AA[A-Za-z0-9_-]{33}\b", 0, None),
     ("jwt", "SECRET", r"\beyJ[A-Za-z0-9_-]{8,}\.eyJ[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}", 0, None),
     ("url-password", "SECRET", r"\b[a-z][a-z0-9+.-]*://[^\s:/@]+:([^\s@/]{3,})@", 1, None),
     ("url-username", "ACCOUNT", r"\b[a-z][a-z0-9+.-]*://([^\s:/@]+):[^\s@/]{3,}@", 1, lambda v: _personal_user(v)),
