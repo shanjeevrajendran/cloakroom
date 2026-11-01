@@ -10,6 +10,11 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 import pytest
 
+try:
+    from compression import zstd  # 3.14+
+except ImportError:
+    from backports import zstd
+
 KEY = "sk-" + "proj9Hq2LmNp4RvX7yBc1Df5Gh6Jk0Q4z"  # an API-key shape, not a real one
 EMAIL = "henrik.dahl@quillfield.com"
 AUTH = "sk-ant-" + "api03-Zk8mQ2vL7xNp4RtY1bCd5Fg"  # a header value: must reach the upstream exactly as sent
@@ -237,7 +242,7 @@ def test_gzip_body_is_masked_and_sent_plain(stack):
 
 def test_unreadable_bodies_are_refused_and_never_forwarded(stack):
     cases = [(b"\x00\x01 not json " + KEY.encode(), {}, "not-json", b"not JSON"),
-             (b"zzzz" + KEY.encode(), {"Content-Encoding": "zstd"}, "encoding", b"zstd"),
+             (b"zzzz" + KEY.encode(), {"Content-Encoding": "zstd"}, "encoding", b"compressed"),
              (b"zzzz" + KEY.encode(), {"Content-Encoding": "br"}, "encoding", b"brotli")]
     for raw, h, why, said in cases:
         status, _, body = send(stack, "POST", "/fake/v1/messages", raw, h)
@@ -265,11 +270,70 @@ def test_a_body_over_the_cap_is_refused_before_it_is_read(stack, monkeypatch):
     assert rows("proxy")[-1]["reason"] == "too-large"
 
 
-def test_zstd_body_is_refused_with_the_secret_inside(stack):
-    # what Codex signed in with ChatGPT sends: a compressed JSON body holding a key
-    raw = b"\x28\xb5\x2f\xfd" + json.dumps({"input": [{"role": "user", "content": KEY}]}).encode()
+def zstd_of(data: bytes) -> bytes:
+    return zstd.compress(data)
+
+
+def test_zstd_body_is_decoded_masked_and_sent_plain(stack):
+    # what Codex signed in with ChatGPT sends: a zstd JSON body holding a key
+    raw = zstd_of(json.dumps({"input": [{"role": "user", "content": f"read this: {KEY}"}]}).encode())
     status, _, _ = send(stack, "POST", "/fake/v1/responses", raw, {"Content-Encoding": "zstd"})
-    assert status == 503 and stack.seen == []
+    assert status == 200  # 1.1.0 refused it with a 503
+    seen = stack.seen[-1]
+    assert KEY.encode() not in seen["body"] and b"PII_SECRET_" in seen["body"]
+    assert "content-encoding" not in {k.lower() for k in seen["headers"]}  # sent plain
+    assert rows("proxy")[-1]["action"] == "masked"
+
+
+def test_a_zstd_body_with_nothing_to_mask_goes_out_as_it_came(stack):
+    raw = zstd_of(b'{"input":[{"role":"user","content":"hello there"}]}')
+    send(stack, "POST", "/fake/v1/responses", raw, {"Content-Encoding": "zstd"})
+    assert stack.seen[-1]["body"] == raw and stack.seen[-1]["headers"].get("Content-Encoding") == "zstd"
+
+
+def test_a_zstd_bomb_stops_at_the_cap_while_decompressing(stack):
+    import tracemalloc
+    from cloakroom import config, proxy
+    c = zstd.ZstdCompressor()
+    head = b'{"input":"' + b"x" * (1 << 20)
+    bomb = c.compress(head) + b"".join(c.compress(b"x" * (1 << 20)) for _ in range(199)) + c.flush()  # 200 MB out
+    assert len(bomb) < 64 * 1024
+    tracemalloc.start()
+    with pytest.raises(proxy.Unchecked) as e:
+        proxy.mask_body(bomb, "zstd", 1 << 20)
+    peak = tracemalloc.get_traced_memory()[1]
+    tracemalloc.stop()
+    assert e.value.reason == "too-large" and peak < 8 << 20  # never more than about the cap in memory
+    (config.HOME / "config.json").write_text(json.dumps({"proxy_max_mb": 1, "proxy_upstreams": {"/fake": f"http://127.0.0.1:{stack.port}"}}))
+    status, _, body = send(stack, "POST", "/fake/v1/responses", bomb, {"Content-Encoding": "zstd"})
+    assert status == 503 and b"proxy_max_mb" in body and stack.seen == []
+
+
+@pytest.mark.parametrize("raw", [b"\x28\xb5\x2f\xfd" + b"junk" * 8, None, "two-frames"])
+def test_bad_zstd_is_refused(stack, raw):
+    whole = zstd_of(json.dumps({"input": KEY}).encode())
+    raw = {None: whole[:-4], "two-frames": whole + whole}.get(raw, raw)  # garbage, cut short, a second frame
+    status, _, body = send(stack, "POST", "/fake/v1/responses", raw, {"Content-Encoding": "zstd"})
+    assert status == 503 and stack.seen == [] and rows("proxy")[-1]["reason"] == "encoding"
+
+
+def test_without_a_zstd_library_zstd_bodies_stay_refused(stack, monkeypatch):
+    import sys
+    raw = zstd_of(json.dumps({"input": KEY}).encode())
+    monkeypatch.setitem(sys.modules, "compression.zstd", None)  # makes the import fail
+    monkeypatch.setitem(sys.modules, "backports.zstd", None)
+    from cloakroom import proxy
+    assert proxy._zstd() is None
+    status, _, body = send(stack, "POST", "/fake/v1/responses", raw, {"Content-Encoding": "zstd"})
+    assert status == 503 and b"backports.zstd" in body and stack.seen == []
+    assert rows("proxy")[-1]["reason"] == "no-zstd"
+
+
+def test_a_websocket_upgrade_is_refused_at_once_with_426(stack):
+    # Codex tries a WebSocket first; 426 makes it switch to HTTPS straight away instead of retrying
+    t0 = time.monotonic()
+    status, _, _ = send(stack, "GET", "/fake/v1/responses", None, {"Upgrade": "websocket", "Connection": "Upgrade"})
+    assert status == 426 and stack.seen == [] and time.monotonic() - t0 < 1
 
 
 def test_empty_bodies_and_gets_still_pass(stack):
@@ -477,9 +541,9 @@ def test_doctor_is_silent_until_the_proxy_is_in_use(monkeypatch, tmp_path, capsy
 
 # --- the install warning for a ChatGPT sign-in ---
 
-@pytest.mark.parametrize("mode,warns", [("chatgpt", True), ("apikey", False), (None, False)])
-def test_codex_install_warns_on_a_chatgpt_sign_in(monkeypatch, tmp_path, capsys, mode, warns):
-    from cloakroom import cli
+@pytest.mark.parametrize("mode,chatgpt", [("chatgpt", True), ("apikey", False), (None, False)])
+def test_codex_install_points_a_chatgpt_sign_in_at_the_chatgpt_route(monkeypatch, tmp_path, capsys, mode, chatgpt):
+    from cloakroom import cli, proxy
     home = tmp_path / "x"
     home.mkdir()
     fake = {"OPENAI_API_KEY": None, "tokens": {"access_token": "fake-access-value-1234"}}
@@ -490,8 +554,28 @@ def test_codex_install_warns_on_a_chatgpt_sign_in(monkeypatch, tmp_path, capsys,
     for extra in (["--print"], []):
         assert cli.main(["proxy", "install", "codex", *extra]) == 0
         out = capsys.readouterr()
-        assert ("signed in with ChatGPT" in out.err) is warns
+        assert ("signed in with ChatGPT" in out.err) is chatgpt and "503" not in out.err
         assert "fake-access-value-1234" not in out.out + out.err  # no value from the file is printed
+    got = proxy.pointing()["codex"]
+    assert got.endswith("/chatgpt") if chatgpt else got.endswith("/openai/v1")
+    assert not got.rstrip("/").endswith("/backend-api/codex")  # Codex would reroute around the proxy
+    assert proxy.upstreams()["/chatgpt"] == ("chatgpt.com", "https://chatgpt.com/backend-api/codex")
+
+
+def test_install_and_doctor_say_when_the_zstd_library_is_missing(monkeypatch, tmp_path, capsys):
+    import sys
+    from cloakroom import cli
+    home = tmp_path / "x"
+    home.mkdir()
+    (home / "auth.json").write_text(json.dumps({"auth_mode": "chatgpt"}))
+    monkeypatch.setenv("CODEX_HOME", str(home))
+    monkeypatch.setenv("CLAUDE_CONFIG_DIR", str(tmp_path))
+    monkeypatch.setitem(sys.modules, "compression.zstd", None)
+    monkeypatch.setitem(sys.modules, "backports.zstd", None)
+    assert cli.main(["proxy", "install", "codex"]) == 0
+    assert "backports.zstd" in capsys.readouterr().err
+    cli.main(["doctor"])
+    assert sum("backports.zstd" in ln for ln in capsys.readouterr().out.splitlines()) == 1
 
 
 def test_codex_install_without_an_auth_file_does_not_warn(monkeypatch, tmp_path, capsys):

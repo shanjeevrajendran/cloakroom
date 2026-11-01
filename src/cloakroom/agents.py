@@ -734,8 +734,7 @@ def install(agent, remove=False):
         return 0
     if agent == "cursor":
         print(f"cloakroom: Cursor hooks written to {path} (program: {program}).\n"
-              "Cursor's command-line agent (agent) runs them from its next start. The editor reads the same file but "
-              "hasn't been checked with Cloakroom yet.\n"
+              "Cursor's editor and command-line agent (agent) run them from their next start.\n"
               "To remove them: cloakroom uninstall cursor")
         return 0
     print(f"cloakroom: Codex hooks written to {path} (program: {program}).\n"

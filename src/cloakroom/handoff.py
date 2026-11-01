@@ -1,7 +1,7 @@
 """Safe handoff: `cloakroom give NAME` stores a value you type hidden in a terminal and prints a placeholder to paste.
 
 The value never goes through a prompt. It is kept encrypted (crypto.py) per project under the Cloakroom home; every
-session in that project (Claude Code, Codex CLI, Gemini CLI, Cursor's command-line agent) loads it into its vault
+session in that project (Claude Code, Codex CLI, Gemini CLI, Cursor) loads it into its vault
 when the hook starts (vault.py load_given), so the existing restore puts the real value back into local files and commands, and tool output that
 shows it is masked again. Placeholders are the usual signed ones (kind SECRET), tagged with a key only this machine
 has. Entries expire after 24 hours. Values are never printed, logged or shown on the dashboard; the list shows a hint.

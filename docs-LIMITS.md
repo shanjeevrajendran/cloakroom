@@ -46,6 +46,9 @@ Cloakroom can't check, the action is blocked rather than let through.
   session's known values (10-character fragments) and the detectors; any hit withholds the whole output. Files a
   Bash command names are scanned first (up to 512 KB). Arbitrary transformations (ROT13, custom ciphers, values
   computed piece by piece) are out of scope: Cloakroom stops accidental leaks, not a model determined to leak.
+- An email address needs a dotted domain (from 1.2.0): an address on a host without a dot, like `jane@intranet`, isn't
+  masked, and nor is a name written next to it. This keeps the plugin ids Codex lists in its own instructions
+  (`Acme Orbit (acme-orbit@curated-remote)`) from being masked as people and addresses.
 - Disguised copies (0.6.6) are computed from values Cloakroom already knows, so a secret it has never seen isn't
   caught in any form. Not covered: salted or keyed hashes (HMAC, bcrypt, scrypt), other hashes (SHA-512, CRC),
   base32, hex grouped in fours (`xxd` without `-p`), upper/lower case changes of a key, a name's case changes or
@@ -214,16 +217,21 @@ Cloakroom can't check, the action is blocked rather than let through.
   header goes through.
 - Replies are not masked. Cloakroom hooks restore placeholders when the agent writes them to a local file or command;
   a reply is shown as the AI company sent it.
-- Only the text of a JSON body is checked. A body that isn't JSON (an upload), is compressed with zstd or brotli, or is
-  over `proxy_max_mb` (16) is refused with a 503 and a plain reason, never sent, and is counted as denied in
-  `cloakroom report`. Text inside an image or a signed "thinking" block is not checked.
-- Codex CLI signed in with ChatGPT and Gemini CLI signed in with a Google account talk to other addresses than the API
-  ones; `openai_base_url` and `GOOGLE_GEMINI_BASE_URL` apply to API-key sign-in only. Tested on Codex CLI 0.166.0 and
-  Gemini CLI 0.66.0: with an API key both go through the proxy and a key is masked. Codex with a ChatGPT sign-in does
-  send its requests to the proxy once `openai_base_url` is set, but compressed with zstd, which 1.0 cannot read, so the
-  proxy refuses every one of them (503) and Codex stops; `cloakroom proxy install codex` warns when it sees a ChatGPT
-  sign-in. Use an API key (`CODEX_API_KEY`) with the proxy. zstd support is planned for 1.0.1. Codex first tries a
-  WebSocket, which the proxy doesn't carry; it falls back to ordinary requests after about ten seconds of retries.
+- Only the text of a JSON body is checked. gzip, deflate and zstd bodies are decompressed first; a masked body goes on
+  uncompressed. A body that isn't JSON (an upload), is compressed with brotli, is damaged zstd, or is over
+  `proxy_max_mb` (16) once decompressed is refused with a 503 and a plain reason, never sent, and is counted as denied in
+  `cloakroom report`. zstd needs Python 3.14 or the `backports.zstd` package (installed with Cloakroom on older Pythons);
+  without either, zstd bodies are refused and `cloakroom doctor` says so. Text inside an image or a signed "thinking"
+  block is not checked.
+- Codex CLI with a ChatGPT sign-in is covered from 1.2.0 (tested on Codex CLI 0.166.0): `cloakroom proxy install codex`
+  sees the sign-in in Codex's `auth.json` and points Codex at the proxy's `/chatgpt` route, which forwards to
+  `chatgpt.com/backend-api/codex`, where Codex sends with that sign-in. If you switch Codex between ChatGPT and an API
+  key, run `cloakroom proxy install codex` again; until you do, requests go to the wrong address and fail, they don't
+  go around the proxy. Codex first tries a WebSocket, which the proxy doesn't carry; the proxy answers 426 and Codex
+  switches to ordinary requests at once.
+- Gemini CLI signed in with a Google account talks to other addresses than the API ones; `GOOGLE_GEMINI_BASE_URL`
+  applies to API-key sign-in only. Tested on Gemini CLI 0.66.0: with an API key it goes through the proxy and a key is
+  masked.
 - While the proxy isn't running, a tool pointed at it fails (it never goes around it). `cloakroom proxy uninstall NAME`
   undoes the setting.
 - A restored placeholder needs a Cloakroom hook in the agent that writes the file or command, and works for 24 hours.
@@ -233,6 +241,7 @@ Cloakroom can't check, the action is blocked rather than let through.
 ## Codex
 
 Checked against Codex CLI 0.164 (hooks docs: https://developers.openai.com/codex/hooks, and its source).
+Checked 2026-11-01 against Codex CLI 0.166.0 and the Codex app.
 
 - **Open gap, background output:** a command still running when Codex stops waiting (10 seconds by default; the
   model can choose a shorter or longer wait) returns its output so far to the model, and Codex runs no after-action
@@ -250,7 +259,10 @@ Checked against Codex CLI 0.164 (hooks docs: https://developers.openai.com/codex
   through a block (`updatedMCPToolOutput` is read but not applied yet).
 - Codex hooks can't ask: a command with placeholders that could send data off the machine, or one Cloakroom
   doesn't know, is denied instead of asked about. Run it yourself if you want it.
-- No hook at all: Codex's own web search (it runs on OpenAI's servers), and pictures from `view_image`. Hooks also stop when they are turned
+- Pictures from `view_image` are read on your machine, as MCP images are (above): Codex gets their masked text in a
+  block, never the picture. One with no readable text, or any picture without the `cloakroom[ocr]` extra, is held
+  back with a note. `"allow_images": true` lets them through unchecked, with a warning.
+- No hook at all: Codex's own web search (it runs on OpenAI's servers). Hooks also stop when they are turned
   off (`[features] hooks = false`) or by an admin policy.
 - A missing or broken `cloakroom` program makes tool calls fail closed: they are blocked (the hook exits with code
   2 and a reason, which Codex treats as a block). Prompts and session starts go on with Codex's error message, so you are never
@@ -265,9 +277,12 @@ Checked against Codex CLI 0.164 (hooks docs: https://developers.openai.com/codex
 
 ## Cursor
 
-Checked against Cursor's command-line agent (`agent` 2026.10.22) and its hooks docs (https://cursor.com/docs/hooks).
+Checked against Cursor's command-line agent (`agent` 2026.10.22), Cursor's editor (3.27.22) and its hooks docs (https://cursor.com/docs/hooks).
 
-- **Prompts aren't checked in the command-line agent:** Cursor doesn't run its prompt hook (`beforeSubmitPrompt`) there, so a key or personal data you type goes to Cursor as it is. Put such details in a file and ask the agent to read it: Cloakroom masks it on the way in.
+- **Tab completion isn't covered in the editor:** it has no hook, so Cursor's Tab model sees the open file as it is.
+- **@-mentioned files in the editor** aren't sent as attachments: the agent reads them and gets the masked copy.
+
+- **Prompts are checked in the editor but not in the command-line agent:** the command-line agent doesn't run Cursor's prompt hook (`beforeSubmitPrompt`), so a key or personal data you type there goes to Cursor as it is. In the editor a typed key is stopped, with a copy with placeholders to send instead (`cr!` overrides). Put such details in a file and ask the agent to read it: Cloakroom masks it on the way in.
 - **Cursor's own web search isn't seen:** it runs inside Cursor with no hook, so what the agent searches for isn't checked. Web fetch wasn't seen in testing either.
 - **Pictures and PDFs:** opened as files, a picture's text is read on your machine and a PDF's text layer is used; the picture itself is not sent, and a scan without text is held back. Pictures pasted into a prompt aren't checked.
 - **Cloud agents aren't covered:** Cursor runs no user-level hooks there, and no MCP hooks at all.
@@ -350,6 +365,6 @@ Checked 2026-10-25 against the VS Code extensions of Claude Code (2.1.310), Code
 - **Gemini Code Assist in VS Code:** its agent mode runs a cut-down Gemini CLI server that loads extensions without
   their hooks and doesn't read hooks from `settings.json` (read from its source). Cloakroom's checks don't run there,
   so nothing is masked. The Gemini CLI in a terminal, with or without the Gemini CLI Companion extension, runs them.
-- **Cursor (editor):** Cursor's editor reads the same hooks file, but Cloakroom hasn't been checked there yet: treat the editor as not covered until it is.
+- **Cursor (editor):** checked with Cloakroom (Cursor 3.27.22): all nine hooks fire. Tab completion isn't covered. See [Cursor](#cursor).
 - **Antigravity:** it has hooks of its own (`hooks.json` in `~/.gemini/config/` or `.agents/`), but Cloakroom
   doesn't install any, so it doesn't protect you there.

@@ -68,10 +68,11 @@ def squeeze(s: str) -> str:
 FRAGMENT = 10  # a run this long from a known value counts, so truncated output (head, cut) is caught too
 
 
-def known_value_hit(text: str, values, as_typed: bool = False) -> bool:
+def known_value_hit(text: str, values, as_typed: bool = False, runs: bool = True) -> bool:
     """Whitespace-insensitive check for any of the session's real values, or a 10+ character run of one.
     as_typed: text is the output itself, not a decoded view, so a short value counts only where spacing hides it;
-    a copy as it is was the engine's call (shorter than KNOWN_MIN: left alone, too likely to turn up by chance)."""
+    a copy as it is was the engine's call (shorter than KNOWN_MIN: left alone, too likely to turn up by chance).
+    runs=False: whole values only."""
     flat = squeeze(text)
     for v in values:
         v = squeeze(v)
@@ -81,7 +82,7 @@ def known_value_hit(text: str, values, as_typed: bool = False) -> bool:
             if v in flat and not (as_typed and len(v) < KNOWN_MIN and flat.count(v) == text.count(v)):
                 return True
             continue
-        if any(v[i:i + FRAGMENT] in flat for i in range(len(v) - FRAGMENT + 1)):
+        if (any(v[i:i + FRAGMENT] in flat for i in range(len(v) - FRAGMENT + 1)) if runs else v in flat):
             return True
     return False
 

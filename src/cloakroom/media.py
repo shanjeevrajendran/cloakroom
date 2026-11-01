@@ -194,11 +194,25 @@ def _mcp_image(block: dict) -> tuple[bool, str | None]:
         res = block["resource"]
         if str(res.get("mimeType", "")).lower().startswith("image/"):
             return True, res.get("blob") if isinstance(res.get("blob"), str) and res.get("blob") else None
+    url = block.get("image_url")
+    if kind == "input_image" or isinstance(url, str) and url.startswith("data:image/"):  # Codex's view_image (codex-rs)
+        data = url.partition(";base64,")[2] if isinstance(url, str) else ""
+        return True, data or None
     if kind == "image_url" or (str(block.get("mimeType", "")).lower().startswith("image/")
                                and ("data" in block or "blob" in block)):  # a resource_link (a URI) has no pixels
         data = block.get("data") or block.get("blob")
         return True, data if isinstance(data, str) and data else None
     return False, None
+
+
+def file_image(path: str) -> list:
+    """A picture file as an image block, for a picture tool whose result isn't in a shape Cloakroom knows. A file
+    that can't be read gives a block with no data, which convert_mcp holds back."""
+    try:
+        with open(path, "rb") as f:
+            return [{"type": "image", "data": base64.b64encode(f.read()).decode()}]
+    except OSError:
+        return [{"type": "image"}]
 
 
 def _mcp_ocr(data: str, ocr: Ocr | None) -> tuple[str, bool]:

@@ -320,7 +320,7 @@ def _doctor() -> int:
         crypto.key()
         line(crypto.KEY_SOURCE != "key-file" or None, "vault key",
              {"os-secure-store": "OS secure store", "environment": "CLOAKROOM_VAULT_KEY",
-              "key-file": "key file (no OS secure store found; set CLOAKROOM_VAULT_KEY or install a keyring backend)"}
+              "key-file": "key file (no OS secure store found, or HOME is not your account's home; set CLOAKROOM_VAULT_KEY or install a keyring backend)"}
              [crypto.KEY_SOURCE])
     except crypto.KeyUnavailable as e:
         line(False, "vault key", str(e))
@@ -369,7 +369,7 @@ def _doctor() -> int:
             line(None, "gemini", problem)
     if os.path.isdir(agents.cursor_home()):  # Cursor is on this machine
         on = agents.cursor_installed()
-        line(on or None, "cursor", "Cloakroom's hooks installed (command-line agent; the editor isn't checked yet)"
+        line(on or None, "cursor", "Cloakroom's hooks installed (editor and command-line agent)"
              if on else "not protected; to protect it: cloakroom install cursor")
         for path in agents.cursor_other_hooks(os.getcwd()) if on else []:
             line(None, "cursor", f"another hook also runs on Cursor's tool calls ({path}); if it changes commands or "
@@ -384,6 +384,8 @@ def _doctor() -> int:
         else:
             line(True, "proxy", f"running on port {proxy.port()}; pointing at it: "
                  + (", ".join(proxy.NAMES[k] for k in pointed) or "no tool yet (cloakroom proxy install claude)"))
+        if "codex" in pointed and proxy.codex_chatgpt() and proxy._zstd() is None:
+            line(False, "proxy", f"Codex is signed in with ChatGPT, but {proxy.NO_ZSTD}")
     found = find_program()
     line(found is not None or None, "program", found or "the plugin can't find the cloakroom program, so Claude Code "
          "tool calls are denied: reinstall (uv tool install 'cloakroom[model,torch]', or let the plugin do it by "

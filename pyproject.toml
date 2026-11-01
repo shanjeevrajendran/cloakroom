@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "cloakroom"
-version = "1.1.0"
+version = "1.2.0"
 description = "Masks API keys, secrets and personal data before your AI coding agent sees them, and restores them locally. Works with Claude Code, Codex CLI, Gemini CLI and Cursor's command-line agent."
 readme = "README.md"
 license = "Apache-2.0"
@@ -22,7 +22,8 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "Topic :: Security",
 ]
-dependencies = ["cryptography>=42", "keyring>=24", "pypdf>=5"]  # pypdf: PDF text for masking (pure Python)
+dependencies = ["cryptography>=42", "keyring>=24", "pypdf>=5",  # pypdf: PDF text for masking (pure Python)
+                "backports.zstd>=1.0; python_version < '3.14'"]  # the proxy reads zstd bodies (stdlib from 3.14)
 
 [project.optional-dependencies]
 # CPU: ONNX Runtime, no PyTorch at runtime (the ONNX file comes from scripts/export_onnx.py)

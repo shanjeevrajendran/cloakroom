@@ -125,7 +125,8 @@ CONTEXT_RULES = [
     ("person-field", "PERSON",
      r"(?i:\b(?:full_?name|first_?name|last_?name|name|owner|author|customer|contact|employee|patient|signed by|"
      r"new hire|spoke with))[\"'*]*\s*[:=]?\s*[\"'*]*(" + _PERSON + r")", 1, None),
-    ("person-email", "PERSON", r"(" + _PERSON + r")\s*[<(][\w.%+-]+@", 1, None),
+    # the address needs a dotted domain, as in the email rule: "Acme Orbit (acme-orbit@curated-remote)" is a plugin id
+    ("person-email", "PERSON", r"(" + _PERSON + r")\s*[<(][\w.%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b", 1, None),
     ("street-address", "ADDRESS", _STREET, 0, None),
     ("birth-date", "DATE", r"(?i:\b(?:dob|d\.o\.b\.?|date[ _]of[ _]birth|birth_?date|birthday|born(?: on)?))" + _KEY_SEP
      + "(" + _DATE + ")", 1, None),
