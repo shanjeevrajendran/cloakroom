@@ -72,6 +72,9 @@ SECRET_RULES = [
 PII_RULES = [
     ("email", "EMAIL", r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b", 0, None),
     ("phone", "PHONE", r"(?<![\w.:-])(?:\+?1[\s.-]?)?\(?\d{3}\)?[\s.-]\d{3}[\s.-]\d{4}(?![\w-])", 0, None),
+    # the label stands alone (not "passport photo"); 6 to 9 letters and digits, at least one digit
+    ("passport", "ACCOUNT", r"(?i:\b(?:passport|passeport|pasaporte|passaporte|reisepass)(?: no\.?| number| #)?\s*[:=]\s*)"
+     r"((?=[A-Za-z]*\d)[A-Za-z0-9]{6,9})\b", 1, None),
     ("ssn", "SSN", r"(?<!\d)(?!000|666|9\d\d)\d{3}-(?!00)\d{2}-(?!0000)\d{4}(?!\d)", 0, None),
     ("card", "CARD", r"(?<![\d-])(?:\d[ -]?){12,18}\d(?![\d-])", 0, lambda v: _luhn(re.sub(r"\D", "", v))),
     ("iban", "IBAN", r"\b[A-Z]{2}\d{2}(?: ?[A-Z0-9]{4}){2,7}(?: ?[A-Z0-9]{1,4})?\b", 0, _iban_ok),
@@ -135,7 +138,7 @@ CONTEXT_RULES = [
 ]
 
 # found under a key that says what the value is: shape-based "looks like a placeholder / a public place" checks don't apply
-_KEYED = {"keyed-secret", "keyed-password", "url-password", "address-field"}  # (birth dates keep the "historical date" check)
+_KEYED = {"keyed-secret", "keyed-password", "url-password", "address-field", "passport"}  # (birth dates keep the "historical date" check)
 _COMPILED = [(i, k, re.compile(rx), g, v) for i, k, rx, g, v in SECRET_RULES + PII_RULES + CONTEXT_RULES + PATH_RULES]
 OWN_PLACEHOLDER = re.compile(r"\bPII_[A-Z]+_\d+(?:_[a-z2-7]{6})?\b")  # issued (signed) or from before 0.6.1
 

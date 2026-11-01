@@ -3,6 +3,7 @@
 ## 1.1.0 (unreleased)
 - `max_output_tokens` and similar parameter names are no longer treated as secrets (the keyed-secret rule was matching
   `token` and `pass` inside longer names, which showed up in Codex tool descriptions).
+- Passport numbers after a "Passport:" label are masked by their own rule (rules mode used to catch them only by accident).
 - Dashboard: new Console look, solid icon in the header and as favicon, refreshed preview.
 - Cursor's command-line agent: `cloakroom install cursor` adds Cloakroom's hooks to `~/.cursor/hooks.json`, next to yours
   (`uninstall` removes only its own). Cursor can't swap a tool's output for a masked copy, so Cloakroom changes the
