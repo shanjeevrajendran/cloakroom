@@ -35,3 +35,10 @@ def test_environment_key_still_wins_on_a_borrowed_home(tmp_path, monkeypatch):
     monkeypatch.setattr(crypto, "_secure_store", lambda: Boom())
     crypto.key()
     assert crypto.KEY_SOURCE == "environment"
+
+
+def test_scripts_that_set_a_data_folder_set_a_vault_key():
+    scripts = [p for d in ("bench", "scripts") for p in ROOT.glob(f"{d}/**/*.sh")]
+    setters = [p for p in scripts if "CLOAKROOM_HOME" in p.read_text()]
+    assert {p.name for p in setters} >= {"live_test.sh", "live_cursor.sh", "run.sh"}
+    assert [p.name for p in setters if "CLOAKROOM_VAULT_KEY" not in p.read_text()] == []

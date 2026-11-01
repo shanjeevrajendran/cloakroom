@@ -19,6 +19,8 @@ command -v claude >/dev/null || { echo "claude CLI not on PATH"; exit 2; }
 
 W="$(mktemp -d "${TMPDIR:-/tmp}/cloakroom-live.XXXXXX")"
 export CLOAKROOM_HOME="$W/home" CLOAKROOM_PORT="${CLOAKROOM_PORT:-8797}" PATH="$REPO/.venv/bin:$PATH"
+# a per-run vault key: the test never reaches the OS secure store (no Keychain dialog)
+export CLOAKROOM_VAULT_KEY="$(openssl rand -base64 32 2>/dev/null || python3 -c 'import base64,secrets;print(base64.b64encode(secrets.token_bytes(32)).decode())')"
 unset CLOAKROOM_BIN
 
 stop_service() {  # only the service on our test port

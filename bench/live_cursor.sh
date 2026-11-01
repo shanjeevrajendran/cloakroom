@@ -23,6 +23,8 @@ command -v agent >/dev/null || { echo "agent (Cursor's command-line agent) not o
 
 W="$(mktemp -d "${TMPDIR:-/tmp}/cloakroom-cursor.XXXXXX")"
 export CLOAKROOM_HOME="$W/home" CLOAKROOM_PORT="${CLOAKROOM_PORT:-8797}" PATH="$REPO/.venv/bin:$PATH"
+# a per-run vault key: the test never reaches the OS secure store (no Keychain dialog)
+export CLOAKROOM_VAULT_KEY="$(openssl rand -base64 32 2>/dev/null || python3 -c 'import base64,secrets;print(base64.b64encode(secrets.token_bytes(32)).decode())')"
 export FAKE_KEY="ghp_""Z3kQ9mLp2Rt7Vw4Xy8Bc1Df5Gh6Jk0LmPqAa" FAKE_EMAIL="o.vashti@quillmere.net"
 export FAKE_TOKEN="ghp_""Q7aZ0kLm3Np9Rt2Vw5Xy8Bc1Df4Gh6Jk0LmPq"  # fake shapes, not real keys
 HOOKS="$HOME/.cursor/hooks.json"
