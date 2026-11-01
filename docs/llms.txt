@@ -256,7 +256,7 @@ Claude Code also saves every chat on your disk. A prompt Cloakroom stops is take
 It stops accidental exposure: secrets and personal data in files, logs and command output an agent reads while working. It is not a sandbox (a sealed-off space the AI can’t get out of). Out of scope: an AI, or hidden instructions in a file that steer it (a prompt injection), determined to sneak data out through custom encodings or values built piece by piece; data you paste into prompts on purpose (prompts can be blocked, not rewritten); what other tools on your machine send elsewhere.
 
 #### Prompts
-Prompts can only be blocked, not masked. A blocked prompt never reaches the model, but Claude Code keeps it in its local session records on disk.
+Prompts can only be blocked, not masked. A blocked prompt never reaches the model. Claude Code writes it to the chat it saves on disk, and Cloakroom takes it out of the current session’s copy (see Stopped prompts leave the saved chat). Codex and Gemini keep it in their saved chats.
 
 #### Failed commands
 In Claude Code, the error output of a tool call that fails goes through a hook event that lets a hook add notes but not change the text. So it can’t be masked and may reach the model with a key or personal value in it. Keep keys out of commands that print them.

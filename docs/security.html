@@ -138,7 +138,7 @@
   </div>
   <div class="qa">
     <h3 id="limit-prompts">Prompts</h3>
-    <p>Prompts can only be blocked, not masked. A blocked prompt never reaches the model, but Claude Code keeps it in its local session records on disk.</p>
+    <p>Prompts can only be blocked, not masked. A blocked prompt never reaches the model. Claude Code writes it to the chat it saves on disk, and Cloakroom takes it out of the current session’s copy (see <a href="#stops">Stopped prompts leave the saved chat</a>). Codex and Gemini keep it in their saved chats.</p>
     <h3 id="limit-failed">Failed commands</h3>
     <p>In Claude Code, the error output of a tool call that fails goes through a hook event that lets a hook add notes but not change the text. So it can’t be masked and may reach the model with a key or personal value in it. Keep keys out of commands that print them.</p>
     <h3 id="limit-unseen">Secrets it has never seen</h3>
