@@ -255,6 +255,16 @@ def test_unreadable_bodies_are_refused_and_never_forwarded(stack):
     assert any(r["session"] == "proxy" and r["action"] == "denied" for r in report.rows())  # `cloakroom report` shows it
 
 
+def test_a_body_over_the_cap_is_refused_before_it_is_read(stack, monkeypatch):
+    from cloakroom import config, proxy
+    (config.HOME / "config.json").write_text(json.dumps({"proxy_max_mb": 0.0001, "proxy_upstreams": {"/fake": f"http://127.0.0.1:{stack.port}"}}))
+    read = []
+    monkeypatch.setattr(proxy.Handler, "_body", lambda self: read.append(1) or b"")
+    status, _, body = send(stack, "POST", "/fake/v1/messages", b"x" * 400)
+    assert status == 503 and b"proxy_max_mb" in body and stack.seen == [] and not read
+    assert rows("proxy")[-1]["reason"] == "too-large"
+
+
 def test_zstd_body_is_refused_with_the_secret_inside(stack):
     # what Codex signed in with ChatGPT sends: a compressed JSON body holding a key
     raw = b"\x28\xb5\x2f\xfd" + json.dumps({"input": [{"role": "user", "content": KEY}]}).encode()

@@ -242,6 +242,15 @@ class Handler(BaseHTTPRequestHandler):
             self._log(host, prefix, "held", [], 0.0, extra={"hold": "approved-sites"})
             return self._reply(403, _error("permission_error", f"Cloakroom held this request: {host} is not on your "
                                            f"approved sites list. To approve it, run: cloakroom allow-host {host}"))
+        cap = int(cfg["proxy_max_mb"] * 1048576)
+        try:
+            declared = 0 if "chunked" in (self.headers.get("Transfer-Encoding") or "").lower() else int(self.headers.get("Content-Length") or 0)
+        except ValueError:
+            declared = 0  # _body reports it
+        if declared > cap:  # refuse before reading it into memory
+            self._log(host, prefix, "deny", [], 0.0, extra={"reason": "too-large", "check": "proxy request", "size": declared, "limit": cap})
+            return self._reply(503, _error("api_error", f"Cloakroom did not send this request: its body {WHY['too-large']}. "
+                                           "See docs-LIMITS.md, \"Cloakroom proxy\"."))
         try:
             raw = self._body()
         except (ValueError, OSError):
@@ -250,8 +259,7 @@ class Handler(BaseHTTPRequestHandler):
         changed = False
         if raw:
             try:
-                body, changed, found, text = mask_body(raw, self.headers.get("Content-Encoding") or "",
-                                                       int(cfg["proxy_max_mb"] * 1048576))
+                body, changed, found, text = mask_body(raw, self.headers.get("Content-Encoding") or "", cap)
             except Unchecked as u:  # fail closed: a body Cloakroom can't read never reaches the upstream
                 self._log(host, prefix, "deny", [], (time.perf_counter() - t0) * 1000,
                           extra={"reason": u.reason, "check": "proxy request", **u.numbers})
