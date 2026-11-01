@@ -281,6 +281,16 @@ def test_runner_restores_placeholders_before_running(cur, ws):
     assert r.stdout == f"owner: {ph}\n"
 
 
+def test_runner_keeps_placeholders_in_a_commit_message(cur, repo):
+    git(repo, "config", "user.name", "t")
+    git(repo, "config", "user.email", "t@example.com")
+    ph = placeholder(cur)
+    r = runner(shell(cur, f'git commit -q --allow-empty -m "rotate {ph}"')["updated_input"]["command"], repo)
+    assert r.returncode == 0
+    subject = subprocess.run(["git", "-C", str(repo), "log", "-1", "--format=%s"], capture_output=True, text=True).stdout
+    assert EMAIL not in subject and ph in subject
+
+
 def test_runner_never_prints_raw_output_when_masking_fails(cur, ws, monkeypatch, capsys):
     from cloakroom import cursor, hook
     wrapper = shell(cur, f"echo token {KEY}; echo mail {EMAIL} >&2")["updated_input"]["command"]
