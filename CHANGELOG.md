@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.2.0 (2026-11-01)
+- Cursor's editor: checked with Cloakroom. Shell output, file reads, typed messages, @-mentioned files and MCP output are covered there; Tab completion isn't.
+- `cloakroom proxy` now reads zstd-compressed request bodies, so Codex CLI signed in with ChatGPT is masked instead of refused.
+- `cloakroom proxy install codex` sees a ChatGPT sign-in and points Codex at the new `/chatgpt` route, which forwards to chatgpt.com. Run it again if you switch Codex's sign-in.
+- The proxy answers a WebSocket attempt with 426, so Codex switches to ordinary requests at once instead of retrying for about ten seconds.
+- A compressed body is checked against `proxy_max_mb` while it is decompressed, so a small compressed body can't expand past the limit.
+- New dependency on Python 3.10-3.13: `backports.zstd` (stdlib on 3.14). Without it, zstd bodies stay refused and `cloakroom doctor` says so.
+- Cloakroom no longer asks the macOS Keychain for its key when HOME has been pointed somewhere else (tests, sandboxes, kits); it uses a private key file there instead. `cloakroom doctor` says which.
+- Cursor shell commands now keep a non-default CLOAKROOM_HOME and CLOAKROOM_PORT, so the masked-output runner finds its data folder.
+- The names and ids in the plugin list Codex sends about itself (`Name (plugin-id@marketplace)`) are no longer masked as people and email addresses, and Codex's working folder is no longer masked as a web address in full mode. An email address now needs a dotted domain; one on a host without a dot, like `jane@intranet`, isn't masked.
+
 ## 1.1.0 (2026-10-31)
 - Detects more keys on their own, without a `token =` label: GitLab, npm, PyPI, DigitalOcean, xAI and Groq tokens, Slack and Discord webhook links, Telegram bot tokens, and PGP private key blocks.
 - Commit, tag and git-notes messages now keep placeholders instead of real values, so a key typed into a commit message is no longer written into history.

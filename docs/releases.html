@@ -52,6 +52,23 @@
 
 <section class="sec container" aria-label="Changelog">
   <div class="rel-list">
+  <article class="release" id="v1-2-0" aria-labelledby="v1-2-0-t">
+    <div><h2 id="v1-2-0-t">1.2.0</h2>
+    <p><time datetime="2026-11-01">2026-11-01</time></p></div>
+    <div class="release-body">
+    <ul>
+      <li>Cursor's editor: checked with Cloakroom. Shell output, file reads, typed messages, @-mentioned files and MCP output are covered there; Tab completion isn't.</li>
+      <li><code>cloakroom proxy</code> now reads zstd-compressed request bodies, so Codex CLI signed in with ChatGPT is masked instead of refused.</li>
+      <li><code>cloakroom proxy install codex</code> sees a ChatGPT sign-in and points Codex at the new <code>/chatgpt</code> route, which forwards to chatgpt.com. Run it again if you switch Codex's sign-in.</li>
+      <li>The proxy answers a WebSocket attempt with 426, so Codex switches to ordinary requests at once instead of retrying for about ten seconds.</li>
+      <li>A compressed body is checked against <code>proxy_max_mb</code> while it is decompressed, so a small compressed body can't expand past the limit.</li>
+      <li>New dependency on Python 3.10-3.13: <code>backports.zstd</code> (stdlib on 3.14). Without it, zstd bodies stay refused and <code>cloakroom doctor</code> says so.</li>
+      <li>Cloakroom no longer asks the macOS Keychain for its key when HOME has been pointed somewhere else (tests, sandboxes, kits); it uses a private key file there instead. <code>cloakroom doctor</code> says which.</li>
+      <li>Cursor shell commands now keep a non-default CLOAKROOM_HOME and CLOAKROOM_PORT, so the masked-output runner finds its data folder.</li>
+      <li>The names and ids in the plugin list Codex sends about itself (<code>Name (plugin-id@marketplace)</code>) are no longer masked as people and email addresses, and Codex's working folder is no longer masked as a web address in full mode. An email address now needs a dotted domain; one on a host without a dot, like <code>jane@intranet</code>, isn't masked.</li>
+    </ul>
+    </div>
+  </article>
   <article class="release" id="v1-1-0" aria-labelledby="v1-1-0-t">
     <div><h2 id="v1-1-0-t">1.1.0</h2>
     <p><time datetime="2026-10-31">2026-10-31</time></p></div>

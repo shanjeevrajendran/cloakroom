@@ -67,6 +67,12 @@ whole step. And it learns from your corrections.
 It runs on your machine, sets itself up on first start, and works on Mac, Windows and Linux. Free and open source.
 It's new, so expect rough edges.
 
+New in 1.2:
+
+- **Cursor's editor:** checked with Cloakroom, along with the command-line agent ([Cursor](#cursor)).
+- **Codex signed in with ChatGPT:** `cloakroom proxy install codex` points it at Cloakroom's proxy ([details](#point-any-tool-at-cloakroom)).
+- **Fewer false alarms:** the plugin list Codex sends about itself is no longer masked as people and email addresses.
+
 New in 1.1:
 
 - **Cursor's command-line agent:** run `cloakroom install cursor` ([Cursor](#cursor)).
@@ -145,6 +151,9 @@ else: [Known limits](https://github.com/shanjeevrajendran/cloakroom/blob/main/do
 
 ## Recent releases
 
+- **1.2.0** (2026-11-01): Cursor's editor is checked with Cloakroom (Tab completion isn't covered). Codex signed in with
+  ChatGPT is masked through `cloakroom proxy`. A vault key safeguard keeps tests and sandboxes away from the Keychain, and
+  false alarms on Codex's plugin list are gone.
 - **1.1.0** (2026-10-31): Cloakroom also protects Cursor's command-line agent, on Mac and Linux: run
   `cloakroom install cursor`. `cloakroom allow` lets a command Cloakroom held run once. See [Cursor](#cursor).
 - **1.0.0** (2026-10-30): the ledger of where your agent sends data (`cloakroom report --destinations`), an opt-in
@@ -158,9 +167,6 @@ else: [Known limits](https://github.com/shanjeevrajendran/cloakroom/blob/main/do
 - **0.8.1** (2026-10-30): a stopped prompt comes back with placeholders in place of your private values, ready to
   send instead; `cloakroom update` updates Cloakroom and redoes its setup for Codex, Gemini CLI and git commits;
   `cloakroom doctor` shows the version; a new [Updates](#updates) section.
-- **0.8.0** (2026-10-27): `cloakroom exposure` shows which keys your agents saw, with a rotate list; `cloakroom scan`
-  and a git-hook warning when a pull changes the commands a repo's agent config would run; three fixes found by a
-  live agent test ([Results](#results)).
 
 Claude Code plugin updates arrive a few days after each PyPI release (PyPI is the Python package site), once the release has settled
 ([how updates reach you](#updates)). All changes:
