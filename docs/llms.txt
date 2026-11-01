@@ -1,6 +1,6 @@
 # Cloakroom
 
-> Free and open source. Cloakroom masks API keys, secrets and personal data on your own machine before your AI coding agent sees them. Works with Claude Code, Codex CLI, Gemini CLI and Cursor’s command-line agent.
+> Free and open source. Cloakroom masks API keys, secrets and personal data on your own machine before your AI coding agent sees them. Works with Claude Code, Codex CLI, Gemini CLI and Cursor’s terminal agent.
 
 ## Pages
 
@@ -9,14 +9,14 @@
 - [Commands](https://cloakroom.sh/commands.html)
 - [How it works](https://cloakroom.sh/how-it-works.html)
 - [Security](https://cloakroom.sh/security.html)
+- [Settings](https://cloakroom.sh/settings.html)
 - [Releases](https://cloakroom.sh/releases.html)
 - [Writing](https://cloakroom.sh/writing.html)
-- [Settings and fixes](https://cloakroom.sh/settings.html)
 - [Source code](https://github.com/shanjeevrajendran/cloakroom)
 
 <!-- https://cloakroom.sh/install.html -->
 ## Install Cloakroom
-Works with Claude Code, Codex CLI and Gemini CLI.
+Works with Claude Code, Codex CLI, Gemini CLI and Cursor’s terminal agent.
 
 #### Claude Code
 
@@ -32,9 +32,27 @@ Mac, Windows and Linux. You need Claude Code, installed and signed in.
 - Check it. Open a new terminal window and run:
 
 ```
-cloakroom doctor       # every line should say ok
+cloakroom doctor       # see the example below
 cloakroom dashboard    # opens your alerts in the browser
 ```
+
+Example result:
+
+```
+ok   python: 3.14.7 on Darwin arm64
+ok   version: cloakroom 1.1.0
+ok   mode: full
+ok   vault key: OS secure store
+...   model: loading (the first run downloads it once, about 1 GB; that can take a minute or two)
+ok   model: torch, loaded in 1.3 s, one check 17 ms (first check 704 ms, a one-time warm-up)
+ok   service: up on port 37787, model loaded
+warn  codex: not protected; to protect it: cloakroom install codex
+warn  gemini: not protected; to protect it: cloakroom install gemini
+warn  cursor: not protected; to protect it: cloakroom install cursor
+ok   program: ~/.local/bin/cloakroom
+```
+
+Every line should say ok, except warn lines for agents you have not set up; each line says what to fix. The vault key line: the vault is Cloakroom’s encrypted file of the real values it hid, and “OS secure store” means its key sits in your system’s password store (Keychain on a Mac).
 
 #### Codex CLI
 
@@ -45,7 +63,8 @@ Mac and Linux (tested with Codex 0.164).
 uv tool install "cloakroom[model,torch,ocr]"
 ```
 
-- Run cloakroom install codex. It adds four hooks to ~/.codex/hooks.json and leaves your own hooks alone.
+The part in brackets adds the AI model that finds names and addresses on your machine, and reading text in screenshots and scans.
+- Run cloakroom install codex. It adds four hooks (small checks Codex runs before and after each action) to ~/.codex/hooks.json and leaves your own hooks alone.
 
 ```
 cloakroom install codex
@@ -62,37 +81,42 @@ Mac and Linux (built against Gemini CLI 0.65).
 uv tool install "cloakroom[model,torch,ocr]"
 ```
 
+The part in brackets adds the AI model that finds names and addresses on your machine, and reading text in screenshots and scans.
 - Run cloakroom install gemini. It writes one thing: a Gemini extension named cloakroom in ~/.gemini/extensions/cloakroom/. Your settings.json and your own hooks and extensions aren’t touched.
 
 ```
 cloakroom install gemini
 ```
 
-- Gemini runs the hooks from its next start, in every folder; gemini extensions list shows it, cloakroom doctor too.
+- Gemini runs the hooks (small checks before and after each action) from its next start, in every folder; gemini extensions list shows it, cloakroom doctor too.
 
 #### Cursor
 
-Mac and Linux (checked against Cursor’s command-line agent 2026.10.22).
+Cursor’s terminal agent (agent), not the editor. Mac and Linux.
 - Install the program by hand.
 
 ```
 uv tool install "cloakroom[model,torch,ocr]"
 ```
 
-- Run cloakroom install cursor. It adds nine hooks to ~/.cursor/hooks.json and leaves your own hooks alone.
+The part in brackets adds the AI model that finds names and addresses on your machine, and reading text in screenshots and scans.
+- Run cloakroom install cursor. It adds nine hooks (small checks the agent runs before and after each action) to ~/.cursor/hooks.json and leaves your own hooks alone.
 
 ```
 cloakroom install cursor
 ```
 
-- Cursor’s command-line agent (agent) runs them from its next start. The editor reads the same file but hasn’t been checked with Cloakroom yet. cloakroom doctor shows whether they’re installed.
+- Cursor’s terminal agent (agent) runs them from its next start. The editor reads the same file but hasn’t been checked with Cloakroom yet. cloakroom doctor shows whether they’re installed.
+
+### Updating
+Run cloakroom update in a terminal. It updates Cloakroom with the installer you used (uv, pipx or pip) and keeps the optional parts you had. Then it sets up Cloakroom’s checks again for Codex, Gemini CLI, Cursor’s terminal agent and git commits, only where they were set up before.
 
 ### Pick how you’ll run it
 Easiest: add the plugin (above) and let it install Cloakroom on the next start. It uses uv or pipx if either is installed, otherwise a private Python environment in ~/.cloakroom/venv (needs Python 3.10+). If the install fails, Claude Code says so and it retries after 10 minutes. The table is for installing by hand.
 | Your machine | Install | What you get
-| Apple Silicon Mac, or an NVIDIA GPU | uv tool install "cloakroom[model,torch]" | Full mode on the GPU, about 20 ms per check
-| Any other machine (Intel Mac, most Windows and Linux) | uv tool install "cloakroom[model,torch]", then once: cloakroom export-onnx | Full mode on the CPU. Before the export it works but is slow (about 0.5 s per check); after it, about 60 ms on a modern CPU
-| Just trying it, or a CI box | uv tool install cloakroom and CLOAKROOM_MODE=rules | Rules only: instant, no model download, but misses names and free-text personal data
+| Apple Silicon Mac, or an NVIDIA GPU | uv tool install "cloakroom[model,torch]" | Full mode (keys plus names and addresses) on the GPU, about 20 ms per check
+| Any other machine (Intel Mac, most Windows and Linux) | uv tool install "cloakroom[model,torch]", then once: cloakroom export-onnx (saves a copy of the model that runs fast on a CPU) | Full mode on the CPU. Before the export it works but is slow (about 0.5 s per check); after it, about 60 ms on a modern CPU
+| Just trying it, or a CI box | uv tool install cloakroom and CLOAKROOM_MODE=rules | Rules only: instant, no model download, but misses names and personal data in ordinary sentences
 pipx install ... works the same way as uv tool install .... The model extras need about 1 GB of disk on a Mac and up to about 4 GB elsewhere (mostly PyTorch). Python 3.10 or newer.
 To try it on one project first, install the plugin for that folder only. From inside the folder:
 
@@ -109,7 +133,7 @@ The same engine works on any file or pipe, which is handy for checking what it w
 ```
 cloakroom check config.py        # what would be masked, by kind; never prints the values
 cloakroom explain config.py      # every finding with the rule that found it, and what was skipped as safe
-cloakroom mask config.py         # the masked text, as Claude would see it
+cloakroom mask config.py         # the masked text, as the agent would see it
 cat app.log | cloakroom check -  # read from stdin
 cloakroom check --mode rules .env
 ```
@@ -125,7 +149,7 @@ CLOAKROOM_MODE=rules
 ```
 
 - Vault key
-The vault key lives in the OS secure store (Keychain, Credential Manager, Secret Service). On a machine without one, set CLOAKROOM_VAULT_KEY (a 256-bit key, base64 or 64 hex characters), or Cloakroom falls back to a key file readable only by you, and doctor says so.
+The vault is Cloakroom’s encrypted file of the real values it hid. Its key lives in your system’s password store (Keychain, Credential Manager, Secret Service). On a machine without one, set CLOAKROOM_VAULT_KEY (a 256-bit key, base64 or 64 hex characters), or Cloakroom falls back to a key file readable only by you, and doctor says so.
 - Dry run
 CLOAKROOM_DRY_RUN=1 lets everything through and logs what Cloakroom would have done to ~/.cloakroom/dry-run.log. Useful for trying it on a real project before trusting it.
 - Separate homes
@@ -143,62 +167,102 @@ Progress, and numbered steps when something needs you, are written to ~/.cloakro
 When neither uv nor pipx is there, Cloakroom fetches uv, which needs curl or wget. If a Linux machine has neither, Cloakroom tells you the steps: sudo apt install curl (Ubuntu/Debian) or sudo dnf install curl (Fedora/RHEL), then restart Claude Code.
 
 #### Intel Mac
-Only the pattern rules run, so keys, cards and ID numbers are caught but most names and addresses are not. The detection model for names and addresses needs PyTorch or ONNX Runtime, and neither is built for Intel Macs.
+Only the pattern rules run, so keys, cards and ID numbers are caught but most names and addresses are not. The AI model for names and addresses needs PyTorch or ONNX Runtime, and neither is built for Intel Macs.
 
 #### More fixes
 Blocked prompts, ports, model: FAIL and too much masking: Settings and fixes.
 
 <!-- https://cloakroom.sh/security.html -->
 ## Security model
-Cloakroom’s job is to keep secrets and personal data away from the model, so a way around it is a security bug.
+What Cloakroom stores stays on your machine and is not sent anywhere. The values it hides are encrypted. Its job is to keep secrets and personal data away from the model, so a way around it is a security bug.
+For auditors: vault files (the hidden values) are AES-GCM encrypted with a key in the OS secure store (your system’s password store, such as Keychain); the file log (~/.cloakroom/filelog.bin) is encrypted the same way; the activity log is tamper-evident, not tamper-proof: cloakroom report --verify spots a changed line, but someone who rewrites every later line can hide the change.
 
 ### What is stored
 - The vault
-Values go into the vault, an encrypted file kept per session (AES-GCM, key in the OS secure store).
+Values go into the vault, an encrypted file kept per session.
 - The file log
-The log (~/.cloakroom/filelog.bin) is encrypted like the vault and holds no values: they are read back from the file when needed.
+A record of where real values were put back into files the agent wrote. The log (~/.cloakroom/filelog.bin) is encrypted like the vault and holds no values: they are read back from the file when needed.
 - Your rules
-These rules are stored encrypted in ~/.cloakroom/rules.bin; the allow list stays yours to edit by hand.
+Rules you make from the dashboard are stored encrypted in ~/.cloakroom/rules.bin; the allow list stays yours to edit by hand.
 - The activity log
 Tamper-evident, not tamper-proof. The activity log keeps no values or text, but it does keep file paths (masked like any output) and the program name of shell commands.
 - Held commands
-Only a keyed hash of the held command is stored (~/.cloakroom/held.json).
+Only a keyed hash of the held command is stored (~/.cloakroom/held.json): a fingerprint made with a secret key, not the command itself.
 - Keys you hand over
 Entries from cloakroom give expire after 24 hours; --forget removes one now.
 
 ### Where
 
 #### The vault key
-Vault files are AES-GCM encrypted; the key lives in the OS secure store (macOS Keychain, Windows Credential Manager, Linux Secret Service), or CLOAKROOM_VAULT_KEY, or a 0600 key file when no store exists (doctor warns).
+Vault files are AES-GCM encrypted; the key lives in the OS secure store (macOS Keychain, Windows Credential Manager, Linux Secret Service), or CLOAKROOM_VAULT_KEY, or a key file only you can read (permissions 0600) when no store exists (doctor warns).
 
 #### Cloakroom’s own folder
-Claude’s own tool calls can’t change ~/.cloakroom (writes there, or shell commands naming it, are denied), so it can’t pause Cloakroom or edit its rules.
+The agent’s own tool calls can’t change ~/.cloakroom (writes there, or shell commands naming it, are denied), so it can’t pause Cloakroom or edit its rules.
 
 #### The dashboard
 The dashboard (cloakroom dashboard) is reachable only on 127.0.0.1, with a one-time sign-in link; restarting the service signs the browser out.
 
 #### Claude Code’s own records
-Claude Code’s local session log (~/.claude/projects/...) records the hook’s rewritten tool input, so values put back into a file also appear in that log on your disk. They are not sent to the model.
+Claude Code’s local session log (~/.claude/projects/...) records the tool input after Cloakroom put the real values back, so those values also appear in that log on your disk. They are not sent to the model.
 
 ### What leaves your machine
 - The model, once
-First run downloads the detection model (PII-Tracer, pinned revision) from Hugging Face; offline machines need it cached first.
+First run downloads the AI model that finds names and addresses (PII-Tracer, at one fixed version) from Hugging Face; offline machines need it cached first.
 - Sending data
-Commands that would send a secret off your machine, or move money, wait for your OK. A web fetch, an MCP tool call or a prompt to a subagent that holds a real value is stopped before it runs.
+Commands that would send a secret off your machine, or move money, wait for your OK. A web fetch, an MCP tool call (an add-on tool) or a prompt to a subagent that holds a real value is stopped before it runs.
 - Not covered
 Codex’s own web search (runs on OpenAI’s servers).
+
+### What it stops
+Beyond hiding values, Cloakroom holds some actions, watches some things for you and gives you safer ways to hand over a key. Each item links to the limit that goes with it.
+
+#### Holds
+
+#### Sending-data hold
+Stops a shell command that would send a secret off your machine. It checks the command before it runs: if it can send data out and holds a known secret, a key the rules recognise or a literal token of 16+ characters in a login header (such as Authorization), it is denied.Example: a curl call with your API key in its header.To send it anyway, type cr: allow as your prompt (the agent never sees it), then ask the agent to run the same command again. It passes once, within 10 minutes.Limit: Secrets it has never seen.
+
+#### Money-movement hold
+Stops a tool call that would move money: a write to a listed payment endpoint, a payment CLI command, or an MCP tool (an add-on tool) whose name carries a money verb, such as pay or create_payout.Example: an MCP tool called create_payout is held with one line naming it.cr: allow lets the same call run once.Limit: Money moved by programs.
+
+#### Write-time and commit check
+Stops a key or password from landing in a file in a git repo that is not git-ignored. The call is denied and the agent is told to put the value in .env. Before the agent runs git commit or git push, a key or password in what would be committed holds the command.Example: the agent tries to write an API key into config.py.Limit: Keys written by scripts.
+
+#### Nothing gets through when the program is missing
+If the cloakroom command is missing, the plugin blocks prompts and denies tool calls instead of letting data through.Example: you remove the program by mistake; your next prompt is blocked, not passed on.
+
+#### Watches
+
+#### Which keys your agents saw
+Shows the keys and passwords Claude Code, Codex CLI, Gemini CLI and Cursor’s terminal agent saw. Each is a hint, never the key, and the list ends with “Rotate these”: keys to replace with new ones.Example: a line like ghp_…LmPq.Command: cloakroom exposureLimit: The exposure list.
+
+#### Warns when a pull changes what your agent runs
+cloakroom scan lists every command a repo’s agent and editor config would run. It flags the setup the October 2026 npm worm used: an agent hook and an editor task that run each other’s files. After cloakroom install git-hook, each pull, checkout or merge that adds or changes such a command prints it. It warns, never blocks.Example: a pull adds an editor task that runs a file an agent hook also runs.Command: cloakroom scan
+
+#### Where your agent sends data
+Lists the sites your agent’s commands, web fetches and MCP calls went to, with the kinds of data they carried. The dashboard shows the same in “Where data went”. cloakroom allow-host example.com builds an approved-sites list; once it is on, a call to any other site is held. An email, phone number, name or your username in a web address or header is held too.Example: after you allow example.com, a fetch to another site is held.Command: cloakroom report --destinations
+
+#### Failed tool calls counted as not checked
+A tool call that fails in Claude Code is counted as “not checked”. It shows in the event log, in “Checks skipped” in cloakroom report, on the dashboard, and as one note per session.Example: a command with a non-zero exit.Limit: Failed commands.
+
+#### Safer handling
+
+#### Hand the agent a key safely
+Asks for the value in a hidden terminal prompt and gives you a placeholder to paste. When the agent writes that placeholder into a local file or command, the real value goes back in. The AI never sees it.Example: cloakroom give STRIPE_KEY, then paste the placeholder into your prompt.Command: cloakroom give NAME
+
+#### Stopped prompts leave the saved chat
+Claude Code also saves every chat on your disk. A prompt Cloakroom stops is taken out of that saved copy for the current session (right away, after the next reply and when the session ends), so the key you typed doesn’t stay behind. Claude Code only.Example: you paste a key into a prompt and it is stopped; the saved chat doesn’t keep it.Limit: Prompts.
 
 ### What it cannot catch
 It stops accidental exposure: secrets and personal data in files, logs and command output an agent reads while working. It is not a sandbox (a sealed-off space the AI can’t get out of). Out of scope: an AI, or hidden instructions in a file that steer it (a prompt injection), determined to sneak data out through custom encodings or values built piece by piece; data you paste into prompts on purpose (prompts can be blocked, not rewritten); what other tools on your machine send elsewhere.
 
 #### Prompts
-Prompts can only be blocked, not masked. A blocked prompt never reaches the model, but Claude Code keeps it in its local session records on disk.
+Prompts can only be blocked, not masked. A blocked prompt never reaches the model. Claude Code writes it to the chat it saves on disk, and Cloakroom takes it out of the current session’s copy (see Stopped prompts leave the saved chat). Codex and Gemini keep it in their saved chats.
 
 #### Failed commands
 In Claude Code, the error output of a tool call that fails goes through a hook event that lets a hook add notes but not change the text. So it can’t be masked and may reach the model with a key or personal value in it. Keep keys out of commands that print them.
 
 #### Secrets it has never seen
-Disguised copies are computed from values Cloakroom already knows, so a secret it has never seen isn’t caught in any form. Not covered: salted or keyed hashes (HMAC, bcrypt, scrypt), other hashes (SHA-512, CRC), base32, upper/lower case changes of a key, and values shorter than 8 characters.
+Cloakroom looks for disguised copies (encoded or hashed) of values it already knows, so a secret it has never seen isn’t caught in any form. Not covered: salted or keyed hashes (HMAC, bcrypt, scrypt), other hashes (SHA-512, CRC), base32, upper/lower case changes of a key, and values shorter than 8 characters.
 
 #### Keys written by scripts
 A key split into pieces, or one with no known pattern and not seen earlier in the session, isn’t caught when a file is written.

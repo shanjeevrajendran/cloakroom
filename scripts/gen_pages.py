@@ -294,7 +294,6 @@ def llms():
     about = re.search(r'<meta name="description" content="([^"]+)">', index).group(1)
     nav = re.search(r'<nav aria-label="Site">(.*?)</nav>', (DOCS / "install.html").read_text(), re.S).group(1)
     pages = [(name, label) for name, label in re.findall(r'<a href="([a-z0-9-]+\.html)"[^>]*>([^<]+)</a>', nav)]
-    pages.append(("settings.html", "Settings and fixes"))
     lines = [
         "# Cloakroom",
         "",
