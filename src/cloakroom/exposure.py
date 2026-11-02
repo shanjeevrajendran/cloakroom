@@ -141,7 +141,34 @@ def _strings(path: Path):
             stack.extend(v)
 
 
-def found(since: str = "") -> tuple[list[dict], dict]:
+def typed(rec) -> list[str]:
+    """Text the user typed in one Claude transcript record; not tool output or what Claude Code injected."""
+    if not isinstance(rec, dict) or rec.get("type") != "user" or rec.get("isMeta"):
+        return []
+    content = (rec.get("message") or {}).get("content")
+    if isinstance(content, str):
+        parts = [content]
+    elif isinstance(content, list):
+        if any(isinstance(c, dict) and c.get("type") == "tool_result" for c in content):
+            return []
+        parts = [c.get("text", "") for c in content if isinstance(c, dict) and c.get("type") == "text"]
+    else:
+        return []
+    # <system-reminder>, <command-name>, <local-command-stdout> are added by Claude Code, not typed
+    return [p for p in parts if isinstance(p, str) and p.strip() and not p.lstrip().startswith("<")]
+
+
+def _typed_strings(path: Path):
+    # shortcut: Claude transcripts only; Codex, Gemini and Cursor need their own typed() for their record shapes
+    with open(path, encoding="utf-8", errors="replace") as f:
+        for line in f:
+            try:
+                yield from typed(json.loads(line))
+            except ValueError:
+                continue
+
+
+def found(since: str = "", personal: bool = False) -> tuple[list[dict], dict]:
     """Rows per (file, key) from old transcripts, and what was skipped. Never writes."""
     cfg = config.load()
     known = history._known()
@@ -176,6 +203,19 @@ def found(since: str = "") -> tuple[list[dict], dict]:
                                               "file": "~" + str(path)[len(home):] if str(path).startswith(home)
                                               else str(path), "date": day, "count": 0})
                     row["count"] += 1
+            if personal and agent == "claude" and path.suffix == ".jsonl":
+                for s in _typed_strings(path):
+                    hits, _ = engine.detect(s, "full", cfg["allow"])
+                    for f in hits:
+                        if f.kind in KINDS:
+                            continue
+                        val = s[f.start:f.end]
+                        fp = fingerprint(val)
+                        row = per.setdefault(fp, {"agent": agent, "kind": f.kind, "hint": hint(val),
+                                                  "fingerprint": fp, "file": "~" + str(path)[len(home):]
+                                                  if str(path).startswith(home) else str(path), "date": day,
+                                                  "count": 0})
+                        row["count"] += 1
         except OSError:
             skipped["unreadable"] += 1
             continue
@@ -183,12 +223,12 @@ def found(since: str = "") -> tuple[list[dict], dict]:
     return sorted(rows, key=lambda r: (r["date"], r["file"])), skipped
 
 
-def build(since: str = "") -> dict:
+def build(since: str = "", personal: bool = False) -> dict:
     s = [r for r in seen() if not since or r["first"][:10] >= since]
-    h, skipped = found(since)
+    h, skipped = found(since, personal)
     rotate: dict[str, dict] = {}
     for r in s + h:
-        if not r["fingerprint"]:
+        if not r["fingerprint"] or r["kind"] not in KINDS:  # personal data is not rotated
             continue
         x = rotate.setdefault(r["fingerprint"], {"kind": r["kind"], "hint": r["hint"], "fingerprint": r["fingerprint"],
                                                  "places": 0, "last": ""})
