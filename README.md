@@ -67,6 +67,11 @@ whole step. And it learns from your corrections.
 It runs on your machine, sets itself up on first start, and works on Mac, Windows and Linux. Free and open source.
 It's new, so expect rough edges.
 
+New in 1.3:
+
+- **Holds only you can lift:** an agent can't approve its own held call, switch Cloakroom off or uninstall it, on Mac, Windows and Linux ([details](#extra-protections)).
+- **Planted hooks are held:** a hook or MCP server an agent writes into its own config waits until you type `cr: allow`.
+
 New in 1.2:
 
 - **Cursor's editor:** checked with Cloakroom, along with the command-line agent ([Cursor](#cursor)).
@@ -154,7 +159,7 @@ else: [Known limits](https://github.com/shanjeevrajendran/cloakroom/blob/main/do
 
 ## Recent releases
 
-- **1.3.0** (unreleased): an agent can't approve its own held call or switch Cloakroom off, and a hook or MCP
+- **1.3.0**: an agent can't approve its own held call or switch Cloakroom off, and a hook or MCP
   server it writes into agent config is held until you type `cr: allow`.
 - **1.2.0**: Cursor's editor is checked with Cloakroom (Tab completion isn't covered). Codex signed in with
   ChatGPT is masked through `cloakroom proxy`. A vault key safeguard keeps tests and sandboxes away from the Keychain, and

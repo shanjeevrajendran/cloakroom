@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.3.0 (unreleased)
+## 1.3.0 (2026-11-01)
 - An agent can no longer approve its own held call: its shell commands that run `cloakroom allow`, `allow-host` or `uninstall` (any path, `python -m`, `uvx`, inside `bash -c`, `$(...)`, a script it runs, or a fake terminal) are denied. These commands also refuse to run in an agent's shell or without a terminal; in your own terminal they work as before.
 - A hook or MCP server written into an agent's config (`.mcp.json`, `.claude/settings.json`, Codex's `config.toml` and `hooks.json`, Cursor's `hooks.json` and `mcp.json`, `.gemini/settings.json`, Gemini extensions) is held until you type `cr: allow`. The hold names the file, the line and the command. Removing Cloakroom's own entry there is held the same way. Edits that add no command, and reading config, go through.
 - An agent can no longer remove Cloakroom itself: `uv tool`, `pipx`, `pip`, `uv pip` or `brew` uninstall of cloakroom, and removing, moving or un-executing the installed program or its tool folder, are denied, on Windows too (Git Bash paths like `/c/Users/...`, `cloakroom.exe`, uv's and pipx's folders there). Updating Cloakroom and removing other packages go through.
