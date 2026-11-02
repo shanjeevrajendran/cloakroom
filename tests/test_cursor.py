@@ -282,6 +282,11 @@ def test_runner_masks_stdout_and_stderr_and_keeps_the_exit_code(cur, ws):
     assert re.fullmatch(r"mail PII_EMAIL_1_[a-z2-7]{6}\n", r.stderr)
 
 
+def test_runner_marks_the_agents_shell(cur, ws):  # cloakroom allow refuses there (cli._from_agent)
+    r = runner(shell(cur, "echo $CLOAKROOM_RUN")["updated_input"]["command"], ws)
+    assert re.fullmatch(r"r[\w-]{15}\n", r.stdout)
+
+
 def test_runner_restores_placeholders_before_running(cur, ws):
     (ws / "notes.txt").write_text(f"owner: {EMAIL}\nother line\n")
     ph = placeholder(cur)

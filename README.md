@@ -153,6 +153,8 @@ else: [Known limits](https://github.com/shanjeevrajendran/cloakroom/blob/main/do
 
 ## Recent releases
 
+- **1.3.0** (unreleased): an agent can't approve its own held call or switch Cloakroom off, and a hook or MCP
+  server it writes into agent config is held until you type `cr: allow`.
 - **1.2.0**: Cursor's editor is checked with Cloakroom (Tab completion isn't covered). Codex signed in with
   ChatGPT is masked through `cloakroom proxy`. A vault key safeguard keeps tests and sandboxes away from the Keychain, and
   false alarms on Codex's plugin list are gone.
@@ -166,9 +168,6 @@ else: [Known limits](https://github.com/shanjeevrajendran/cloakroom/blob/main/do
 - **0.9.0**: `cloakroom give NAME` hands the agent a key through a hidden prompt, so you never paste it
   into a chat; a prompt Cloakroom stops is taken out of the session's saved Claude Code transcript; a failed command is
   counted as not checked in `cloakroom report`. See [Hand the agent a key safely](#hand-the-agent-a-key-safely).
-- **0.8.1**: a stopped prompt comes back with placeholders in place of your private values, ready to
-  send instead; `cloakroom update` updates Cloakroom and redoes its setup for Codex, Gemini CLI and git commits;
-  `cloakroom doctor` shows the version; a new [Updates](#updates) section.
 
 Claude Code plugin updates arrive a few days after each PyPI release (PyPI is the Python package site), once the release has settled
 ([how updates reach you](#updates)). All changes:

@@ -25,6 +25,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 import time
 import urllib.request
@@ -63,6 +64,26 @@ def _allow_host(a) -> int:
     print(f"{host} {'removed from' if a.remove else 'added to'} the approved sites list" +
           ("" if cfg["egress"] == "allowlist" else ' (the list is off: set "egress": "allowlist" in config.json to use it)'))
     return 0
+
+
+# Set in the agent's shell: Claude Code, Gemini CLI, Codex's sandbox, Cursor's (cloakroom cursor-run)
+AGENT_MARKERS = ("CLAUDECODE", "GEMINI_CLI", "CODEX_SANDBOX", "CLOAKROOM_RUN")
+
+
+def _has_tty() -> bool:
+    if os.name == "nt":
+        return sys.stdin.isatty()
+    try:
+        os.close(os.open("/dev/tty", os.O_RDWR))
+        return True
+    except OSError:
+        return False
+
+
+def _from_agent() -> str:
+    """Why this looks like an agent's shell rather than your own terminal ("" when it doesn't)."""
+    marker = next((m for m in AGENT_MARKERS if os.environ.get(m)), "")
+    return f"{marker} is set" if marker else "" if _has_tty() else "there is no terminal"
 
 
 def main(argv=None):
@@ -146,6 +167,11 @@ def main(argv=None):
             return 0 if events.verify()["ok"] else 1
         sys.stdout.write(report.destinations_text(a.format, a.since) if a.destinations else report.export(a.format, a.since))
         return 0
+    if (a.cmd in ("allow", "uninstall") or (a.cmd == "allow-host" and not a.list)
+            or (a.cmd == "proxy" and a.action == "uninstall")) and (why := _from_agent()):
+        print(f"cloakroom: {a.cmd} approves a held call or a site, or switches Cloakroom off, so it runs only in your "
+              f"own terminal, not in an agent's shell ({why}). Type it in a terminal window yourself.", file=sys.stderr)
+        return 1
     if a.cmd == "allow-host":
         return _allow_host(a)
     if a.cmd == "proxy":

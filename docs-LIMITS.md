@@ -80,6 +80,17 @@ Cloakroom can't check, the action is blocked rather than let through.
 - Claude's own tool calls can't change `~/.cloakroom` (writes there, or shell commands naming it, are denied), so
   it can't pause Cloakroom or edit its rules. A side effect: Claude can't read Cloakroom's logs with shell commands
   in a protected project either.
+- An agent can't approve its own held call or switch Cloakroom off: its shell commands that run `cloakroom allow`,
+  `allow-host` or `uninstall` (in any spelling, in a script it runs, or under a fake terminal like `script`) are
+  denied, and those commands refuse to run without a terminal or inside an agent's shell (Claude Code, Codex's
+  sandbox, Gemini CLI, Cursor). A hook or MCP server written into an agent's config file, or a change that removes
+  Cloakroom's own entry there, is held for `cr: allow` and named with the command it would run. Config edits that
+  add no command, and reading config, go through.
+- What stays possible: the agent runs as you, so one that builds Cloakroom's folder name or command at run time
+  (pieces of a string, an encoded name) and fakes a terminal can still edit Cloakroom's files or approve a hold.
+  A hook only sees the command's text. The wall for that is the agent's own sandbox (Codex's workspace-write mode,
+  Claude Code's sandbox), which keeps `~/.cloakroom` and the agents' config folders out of reach. And a `cr: allow`
+  you type without reading the hold lets the call through.
 - Dates: a date the model finds is masked only near birth, death or age words (English, German, French, Spanish
   forms) or as part of someone's record (next to a name, or in a table / CSV / SQL row holding one). A birth date
   written with neither nearby is missed; `"mask_all_dates": true` masks every date instead.
