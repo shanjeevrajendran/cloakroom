@@ -99,6 +99,15 @@ browser. OCR reads text out of pictures.
 - **Agent config files:** a real key written into `.mcp.json`, `.claude/settings.json`, `.cursor/mcp.json` or
   `claude_desktop_config.json` inside a repo (and not git-ignored) is denied. Claude is told to use an environment
   reference such as `${GITHUB_TOKEN}` instead.
+- **Self-approval and switch-off guard:** `cloakroom allow`, `allow-host` and `uninstall` refuse to run in an agent's
+  shell (Claude Code, Codex's sandbox, Gemini CLI, Cursor) or without a terminal, and a shell command that runs them
+  (any path, `python -m`, `uvx`, inside `bash -c` or a script) is denied. Uninstalling Cloakroom, or removing or moving
+  its program, is held the same way. A hook or MCP server written into an agent's config (`.mcp.json`,
+  `.claude/settings.json`, Codex's `config.toml` and `hooks.json`, Cursor's `hooks.json` and `mcp.json`,
+  `.gemini/settings.json`, Gemini extensions), or a change that removes Cloakroom's own entry there, is held until
+  you type `cr: allow`. The message names the file, the line and the command. Edits that add no command, and reading
+  config, go through. The agent runs as you, so this reads the command's text: the wall against a name built at run
+  time is the agent's own sandbox.
 - **Activity log:** each line of the event log carries a fingerprint (hash) of the line before it, so an edited
   line shows up. One file per month, kept `"log_months"` months (default 12). `cloakroom report [--since DATE] [--format csv|json]` gives counts per day and
   session by data kind and action, with no values (the dashboard's Export button gives the same CSV).

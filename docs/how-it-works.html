@@ -55,7 +55,7 @@
 <section class="sec container" id="trip" aria-labelledby="trip-title">
   <h2 id="trip-title">In short</h2>
   <div class="sec-body">
-    <p>Every time the AI reads a file, runs a command or uses an add-on, Cloakroom checks what goes to the AI and swaps real values for placeholders. When the AI writes or runs something that holds a placeholder, Cloakroom puts the real value back on your machine. Commands that would send a secret off your machine, or move money, wait for your OK (<a href="security.html#stops">what it stops</a>).</p>
+    <p>Every time the AI reads a file, runs a command or uses an add-on, Cloakroom checks what goes to the AI and swaps real values for placeholders. When the AI writes or runs something that holds a placeholder, Cloakroom puts the real value back on your machine. Commands that would send a secret off your machine, or move money, wait for your OK, and so does a hook or MCP server the agent adds to its own config. The agent can’t approve its own hold or switch Cloakroom off (<a href="security.html#stops">what it stops</a>).</p>
     <p>Words used below: hooks are small checks the agent runs before and after each action (a “tool call”). PII is personal data such as names, emails and addresses. MCP tools are add-ons that give the agent extra abilities, such as a browser. OCR reads text out of pictures. The vault is an encrypted file on your machine that holds the real values for one session.</p>
 <pre class="cmd diagram" aria-label="Diagram: a file read goes through Cloakroom, the model sees placeholders, and the real value is put back in the file on disk"><code>  Claude Code reads a file or runs a tool
         |   "Nadia Petrov called about..."    sk_live_51Hx9Q...
@@ -112,6 +112,8 @@
     <p>A placeholder is <code>PII_&lt;KIND&gt;_&lt;n&gt;_&lt;tag&gt;</code>. The tag is a short code signed with a key from the vault, so it can’t be guessed. A value comes back only when the tag checks out and the placeholder is in this session’s vault. Anything else in placeholder shape stays as text. Three refused guesses in one session show you one line.</p>
     <h3>Files the agent wrote stay masked</h3>
     <p>When real values are put back into a file, the hook records per file its path, its SHA-256, size and time, and per value the byte position, the value’s SHA-256, kind and placeholder. The log (<code>~/.cloakroom/filelog.bin</code>) is encrypted like the vault and holds no values: they are read back from the file when needed.</p>
+    <h3>Holds the agent can’t lift</h3>
+    <p><code>cloakroom allow</code>, <code>allow-host</code> and <code>uninstall</code> refuse to run in an agent’s shell, and a shell command that runs them is denied. Removing Cloakroom is held. A hook or MCP server written into an agent’s config waits until you type <code>cr: allow</code>; the message names the file, the line and the command. Cloakroom reads the command’s text, so the agent’s own sandbox is the wall against a name built at run time.</p>
     <h3>Encoded dumps and secrets</h3>
     <p><code>od</code>, <code>xxd</code>, <code>base64</code> and spaced-out output are turned back into text and checked; a hit holds the output back (it isn’t passed on). Each secret already in the session vault is also looked for in its encoded forms (base64, URL-encoded and JSON-escaped), and as an MD5, SHA-1 or SHA-256 hash, as hex, and reversed.</p>
   </div>

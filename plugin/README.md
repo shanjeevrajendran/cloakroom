@@ -90,6 +90,6 @@ Security reports: [SECURITY.md](https://github.com/shanjeevrajendran/cloakroom/b
 
 Nothing needs to be installed first (on Mac and Linux, `curl` or `wget`, which almost every system has; else uv,
 pipx or Python 3.10+ with venv). About 1 GB on a Mac, up to about 4 GB elsewhere. To remove it: `/plugin uninstall cloakroom`,
-then `uv tool uninstall cloakroom` (or delete `~/.cloakroom`).
+then `uv tool uninstall cloakroom` (or delete `~/.cloakroom`). Run these in your own terminal: Claude can't remove Cloakroom or approve its own held calls.
 
 License: Apache-2.0. Made by Shanjeev Rajendran.
