@@ -188,7 +188,13 @@ def main(argv=None):
         return proxy.run(a)
     if a.cmd == "exposure":
         from . import exposure
-        sys.stdout.write(exposure.render(exposure.build(a.since, a.personal), a.format))
+        try:
+            data = exposure.build(a.since, a.personal)
+        except engine.ModelUnavailable as e:
+            print(f"cloakroom: --personal needs the model ({e}). Run cloakroom exposure without it for keys and "
+                  "passwords only.", file=sys.stderr)
+            return 2
+        sys.stdout.write(exposure.render(data, a.format))
         return 0
     if a.cmd == "clean-history":
         from . import history

@@ -414,9 +414,11 @@ Git saves versions of your code, and those versions are often shared online.
   anyone who rewrites every later line can rebuild the chain. The log keeps `"log_months"` months (default 12).
 - **`cloakroom clean-history [--dry-run]`:** the first run only counts, per project. Files changed in the last ten
   minutes (an open session) are skipped.
-- **`cloakroom exposure [--since 2026-10-01] [--format text|json]`:** keys and passwords seen with Cloakroom and found
+- **`cloakroom exposure [--since 2026-10-01] [--personal] [--format text|json]`:** keys and passwords seen with Cloakroom and found
   in old agent transcripts, with a hint (a known prefix such as `sk-` or `ghp_` and, for values of 16 characters or
   more, the last 4) and a rotate checklist. It lists only what Cloakroom detected: a key it missed has no line.
+  `--personal` also looks for personal data (names, emails, addresses, account numbers) in what you typed in old Claude
+  Code chats; Claude Code only for now, slow (it uses the model) and lightly tested.
 - **`cloakroom scan [folder]`:** lists every command the agent and editor config in a folder would run
   (`.claude/settings.json`, `.mcp.json`, `.codex/`, `.gemini/settings.json`, `.vscode/tasks.json`), with its file and
   line, and flags the npm worm's shape. Read-only.

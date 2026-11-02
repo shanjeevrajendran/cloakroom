@@ -61,6 +61,7 @@
       <li>An agent can no longer remove Cloakroom itself: <code>uv tool</code>, <code>pipx</code>, <code>pip</code>, <code>uv pip</code> or <code>brew</code> uninstall of cloakroom, and removing, moving or un-executing the installed program or its tool folder, are denied, on Windows too (Git Bash paths like <code>/c/Users/...</code>, <code>cloakroom.exe</code>, uv's and pipx's folders there). Updating Cloakroom and removing other packages go through.</li>
       <li>Codex can no longer delete Cloakroom's own files with a patch, and a folder name hidden behind a wildcard (<code>.cloak*</code>) is now seen.</li>
       <li>The scan command also lists Cursor's <code>hooks.json</code> and <code>mcp.json</code>.</li>
+      <li><code>cloakroom exposure --personal</code> also looks for personal data (names, emails, addresses, account numbers) in what you typed in old Claude Code chats. Claude Code transcripts only for now; it is slow, uses the model, and is lightly tested, so treat its list as a starting point.</li>
     </ul>
     </div>
   </article>
