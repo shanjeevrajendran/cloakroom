@@ -69,7 +69,7 @@ It's new, so expect rough edges.
 
 New in 1.3:
 
-- **Holds only you can lift:** an agent can't approve its own held call, switch Cloakroom off or uninstall it, on Mac, Windows and Linux ([details](#extra-protections)).
+- **Prompt injection, contained:** hidden instructions can't make the agent approve its own held call, switch Cloakroom off or uninstall it, on Mac, Windows and Linux ([details](#prompt-injection)).
 - **Planted hooks are held:** a hook or MCP server an agent writes into its own config waits until you type `cr: allow`.
 
 New in 1.2:
@@ -356,6 +356,27 @@ Git saves versions of your code, and those versions are often shared online.
 - **Agent config files:** a real key written into `.mcp.json`, `.claude/settings.json`, `.cursor/mcp.json` or a
   copy of `claude_desktop_config.json` in a repo is refused. Claude is told to point to a setting kept outside the
   file instead, such as `${GITHUB_TOKEN}`.
+
+### Prompt injection
+
+A prompt injection is hidden text in a file, web page, issue or tool output that tells the agent to do something you
+didn't ask, such as send your keys somewhere. Cloakroom doesn't try to spot that text. It assumes the injection worked
+and limits what the agent can do with it:
+
+- **The agent never has your keys:** files, command output and MCP results reach it with placeholders, so there is
+  nothing real to send.
+- **Known secrets can't leave:** a shell command, web fetch, web search, MCP call or subagent prompt that carries a
+  secret from this session, plain or encoded (base64, hex), is held.
+- **It can't approve itself:** the agent can't run `cloakroom allow`, approve a site, switch Cloakroom off or
+  uninstall it.
+- **It can't plant code:** a hook or MCP server written into an agent's config waits until you type `cr: allow`.
+- **Tested against real attacks:** the test suite replays public injection attacks (a poisoned GitHub issue read
+  through MCP, a PR comment that asks for a `curl`, a support ticket that asks for a database token) on Claude Code,
+  Codex, Gemini CLI and Cursor.
+
+What it doesn't stop: data Cloakroom doesn't recognise as private can still leave through a shell command or web
+fetch; turn on the approved-sites list for that ([See where your agent sends data](#see-where-your-agent-sends-data)).
+A secret smuggled out piece by piece, or through a custom encoding, can also get through.
 
 **You stay in control, and can show it**
 
@@ -817,8 +838,8 @@ fictional 555 numbers), plain dates and job titles are left alone. Mark a false 
 suggests a rule, or add exceptions to `allow` in `~/.cloakroom/config.json`. `cloakroom check FILE` previews masks.
 
 **What doesn't it protect?** It stops accidental leaks, like a key in a file Claude happened to open. It isn't a
-sandbox (a sealed-off space the AI can't get out of). Out of scope: a prompt injection (hidden text in a file that
-steers Claude) set on smuggling data out piece by piece, what you type into a prompt (a prompt
+sandbox (a sealed-off space the AI can't get out of). A prompt injection is contained, not prevented: see
+[Prompt injection](#prompt-injection). Out of scope: an injected agent set on smuggling data out piece by piece, what you type into a prompt (a prompt
 with a key or personal data is stopped before it's sent but can't be rewritten, and names alone go through), and Claude Code's own local logs. Keys are kept
 out of files git would commit when Claude writes them with Write or Edit, but a file a shell command writes some other
 way (a script, `cp`, `sed -i`) is not checked yet, so a commit made from it can still carry a key. An agent runs as
