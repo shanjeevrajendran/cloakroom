@@ -10,7 +10,7 @@
   cloakroom report --destinations [--since DATE]   where outgoing calls went, per host (no values)
   cloakroom allow-host HOST [--remove|--list]    approve a site for the approved-sites list ("egress": "allowlist")
   cloakroom clean-history [--dry-run]            find and replace keys in old Claude Code transcripts
-  cloakroom exposure [--since DATE] [--format text|json]   which keys and passwords your agents saw, to rotate
+  cloakroom exposure [--since DATE] [--personal] [--format text|json]   which keys and passwords your agents saw, to rotate
   cloakroom install git-hook                     check your own commits and pushes in this repo for keys
   cloakroom install cursor                       mask what Cursor's command-line agent reads and runs (uninstall: remove)
   cloakroom allow                                let the command Cloakroom last held run once (Cursor has no prompt to type cr: allow in)
@@ -163,6 +163,8 @@ def main(argv=None):
     e = sub.add_parser("exposure", help="which keys and passwords your agents saw (Cloakroom's log and old agent "
                        "transcripts), with a rotate list; hints only, never values")
     e.add_argument("--since", default="", help="first day, YYYY-MM-DD")
+    e.add_argument("--personal", action="store_true", help="also look for personal data (names, emails, "
+                   "addresses, account numbers) in what you typed in old Claude Code chats; slow, uses the model")
     e.add_argument("--format", choices=["text", "json"], default="text")
     a = p.parse_args(argv)
 
@@ -186,7 +188,13 @@ def main(argv=None):
         return proxy.run(a)
     if a.cmd == "exposure":
         from . import exposure
-        sys.stdout.write(exposure.render(exposure.build(a.since), a.format))
+        try:
+            data = exposure.build(a.since, a.personal)
+        except engine.ModelUnavailable as e:
+            print(f"cloakroom: --personal needs the model ({e}). Run cloakroom exposure without it for keys and "
+                  "passwords only.", file=sys.stderr)
+            return 2
+        sys.stdout.write(exposure.render(data, a.format))
         return 0
     if a.cmd == "clean-history":
         from . import history

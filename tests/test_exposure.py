@@ -155,3 +155,58 @@ def test_cli(agent_homes, capsys):
     assert "Rotate these" in out and KEY not in out
     assert cli.main(["exposure", "--format", "json"]) == 0
     assert json.loads(capsys.readouterr().out)["history"]
+
+
+def _rec(content, **kw):
+    return {"type": "user", "message": {"content": content}, **kw}
+
+
+def test_typed_filter():
+    from cloakroom.exposure import typed
+    assert typed(_rec("mail me at a@b.com")) == ["mail me at a@b.com"]
+    assert typed(_rec([{"type": "text", "text": "hi"}, {"type": "image"}, {"type": "text", "text": " "}])) == ["hi"]
+    assert typed(_rec([{"type": "tool_result", "content": "x"}, {"type": "text", "text": "hi"}])) == []
+    assert typed(_rec("hi", isMeta=True)) == []
+    assert typed(_rec("<system-reminder>x</system-reminder>")) == []
+    assert typed(_rec("  <command-name>/x</command-name>")) == []
+    assert typed({"type": "assistant", "message": {"content": "hi"}}) == []
+    assert typed("not a dict") == [] and typed(_rec(None)) == []
+
+
+def test_personal_rows_carry_no_values(tmp_path, monkeypatch, no_history):
+    pytest.importorskip("torch")  # the personal pass runs the model
+    from cloakroom import exposure
+    email = "jane.q.doe.private@gmail.com"
+    proj = tmp_path / "claude" / "projects" / "p"
+    proj.mkdir(parents=True)
+    t = proj / "t.jsonl"
+    t.write_text("\n".join(json.dumps(r) for r in [
+        _rec(f"please write to {email} about the invoice"),
+        _rec([{"type": "tool_result", "content": f"cc {email}"}]),
+    ]) + "\n")
+    os.utime(t, (time.time() - 3600,) * 2)
+    monkeypatch.setenv("CLAUDE_CONFIG_DIR", str(tmp_path / "claude"))
+    off = exposure.build()
+    assert not [r for r in off["history"] if r["kind"] not in exposure.KINDS]
+    data = exposure.build(personal=True)
+    rows = [r for r in data["history"] if r["kind"] not in exposure.KINDS]
+    assert rows and all(r["count"] == 1 and set(r) == set(data["history"][0]) for r in rows)  # tool_result skipped
+    assert not any(x["kind"] not in exposure.KINDS for x in data["rotate"])
+    text = _text(data)
+    assert email not in text and "jane.q.doe" not in text
+
+
+def test_personal_without_the_model_says_so(tmp_path, monkeypatch, capsys, no_history):
+    from cloakroom import cli, engine
+    proj = tmp_path / "claude" / "projects" / "p"
+    proj.mkdir(parents=True)
+    t = proj / "t.jsonl"
+    t.write_text(json.dumps(_rec("write to jane@example.org")) + "\n")
+    os.utime(t, (time.time() - 3600,) * 2)  # a file changed in the last minutes is skipped as busy
+    monkeypatch.setenv("CLAUDE_CONFIG_DIR", str(tmp_path / "claude"))
+
+    def no_model(*a, **k):
+        raise engine.ModelUnavailable("the model isn't installed")
+    monkeypatch.setattr(engine, "detect", no_model)
+    assert cli.main(["exposure", "--personal"]) == 2
+    assert "--personal needs the model" in capsys.readouterr().err
