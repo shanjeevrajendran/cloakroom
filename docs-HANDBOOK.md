@@ -94,7 +94,7 @@ Nothing changes in how you work. What you'll notice:
   `allow-host` and `uninstall` refuse to run in its shell, and removing Cloakroom is held. A hook or MCP server Claude
   writes into its config waits until you type `cr: allow`; the message names the file, the line and the command. Run
   those commands in your own terminal (on Windows: PowerShell, cmd or Windows Terminal; Git Bash's own window is
-  refused, so type `cr: allow` there instead).
+  refused; or type `cr: allow` in the chat).
 - **Dashboard.** `cloakroom dashboard` opens your alerts in the browser (127.0.0.1 only). Label them correct,
   false alarm or missed; see section 6.
 
