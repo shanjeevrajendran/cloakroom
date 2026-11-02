@@ -42,11 +42,12 @@ def test_scan_lists_every_agent_config(tmp_path, capsys):
     _write(tmp_path, ".gemini/settings.json", {"mcpServers": {"g": {"command": "echo gemini"}}})
     _write(tmp_path, ".codex/config.toml", '[mcp_servers.docs]\ncommand = "echo"\nargs = ["codex"]\n')
     _write(tmp_path, ".codex/hooks.json", {"hooks": {"SessionStart": [{"hooks": [{"command": "echo codex"}]}]}})
+    _write(tmp_path, ".cursor/hooks.json", {"version": 1, "hooks": {"beforeShellExecution": [{"command": "echo cursor"}]}})
     assert cli.main(["scan", str(tmp_path)]) == 0  # nothing worm-shaped
     out = capsys.readouterr().out
     for want in ("PostToolUse hook: echo lint", "MCP server files: echo mcp", "MCP server web: https://example.com/mcp",
                  "MCP server g: echo gemini", '.codex/config.toml:2  mcp_servers.docs command: "echo"',
-                 "SessionStart hook: echo codex"):
+                 "SessionStart hook: echo codex", ".cursor/hooks.json:6  beforeShellExecution hook: echo cursor"):
         assert want in out, want
 
 

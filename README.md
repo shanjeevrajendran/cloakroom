@@ -130,7 +130,8 @@ explained under the table.
 | Keys written into files git would commit | ✓ | ✓ | ✓ | ✓ |
 | The agent's `git commit` / `git push` check | ✓ | ✓ | ✓ | ✓ |
 | Commands that send secrets or placeholders over the internet | ✓ | ⛔ Stopped: refused, not asked about | ✓ | ⛔ Stopped: refused, not asked about |
-| Calls that move money | ✓ | ✓ | ✓ | ✓ (to let one through: run `cloakroom allow` in a terminal) |
+| Calls that move money | ✓ | ✓ | ✓ | ✓ (to let one through: run `cloakroom allow` in your own terminal) |
+| The agent approving its own held call, switching Cloakroom off, or adding a hook or MCP server to its config | ⛔ Held | ⛔ Held | ⛔ Held | ⛔ Held |
 | Check on commits you make yourself | ✓ | ✓ | ✓ | ✓ |
 | Systems | Mac, Linux, Windows | Mac, Linux | Mac, Linux | Mac, Linux |
 
@@ -153,6 +154,8 @@ else: [Known limits](https://github.com/shanjeevrajendran/cloakroom/blob/main/do
 
 ## Recent releases
 
+- **1.3.0** (unreleased): an agent can't approve its own held call or switch Cloakroom off, and a hook or MCP
+  server it writes into agent config is held until you type `cr: allow`.
 - **1.2.0**: Cursor's editor is checked with Cloakroom (Tab completion isn't covered). Codex signed in with
   ChatGPT is masked through `cloakroom proxy`. A vault key safeguard keeps tests and sandboxes away from the Keychain, and
   false alarms on Codex's plugin list are gone.
@@ -166,9 +169,6 @@ else: [Known limits](https://github.com/shanjeevrajendran/cloakroom/blob/main/do
 - **0.9.0**: `cloakroom give NAME` hands the agent a key through a hidden prompt, so you never paste it
   into a chat; a prompt Cloakroom stops is taken out of the session's saved Claude Code transcript; a failed command is
   counted as not checked in `cloakroom report`. See [Hand the agent a key safely](#hand-the-agent-a-key-safely).
-- **0.8.1**: a stopped prompt comes back with placeholders in place of your private values, ready to
-  send instead; `cloakroom update` updates Cloakroom and redoes its setup for Codex, Gemini CLI and git commits;
-  `cloakroom doctor` shows the version; a new [Updates](#updates) section.
 
 Claude Code plugin updates arrive a few days after each PyPI release (PyPI is the Python package site), once the release has settled
 ([how updates reach you](#updates)). All changes:
@@ -354,6 +354,14 @@ Git saves versions of your code, and those versions are often shared online.
 
 **You stay in control, and can show it**
 
+- **An agent can't approve its own held call:** `cloakroom allow` and `cloakroom allow-host` refuse to run in an
+  agent's shell, and a shell command that tries them is denied. Approve in the chat with `cr: allow`, or run the
+  command in your own terminal.
+- **An agent can't switch Cloakroom off or remove it:** uninstalling it, removing its hook entry from an agent's
+  config, or removing the package or program is held, whether the agent uses a command or edits the file.
+- **A hook or MCP server the agent adds is held:** a command written into `.mcp.json`, `.claude/settings.json`, Codex's
+  `config.toml` or `hooks.json`, Cursor's `hooks.json` or `mcp.json`, `.gemini/settings.json` or a Gemini extension waits
+  until you type `cr: allow`. The message names the file, the line and the command. Edits that add no command go through.
 - **Claude can't turn Cloakroom off:** its settings change only from the dashboard or when you type `cr: pause` or
   `cr: resume`.
 - **A log you can check and export:** each line of the activity log carries a fingerprint (hash) of the line
@@ -507,7 +515,8 @@ The approved-sites list is off until you add `"egress": "allowlist"` to `~/.cloa
 that isn't on the list is held, whatever it carries, with the same message and `cr: allow` as any held command: type
 `cr: allow` in the chat, then ask the agent to run the same call again. A call whose destination Cloakroom can't read
 (`aws s3 ls`, `npm publish`) is held too. WebSearch counts as the host `web-search`, and an MCP server your config
-doesn't name as `mcp:NAME`; approve those with `cloakroom allow-host web-search` or `cloakroom allow-host mcp:NAME`.
+doesn't name as `mcp:NAME`; approve those with `cloakroom allow-host web-search` or `cloakroom allow-host mcp:NAME`. Run `allow-host` in your own
+terminal: it refuses in the agent's shell.
 
 Always on, with or without the list: a command or web call whose address, query string or headers carry an email
 address, a phone number, a name or your computer's username is held, and the message says which. The username comes
@@ -516,7 +525,7 @@ from the operating system, not from `$USER`. A placeholder in the address is fin
 | Command | What it does |
 |---|---|
 | `cloakroom report --destinations` | hosts, calls, holds and kinds carried; the dashboard shows the same as "Where data went" |
-| `cloakroom allow-host HOST` | add a site to the approved-sites list (`--remove` takes it off, `--list` shows it) |
+| `cloakroom allow-host HOST` | add a site to the approved-sites list (`--remove` takes it off, `--list` shows it); your own terminal only |
 
 It doesn't see the agent's own calls to its model provider, or a tool that runs no Cloakroom check
 ([Known limits](https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-LIMITS.md)).
@@ -746,7 +755,7 @@ of MCP calls, and keys are kept out of files git would commit. What's different:
 - Cursor's Grep tool is refused when it would show file contents, which can't be masked; the agent searches with a
   shell command, whose output is masked.
 - Commands Cloakroom would ask about are refused: a command with placeholders that could send data off the machine,
-  or one Cloakroom doesn't know, is stopped. To let a held command through once, run `cloakroom allow` in a terminal.
+  or one Cloakroom doesn't know, is stopped. To let a held command through once, run `cloakroom allow` in your own terminal (the agent's shell is refused).
 - Cursor's own web search isn't seen: it runs inside Cursor with no hook.
 
 To remove it: `cloakroom uninstall cursor`. More in
@@ -805,7 +814,9 @@ sandbox (a sealed-off space the AI can't get out of). Out of scope: a prompt inj
 steers Claude) set on smuggling data out piece by piece, what you type into a prompt (a prompt
 with a key or personal data is stopped before it's sent but can't be rewritten, and names alone go through), and Claude Code's own local logs. Keys are kept
 out of files git would commit when Claude writes them with Write or Edit, but a file a shell command writes some other
-way (a script, `cp`, `sed -i`) is not checked yet, so a commit made from it can still carry a key. Details:
+way (a script, `cp`, `sed -i`) is not checked yet, so a commit made from it can still carry a key. An agent runs as
+you, so one that builds Cloakroom's folder name or a command at run time can still try to edit its files or approve a
+hold; the agent's own sandbox is the wall for that. Details:
 [docs-LIMITS.md](https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-LIMITS.md).
 
 **What about PDFs, scans and photos?** Cloakroom pulls the text out on your machine and masks it like any file;
@@ -819,7 +830,7 @@ A scan it can't read in time, encrypted PDFs, figures in a notebook and other pi
 told so; to show Claude a picture anyway, attach it to your own prompt. Page and time limits:
 [known limits](https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-LIMITS.md).
 
-**How do I remove it?** See [Uninstall](https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-SETUP.md#uninstall).
+**How do I remove it?** In your own terminal: an agent's attempt to remove Cloakroom is held. See [Uninstall](https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-SETUP.md#uninstall).
 
 ## More
 

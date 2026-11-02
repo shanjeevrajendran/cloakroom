@@ -538,7 +538,7 @@ def _deny(reason: str) -> dict:
 HOME_DENY = ("Cloakroom: its own settings (~/.cloakroom) are changed only by you, from the dashboard or "
              "by typing cr: pause / cr: resume. Claude can't change them.")
 WRITE_TOOLS = {"Write", "Edit", "MultiEdit", "NotebookEdit", "apply_patch"}
-_PATCH_FILE = re.compile(r"^\*\*\* (?:Add File|Update File|Move to): (.+?)\s*$", re.M)
+_PATCH_FILE = re.compile(r"^\*\*\* (?:Add File|Update File|Delete File|Move to): (.+?)\s*$", re.M)
 
 
 def _write_paths(tool: str, args: dict) -> list[str]:
@@ -548,15 +548,103 @@ def _write_paths(tool: str, args: dict) -> list[str]:
     return [str(args.get("file_path") or args.get("notebook_path") or "")]
 
 
-def _touches_home(tool: str, args: dict) -> bool:
+def _touches_home(tool: str, args: dict, cwd: str = "") -> bool:
     """A tool call that would change Cloakroom's own files (~/.cloakroom: pause, rules, vault, token)."""
+    import glob
     home = str(config.HOME)
     if tool in WRITE_TOOLS:
         return any(os.path.realpath(os.path.expanduser(p)).startswith(os.path.realpath(home))
                    for p in _write_paths(tool, args))
     if tool in SHELL_TOOLS:
         cmd = str(args.get("command", ""))
-        return ".cloakroom" in cmd or home in cmd
+        if ".cloakroom" in cmd or home in cmd:
+            return True
+        # a globbed name (.cloak*/held.json), expanded from the agent's folder and from your home folder
+        return any(os.path.realpath(m).startswith(os.path.realpath(home))
+                   for w in re.findall(r"[^\s'\"`;|&<>()]*[*?[][^\s'\"`;|&<>()]*", cmd)
+                   for root in (cwd or ".", os.path.expanduser("~"))
+                   for m in glob.glob(os.path.join(root, os.path.expanduser(w)))[:50])
+    return False
+
+
+SELF_DENY = ("Cloakroom: approving a held call, approving a site, or switching Cloakroom off is yours to do: type "
+             "cr: allow, or run the command in your own terminal. Claude can't run it.")
+# The cloakroom program (any path, python -m, uvx, a pty wrapper's ['cloakroom', 'allow']) with a subcommand that
+# approves or switches Cloakroom off; the agents' own switches for Cloakroom; its Python API for the same.
+_Q = r"""['"]?\s*,?\s*['"]?"""
+_SELF_CLI = re.compile(
+    r"(?i)(?:^|[\s/'\"`(;|&=,\[])cloakroom(?:\.exe)?" + _Q +
+    r"(?:allow(?![\w-])|allow-host(?!\s+--list)|uninstall\b|proxy" + _Q + r"uninstall\b)"
+    r"|\b(?:claude\s+plugins?|gemini\s+extensions?)\s+(?:disable|uninstall|remove|rm)\b[^;&|\n]*\bcloakroom"
+    r"|\b(?:pip[\d.]*|pipx|uv\s+(?:tool|pip)|brew)\s+(?:uninstall|remove|rm)\b[^;&|\n]*(?<![\w-])cloakroom(?![\w-])"
+    r"|\b(?:import|from)\s+cloakroom\b[^\n]*\b(?:_arm_held|_write_held|set_allowed_hosts|uninstall)")
+_RUNNERS = {"sh", "bash", "zsh", "dash", "ksh", "fish", "source", ".", "python", "python3", "node", "perl", "ruby"}
+_SEGMENTS = re.compile(r"&&|\|\||[;|\n]")
+
+
+_REMOVERS = {"rm", "rmdir", "unlink", "mv", "trash", "shred", "chmod", "chflags", "truncate", "cp", "ln", "install"}
+
+
+def _program_paths() -> list[str]:
+    """Where the installed Cloakroom lives (the program on PATH or the one this hook runs, its uv or pipx tool
+    folder, an installed package folder): removing any of them leaves the agents' hooks nothing to run."""
+    import shutil
+    from . import agents
+    home, env = os.path.expanduser("~"), os.environ.get
+    # tool folders: uv (docs: reference/storage.md) and pipx (paths.py: platformdirs' data folder, then the older
+    # ~/.local/pipx and, on Windows, ~/pipx); the defaults stay guarded when UV_TOOL_DIR or PIPX_HOME points elsewhere
+    roots = [(home, ".local", "share", "uv", "tools"), (env("XDG_DATA_HOME"), "uv", "tools"),
+             (env("APPDATA"), "uv", "data", "tools"), (env("UV_TOOL_DIR"),),
+             (home, ".local", "pipx", "venvs"), (home, "pipx", "venvs"), (home, ".local", "share", "pipx", "venvs"),
+             (env("XDG_DATA_HOME"), "pipx", "venvs"), (home, "Library", "Application Support", "pipx", "venvs"),
+             (env("LOCALAPPDATA"), "pipx", "pipx", "venvs"), (env("PIPX_HOME"), "venvs")]
+    found = [shutil.which("cloakroom"), agents._program()] + [os.path.join(*r, "cloakroom") for r in roots if r[0]]
+    package = os.path.dirname(os.path.abspath(__file__))
+    found += [package] if "site-packages" in package else []  # not a source checkout you work on
+    # POSIX: also the link's own name (norm resolves links); Windows: norm's one spelling is the only one
+    return list(dict.fromkeys(q for p in found if p
+                              for q in (filelog.norm(p),) + (() if os.name == "nt" else (os.path.abspath(p),))))
+
+
+def _removes_program(command: str, cwd: str) -> bool:
+    """rm, mv, chmod... of the installed program, its tool folder, or (rm, mv) a folder holding them."""
+    import shlex
+    homes = _program_paths()
+
+    def hit(w, up):  # norm's spelling uses "/" on every OS; Git Bash's rm finds cloakroom.exe from "cloakroom"
+        p = filelog.norm(_git_bash_path(w, False), cwd)
+        return any(q == h or q.startswith(h + "/") or (up and h.startswith(q.rstrip("/") + "/"))
+                   for q in (p, p + ".exe") for h in homes)
+    if any(hit(t.strip("\"'"), False) for t in _REDIRECT.findall(command)):
+        return True
+    for seg in _SEGMENTS.split(command):
+        try:  # as _command_paths: Windows keeps its backslashes
+            words = [w.strip("'\"") for w in shlex.split(seg, posix=os.name != "nt")]
+        except ValueError:
+            words = [w.strip("'\"") for w in seg.split()]
+        first = os.path.basename(words[0]) if words else ""
+        if first not in _REMOVERS:
+            continue
+        args = [w for w in words[1:] if w and not w.startswith("-")]
+        if first in ("cp", "ln", "install"):  # only what it writes to
+            args = args[-1:]
+        if any(hit(w, first in ("rm", "rmdir", "mv", "trash")) for w in args):
+            return True
+    return False
+
+
+def _self_cli(command: str, cwd: str) -> bool:
+    """The command (or a script file it runs: sh x.sh, python x.py, ./x) approves or switches Cloakroom off, or
+    removes its installed program."""
+    if _SELF_CLI.search(command) or _removes_program(command, cwd):
+        return True
+    for seg in _SEGMENTS.split(command):
+        words = [w.strip("'\"") for w in seg.split()]
+        first = os.path.basename(words[0]) if words else ""
+        target = next((w for w in words[1:] if not w.startswith("-")), "") if first in _RUNNERS \
+            else (words[0] if words and "/" in words[0] else "")
+        if target and _SELF_CLI.search(_existing(os.path.join(cwd, os.path.expanduser(target)))):
+            return True
     return False
 
 
@@ -567,14 +655,111 @@ _DRY_DENY = {"dry-run": "would deny"}  # _commit_check in dry run: log only, and
 _REDIRECT = re.compile(r"(?:(?<![-=>\d])\d?>>?(?!=)|\|\s*tee(?:\s+-a)?)\s*([^\s|;&<>=][^\s|;&<>]*)")
 # MCP and agent config files a repo may commit: a token there belongs in an environment reference
 AGENT_CONFIGS = (".mcp.json", ".claude/settings.json", ".claude/settings.local.json", ".cursor/mcp.json",
+                 ".cursor/hooks.json", ".gemini/settings.json", ".codex/config.toml", ".codex/hooks.json",
                  "claude_desktop_config.json")
+_AGENT_DIRS = re.compile(r"(?:^|/)(?:\.gemini/extensions/[^/]+|\.claude/plugins/.*cloakroom[^/]*)(?:/|$)")
 _CONFIG_SECRET = re.compile(r'(?i)"(?P<key>[^"\n]*(?:token|key|secret|passw|auth|credential|bearer)[^"\n]*)"\s*:\s*'
                             r'"(?:bearer\s+|token\s+|basic\s+)?(?P<value>[^"\s]*)"')
 
 
 def _agent_config(path: str) -> bool:
+    """An agent's config file (its hooks and MCP servers run commands), or a Gemini extension or Cloakroom's plugin."""
     p = path.replace("\\", "/")
-    return any(p == c or p.endswith("/" + c) for c in AGENT_CONFIGS)
+    return any(p == c or p.endswith("/" + c) for c in AGENT_CONFIGS) or bool(_AGENT_DIRS.search(p))
+
+
+_PATCH_PART = re.compile(r"^\*\*\* (Add File|Update File|Delete File): (.+?)\s*$", re.M)
+
+
+def _new_text(tool: str, args: dict, raw: str, old: str) -> str | None:
+    """The file raw as this write leaves it ("" when deleted); None when Cloakroom can't work it out."""
+    if tool == "Write":
+        return str(args.get("content", ""))
+    if tool == "Delete":
+        return ""
+    if tool in ("Edit", "MultiEdit"):
+        for e in (args.get("edits") or []) if tool == "MultiEdit" else [args]:
+            if isinstance(e, dict):
+                a, b = str(e.get("old_string", "")), str(e.get("new_string", ""))
+                old = old.replace(a, b) if e.get("replace_all") else old.replace(a, b, 1)
+        return old
+    if tool != "apply_patch":
+        return None
+    parts = _PATCH_PART.split(str(args.get("command", "")))
+    for kind, p, body in zip(parts[1::3], parts[2::3], parts[3::3]):
+        if p != raw:
+            continue
+        lines = [ln for ln in body.splitlines() if not ln.startswith("***")]
+        if kind != "Update File":
+            return "\n".join(ln[1:] for ln in lines if ln.startswith("+")) if kind == "Add File" else ""
+        for hunk in re.split(r"(?m)^@@.*$", "\n".join(lines)):
+            rows = hunk.strip("\n").splitlines()
+            a = "\n".join(ln[1:] for ln in rows if ln[:1] in (" ", "-"))
+            b = "\n".join(ln[1:] for ln in rows if ln[:1] in (" ", "+"))
+            if a and a not in old:
+                return None
+            old = old.replace(a, b, 1) if a else old + b
+        return old
+    return None
+
+
+_READERS = {"cat", "head", "tail", "less", "more", "grep", "egrep", "fgrep", "rg", "jq", "ls", "wc", "diff", "stat",
+            "file", "bat", "git", "cloakroom", "code", "open", "test", "[", "shasum", "sha256sum", "md5", "cd"}
+
+
+def _shell_writes(command: str, cwd: str, paths: list[str]) -> bool:
+    """The command writes, copies over, moves or deletes one of paths (a reader like cat, jq or git doesn't)."""
+    if {filelog.norm(t.strip("\"'"), cwd) for t in _REDIRECT.findall(command)} & set(paths):
+        return True
+    for seg in _SEGMENTS.split(command):
+        words = [w.strip("\"'") for w in seg.split()]
+        first = os.path.basename(words[0]) if words else ""
+        if not words or first in _READERS or (first == "sed" and not any(w.startswith(("-i", "--in-place"))
+                                                                         for w in words)):
+            continue
+        if any(filelog.norm(w, cwd) in paths for w in words[1:] if w):
+            return True
+    return False
+
+
+def _config_hold(tool: str, args: dict, cwd: str) -> dict | None:
+    """Hold a call that plants or changes a command (a hook, an MCP server) in an agent's config file, or drops
+    Cloakroom's own entry there; a shell command that writes such a file is held as it is. cr: allow lets it run once.
+    Config that adds no command, and reading config, go through."""
+    from . import configscan
+    why = []
+    if tool in SHELL_TOOLS:
+        cmd = str(args.get("command", ""))
+        paths = [p for p in _command_paths(cmd, cwd, tool == "PowerShell") if _agent_config(p)]
+        if paths and _shell_writes(cmd, cwd, paths):
+            why = [f"it changes {', '.join(paths)}, agent config whose hooks and MCP servers run commands"]
+        key = cmd
+    else:
+        raws = [v for v in args.values() if isinstance(v, str)] if tool == "Delete" else _write_paths(tool, args)
+        for raw in raws:
+            path = os.path.normpath(os.path.join(cwd, os.path.expanduser(raw)))
+            if not _agent_config(path):
+                continue
+            old = _existing(path)
+            new = _new_text(tool, args, raw, old)
+            if new is None:
+                why.append(f"it changes {path}, agent config, in a way Cloakroom can't read")
+                continue
+            before = {(w, c) for w, c, _ in configscan.commands(path, old)} if old.strip() else set()
+            why += [f"it adds to {path}:{n} the {w}: {c}" for w, c, n in configscan.commands(path, new)
+                    if c and (w, c) not in before]
+            why += [f"it removes Cloakroom's own entry from {path} ({ln.strip()[:80]})" for ln in old.splitlines()
+                    if "cloakroom" in ln.lower() and ln.strip() not in new][:1]
+        key = tool + "\0" + json.dumps(args, sort_keys=True)
+    if not why:
+        return None
+    if _allowed_once(key):
+        _ACTION[0] = "allowed once"
+        return None
+    _write_held({"mac": _command_mac(key), "until": time.time() + 60 * HOLD_MINUTES, "armed": False})
+    _ACTION[0] = "held"
+    return _deny(f"Cloakroom held this call: {'; '.join(why)}. A planted hook or MCP server runs with your rights. "
+                 "If you meant it, type cr: allow, then ask Claude to run the same call again: it runs once.")
 
 
 def _config_literals(text: str) -> list[str]:
@@ -1124,10 +1309,10 @@ def _cursor_pre(data: dict) -> tuple[bool, dict | None]:
     if tool == "Grep" and args.get("output_mode") not in ("files_with_matches", "count"):
         return True, _deny(agents.GREP_DENY)
     if tool == "Delete":
-        home = os.path.realpath(str(config.HOME))
-        under = any(isinstance(v, str) and os.path.realpath(os.path.join(data.get("cwd") or os.getcwd(),
-                    os.path.expanduser(v))).startswith(home) for v in args.values())
-        return True, _deny(HOME_DENY) if under else None
+        home, cwd = os.path.realpath(str(config.HOME)), data.get("cwd") or os.getcwd()
+        under = any(isinstance(v, str) and os.path.realpath(os.path.join(cwd, os.path.expanduser(v))).startswith(home)
+                    for v in args.values())
+        return True, _deny(HOME_DENY) if under else _config_hold(tool, args, cwd)
     if tool not in CURSOR_TOOLS:
         _skip("cursor-tool", f"output of Cursor's {tool} tool", say=False)
         return True, None
@@ -1136,12 +1321,19 @@ def _cursor_pre(data: dict) -> tuple[bool, dict | None]:
 
 def _on_pre(data: dict) -> dict | None:
     tool, args, session = data.get("tool_name", ""), data.get("tool_input") or {}, data.get("session_id", "default")
-    if _touches_home(tool, args):
+    cwd = data.get("cwd") or os.getcwd()
+    if _touches_home(tool, args, cwd):
         return _deny(HOME_DENY)
+    if tool in SHELL_TOOLS and _self_cli(str(args.get("command", "")), cwd):
+        return _deny(SELF_DENY)
     blob = json.dumps(args)
     has_ph = bool(ANY_PLACEHOLDER.search(blob))
     vault = Vault(config.vault_path(session))
-    cwd = data.get("cwd") or os.getcwd()
+    if tool in SHELL_TOOLS or tool in WRITE_TOOLS:
+        held = _config_hold(tool, args, cwd)
+        if held:  # a literal token in it is denied first: that message names the fix
+            token = _commit_check(tool, args, args, cwd, vault) if tool in WRITE_TOOLS else None
+            return token if token and token is not _DRY_DENY else held
 
     money_why = money.reason(tool, args, SHELL_TOOLS, config.load())
     if tool in SHELL_TOOLS:

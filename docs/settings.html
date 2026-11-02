@@ -105,6 +105,8 @@
     <p>Mark it a false alarm on the dashboard, or run <code>cloakroom explain</code> on the file to see which rule fired and add an <code>allow</code> entry.</p>
     <h3>A prompt keeps getting blocked</h3>
     <p>Start it with <code>cr!</code>, or type <code>cr: pause 10m</code>; <code>cr: resume</code> ends the pause.</p>
+    <h3><code>cloakroom allow</code> refuses to run</h3>
+    <p>It runs only in your own terminal, not in the agent’s shell. Open a terminal window and type it there, or type <code>cr: allow</code> in the chat. The same goes for <code>allow-host</code> and <code>uninstall</code>.</p>
     <h3>Dashboard says “signed out”</h3>
     <p>The service restarted; run <code>cloakroom dashboard</code> again.</p>
     <h3>Something got through</h3>

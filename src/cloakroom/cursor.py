@@ -327,7 +327,8 @@ def run(ident: str) -> int:
     for s in (signal.SIGTERM, signal.SIGINT, signal.SIGHUP):
         signal.signal(s, lambda n, _f: got.append(n))
     proc = subprocess.Popen([os.environ.get("SHELL") or "/bin/sh", "-c", cmd], stdout=subprocess.PIPE,
-                            stderr=subprocess.PIPE, start_new_session=True)
+                            stderr=subprocess.PIPE, start_new_session=True,  # no terminal: see cli._from_agent
+                            env={**os.environ, "CLOAKROOM_RUN": ident})
     streams = [(_Stream(proc.stdout), sys.stdout), (_Stream(proc.stderr), sys.stderr)]
     sent = exited = None
     while True:

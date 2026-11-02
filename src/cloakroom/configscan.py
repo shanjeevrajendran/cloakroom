@@ -15,7 +15,7 @@ import sys
 
 # shortcut: a fixed list of project config files; add a file here when another agent reads project config
 FILES = (".claude/settings.json", ".claude/settings.local.json", ".mcp.json", ".gemini/settings.json",
-         ".codex/hooks.json", ".codex/config.toml", ".vscode/tasks.json")
+         ".codex/hooks.json", ".codex/config.toml", ".cursor/hooks.json", ".cursor/mcp.json", ".vscode/tasks.json")
 ZERO = "0" * 40
 
 
@@ -59,7 +59,8 @@ def commands(path: str, text: str) -> list[tuple[str, str, int]]:
     hooks = data.get("hooks")
     for event, groups in (hooks.items() if isinstance(hooks, dict) else ()):
         for group in groups if isinstance(groups, list) else ():
-            for h in (group.get("hooks") or []) if isinstance(group, dict) else ():
+            # Claude Code, Codex, Gemini: {"hooks": [{"command"}]} groups; Cursor: the {"command"} entries themselves
+            for h in (group.get("hooks") or [group]) if isinstance(group, dict) else ():
                 if isinstance(h, dict) and h.get("command"):
                     out.append((f"{event} hook", h["command"], _line(text, h["command"])))
     if isinstance(data.get("statusLine"), dict) and data["statusLine"].get("command"):

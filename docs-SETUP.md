@@ -35,6 +35,8 @@ Backends (`CLOAKROOM_BACKEND=auto|torch|onnx`, `auto` by default):
 
 ## Uninstall
 
+Run these in your own terminal. An agent that tries to uninstall Cloakroom is held.
+
 1. In Claude Code: `/plugin uninstall cloakroom@cloakroom`.
 2. Stop the service: `cloakroom status` shows if it runs; it stops when you log out, or end the `python` process
    listening on port 37787.

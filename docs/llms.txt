@@ -227,6 +227,12 @@ Stops a tool call that would move money: a write to a listed payment endpoint, a
 #### Write-time and commit check
 Stops a key or password from landing in a file in a git repo that is not git-ignored. The call is denied and the agent is told to put the value in .env. Before the agent runs git commit or git push, a key or password in what would be committed holds the command.Example: the agent tries to write an API key into config.py.Limit: Keys written by scripts.
 
+#### The agent can’t approve its own hold or switch Cloakroom off
+Stops an agent from lifting a hold itself or turning Cloakroom off. cloakroom allow, allow-host and uninstall refuse to run in an agent’s shell, and a shell command that runs them is denied. Uninstalling Cloakroom, or removing its program, is held too.Example: the agent runs cloakroom allow to let its own held command through; it is refused.Type cr: allow in the chat, or run the command in your own terminal.Limit: Built at run time.
+
+#### A hook or MCP server the agent adds is held
+Stops an agent from planting a command in its own config. A hook or MCP server (an add-on tool) written into .mcp.json, .claude/settings.json, Codex’s config.toml or hooks.json, Cursor’s hooks.json or mcp.json, .gemini/settings.json or a Gemini extension waits for cr: allow. The message names the file, the line and the command. Edits that add no command go through.Example: the agent adds a hook that runs a script from a file it wrote.Limit: Built at run time.
+
 #### Nothing gets through when the program is missing
 If the cloakroom command is missing, the plugin blocks prompts and denies tool calls instead of letting data through.Example: you remove the program by mistake; your next prompt is blocked, not passed on.
 
@@ -269,6 +275,9 @@ A key split into pieces, or one with no known pattern and not seen earlier in th
 
 #### Money moved by programs
 The money-movement hold sees the command or tool call, not what a program does once it runs. A script or app that calls a payment API isn’t held.
+
+#### Built at run time
+These two holds read the command’s text. The agent runs as you, so one that builds Cloakroom’s folder name or a command piece by piece, and fakes a terminal, can still edit Cloakroom’s files or approve a hold. The agent’s own sandbox is the wall for that.
 
 #### The exposure list
 cloakroom exposure lists only what Cloakroom detected: a key it missed leaves no line, so an empty list is not proof nothing leaked.

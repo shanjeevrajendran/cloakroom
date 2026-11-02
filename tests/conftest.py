@@ -10,6 +10,11 @@ def isolated_home(tmp_path, monkeypatch):
     monkeypatch.setenv("CLOAKROOM_HOME", str(tmp_path / "home"))
     monkeypatch.setenv("CLOAKROOM_MODE", "rules")
     monkeypatch.setenv("CLOAKROOM_VAULT_KEY", base64.b64encode(b"k" * 32).decode())
+    # the tests stand in for your own terminal: no agent marker, a terminal (test_injection_replay checks the refusal)
+    from cloakroom import cli
+    for marker in cli.AGENT_MARKERS:
+        monkeypatch.delenv(marker, raising=False)
+    monkeypatch.setattr(cli, "_has_tty", lambda: True)
     from cloakroom import config, crypto
     importlib.reload(config)
     crypto._KEY = None
