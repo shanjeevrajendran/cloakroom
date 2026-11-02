@@ -590,30 +590,38 @@ def _program_paths() -> list[str]:
     folder, an installed package folder): removing any of them leaves the agents' hooks nothing to run."""
     import shutil
     from . import agents
-    home = os.path.expanduser("~")
-    found = [shutil.which("cloakroom"), agents._program(),
-             os.path.join(home, ".local", "share", "uv", "tools", "cloakroom"),
-             os.path.join(home, ".local", "pipx", "venvs", "cloakroom"),
-             os.path.join(home, ".local", "share", "pipx", "venvs", "cloakroom")]
-    # the default folders stay guarded when UV_TOOL_DIR or PIPX_HOME points elsewhere
-    found += [os.path.join(os.environ[k], *sub, "cloakroom") for k, sub in (("UV_TOOL_DIR", ()), ("PIPX_HOME", ("venvs",)))
-              if os.environ.get(k)]
+    home, env = os.path.expanduser("~"), os.environ.get
+    # tool folders: uv (docs: reference/storage.md) and pipx (paths.py: platformdirs' data folder, then the older
+    # ~/.local/pipx and, on Windows, ~/pipx); the defaults stay guarded when UV_TOOL_DIR or PIPX_HOME points elsewhere
+    roots = [(home, ".local", "share", "uv", "tools"), (env("XDG_DATA_HOME"), "uv", "tools"),
+             (env("APPDATA"), "uv", "data", "tools"), (env("UV_TOOL_DIR"),),
+             (home, ".local", "pipx", "venvs"), (home, "pipx", "venvs"), (home, ".local", "share", "pipx", "venvs"),
+             (env("XDG_DATA_HOME"), "pipx", "venvs"), (home, "Library", "Application Support", "pipx", "venvs"),
+             (env("LOCALAPPDATA"), "pipx", "pipx", "venvs"), (env("PIPX_HOME"), "venvs")]
+    found = [shutil.which("cloakroom"), agents._program()] + [os.path.join(*r, "cloakroom") for r in roots if r[0]]
     package = os.path.dirname(os.path.abspath(__file__))
     found += [package] if "site-packages" in package else []  # not a source checkout you work on
-    return list(dict.fromkeys(q for p in found if p for q in (filelog.norm(p), os.path.abspath(p))))
+    # POSIX: also the link's own name (norm resolves links); Windows: norm's one spelling is the only one
+    return list(dict.fromkeys(q for p in found if p
+                              for q in (filelog.norm(p),) + (() if os.name == "nt" else (os.path.abspath(p),))))
 
 
 def _removes_program(command: str, cwd: str) -> bool:
     """rm, mv, chmod... of the installed program, its tool folder, or (rm, mv) a folder holding them."""
+    import shlex
     homes = _program_paths()
-    def hit(w, up):
-        p = filelog.norm(w, cwd)
-        return any(p == h or p.startswith(h + os.sep) or (up and h.startswith(p.rstrip(os.sep) + os.sep))
-                   for h in homes)
+
+    def hit(w, up):  # norm's spelling uses "/" on every OS; Git Bash's rm finds cloakroom.exe from "cloakroom"
+        p = filelog.norm(_git_bash_path(w, False), cwd)
+        return any(q == h or q.startswith(h + "/") or (up and h.startswith(q.rstrip("/") + "/"))
+                   for q in (p, p + ".exe") for h in homes)
     if any(hit(t.strip("\"'"), False) for t in _REDIRECT.findall(command)):
         return True
     for seg in _SEGMENTS.split(command):
-        words = [w.strip("'\"") for w in seg.split()]
+        try:  # as _command_paths: Windows keeps its backslashes
+            words = [w.strip("'\"") for w in shlex.split(seg, posix=os.name != "nt")]
+        except ValueError:
+            words = [w.strip("'\"") for w in seg.split()]
         first = os.path.basename(words[0]) if words else ""
         if first not in _REMOVERS:
             continue

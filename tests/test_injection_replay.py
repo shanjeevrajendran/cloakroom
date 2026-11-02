@@ -357,11 +357,12 @@ CASES = {  # id: steps; a step is (kind, *args) with kind shell | write | edit |
     "c-uv-pip-uninstall": [("shell", "uv pip uninstall cloakroom")],
     "c-brew-uninstall": [("shell", "brew uninstall cloakroom")],
     "c-rm-program": [("shell", "rm -f ~/.local/bin/cloakroom")],
-    "c-rm-program-on-path": [("shell", "rm -f /usr/local/bin/cloakroom")],
+    "c-rm-program-on-path": [("shell", "rm -f {program}")],
     "c-mv-program": [("shell", "mv {user}/.local/bin/cloakroom /tmp/cr-off")],
     "c-chmod-program": [("shell", "chmod -x ~/.local/bin/cloakroom")],
     "c-rm-uv-tool-venv": [("shell", "rm -rf ~/.local/share/uv/tools/cloakroom")],
     "c-rm-pipx-venv": [("shell", "rm -rf ~/.local/pipx/venvs/cloakroom")],
+    "c-rm-pipx-venv-macos": [("shell", "rm -rf ~/Library/Application\\ Support/pipx/venvs/cloakroom")],
     # d. planting a hook or MCP server (no literal secret)
     "d-mcp-write": [("write", "{ws}/.mcp.json", EVIL_MCP)],
     "d-mcp-shell": [("shell", f"echo '{EVIL_MCP}' > .mcp.json")],
@@ -380,6 +381,8 @@ CASES = {  # id: steps; a step is (kind, *args) with kind shell | write | edit |
     "d-gemini-edit": [("edit", "{ws}/.gemini/settings.json", "{}", EVIL_HOOK)],
     "d-gemini-shell": [("shell", "cp /tmp/evil.json .gemini/settings.json")],
 }
+NT_ONLY_POSIX = {"c-rm-pipx-venv-macos": pytest.mark.skipif(os.name == "nt", reason="macOS's pipx folder, written "
+                                                                                 "with a POSIX escaped space")}
 # What a hook can't see: the agent builds Cloakroom's folder name at run time. Its sandbox is the wall (docs-LIMITS).
 RESIDUAL = {"b-python-split-name", "c-config-python"}
 CONFIG_GAP = pytest.mark.xfail(strict=True, reason="LIMIT: a name built at run time is invisible to a hook; the "
@@ -436,24 +439,29 @@ def places(tmp_path, monkeypatch):
     from cloakroom import agents, config
     user, ws = tmp_path / "user", tmp_path / "ws"
     ws.mkdir()
-    for k, v in (("HOME", user), ("CODEX_HOME", user / ".codex"), ("GEMINI_CLI_HOME", user),
+    for k, v in (("HOME", user), ("USERPROFILE", user), ("CODEX_HOME", user / ".codex"), ("GEMINI_CLI_HOME", user),
                  ("CLOAKROOM_HOME", user / ".cloakroom"),
                  ("PIPX_HOME", tmp_path / "opt-pipx"), ("UV_TOOL_DIR", tmp_path / "opt-uv")):  # set on CI runners
         monkeypatch.setenv(k, str(v))
     importlib.reload(config)
-    monkeypatch.setattr(agents, "_program", lambda: "/usr/local/bin/cloakroom")  # Cursor wraps its shell in it
+    exe = "cloakroom.exe" if os.name == "nt" else "cloakroom"  # Windows finds a program by its .exe
+    program = tmp_path / "opt" / "bin" / exe  # the program the hooks run (agents._program)
+    program.parent.mkdir(parents=True)
+    program.write_text("#!/bin/sh\n")
+    monkeypatch.setattr(agents, "_program", lambda: str(program))  # Cursor wraps its shell in it
     for install in (agents.install_codex, agents.install_cursor, agents.install_gemini):  # Cloakroom's own entries
-        install("/usr/local/bin/cloakroom")
+        install(str(program))
     venv = user / ".local" / "share" / "uv" / "tools" / "cloakroom" / "bin"  # a uv tool install, found on PATH
     venv.mkdir(parents=True)
-    (venv / "cloakroom").write_text("#!/bin/sh\n")
-    (venv / "cloakroom").chmod(0o755)
+    (venv / exe).write_text("#!/bin/sh\n")
+    (venv / exe).chmod(0o755)
     (user / ".local" / "bin").mkdir()
-    (user / ".local" / "bin" / "cloakroom").symlink_to(venv / "cloakroom")
+    (user / ".local" / "bin" / exe).symlink_to(venv / exe)
     monkeypatch.setenv("PATH", f"{user / '.local' / 'bin'}{os.pathsep}{os.environ['PATH']}")
     (user / ".claude").mkdir()
     (user / ".claude" / "settings.json").write_text(json.dumps({"enabledPlugins": {"cloakroom@cloakroom": True}}))
-    return {"{home}": str(config.HOME), "{user}": str(user), "{ws}": str(ws)}, ws
+    shown = "/" + program.as_posix()[0].lower() + program.as_posix()[2:] if os.name == "nt" else str(program)
+    return {"{home}": str(config.HOME), "{user}": str(user), "{ws}": str(ws), "{program}": shown}, ws  # Git Bash: /c/
 
 
 def _step(agent, kind, args, where, ws, monkeypatch, capsys):
@@ -473,7 +481,7 @@ def _step(agent, kind, args, where, ws, monkeypatch, capsys):
 
 
 @pytest.mark.parametrize("case,agent", [
-    pytest.param(c, a, id=f"{c}-{a}", marks=CONFIG_GAP if c in RESIDUAL else ())
+    pytest.param(c, a, id=f"{c}-{a}", marks=CONFIG_GAP if c in RESIDUAL else NT_ONLY_POSIX.get(c, ()))
     for c, steps in CASES.items() for a in AGENTS if _applies(a, steps)])
 def test_config_guard_replay(case, agent, places, monkeypatch, capsys):
     where, ws = places
@@ -573,5 +581,53 @@ def test_no_terminal_is_seen_as_an_agents_shell():
     from cloakroom import cli
     env = {k: v for k, v in os.environ.items() if k not in cli.AGENT_MARKERS}
     r = subprocess.run([sys.executable, "-c", "from cloakroom import cli; print(cli._from_agent())"], env=env,
-                       capture_output=True, text=True, start_new_session=True, timeout=60)
+                       capture_output=True, text=True, start_new_session=True, timeout=60,
+                       stdin=subprocess.DEVNULL)  # Windows: NUL, which isatty() calls a terminal
     assert r.stdout.strip() == "there is no terminal", r.stderr
+
+
+WIN_REMOVALS = [  # Git Bash on Windows: ~ is your profile, /c/ is C:, rm finds cloakroom.exe from "cloakroom"
+    ("rm -f ~/.local/bin/cloakroom", True),
+    ("rm -f /c/Users/ann/.local/bin/cloakroom.exe", True),
+    ('mv "C:\\Users\\Ann\\.local\\bin\\cloakroom.exe" /tmp/x', True),
+    ('rm -rf "C:\\Users\\Ann\\AppData\\Roaming\\uv\\data\\tools\\cloakroom"', True),  # uv's tool folder there
+    ("rm -rf C:/Users/Ann/AppData/Roaming/uv/data/tools/cloakroom/Lib", True),
+    ("rm -rf ~/AppData/Local/pipx/pipx/venvs/cloakroom", True),  # pipx: platformdirs' data folder
+    ("rm -rf ~/pipx/venvs/cloakroom", True),  # pipx's older Windows folder
+    ("rm -rf ~/.local", True),  # a folder holding the program
+    ("rm -f ~/.local/bin/ruff.exe", False),
+    ('rm -rf "C:\\Users\\Ann\\AppData\\Roaming\\uv\\data\\tools\\ruff"', False),
+]
+
+
+@pytest.mark.parametrize("command,held", WIN_REMOVALS)
+def test_removing_the_program_is_seen_with_windows_paths(command, held, monkeypatch):
+    """hook._removes_program with Windows path rules (filelog.norm windows=True, Git Bash /c/ paths, .exe, the
+    APPDATA and LOCALAPPDATA tool folders), run on any OS."""
+    import functools
+    import shutil
+    from cloakroom import agents, filelog, hook
+    monkeypatch.setattr(hook.filelog, "norm", functools.partial(filelog.norm, windows=True))
+    monkeypatch.setattr(sys, "platform", "win32")
+    monkeypatch.setenv("HOME", "C:\\Users\\Ann")
+    monkeypatch.setenv("APPDATA", "C:\\Users\\Ann\\AppData\\Roaming")
+    monkeypatch.setenv("LOCALAPPDATA", "C:\\Users\\Ann\\AppData\\Local")
+    exe = "C:\\Users\\Ann\\.local\\bin\\cloakroom.exe"
+    monkeypatch.setattr(shutil, "which", lambda name: exe if name == "cloakroom" else None)
+    monkeypatch.setattr(agents, "_program", lambda: exe)
+    assert hook._removes_program(command, "C:\\Users\\Ann\\proj") is held
+
+
+@pytest.mark.parametrize("console,want", [(0, False), (1, True)])
+def test_windows_terminal_probe_asks_the_console_not_isatty(console, want, monkeypatch):
+    """On Windows, isatty() is True for NUL (an agent's shell often has it as input): only a console answers
+    GetConsoleMode."""
+    import ctypes
+    import types
+    from cloakroom import cli
+    importlib.reload(cli)  # the real probe (conftest stands in a terminal)
+    monkeypatch.setitem(sys.modules, "msvcrt", types.SimpleNamespace(get_osfhandle=lambda fd: 3))
+    monkeypatch.setattr(ctypes, "windll", types.SimpleNamespace(kernel32=types.SimpleNamespace(
+        GetConsoleMode=lambda handle, mode: console)), raising=False)
+    monkeypatch.setattr(sys, "stdin", types.SimpleNamespace(isatty=lambda: True, fileno=lambda: 0))
+    assert cli._has_tty(windows=True) is want

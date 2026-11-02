@@ -70,9 +70,16 @@ def _allow_host(a) -> int:
 AGENT_MARKERS = ("CLAUDECODE", "GEMINI_CLI", "CODEX_SANDBOX", "CLOAKROOM_RUN")
 
 
-def _has_tty() -> bool:
-    if os.name == "nt":
-        return sys.stdin.isatty()
+def _has_tty(windows: bool | None = None) -> bool:
+    if os.name == "nt" if windows is None else windows:
+        # isatty() is True for NUL there, which an agent's shell often has as input: ask for a console instead
+        try:
+            import ctypes
+            import msvcrt
+            return bool(ctypes.windll.kernel32.GetConsoleMode(msvcrt.get_osfhandle(sys.stdin.fileno()),
+                                                              ctypes.byref(ctypes.c_uint32())))
+        except (ImportError, AttributeError, OSError, ValueError):
+            return False
     try:
         os.close(os.open("/dev/tty", os.O_RDWR))
         return True
