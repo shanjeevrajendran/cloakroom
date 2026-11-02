@@ -437,7 +437,8 @@ def places(tmp_path, monkeypatch):
     user, ws = tmp_path / "user", tmp_path / "ws"
     ws.mkdir()
     for k, v in (("HOME", user), ("CODEX_HOME", user / ".codex"), ("GEMINI_CLI_HOME", user),
-                 ("CLOAKROOM_HOME", user / ".cloakroom")):
+                 ("CLOAKROOM_HOME", user / ".cloakroom"),
+                 ("PIPX_HOME", tmp_path / "opt-pipx"), ("UV_TOOL_DIR", tmp_path / "opt-uv")):  # set on CI runners
         monkeypatch.setenv(k, str(v))
     importlib.reload(config)
     monkeypatch.setattr(agents, "_program", lambda: "/usr/local/bin/cloakroom")  # Cursor wraps its shell in it

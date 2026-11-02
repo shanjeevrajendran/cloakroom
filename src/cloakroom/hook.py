@@ -592,10 +592,12 @@ def _program_paths() -> list[str]:
     from . import agents
     home = os.path.expanduser("~")
     found = [shutil.which("cloakroom"), agents._program(),
-             os.path.join(os.environ.get("UV_TOOL_DIR") or os.path.join(home, ".local", "share", "uv", "tools"),
-                          "cloakroom"),
-             os.path.join(os.environ.get("PIPX_HOME") or os.path.join(home, ".local", "pipx"), "venvs", "cloakroom"),
+             os.path.join(home, ".local", "share", "uv", "tools", "cloakroom"),
+             os.path.join(home, ".local", "pipx", "venvs", "cloakroom"),
              os.path.join(home, ".local", "share", "pipx", "venvs", "cloakroom")]
+    # the default folders stay guarded when UV_TOOL_DIR or PIPX_HOME points elsewhere
+    found += [os.path.join(os.environ[k], *sub, "cloakroom") for k, sub in (("UV_TOOL_DIR", ()), ("PIPX_HOME", ("venvs",)))
+              if os.environ.get(k)]
     package = os.path.dirname(os.path.abspath(__file__))
     found += [package] if "site-packages" in package else []  # not a source checkout you work on
     return list(dict.fromkeys(q for p in found if p for q in (filelog.norm(p), os.path.abspath(p))))
