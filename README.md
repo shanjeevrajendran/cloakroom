@@ -136,7 +136,8 @@ explained under the table.
 | The agent's `git commit` / `git push` check | ✓ | ✓ | ✓ | ✓ |
 | Commands that send secrets or placeholders over the internet | ✓ | ⛔ Stopped: refused, not asked about | ✓ | ⛔ Stopped: refused, not asked about |
 | Calls that move money | ✓ | ✓ | ✓ | ✓ (to let one through: run `cloakroom allow` in your own terminal) |
-| The agent approving its own held call, switching Cloakroom off, or adding a hook or MCP server to its config | ⛔ Held | ⛔ Held | ⛔ Held | ⛔ Held |
+| [Prompt injection](#prompt-injection): the agent sending your keys out by shell, web or MCP | ⛔ Held | ⛔ Held; ✗ Codex's own web search | ⛔ Held | ⛔ Held; ✗ Cursor's own web search |
+| [Prompt injection](#prompt-injection): the agent approving its own held call, switching Cloakroom off, or adding a hook or MCP server to its config | ⛔ Held | ⛔ Held | ⛔ Held | ⛔ Held |
 | Check on commits you make yourself | ✓ | ✓ | ✓ | ✓ |
 | Systems | Mac, Linux, Windows | Mac, Linux | Mac, Linux | Mac, Linux |
 
