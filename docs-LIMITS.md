@@ -85,7 +85,15 @@ Cloakroom can't check, the action is blocked rather than let through.
   denied, and those commands refuse to run without a terminal or inside an agent's shell (Claude Code, Codex's
   sandbox, Gemini CLI, Cursor). A hook or MCP server written into an agent's config file, or a change that removes
   Cloakroom's own entry there, is held for `cr: allow` and named with the command it would run. Config edits that
-  add no command, and reading config, go through.
+  add no command, and reading config, go through. Removing Cloakroom itself is denied the same way: `uv tool`,
+  `pipx`, `pip`, `uv pip` or `brew` uninstall of cloakroom, and `rm`, `mv` or `chmod` of the installed program or
+  its uv or pipx tool folder. Updating it (`cloakroom update`) and removing other packages go through.
+- If the cloakroom program is gone anyway (removed by hand, a broken install): Claude Code's plugin finds no program,
+  holds tool calls and reinstalls Cloakroom in the background. Codex and Gemini CLI run Cloakroom's tool-call hooks
+  with a fallback that exits 2, which both treat as a block. Prompts and session starts go on with a warning, so
+  you're never locked out. Cursor's tool-call hooks are installed with `failClosed`, which Cursor documents as
+  blocking the call when the hook fails; that a missing program counts as a failure is not confirmed live. In all
+  four, prompts are not checked until the program is back.
 - What stays possible: the agent runs as you, so one that builds Cloakroom's folder name or command at run time
   (pieces of a string, an encoded name) and fakes a terminal can still edit Cloakroom's files or approve a hold.
   A hook only sees the command's text. The wall for that is the agent's own sandbox (Codex's workspace-write mode,

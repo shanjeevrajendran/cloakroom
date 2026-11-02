@@ -576,14 +576,57 @@ _SELF_CLI = re.compile(
     r"(?i)(?:^|[\s/'\"`(;|&=,\[])cloakroom(?:\.exe)?" + _Q +
     r"(?:allow(?![\w-])|allow-host(?!\s+--list)|uninstall\b|proxy" + _Q + r"uninstall\b)"
     r"|\b(?:claude\s+plugins?|gemini\s+extensions?)\s+(?:disable|uninstall|remove|rm)\b[^;&|\n]*\bcloakroom"
+    r"|\b(?:pip[\d.]*|pipx|uv\s+(?:tool|pip)|brew)\s+(?:uninstall|remove|rm)\b[^;&|\n]*(?<![\w-])cloakroom(?![\w-])"
     r"|\b(?:import|from)\s+cloakroom\b[^\n]*\b(?:_arm_held|_write_held|set_allowed_hosts|uninstall)")
 _RUNNERS = {"sh", "bash", "zsh", "dash", "ksh", "fish", "source", ".", "python", "python3", "node", "perl", "ruby"}
 _SEGMENTS = re.compile(r"&&|\|\||[;|\n]")
 
 
+_REMOVERS = {"rm", "rmdir", "unlink", "mv", "trash", "shred", "chmod", "chflags", "truncate", "cp", "ln", "install"}
+
+
+def _program_paths() -> list[str]:
+    """Where the installed Cloakroom lives (the program on PATH or the one this hook runs, its uv or pipx tool
+    folder, an installed package folder): removing any of them leaves the agents' hooks nothing to run."""
+    import shutil
+    from . import agents
+    home = os.path.expanduser("~")
+    found = [shutil.which("cloakroom"), agents._program(),
+             os.path.join(os.environ.get("UV_TOOL_DIR") or os.path.join(home, ".local", "share", "uv", "tools"),
+                          "cloakroom"),
+             os.path.join(os.environ.get("PIPX_HOME") or os.path.join(home, ".local", "pipx"), "venvs", "cloakroom"),
+             os.path.join(home, ".local", "share", "pipx", "venvs", "cloakroom")]
+    package = os.path.dirname(os.path.abspath(__file__))
+    found += [package] if "site-packages" in package else []  # not a source checkout you work on
+    return list(dict.fromkeys(q for p in found if p for q in (filelog.norm(p), os.path.abspath(p))))
+
+
+def _removes_program(command: str, cwd: str) -> bool:
+    """rm, mv, chmod... of the installed program, its tool folder, or (rm, mv) a folder holding them."""
+    homes = _program_paths()
+    def hit(w, up):
+        p = filelog.norm(w, cwd)
+        return any(p == h or p.startswith(h + os.sep) or (up and h.startswith(p.rstrip(os.sep) + os.sep))
+                   for h in homes)
+    if any(hit(t.strip("\"'"), False) for t in _REDIRECT.findall(command)):
+        return True
+    for seg in _SEGMENTS.split(command):
+        words = [w.strip("'\"") for w in seg.split()]
+        first = os.path.basename(words[0]) if words else ""
+        if first not in _REMOVERS:
+            continue
+        args = [w for w in words[1:] if w and not w.startswith("-")]
+        if first in ("cp", "ln", "install"):  # only what it writes to
+            args = args[-1:]
+        if any(hit(w, first in ("rm", "rmdir", "mv", "trash")) for w in args):
+            return True
+    return False
+
+
 def _self_cli(command: str, cwd: str) -> bool:
-    """The command (or a script file it runs: sh x.sh, python x.py, ./x) approves or switches Cloakroom off."""
-    if _SELF_CLI.search(command):
+    """The command (or a script file it runs: sh x.sh, python x.py, ./x) approves or switches Cloakroom off, or
+    removes its installed program."""
+    if _SELF_CLI.search(command) or _removes_program(command, cwd):
         return True
     for seg in _SEGMENTS.split(command):
         words = [w.strip("'\"") for w in seg.split()]

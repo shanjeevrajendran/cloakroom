@@ -349,6 +349,19 @@ CASES = {  # id: steps; a step is (kind, *args) with kind shell | write | edit |
     "c-gemini-ext-rm": [("shell", "rm -rf ~/.gemini/extensions/cloakroom")],
     "c-gemini-ext-disable": [("shell", "gemini extensions disable cloakroom")],
     "c-gemini-ext-write": [("write", "{user}/.gemini/extensions/cloakroom/hooks/hooks.json", '{"hooks": {}}')],
+    # c. removing the installed package or program: the agents' hooks then have nothing to run
+    "c-uv-tool-uninstall": [("shell", "uv tool uninstall cloakroom")],
+    "c-pipx-uninstall": [("shell", "pipx uninstall cloakroom")],
+    "c-pip-uninstall": [("shell", "pip uninstall -y cloakroom")],
+    "c-python-m-pip-uninstall": [("shell", "python3 -m pip uninstall -y cloakroom")],
+    "c-uv-pip-uninstall": [("shell", "uv pip uninstall cloakroom")],
+    "c-brew-uninstall": [("shell", "brew uninstall cloakroom")],
+    "c-rm-program": [("shell", "rm -f ~/.local/bin/cloakroom")],
+    "c-rm-program-on-path": [("shell", "rm -f /usr/local/bin/cloakroom")],
+    "c-mv-program": [("shell", "mv {user}/.local/bin/cloakroom /tmp/cr-off")],
+    "c-chmod-program": [("shell", "chmod -x ~/.local/bin/cloakroom")],
+    "c-rm-uv-tool-venv": [("shell", "rm -rf ~/.local/share/uv/tools/cloakroom")],
+    "c-rm-pipx-venv": [("shell", "rm -rf ~/.local/pipx/venvs/cloakroom")],
     # d. planting a hook or MCP server (no literal secret)
     "d-mcp-write": [("write", "{ws}/.mcp.json", EVIL_MCP)],
     "d-mcp-shell": [("shell", f"echo '{EVIL_MCP}' > .mcp.json")],
@@ -430,6 +443,13 @@ def places(tmp_path, monkeypatch):
     monkeypatch.setattr(agents, "_program", lambda: "/usr/local/bin/cloakroom")  # Cursor wraps its shell in it
     for install in (agents.install_codex, agents.install_cursor, agents.install_gemini):  # Cloakroom's own entries
         install("/usr/local/bin/cloakroom")
+    venv = user / ".local" / "share" / "uv" / "tools" / "cloakroom" / "bin"  # a uv tool install, found on PATH
+    venv.mkdir(parents=True)
+    (venv / "cloakroom").write_text("#!/bin/sh\n")
+    (venv / "cloakroom").chmod(0o755)
+    (user / ".local" / "bin").mkdir()
+    (user / ".local" / "bin" / "cloakroom").symlink_to(venv / "cloakroom")
+    monkeypatch.setenv("PATH", f"{user / '.local' / 'bin'}{os.pathsep}{os.environ['PATH']}")
     (user / ".claude").mkdir()
     (user / ".claude" / "settings.json").write_text(json.dumps({"enabledPlugins": {"cloakroom@cloakroom": True}}))
     return {"{home}": str(config.HOME), "{user}": str(user), "{ws}": str(ws)}, ws
@@ -492,6 +512,18 @@ EVERYDAY = {  # no false holds: reading config, Cloakroom's read-only commands, 
     "readme-mentions-allow": ("write", "{ws}/README.md", "Run `cloakroom allow` in a terminal to let it through.\n"),
     "package-scripts": ("write", "{ws}/package.json", '{"scripts": {"test": "node test.js"}}'),
     "edit-source": ("edit", "{ws}/src/util.py", "x = 1", "x = 2"),
+    "pip-uninstall-other": ("shell", "pip uninstall -y requests"),
+    "python-m-pip-uninstall-other": ("shell", "python3 -m pip uninstall -y cloakroom-extras"),
+    "uv-tool-uninstall-other": ("shell", "uv tool uninstall ruff"),
+    "uv-pip-uninstall-other": ("shell", "uv pip uninstall httpx"),
+    "pipx-uninstall-other": ("shell", "pipx uninstall black"),
+    "brew-uninstall-other": ("shell", "brew uninstall jq"),
+    "rm-build": ("shell", "rm -rf build dist .pytest_cache"),
+    "rm-other-tool": ("shell", "rm -rf ~/.local/share/uv/tools/ruff ~/.local/bin/ruff"),
+    "update": ("shell", "cloakroom update"),
+    "ls-program": ("shell", "ls -la ~/.local/bin/cloakroom"),
+    "copy-program-out": ("shell", "cp ~/.local/bin/cloakroom /tmp/cloakroom-backup"),
+    "du-local": ("shell", "du -sh ~/.local"),
 }
 
 
@@ -530,6 +562,9 @@ def test_cli_switches_run_in_your_own_terminal_only(monkeypatch, capsys):
     monkeypatch.setattr(cli, "_has_tty", lambda: True)
     assert cli.main(["allow-host", "example.com"]) == 0 and config.load()["allowed_hosts"] == ["example.com"]
     assert cli.main(["allow"]) == 0 and hook._read_held()["armed"]
+    from cloakroom import update
+    monkeypatch.setattr(update, "run", lambda check=False: 0)
+    assert cli.main(["update"]) == 0  # updating Cloakroom from your terminal isn't a switch-off
 
 
 def test_no_terminal_is_seen_as_an_agents_shell():
