@@ -93,7 +93,8 @@ Nothing changes in how you work. What you'll notice:
 - **Holds only you can lift.** Claude can't approve its own held call or switch Cloakroom off: `cloakroom allow`,
   `allow-host` and `uninstall` refuse to run in its shell, and removing Cloakroom is held. A hook or MCP server Claude
   writes into its config waits until you type `cr: allow`; the message names the file, the line and the command. Run
-  those commands in your own terminal.
+  those commands in your own terminal (on Windows: PowerShell, cmd or Windows Terminal; Git Bash's own window is
+  refused, so type `cr: allow` there instead).
 - **Dashboard.** `cloakroom dashboard` opens your alerts in the browser (127.0.0.1 only). Label them correct,
   false alarm or missed; see section 6.
 
