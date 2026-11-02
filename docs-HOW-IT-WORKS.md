@@ -159,6 +159,7 @@ to write through the shell. Cursor's Grep tool is refused when it would show fil
 
 What Cloakroom protects against, and what it doesn't. It stops **accidental** exposure: secrets and personal data
 in files, logs and command output an agent reads while working. It is not a sandbox (a sealed-off space the AI
-can't get out of). Out of scope: an AI, or hidden instructions in a file that steer it (a prompt injection),
-determined to sneak data out through custom encodings or values built piece by piece; data you paste into prompts on purpose (prompts can be
+can't get out of). A prompt injection (hidden instructions in a file that steer the AI) is contained, not
+prevented: the agent only ever has placeholders, known secrets are held on the way out by any tool, and it can't
+approve its own hold, switch Cloakroom off or plant a hook. Out of scope: an injected AI determined to sneak data out through custom encodings or values built piece by piece; data you paste into prompts on purpose (prompts can be
 blocked, not rewritten); what other tools on your machine send elsewhere. Details: [docs-LIMITS.md](docs-LIMITS.md).
