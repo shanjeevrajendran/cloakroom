@@ -610,6 +610,7 @@ def test_removing_the_program_is_seen_with_windows_paths(command, held, monkeypa
     monkeypatch.setattr(hook.filelog, "norm", functools.partial(filelog.norm, windows=True))
     monkeypatch.setattr(sys, "platform", "win32")
     monkeypatch.setenv("HOME", "C:\\Users\\Ann")
+    monkeypatch.setenv("USERPROFILE", "C:\\Users\\Ann")  # what ~ means to Python on Windows
     monkeypatch.setenv("APPDATA", "C:\\Users\\Ann\\AppData\\Roaming")
     monkeypatch.setenv("LOCALAPPDATA", "C:\\Users\\Ann\\AppData\\Local")
     exe = "C:\\Users\\Ann\\.local\\bin\\cloakroom.exe"
