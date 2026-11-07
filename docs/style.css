@@ -183,11 +183,10 @@ mark.ph { background: var(--accent); color: var(--accent-ink); font-weight: 600;
 .mini pre { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 0.875rem; line-height: 1.6; }
 .mini--pic { padding: 0; overflow: hidden; background: transparent; }
 @media (min-width: 60.01rem) {
-  .site-js .feat-field { display: block; grid-column: 1 / 7; grid-row: 1 / span 2; position: sticky; top: 0; height: 100svh; max-height: 1000px; align-self: start; }
+  .site-js .feat-field { display: block; grid-column: 1 / 7; grid-row: 1 / span 2; position: sticky; top: max(24px, calc(50svh - 280px)); align-self: start; }
   .site-js .feat-field { background: var(--field-1); color: var(--ink); display: grid; place-items: center; padding: 40px; }
   .site-js .feat-col { grid-column: 8 / 13; gap: 0; padding-top: 72px; }
-  .site-js .feat { min-height: 62svh; align-content: center; padding-block: 40px; }
-  .site-js .feat:last-child { min-height: 70svh; }
+  .site-js .feat { min-height: 46svh; align-content: center; padding-block: 40px; }
   .site-js .ctl { display: inline-block; }
   .site-js .mini { display: none; }
 }
@@ -195,7 +194,7 @@ mark.ph { background: var(--accent); color: var(--accent-ink); font-weight: 600;
 .out figcaption { grid-area: 1 / 1; font-size: var(--s-small); font-weight: 600; margin-bottom: 14px; }
 .out figcaption span { grid-area: 1 / 1; }
 .out > pre, .out > img { grid-area: 2 / 1; margin: 0; transition: opacity 240ms ease, transform 300ms var(--ease-out), visibility 0s linear 0s; }
-.out > pre { background: var(--field-1-row); border-radius: var(--ui-radius); padding: 32px; white-space: pre-wrap; overflow-wrap: anywhere; font-size: var(--s-lead); line-height: 1.7; align-self: start; }
+.out > pre { background: var(--field-1-row); border-radius: var(--ui-radius); padding: 32px; white-space: pre-wrap; overflow-wrap: anywhere; font-size: var(--s-lead); line-height: 1.7; align-self: center; }
 .out > img { border-radius: var(--ui-radius); }
 .out figcaption { display: grid; }
 .out:not([data-state="read"]) [data-for="read"], .out:not([data-state="write"]) [data-for="write"], .out:not([data-state="learn"]) [data-for="learn"] { opacity: 0; visibility: hidden; transform: translateY(8px); transition-delay: 0s, 0s, 240ms; }
