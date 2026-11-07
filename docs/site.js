@@ -54,6 +54,8 @@
     const parent = el.closest('section, article') || document.body;
     const n = seen.get(parent) || 0;
     el.style.setProperty('--d', Math.min(n, 8));
+    // Played once: a resize across the breakpoint must not replay it.
+    el.addEventListener('animationend', (e) => { if (e.target === el) el.classList.add('done'); });
     seen.set(parent, n + 1);
   });
   if (still) { parts.forEach((el) => el.classList.add('in')); return; }

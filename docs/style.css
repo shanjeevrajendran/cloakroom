@@ -538,7 +538,7 @@ td { background: var(--row); }
 }
 @media (prefers-reduced-motion: no-preference) and (min-width: 40.01rem) {
   .site-js main > :not(.hero) [data-rise]:not(.in), .site-js .row:not(.in), .site-js .feat > :not(.in), .site-js .tiles details:not(.in), .site-js .group-aside:not(.in), .site-js .defs-board > div:not(.in), .site-js .leaves dl > div:not(.in), .site-js .qa-list > div:not(.in), .site-js .ticket > :not(.in) { opacity: 0; }
-  .site-js main > :not(.hero) .in { animation: rise 500ms var(--ease-out) backwards; animation-delay: calc(var(--d, 0) * 50ms); }
+  .site-js main > :not(.hero) .in:not(.done) { animation: rise 500ms var(--ease-out) backwards; animation-delay: calc(var(--d, 0) * 50ms); }
 }
 @keyframes line-up { from { transform: translateY(105%); } }
 @keyframes rise { from { opacity: 0; transform: translateY(16px); } }
