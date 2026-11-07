@@ -146,7 +146,7 @@
     <h3 id="limit-failed">Failed commands</h3>
     <p>In Claude Code, the error output of a tool call that fails goes through a hook step that can add notes but can’t change the text. So it can’t be masked and may reach the model with a key or personal value in it. Keep keys out of commands that print them.</p>
     <h3 id="limit-unseen">Secrets it has never seen</h3>
-    <p>Cloakroom looks for disguised copies (encoded or hashed) of values it already knows, so a secret it has never seen isn’t caught in any form. Not covered: salted or keyed hashes (HMAC, bcrypt, scrypt), other hashes (SHA-512, CRC), base32, upper/lower case changes of a key, and values shorter than 8 characters.</p>
+    <p>Cloakroom looks for disguised copies (encoded or hashed) of values it already knows, so a secret it has never seen isn’t caught in any form. Not covered: salted or keyed hashes (HMAC, bcrypt, scrypt: hashes mixed with random extra data or a secret key, so Cloakroom can’t work them out from the value alone), other hashes (SHA-512, CRC), base32, upper/lower case changes of a key, and values shorter than 8 characters.</p>
     <h3 id="limit-scripts">Keys written by scripts</h3>
     <p>A key split into pieces, or one with no known pattern and not seen earlier in the session, isn’t caught when a file is written.</p>
     <h3 id="limit-money">Money moved by programs</h3>

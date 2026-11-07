@@ -329,7 +329,8 @@ changed on the way, such as a hash (a scrambled fingerprint of the value that ca
   `\x6b...`); a key or password of 12+ characters written backwards; pairs like `user:password` or
   `DB_PASSWORD=...` in hex or URL encoding; a card or account number's last 4 digits right after "ending in",
   "last 4" or `****`; an email's username on its own when it can't be an ordinary word (`r.okafor77`, not `admin`).
-- **Not covered:** salted or keyed hashes (bcrypt, HMAC), other hashes, a name in different capitals, initials,
+- **Not covered:** salted or keyed hashes (bcrypt, HMAC: hashes mixed with random extra data or a secret key, so
+  Cloakroom can't work them out from the value alone), other hashes, a name in different capitals, initials,
   a last 4 with no word pointing at it, and anything Cloakroom hasn't seen in plain form first.
 
 **Keys stay out of git**
@@ -541,7 +542,8 @@ cloakroom allow-host example.com           # approve a site; *.example.com appro
 cloakroom allow-host --list                # the list, and whether it is on
 ```
 
-The approved-sites list is off until you add `"egress": "allowlist"` to `~/.cloakroom/config.json`. Then a call to a host
+The approved-sites list is off until you add `"egress": "allowlist"` to `~/.cloakroom/config.json` (`egress` is the
+setting for where outgoing calls may go). Then a call to a host
 that isn't on the list is held, whatever it carries, with the same message and `cr: allow` as any held command: type
 `cr: allow` in the chat, then ask the agent to run the same call again. A call whose destination Cloakroom can't read
 (`aws s3 ls`, `npm publish`) is held too. WebSearch counts as the host `web-search`, and an MCP server your config
