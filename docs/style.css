@@ -437,10 +437,10 @@ td { background: var(--row); }
 .ref table { table-layout: fixed; }
 .ref col.c-cmd { width: 30%; }
 .ref col.c-rel { width: 12%; }
-.ref td:first-child code { font-size: var(--s-body); background: none; padding: 0; color: var(--accent); }
+.ref td:first-child code { font-size: var(--s-small); line-height: 1.7; background: none; padding: 0; color: var(--accent); }
 .ref .arg { color: var(--muted); }
-.ref td.rel { color: var(--muted); white-space: nowrap; }
-@media (min-width: 40.01rem) { .ref .tok { white-space: nowrap; } }
+.ref td.rel { color: var(--muted); }
+@media (min-width: 80rem) { .ref .tok, .ref td.rel { white-space: nowrap; } }
 
 /* releases and articles: one filled block each */
 .rel-list { gap: 4px; }
@@ -501,7 +501,6 @@ td { background: var(--row); }
   .ref td { padding: 4px 0; background: none; }
   .ref td[data-label]::before { content: attr(data-label) ": "; color: var(--muted); }
   .ref td:empty { display: none; }
-  .ref td.rel { white-space: normal; }
   .writeup.writeup--page { padding-top: 112px; }
   .writeup--page > .doc { padding: 40px 18px; margin-inline: calc(-1 * var(--gutter)); }
 }

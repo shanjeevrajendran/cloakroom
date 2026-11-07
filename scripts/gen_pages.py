@@ -108,15 +108,15 @@ def chrome(page, title, description):
         ("<title>Install Cloakroom</title>", f"<title>{title}</title>", 1),
         ('content="Install Cloakroom"', f'content="{title}"', 1),
         ('https://cloakroom.sh/install.html', f"https://cloakroom.sh/{page}", 2),
-        ('<a href="install.html" aria-current="page">', '<a href="install.html">', 1),
-        (f'<a href="{page}">', f'<a href="{page}" aria-current="page">', int(f'<a href="{page}">' in head)),
+        ('<a href="install.html" aria-current="page">', '<a href="install.html">', 2),
+        (f'<a href="{page}">', f'<a href="{page}" aria-current="page">', 2 * int(f'<a href="{page}">' in head)),
     ]
     old_desc = re.search(r'<meta name="description" content="([^"]+)">', head).group(1)
     swaps.insert(0, (old_desc, html.escape(description), 2))
     for a, b, n in swaps:
         assert head.count(a) == n, (page, a)
         head = head.replace(a, b)
-    foot = foot.replace('\n<script src="install.js"></script>', "")
+    foot = foot.replace('<script src="install.js"></script>\n', "")
     return head + '<main id="main">\n', "</main>" + foot
 
 
@@ -230,7 +230,7 @@ def releases(src):
 
 class Text(HTMLParser):
     """The <main> of a page as plain text: heads as ## lines, list items as - lines, code blocks kept as typed."""
-    BLOCK = {"p", "h1", "h2", "h3", "li", "pre", "tr", "dt", "dd", "section"}
+    BLOCK = {"p", "h1", "h2", "h3", "li", "pre", "tr", "dt", "dd", "section", "figcaption"}
 
     def __init__(self):
         super().__init__()
@@ -290,7 +290,7 @@ def llms():
 
     index = (DOCS / "index.html").read_text()
     about = re.search(r'<meta name="description" content="([^"]+)">', index).group(1)
-    nav = re.search(r'<nav aria-label="Site">(.*?)</nav>', (DOCS / "install.html").read_text(), re.S).group(1)
+    nav = re.search(r'<nav class="site" aria-label="Site">(.*?)</nav>', (DOCS / "install.html").read_text(), re.S).group(1)
     pages = [(name, label) for name, label in re.findall(r'<a href="([a-z0-9-]+\.html)"[^>]*>([^<]+)</a>', nav)]
     lines = [
         "# Cloakroom",
