@@ -394,7 +394,8 @@ html:not(.js) .tabpanel + .tabpanel { margin-top: 8px; }
 main > .sec:nth-of-type(even) { --row: var(--field-1-row); position: relative; isolation: isolate; }
 main > .sec:nth-of-type(even)::before { content: ""; position: absolute; z-index: -1; inset: 0 calc(50% - 50vw); background: var(--field-1); }
 .sec > h2 { grid-column: 1 / -1; font-size: var(--s-head); overflow-wrap: break-word; min-width: 0; }
-.sec-body, .ref-body, .rel-list, .sec > .qa { grid-column: 1 / -1; display: grid; gap: 24px; min-width: 0; }
+.sec-body, .ref-body, .rel-list { grid-column: 1 / -1; display: grid; gap: 24px; min-width: 0; }
+.sec > .qa { grid-column: 1 / -1; min-width: 0; }
 .sec-body > p, .ref-body > p, .src-note { max-width: 70ch; }
 .sec-body h3 { font-size: var(--s-title); margin-top: 24px; }
 .sec code, .doc code, .doc-hero code { background: color-mix(in oklab, currentColor 12%, transparent); padding: 1px 5px; border-radius: 3px; overflow-wrap: anywhere; }
@@ -425,7 +426,7 @@ pre.diagram { white-space: pre; overflow-x: auto; overflow-wrap: normal; }
 .qa > h3 { grid-column: 1; font-size: var(--s-lead); line-height: 1.2; }
 .qa > p { grid-column: 2; padding-left: 0; }
 .feats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
-.feats .feat { max-width: none; background: var(--row); padding: 40px 32px; gap: 14px; align-content: start; }
+.sec .feats .feat { min-height: 0; max-width: none; background: var(--row); padding: 40px 32px; gap: 14px; align-content: start; }
 
 /* tables: one filled row per entry */
 .table-wrap { overflow-x: auto; }
