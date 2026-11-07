@@ -1,6 +1,6 @@
 # Cloakroom
 
-> Free and open source. Cloakroom masks API keys, secrets and personal data on your own machine before your AI coding agent sees them. Works with Claude Code, Codex CLI, Gemini CLI and Cursor’s terminal agent.
+> Free and open source. Cloakroom masks API keys, secrets and personal data on your own machine before your AI coding agent sees them. Works with Claude Code, Codex CLI, Gemini CLI and Cursor (editor and command-line agent).
 
 ## Pages
 
@@ -16,7 +16,7 @@
 
 <!-- https://cloakroom.sh/install.html -->
 ## Install Cloakroom
-Works with Claude Code, Codex CLI, Gemini CLI and Cursor’s terminal agent.
+Works with Claude Code, Codex CLI, Gemini CLI and Cursor (editor and command-line agent).
 
 #### Claude Code
 
@@ -92,7 +92,7 @@ cloakroom install gemini
 
 #### Cursor
 
-Cursor’s terminal agent (agent), not the editor. Mac and Linux.
+Cursor’s editor and its command-line agent (agent). Tab completion isn’t covered. Mac and Linux.
 - Install the program by hand.
 
 ```
@@ -106,10 +106,10 @@ The part in brackets adds the AI model that finds names and addresses on your ma
 cloakroom install cursor
 ```
 
-- Cursor’s terminal agent (agent) runs them from its next start. The editor reads the same file but hasn’t been checked with Cloakroom yet. cloakroom doctor shows whether they’re installed.
+- Cursor’s editor and its command-line agent (agent) run them from their next start. Tab completion has no hook, so it isn’t covered, and the command-line agent doesn’t check the prompts you type; the editor does. cloakroom doctor shows whether they’re installed.
 
 ### Updating
-Run cloakroom update in a terminal. It updates Cloakroom with the installer you used (uv, pipx or pip) and keeps the optional parts you had. Then it sets up Cloakroom’s checks again for Codex, Gemini CLI, Cursor’s terminal agent and git commits, only where they were set up before.
+Run cloakroom update in a terminal. It updates Cloakroom with the installer you used (uv, pipx or pip) and keeps the optional parts you had. Then it sets up Cloakroom’s checks again for Codex, Gemini CLI, Cursor and git commits, only where they were set up before.
 
 ### Pick how you’ll run it
 Easiest: add the plugin (above) and let it install Cloakroom on the next start. It uses uv or pipx if either is installed, otherwise a private Python environment in ~/.cloakroom/venv (needs Python 3.10+). If the install fails, Claude Code says so and it retries after 10 minutes. The table is for installing by hand.
@@ -257,7 +257,7 @@ If the cloakroom command is missing, the plugin blocks prompts and denies tool c
 - Failed tool calls
 
 #### Which keys your agents saw
-Shows the keys and passwords Claude Code, Codex CLI, Gemini CLI and Cursor’s terminal agent saw. Each is a hint, never the key, and the list ends with “Rotate these”: keys to replace with new ones.Example: a line like ghp_…LmPq.Command: cloakroom exposureLimit: The exposure list.
+Shows the keys and passwords Claude Code, Codex CLI, Gemini CLI and Cursor’s agent saw. Each is a hint, never the key, and the list ends with “Rotate these”: keys to replace with new ones.Example: a line like ghp_…LmPq.Command: cloakroom exposureLimit: The exposure list.
 
 #### Warns when a pull changes what your agent runs
 cloakroom scan lists every command a repo’s agent and editor config would run. It flags the setup the October 2026 npm worm used: an agent hook and an editor task that run each other’s files. After cloakroom install git-hook, each pull, checkout or merge that adds or changes such a command prints it. It warns, never blocks.Example: a pull adds an editor task that runs a file an agent hook also runs.Command: cloakroom scan

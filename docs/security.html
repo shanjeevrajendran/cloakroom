@@ -161,7 +161,7 @@
     </div>
     <div class="items">
     <div class="item"><h3 id="stop-exposure">Which keys your agents saw</h3>
-    <p>Shows the keys and passwords Claude Code, Codex CLI, Gemini CLI and Cursor’s terminal agent saw. Each is a hint, never the key, and the list ends with “Rotate these”: keys to replace with new ones.<br>Example: a line like <code>ghp_…LmPq</code>.<br>Command: <code>cloakroom exposure</code><br>Limit: <a href="#limit-exposure">The exposure list</a>.</p></div>
+    <p>Shows the keys and passwords Claude Code, Codex CLI, Gemini CLI and Cursor’s agent saw. Each is a hint, never the key, and the list ends with “Rotate these”: keys to replace with new ones.<br>Example: a line like <code>ghp_…LmPq</code>.<br>Command: <code>cloakroom exposure</code><br>Limit: <a href="#limit-exposure">The exposure list</a>.</p></div>
     <div class="item"><h3 id="stop-pull">Warns when a pull changes what your agent runs</h3>
     <p><code>cloakroom scan</code> lists every command a repo’s agent and editor config would run. It flags the setup the October 2026 npm worm used: an agent hook and an editor task that run each other’s files. After <code>cloakroom install git-hook</code>, each pull, checkout or merge that adds or changes such a command prints it. It warns, never blocks.<br>Example: a pull adds an editor task that runs a file an agent hook also runs.<br>Command: <code>cloakroom scan</code></p></div>
     <div class="item"><h3 id="stop-destinations">Where your agent sends data</h3>

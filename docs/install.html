@@ -4,14 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Install Cloakroom</title>
-<meta name="description" content="Install Cloakroom for Claude Code, Codex CLI, Gemini CLI or Cursor’s terminal agent, pick the right install for your machine, and run it on headless machines and CI.">
+<meta name="description" content="Install Cloakroom for Claude Code, Codex CLI, Gemini CLI or Cursor (editor and command-line agent), pick the right install for your machine, and run it on headless machines and CI.">
 <meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#0f1f10">
 <link rel="canonical" href="https://cloakroom.sh/install.html">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Cloakroom">
 <meta property="og:title" content="Install Cloakroom">
-<meta property="og:description" content="Install Cloakroom for Claude Code, Codex CLI, Gemini CLI or Cursor’s terminal agent, pick the right install for your machine, and run it on headless machines and CI.">
+<meta property="og:description" content="Install Cloakroom for Claude Code, Codex CLI, Gemini CLI or Cursor (editor and command-line agent), pick the right install for your machine, and run it on headless machines and CI.">
 <meta property="og:url" content="https://cloakroom.sh/install.html">
 <meta property="og:image" content="https://raw.githubusercontent.com/shanjeevrajendran/cloakroom/main/assets/social-card.png">
 <meta name="twitter:card" content="summary_large_image">
@@ -59,7 +59,7 @@
 
 <section class="hero page-hero container" aria-labelledby="page-title">
   <h1 id="page-title">Install Cloakroom</h1>
-  <p class="lead">Works with Claude Code, Codex CLI, Gemini CLI and Cursor’s terminal agent.</p>
+  <p class="lead">Works with Claude Code, Codex CLI, Gemini CLI and Cursor (editor and command-line agent).</p>
   <div class="tabs" data-tabs>
     <div class="tablist" role="tablist" aria-label="Install for your agent">
       <button type="button" role="tab" id="tab-claude" aria-controls="panel-claude" aria-selected="true">Claude Code</button>
@@ -115,14 +115,14 @@ ok   program: ~/.local/bin/cloakroom</code></pre>
       </ol>
     </div>
     <div class="tabpanel" role="tabpanel" id="panel-cursor" aria-labelledby="tab-cursor">
-      <p class="tab-note">Cursor’s terminal agent (<code>agent</code>), not the editor. Mac and Linux.</p>
+      <p class="tab-note">Cursor’s editor and its command-line agent (<code>agent</code>). Tab completion isn’t covered. Mac and Linux.</p>
       <ol class="steps">
         <li><p><strong>Install the program by hand.</strong></p>
           <div class="cmd-row"><pre><code>uv tool install "cloakroom[model,torch,ocr]"</code></pre><button type="button" class="copy">Copy</button></div>
           <p class="tab-note">The part in brackets adds the AI model that finds names and addresses on your machine, and reading text in screenshots and scans.</p></li>
         <li><p><strong>Run <code>cloakroom install cursor</code>.</strong> It adds nine hooks (small checks the agent runs before and after each action) to <code>~/.cursor/hooks.json</code> and leaves your own hooks alone.</p>
           <div class="cmd-row"><pre><code>cloakroom install cursor</code></pre><button type="button" class="copy">Copy</button></div></li>
-        <li><p>Cursor’s terminal agent (<code>agent</code>) runs them from its next start. The editor reads the same file but hasn’t been checked with Cloakroom yet. <code>cloakroom doctor</code> shows whether they’re installed.</p></li>
+        <li><p>Cursor’s editor and its command-line agent (<code>agent</code>) run them from their next start. Tab completion has no hook, so it isn’t covered, and the command-line agent doesn’t check the prompts you type; the editor does. <code>cloakroom doctor</code> shows whether they’re installed.</p></li>
       </ol>
     </div>
   </div>
@@ -131,7 +131,7 @@ ok   program: ~/.local/bin/cloakroom</code></pre>
 <section class="sec container" id="updating" aria-labelledby="updating-title">
   <h2 id="updating-title">Updating</h2>
   <div class="sec-body">
-    <p>Run <code>cloakroom update</code> in a terminal. It updates Cloakroom with the installer you used (uv, pipx or pip) and keeps the optional parts you had. Then it sets up Cloakroom’s checks again for Codex, Gemini CLI, Cursor’s terminal agent and git commits, only where they were set up before.</p>
+    <p>Run <code>cloakroom update</code> in a terminal. It updates Cloakroom with the installer you used (uv, pipx or pip) and keeps the optional parts you had. Then it sets up Cloakroom’s checks again for Codex, Gemini CLI, Cursor and git commits, only where they were set up before.</p>
   </div>
 </section>
 
