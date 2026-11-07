@@ -108,8 +108,25 @@ cloakroom install cursor
 
 - Cursor’s editor and its command-line agent (agent) run them from their next start. Tab completion has no hook, so it isn’t covered, and the command-line agent doesn’t check the prompts you type; the editor does. cloakroom doctor shows whether they’re installed.
 
+### In an editor
+Claude Code in VS Code or JetBrains: Cloakroom works as in the terminal. The VS Code extension runs Claude Code with your plugins, and the JetBrains plugin runs claude in the editor’s built-in terminal.
+Codex in VS Code (OpenAI’s Codex extension): the extension’s own Codex reads the same ~/.codex/hooks.json, so it loads Cloakroom’s hooks. Trust them first in the codex command-line tool (type /hooks, as in the Codex steps above); the same Codex limits apply.
+Gemini Code Assist in VS Code: Cloakroom does not protect you there. Its agent mode doesn’t run the hooks that Gemini extensions bring. Use the Gemini CLI in a terminal instead (VS Code’s own terminal is fine).
+Antigravity, and editors not listed here: not supported. Cloakroom installs nothing there.
+More in Known limits.
+
 ### Updating
-Run cloakroom update in a terminal. It updates Cloakroom with the installer you used (uv, pipx or pip) and keeps the optional parts you had. Then it sets up Cloakroom’s checks again for Codex, Gemini CLI, Cursor and git commits, only where they were set up before.
+Claude Code: Claude Code updates the Cloakroom plugin, and the plugin then updates the cloakroom program the next time you start Claude Code. A plugin update comes out a few days after each new Cloakroom release. Claude Code only does this by itself if automatic updates are on for the place you added Cloakroom from (Claude Code calls it a marketplace). They’re on if you added Cloakroom from the plugin directory on claude.ai, and off otherwise. To switch them on:
+- In Claude Code, type /plugin and press Enter.
+- Go to the Marketplaces tab and choose cloakroom.
+- Choose Enable auto-update.
+When an update arrives, Claude Code says “Run /reload-plugins”: type that, or restart Claude Code. To update right away instead, run this in a terminal:
+
+```
+claude plugin update cloakroom@cloakroom
+```
+
+Codex, Gemini CLI, Cursor, git commits, or a cloakroom you installed yourself: run cloakroom update in a terminal. It updates Cloakroom with the installer you used (uv, pipx or pip) and keeps the optional parts you had. Then it sets up Cloakroom’s checks again for Codex, Gemini CLI, Cursor and git commits, only where they were set up before.
 
 ### Pick how you’ll run it
 Easiest: add the plugin (above) and let it install Cloakroom on the next start. It uses uv or pipx if either is installed, otherwise a private Python environment in ~/.cloakroom/venv (needs Python 3.10+). If the install fails, Claude Code says so and it retries after 10 minutes. The table is for installing by hand.
