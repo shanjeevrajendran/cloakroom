@@ -79,8 +79,9 @@ h3 { font-family: var(--font-text); font-weight: 600; letter-spacing: -0.01em; l
 
 /* ---------- Hero: two tones meeting at 50% ---------- */
 .hero { display: grid; grid-template-columns: 1fr 1fr; min-height: min(100svh, 1000px); background: var(--bg); }
-.hero-copy { display: flex; flex-direction: column; justify-content: flex-end; gap: 22px; padding: 128px var(--gutter) 48px; max-width: 720px; justify-self: end; width: 100%; }
+.hero-copy { display: flex; flex-direction: column; justify-content: flex-end; gap: 22px; padding: 128px var(--gutter) 48px; max-width: 720px; justify-self: end; width: 100%; container-type: inline-size; }
 .hero h1 { font-size: var(--s-head); }
+.hero:not(.hero--sec) .hero-copy h1 { font-size: min(var(--s-head), 9.5cqi); }
 .lines .line { display: block; overflow: hidden; padding-bottom: 0.1em; margin-bottom: -0.1em; }
 .lines [data-line] { display: block; }
 .hero .lead { font-size: var(--s-lead); line-height: 1.35; max-width: 32ch; }
@@ -361,6 +362,7 @@ mark.ph { background: var(--accent); color: var(--accent-ink); font-weight: 600;
 }
 @media (max-width: 40rem) {
   .hero h1 { font-size: 2rem; }
+  .hero:not(.hero--sec) .hero-copy h1 { font-size: min(2rem, 9.5cqi); }
   .tablist [role="tab"], .copy, .swap-switch button { min-height: 44px; }
   .actions .text-link { display: inline-block; padding-block: 10px; }
   .foot nav { gap: 0 24px; }
