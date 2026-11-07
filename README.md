@@ -3,7 +3,7 @@
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/shanjeevrajendran/cloakroom/main/assets/title-card-dark.svg">
   <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/shanjeevrajendran/cloakroom/main/assets/title-card-light.svg">
-  <img src="https://raw.githubusercontent.com/shanjeevrajendran/cloakroom/main/assets/title-card-light.svg" alt="Cloakroom: your secrets stay on your machine. A coat-check ticket shows a masked API key on the part that stays on your disk and the placeholder PII_SECRET_1 on the stub the model sees." width="880">
+  <img src="https://raw.githubusercontent.com/shanjeevrajendran/cloakroom/main/assets/title-card-light.svg" alt="Cloakroom: your secrets stay on your machine. A coat-check ticket shows a masked API key on the part that stays on your disk and a placeholder on the stub the model sees." width="880">
 </picture>
 
 **Cloakroom is free and open source. It masks API keys, passwords and personal data (names, emails, addresses and the like) on your machine before your AI coding agent sees them. Works with Claude Code, Codex CLI, Gemini CLI and Cursor.**
@@ -58,8 +58,8 @@ claude plugin install cloakroom@cloakroom
 
 Then restart Claude Code. Details and other tools: [Get started](#get-started).
 
-A placeholder is a label such as `PII_PERSON_1` or `PII_SECRET_1`. The AI sees the label and works with it. The
-real value stays on your machine.
+A placeholder is a short label that takes the real value's place. The AI sees only the placeholder and works with
+it as usual. The real value stays on your machine, and the files the AI writes get it back.
 
 Cloakroom catches personal data as well as keys. It masks the data and lets the AI carry on, instead of stopping the
 whole step. And it learns from your corrections.
@@ -69,8 +69,8 @@ It's new, so expect rough edges.
 
 New in 1.3:
 
-- **Prompt injection, contained:** hidden instructions can't make the agent approve its own held call, switch Cloakroom off or uninstall it, on Mac, Windows and Linux ([details](#prompt-injection)).
-- **Planted hooks are held:** a hook or MCP server an agent writes into its own config waits until you type `cr: allow`.
+- **Prompt injection, contained:** hidden instructions in a file or web page can't make the agent approve a call Cloakroom held, switch Cloakroom off or uninstall it, on Mac, Windows and Linux ([details](#prompt-injection)).
+- **Added commands wait for you:** a hook (a command the agent runs by itself before or after an action) or an MCP server (an add-on tool) that an agent writes into its own settings waits until you type `cr: allow`.
 
 New in 1.2:
 
@@ -86,7 +86,7 @@ New in 1.1:
 New in 1.0:
 
 - **See where your agent sends data, and limit it to sites you approve:** `cloakroom report --destinations` lists the
-  hosts your agent's commands, web fetches and MCP calls went to, with the kinds of data they carried.
+  sites your agent's commands, web fetches and MCP calls went to, with the kinds of data they carried.
   `cloakroom allow-host example.com` builds an approved-sites list; once you turn it on, a call to any other site is
   held. An email, phone number, name or your username in a web address or header is held too
   ([details](#see-where-your-agent-sends-data)).
@@ -100,7 +100,7 @@ New in 0.8:
   Gemini CLI and Cursor saw, each as a hint (`ghp_…LmPq`), never the key, and ends with a "Rotate these" list. It lists only
   what Cloakroom detected ([details](#extra-protections)).
 - **A warning when a pull changes what your agent runs:** `cloakroom scan` lists every command a repo's agent and
-  editor config would run and flags the npm worm's shape. After `cloakroom install git-hook`, each pull, checkout or
+  editor config would run and flags the setup the October 2026 npm worm used. After `cloakroom install git-hook`, each pull, checkout or
   merge that adds or changes such a command prints it. It warns, never blocks ([details](#extra-protections)).
 - **Hand the agent a key safely:** `cloakroom give NAME` asks for the value in a hidden terminal prompt and gives
   you a placeholder to paste. When the agent writes that placeholder into a local file or command, the real value goes
@@ -163,11 +163,11 @@ else: [Known limits](https://github.com/shanjeevrajendran/cloakroom/blob/main/do
 - **1.3.0**: an agent can't approve its own held call or switch Cloakroom off, and a hook or MCP
   server it writes into agent config is held until you type `cr: allow`.
 - **1.2.0**: Cursor's editor is checked with Cloakroom (Tab completion isn't covered). Codex signed in with
-  ChatGPT is masked through `cloakroom proxy`. A vault key safeguard keeps tests and sandboxes away from the Keychain, and
+  ChatGPT is masked through `cloakroom proxy`. Tests and sandboxes no longer ask the Keychain for Cloakroom's key, and
   false alarms on Codex's plugin list are gone.
 - **1.1.0**: Cloakroom also protects Cursor's command-line agent, on Mac and Linux: run
   `cloakroom install cursor`. `cloakroom allow` lets a command Cloakroom held run once. See [Cursor](#cursor).
-- **1.0.0**: the ledger of where your agent sends data (`cloakroom report --destinations`), an opt-in
+- **1.0.0**: a list of where your agent sends data (`cloakroom report --destinations`), an opt-in
   approved-sites list (`cloakroom allow-host`), and a hold on a web address or header that carries your email, phone,
   name or username. See [See where your agent sends data](#see-where-your-agent-sends-data). `cloakroom proxy` masks the
   requests of any tool that lets you set its API address, on Mac, Linux and Windows. See
@@ -183,8 +183,8 @@ Claude Code plugin updates arrive a few days after each PyPI release (PyPI is th
 **Hand Claude the files you'd never paste into a chat:**
 
 - **Bank statements** (PDF, scan or CSV): "sort a year of spending by category." Claude sees amounts and merchants, not your name, address or account number.
-- **Support tickets:** "draft replies to this week's tickets." Claude writes to a placeholder name (`PII_PERSON_1`);
-  the drafts saved on your disk have the real names.
+- **Support tickets:** "draft replies to this week's tickets." Claude writes to a placeholder name; the drafts saved
+  on your disk have the real names.
 - **Medical or HR records:** names, birth dates, addresses and ID numbers are masked, so Claude can summarise or tidy a record without knowing whose it is.
 - **`.env` files and logs:** Claude fixes the config without ever seeing the password or API key.
 - **Disguised copies:** a key or email that a command hashed, hex-encoded or reversed is still masked
@@ -323,7 +323,7 @@ Masking is the core. These come with it, on by default, and need nothing from yo
 <a id="disguised-copies"></a>**Disguised copies**
 
 Once Cloakroom has seen a key, password, card or account number, or an email, it also looks for copies a command
-changed on the way. Each copy gets its own placeholder, and the exact copy is put back in files Claude writes.
+changed on the way, such as a hash (a scrambled fingerprint of the value that can't be turned back). Each copy gets its own placeholder, and the exact copy is put back in files Claude writes.
 
 - **Covered:** MD5, SHA-1 and SHA-256 hashes of a key or an email; hex (`6b39...`, `0x...`, `6b 39 ...`,
   `\x6b...`); a key or password of 12+ characters written backwards; pairs like `user:password` or
@@ -394,9 +394,9 @@ A secret smuggled out piece by piece, or through a custom encoding, can also get
 - **A log you can check and export:** each line of the activity log carries a fingerprint (hash) of the line
   before it, so an edited or removed line shows up. `cloakroom report` (or Export on the dashboard) gives counts per day and session,
   without values.
-- **Placeholders can't be guessed:** each one ends in a short tag only your machine can make
-  (`PII_SECRET_1_k7q2ab`), and only placeholders issued in this session get their real value back. A file that
-  names `PII_SECRET_1` to fish for a key gets nothing; after three such tries in a session you see one line.
+- **Placeholders can't be guessed:** each one ends in a short random tag only your machine can make, and only
+  placeholders issued in this session get their real value back. A file that names a made-up placeholder to fish for
+  a key gets nothing; after three such tries in a session you see one line.
 - **Files Claude wrote stay masked:** when a real value is put back into a file, Cloakroom remembers where (never the
   value), so reading that file again later, even in a new session, shows the placeholder.
 - **Old transcripts can be cleaned:** `cloakroom clean-history` finds keys and passwords already sitting in old
@@ -409,9 +409,10 @@ A secret smuggled out piece by piece, or through a custom encoding, can also get
 
 <a id="for-finance-teams"></a>**For finance teams**
 
-- **Bank numbers are masked:** US routing numbers (a valid ABA check digit plus a word or field like "routing" or "ABA")
-  and bank account numbers (next to "account number", "acct", "checking account", "DDA", in a CSV column of that
-  name, a line of an ACH payment file, or beside a routing number in the same record) become `PII_BANK_1_k7q2ab`.
+- **Bank numbers are masked:** US routing numbers (nine digits whose built-in check digit adds up, next to a word or
+  field like "routing" or "ABA") and bank account numbers (next to "account number", "acct", "checking account",
+  "DDA", in a CSV column of that name, a line of an ACH payment file, or beside a routing number in the same record)
+  are swapped for placeholders.
   Digits with no such word stay as they are, so order numbers, phone numbers and ZIP+4 codes are left alone.
 - **Calls that move money are held:** a write to a payment, payout or transfer API (Stripe, Plaid, Dwolla, Wise,
   Adyen, PayPal, Square, Increase, Modern Treasury, Column) from curl, PowerShell or a payment CLI, or an MCP tool
@@ -477,8 +478,8 @@ a one-time link.
 
 Claude Code lets Cloakroom stop a prompt but not rewrite it. So a prompt holding a key, an email, a phone, a card or
 an ID number is stopped before it's sent, and the AI never sees it. Names alone and plain dates go through. The
-message says what it found and gives your prompt back with each private value swapped for a placeholder (like
-`PII_EMAIL_1_k7q2ab`), ready to copy and send:
+message says what it found and gives your prompt back with each private value swapped for a placeholder, ready to
+copy and send:
 
 ```
 Cloakroom stopped this prompt: it holds private data (EMAIL x1, SECRET x1), so it wasn't sent. In the copy below
@@ -516,7 +517,7 @@ When the agent needs a key (a Stripe key, a database password), don't paste it i
 cloakroom give STRIPE_KEY
 ```
 
-You type the value hidden. Cloakroom keeps it on your machine and prints a placeholder; tell the agent `STRIPE_KEY is PII_SECRET_1_k7q2ab`. When the agent writes that placeholder into a local file or command, Cloakroom puts the real value back, and masks it again in anything the agent reads. The agent never sees the value. It works in Claude Code, Codex CLI, Gemini CLI and Cursor, for every session in that project.
+You type the value hidden. Cloakroom keeps it on your machine and prints a placeholder. Tell the agent that `STRIPE_KEY` is that placeholder. When the agent writes that placeholder into a local file or command, Cloakroom puts the real value back, and masks it again in anything the agent reads. The agent never sees the value. It works in Claude Code, Codex CLI, Gemini CLI and Cursor, for every session in that project.
 
 | Command | What it does |
 |---|---|
@@ -531,7 +532,7 @@ If you type `cr: give NAME` into a prompt, Cloakroom stops it and tells you to u
 
 Cloakroom writes down where your agent sends data and can limit it to sites you approve. It sees the commands that
 send data (`curl`, `wget`, `ssh`, `scp`, `git push`, network one-liners), WebFetch and WebSearch, and MCP calls to remote
-servers. Each is logged with the host and the kinds of data it carried (`EMAIL x2`, never a value). Calls to `localhost`
+servers. Each is logged with the site and the kinds of data it carried (`EMAIL x2`, never a value). Calls to `localhost`
 aren't logged.
 
 ```bash
@@ -581,17 +582,17 @@ placeholders from file reads: when the agent writes it to a local file or a comm
 placeholders are kept encrypted for 24 hours, like `cloakroom give`. A placeholder that a Cloakroom hook already put
 in the text passes through as it is.
 
-Each request is logged in the where-it-went ledger with the host and the kinds masked, never a value, so
+Each request is logged in the same where-data-went list with the site and the kinds masked, never a value, so
 `cloakroom report --destinations` shows the proxy's traffic next to the commands. With the approved-sites list on, a
-request to an upstream that isn't on it is refused. A body Cloakroom can't read (not JSON, a compression it doesn't know,
-over `proxy_max_mb`, 16 by default) is refused with a 503 and a plain reason, not sent, and shows as denied in
+request to a site that isn't on it is refused. A body Cloakroom can't read (not JSON, a compression it doesn't know,
+over `proxy_max_mb`, 16 by default) is refused with an error (HTTP 503) and a plain reason, not sent, and shows as denied in
 `cloakroom report`. If the check can't run, the request is refused too. `cloakroom doctor` shows whether the proxy runs and which tools point at it.
 
 | Setting in `~/.cloakroom/config.json` | What it does |
 |---|---|
 | `proxy_port` | the port; 0 (default) picks a free one the first time and keeps it |
 | `proxy_max_mb` | bigger bodies are refused, not sent (default 16) |
-| `proxy_upstreams` | more routes, for example `{"/mistral": "https://api.mistral.ai"}`; `https` only (a loopback address may use `http`) |
+| `proxy_upstreams` | more routes, for example `{"/mistral": "https://api.mistral.ai"}`; `https` only (an address on your own machine may use `http`) |
 
 Cursor and Copilot are not covered: their requests go through the vendor's own servers, so there is no address on your
 machine to point them at ([Known limits](https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-LIMITS.md)).
@@ -609,7 +610,7 @@ in a log looks like ordinary text to them.
   when Claude writes a file or runs a command locally.
 - **Runs on your machine.** Detection, OCR, the encrypted vault (where the real values wait) and the put-back are
   all local. The only network call is the one-time model download (the OCR models ship inside the package).
-- **Mac, Windows and Linux.** One install on all three, with the vault key in each system's own secure store:
+- **Mac, Windows and Linux.** One install on all three, with the key to the vault in each system's own password store:
   Keychain on macOS; Credential Manager on Windows (runs in PowerShell or Git Bash, tested on Windows Server);
   Secret Service on Linux (tested on Ubuntu 24.04, plus automatic tests on every change).
 - **No graphics card needed.** Each file or command is checked in a fraction of a second on an ordinary laptop
@@ -840,7 +841,7 @@ suggests a rule, or add exceptions to `allow` in `~/.cloakroom/config.json`. `cl
 
 **What doesn't it protect?** It stops accidental leaks, like a key in a file Claude happened to open. It isn't a
 sandbox (a sealed-off space the AI can't get out of). A prompt injection is contained, not prevented: see
-[Prompt injection](#prompt-injection). Out of scope: an injected agent set on smuggling data out piece by piece, what you type into a prompt (a prompt
+[Prompt injection](#prompt-injection). Out of scope: an agent taken over by hidden instructions that sneaks data out a piece at a time, what you type into a prompt (a prompt
 with a key or personal data is stopped before it's sent but can't be rewritten, and names alone go through), and Claude Code's own local logs. Keys are kept
 out of files git would commit when Claude writes them with Write or Edit, but a file a shell command writes some other
 way (a script, `cp`, `sed -i`) is not checked yet, so a commit made from it can still carry a key. An agent runs as
