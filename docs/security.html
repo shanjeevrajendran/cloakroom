@@ -6,7 +6,7 @@
 <title>Cloakroom security model</title>
 <meta name="description" content="What Cloakroom stores and where, what leaves your machine, what it cannot catch, and how to report a way around it.">
 <meta name="color-scheme" content="dark">
-<meta name="theme-color" content="#0a100c">
+<meta name="theme-color" content="#0f1f10">
 <link rel="canonical" href="https://cloakroom.sh/security.html">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Cloakroom">
@@ -18,20 +18,31 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 44 44'%3E%3Crect width='44' height='44' rx='9' fill='%230d1117'/%3E%3Cg fill='%2356d364' stroke='%2356d364' stroke-width='2.6' stroke-linejoin='round' stroke-linecap='round' transform='translate(4 4) scale(.82)'%3E%3Cpath d='M4 6H40V16A6 6 0 0 0 40 28V38H4V28A6 6 0 0 0 4 16Z'/%3E%3Cpath d='M14 22H30' stroke='%230d1117' stroke-dasharray='3 3'/%3E%3C/g%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Martian+Mono:wdth,wght@75..112.5,400..700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
+<link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@700&family=Figtree:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="bakeoff-b.css">
 <script>document.documentElement.classList.add('js')</script>
 </head>
-<body class="t-terminal">
+<body>
 <a class="skip" href="#main">Skip to content</a>
 
-<header class="bar">
-  <div class="container bar-inner">
-    <a class="brand" href="./" aria-label="Cloakroom, home">
-      <svg viewBox="0 0 44 44" width="26" height="26" aria-hidden="true"><rect width="44" height="44" rx="9" fill="#0d1117"/><g fill="#56d364" stroke="#56d364" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round" transform="translate(4 4) scale(.82)"><path d="M4 6H40V16A6 6 0 0 0 40 28V38H4V28A6 6 0 0 0 4 16Z"/><path d="M14 22H30" stroke="#0d1117" stroke-dasharray="3 3"/></g></svg>
-      <span>Cloakroom</span>
-    </a>
-    <nav aria-label="Site">
+<header class="top">
+  <a class="brand" href="./" aria-label="Cloakroom, home">
+    <svg viewBox="0 0 44 44" width="28" height="28" aria-hidden="true"><g fill="#c6f19d" stroke="#c6f19d" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"><path d="M4 6H40V16A6 6 0 0 0 40 28V38H4V28A6 6 0 0 0 4 16Z"/><path d="M14 22H30" stroke="#0f1f10" stroke-dasharray="3 3"/></g></svg>
+    <span>Cloakroom</span>
+  </a>
+  <nav class="site" aria-label="Site">
+    <a href="install.html">Install</a>
+    <a href="commands.html">Commands</a>
+    <a href="how-it-works.html">How it works</a>
+    <a href="security.html" aria-current="page">Security</a>
+    <a href="settings.html">Settings</a>
+    <a href="releases.html">Releases</a>
+    <a href="writing.html">Writing</a>
+    <a href="https://github.com/shanjeevrajendran/cloakroom">GitHub</a>
+  </nav>
+  <details class="menu">
+    <summary>Menu</summary>
+    <nav aria-label="Site menu">
       <a href="install.html">Install</a>
       <a href="commands.html">Commands</a>
       <a href="how-it-works.html">How it works</a>
@@ -41,21 +52,28 @@
       <a href="writing.html">Writing</a>
       <a href="https://github.com/shanjeevrajendran/cloakroom">GitHub</a>
     </nav>
-  </div>
+  </details>
 </header>
 
 <main id="main">
 
-<section class="hero page-hero page-hero--short container" aria-labelledby="page-title">
-  <h1 id="page-title">Security model</h1>
-  <p class="lead">What Cloakroom stores stays on your machine and is not sent anywhere. The values it hides are encrypted. Its job is to keep secrets and personal data away from the model, so a way around it is a security bug.</p>
-  <p class="lead">For auditors: the vault files (where the hidden values are saved) are encrypted with AES-GCM. The key sits in your system’s password store, such as the macOS Keychain. The file log (<code>~/.cloakroom/filelog.bin</code>) is encrypted the same way. The activity log is tamper-evident, not tamper-proof: <code>cloakroom report --verify</code> spots a changed line, but someone who rewrites every later line can hide the change.</p>
+<section class="hero hero--sec" aria-labelledby="page-title">
+  <div class="hero-copy">
+    <h1 id="page-title" class="lines"><span class="line"><span data-line style="--i:0">Security model</span></span></h1>
+    <p class="lead" data-rise>What Cloakroom stores stays on your machine and is not sent anywhere. The values it hides are encrypted. Its job is to keep secrets and personal data away from the model, so a way around it is a security bug.</p>
+    <p class="actions" data-rise><a class="btn" href="https://github.com/shanjeevrajendran/cloakroom/security">Report a vulnerability</a></p>
+    <p class="lead" data-rise>For auditors: the vault files (where the hidden values are saved) are encrypted with AES-GCM. The key sits in your system’s password store, such as the macOS Keychain. The file log (<code>~/.cloakroom/filelog.bin</code>) is encrypted the same way. The activity log is tamper-evident, not tamper-proof: <code>cloakroom report --verify</code> spots a changed line, but someone who rewrites every later line can hide the change.</p>
+  </div>
+  <figure class="hero-photo">
+    <img src="bakeoff-b/cloakroom-leipzig.jpg" width="1600" height="1200" decoding="async" alt="The cloakroom of the Leipzig Opera House: coats hang on racks behind two long wooden counters under pendant lamps.">
+    <figcaption>The cloakroom of the Leipzig Opera House.</figcaption>
+  </figure>
 </section>
 
-<section class="sec container" id="stored" aria-labelledby="stored-title">
-  <h2 id="stored-title">What is stored</h2>
-  <div class="sec-body">
-    <dl class="defs">
+<section class="stored" id="stored" aria-labelledby="stored-title">
+  <div class="frame">
+    <h2 id="stored-title" data-rise>What is stored</h2>
+    <dl class="defs-board">
       <div><dt>The vault</dt><dd>The real values Cloakroom hides are saved here, in an encrypted file for each session.</dd></div>
       <div><dt>The file log</dt><dd>A record of where real values were put back into files the agent wrote. The log (<code>~/.cloakroom/filelog.bin</code>) is encrypted like the vault and holds no values: they are read back from the file when needed.</dd></div>
       <div><dt>Your rules</dt><dd>Rules you make from the dashboard are stored encrypted in <code>~/.cloakroom/rules.bin</code>; the <code>allow</code> list stays yours to edit by hand.</dd></div>
@@ -66,24 +84,40 @@
   </div>
 </section>
 
-<section class="sec container" id="where" aria-labelledby="where-title">
-  <h2 id="where-title">Where</h2>
-  <div class="qa">
-    <h3>The vault key</h3>
-    <p>The vault files are encrypted with AES-GCM. The key lives in your system’s password store (macOS Keychain, Windows Credential Manager, Linux Secret Service), or in <code>CLOAKROOM_VAULT_KEY</code>. When there is no password store, it goes in a key file only you can read (permissions 0600), and <code>cloakroom doctor</code> warns you.</p>
-    <h3>Cloakroom’s own folder</h3>
-    <p>The agent can’t change <code>~/.cloakroom</code>: a write there, or a shell command that names it, is refused. So the agent can’t pause Cloakroom or edit its rules.</p>
-    <h3>The dashboard</h3>
-    <p>The dashboard (<code>cloakroom dashboard</code>) is reachable only on 127.0.0.1, with a one-time sign-in link; restarting the service signs the browser out.</p>
-    <h3>Claude Code’s own records</h3>
-    <p>Claude Code’s local session log (<code>~/.claude/projects/...</code>) records the tool input after Cloakroom put the real values back, so those values also appear in that log on your disk. They are not sent to the model.</p>
+<section class="split where" id="where" aria-labelledby="where-title">
+  <div class="aside">
+    <h2 id="where-title" data-rise>Where</h2>
+    <figure class="folder" data-ui data-rise>
+      <figcaption>~/.cloakroom</figcaption>
+      <ul>
+        <li><code>filelog.bin</code><span>The file log, encrypted</span></li>
+        <li><code>rules.bin</code><span>Your rules, encrypted</span></li>
+        <li><code>held.json</code><span>Fingerprints of held commands</span></li>
+      </ul>
+    </figure>
+    <figure class="dash" data-rise>
+      <img src="https://raw.githubusercontent.com/shanjeevrajendran/cloakroom/main/assets/dashboard-preview.png" width="2800" height="2000" loading="lazy" decoding="async" alt="The Cloakroom dashboard: a list of recent alerts, each showing the tool, the file and what was masked, with labels like Correct, To review and Missed something, and a panel that turns your labels into suggested rules to approve or dismiss.">
+      <figcaption>The dashboard, on 127.0.0.1.</figcaption>
+    </figure>
+  </div>
+  <div class="body">
+    <div class="qa-list">
+      <div><h3>The vault key</h3>
+      <p>The vault files are encrypted with AES-GCM. The key lives in your system’s password store (macOS Keychain, Windows Credential Manager, Linux Secret Service), or in <code>CLOAKROOM_VAULT_KEY</code>. When there is no password store, it goes in a key file only you can read (permissions 0600), and <code>cloakroom doctor</code> warns you.</p></div>
+      <div><h3>Cloakroom’s own folder</h3>
+      <p>The agent can’t change <code>~/.cloakroom</code>: a write there, or a shell command that names it, is refused. So the agent can’t pause Cloakroom or edit its rules.</p></div>
+      <div><h3>The dashboard</h3>
+      <p>The dashboard (<code>cloakroom dashboard</code>) is reachable only on 127.0.0.1, with a one-time sign-in link; restarting the service signs the browser out.</p></div>
+      <div><h3>Claude Code’s own records</h3>
+      <p>Claude Code’s local session log (<code>~/.claude/projects/...</code>) records the tool input after Cloakroom put the real values back, so those values also appear in that log on your disk. They are not sent to the model.</p></div>
+    </div>
   </div>
 </section>
 
-<section class="sec container" id="leaves" aria-labelledby="leaves-title">
-  <h2 id="leaves-title">What leaves your machine</h2>
-  <div class="sec-body">
-    <dl class="defs">
+<section class="leaves" id="leaves" aria-labelledby="leaves-title">
+  <div class="frame">
+    <h2 id="leaves-title" data-rise>What leaves your machine</h2>
+    <dl>
       <div><dt>The model, once</dt><dd>First run downloads the AI model that finds names and addresses (PII-Tracer, at one fixed version) from Hugging Face. A machine with no internet needs it downloaded beforehand.</dd></div>
       <div><dt>Sending data</dt><dd>Commands that would send a secret off your machine, or move money, wait for your OK. A web fetch, an MCP tool call (an add-on tool) or a prompt to a subagent that holds a real value is stopped before it runs.</dd></div>
       <div><dt>Not covered</dt><dd>Codex’s own web search (runs on OpenAI’s servers).</dd></div>
@@ -91,101 +125,124 @@
   </div>
 </section>
 
-<section class="sec container" id="stops" aria-labelledby="stops-title">
-  <h2 id="stops-title">What it stops</h2>
-  <div class="sec-body">
-    <p>Beyond hiding values, Cloakroom holds some actions, watches some things for you and gives you safer ways to hand over a key. Each item links to the limit that goes with it.</p>
-    <h3>Holds</h3>
+<section class="stops" id="stops" aria-labelledby="stops-title">
+  <div class="stops-head">
+    <h2 id="stops-title" data-rise>What it stops</h2>
+    <p data-rise>Beyond hiding values, Cloakroom holds some actions, watches some things for you and gives you safer ways to hand over a key. Each item links to the limit that goes with it.</p>
   </div>
-  <div class="qa">
-    <h3 id="stop-send">Sending-data hold</h3>
-    <p>Stops a shell command that would send a secret off your machine. It checks the command before it runs: if it can send data out and holds a secret Cloakroom has seen, a key its rules recognise, or a token of 16+ characters typed out in full in a login header (such as <code>Authorization</code>), it is refused.<br>Example: a <code>curl</code> call with your API key in its header.<br>To send it anyway, type <code>cr: allow</code> as your prompt (the agent never sees it), then ask the agent to run the same command again. It passes once, within 10 minutes.<br>Limit: <a href="#limit-unseen">Secrets it has never seen</a>.</p>
-    <h3 id="stop-money">Money-movement hold</h3>
-    <p>Stops a tool call that would move money: a request that changes something at a payment service address on Cloakroom’s list, a payment command-line tool, or an MCP tool (an add-on tool) whose name carries a money verb, such as <code>pay</code> or <code>create_payout</code>.<br>Example: an MCP tool called <code>create_payout</code> is held with one line naming it.<br><code>cr: allow</code> lets the same call run once.<br>Limit: <a href="#limit-money">Money moved by programs</a>.</p>
-    <h3 id="stop-commit">Write-time and commit check</h3>
-    <p>Stops a key or password from landing in a file in a git repo that is not git-ignored. The call is denied and the agent is told to put the value in <code>.env</code>. Before the agent runs <code>git commit</code> or <code>git push</code>, a key or password in what would be committed holds the command.<br>Example: the agent tries to write an API key into <code>config.py</code>.<br>Limit: <a href="#limit-scripts">Keys written by scripts</a>.</p>
-    <h3 id="stop-self">The agent can’t approve its own hold or switch Cloakroom off</h3>
-    <p>Stops an agent from lifting a hold itself or turning Cloakroom off. <code>cloakroom allow</code>, <code>allow-host</code> and <code>uninstall</code> refuse to run in an agent’s shell, and a shell command that runs them is denied. Uninstalling Cloakroom, or removing its program, is held too.<br>Example: the agent runs <code>cloakroom allow</code> to let its own held command through; it is refused.<br>Type <code>cr: allow</code> in the chat, or run the command in your own terminal.<br>Limit: <a href="#limit-runtime">Built at run time</a>.</p>
-    <h3 id="stop-plant">A hook or MCP server the agent adds is held</h3>
-    <p>Stops an agent from slipping a command into its own settings. A hook (a command the agent runs by itself before or after an action) or an MCP server (an add-on tool) written into <code>.mcp.json</code>, <code>.claude/settings.json</code>, Codex’s <code>config.toml</code> or <code>hooks.json</code>, Cursor’s <code>hooks.json</code> or <code>mcp.json</code>, <code>.gemini/settings.json</code> or a Gemini extension waits for <code>cr: allow</code>. The message names the file, the line and the command. Edits that add no command go through.<br>Example: the agent adds a hook that runs a script from a file it wrote.<br>Limit: <a href="#limit-runtime">Built at run time</a>.</p>
-    <h3 id="stop-missing">Nothing gets through when the program is missing</h3>
-    <p>If the <code>cloakroom</code> command is missing, the plugin blocks prompts and denies tool calls instead of letting data through.<br>Example: you remove the program by mistake; your next prompt is blocked, not passed on.</p>
+
+  <div class="group">
+    <div class="group-aside"><h3>Holds</h3>
+      <ul><li><a href="#stop-send">Sending-data hold</a></li><li><a href="#stop-money">Money-movement hold</a></li><li><a href="#stop-commit">Write-time and commit check</a></li><li><a href="#stop-self">Can’t approve its own hold</a></li><li><a href="#stop-plant">Added hooks and MCP servers</a></li><li><a href="#stop-missing">Program missing</a></li></ul>
+      <figure class="prompt" data-ui>
+        <div class="prompt-box"><code>cr: allow</code><span class="caret" aria-hidden="true"></span></div>
+        <figcaption>Typed as your prompt, the agent never sees it. The same call runs once.</figcaption>
+      </figure>
+    </div>
+    <div class="items">
+    <div class="item"><h3 id="stop-send">Sending-data hold</h3>
+    <p>Stops a shell command that would send a secret off your machine. It checks the command before it runs: if it can send data out and holds a secret Cloakroom has seen, a key its rules recognise, or a token of 16+ characters typed out in full in a login header (such as <code>Authorization</code>), it is refused.<br>Example: a <code>curl</code> call with your API key in its header.<br>To send it anyway, type <code>cr: allow</code> as your prompt (the agent never sees it), then ask the agent to run the same command again. It passes once, within 10 minutes.<br>Limit: <a href="#limit-unseen">Secrets it has never seen</a>.</p></div>
+    <div class="item"><h3 id="stop-money">Money-movement hold</h3>
+    <p>Stops a tool call that would move money: a request that changes something at a payment service address on Cloakroom’s list, a payment command-line tool, or an MCP tool (an add-on tool) whose name carries a money verb, such as <code>pay</code> or <code>create_payout</code>.<br>Example: an MCP tool called <code>create_payout</code> is held with one line naming it.<br><code>cr: allow</code> lets the same call run once.<br>Limit: <a href="#limit-money">Money moved by programs</a>.</p></div>
+    <div class="item"><h3 id="stop-commit">Write-time and commit check</h3>
+    <p>Stops a key or password from landing in a file in a git repo that is not git-ignored. The call is denied and the agent is told to put the value in <code>.env</code>. Before the agent runs <code>git commit</code> or <code>git push</code>, a key or password in what would be committed holds the command.<br>Example: the agent tries to write an API key into <code>config.py</code>.<br>Limit: <a href="#limit-scripts">Keys written by scripts</a>.</p></div>
+    <div class="item"><h3 id="stop-self">The agent can’t approve its own hold or switch Cloakroom off</h3>
+    <p>Stops an agent from lifting a hold itself or turning Cloakroom off. <code>cloakroom allow</code>, <code>allow-host</code> and <code>uninstall</code> refuse to run in an agent’s shell, and a shell command that runs them is denied. Uninstalling Cloakroom, or removing its program, is held too.<br>Example: the agent runs <code>cloakroom allow</code> to let its own held command through; it is refused.<br>Type <code>cr: allow</code> in the chat, or run the command in your own terminal.<br>Limit: <a href="#limit-runtime">Built at run time</a>.</p></div>
+    <div class="item"><h3 id="stop-plant">A hook or MCP server the agent adds is held</h3>
+    <p>Stops an agent from slipping a command into its own settings. A hook (a command the agent runs by itself before or after an action) or an MCP server (an add-on tool) written into <code>.mcp.json</code>, <code>.claude/settings.json</code>, Codex’s <code>config.toml</code> or <code>hooks.json</code>, Cursor’s <code>hooks.json</code> or <code>mcp.json</code>, <code>.gemini/settings.json</code> or a Gemini extension waits for <code>cr: allow</code>. The message names the file, the line and the command. Edits that add no command go through.<br>Example: the agent adds a hook that runs a script from a file it wrote.<br>Limit: <a href="#limit-runtime">Built at run time</a>.</p></div>
+    <div class="item"><h3 id="stop-missing">Nothing gets through when the program is missing</h3>
+    <p>If the <code>cloakroom</code> command is missing, the plugin blocks prompts and denies tool calls instead of letting data through.<br>Example: you remove the program by mistake; your next prompt is blocked, not passed on.</p></div>
+    </div>
   </div>
-  <div class="sec-body">
-    <h3>Watches</h3>
+
+  <div class="group">
+    <div class="group-aside"><h3>Watches</h3>
+      <ul><li><a href="#stop-exposure">Which keys your agents saw</a></li><li><a href="#stop-pull">When a pull changes what runs</a></li><li><a href="#stop-destinations">Where your agent sends data</a></li><li><a href="#stop-failed">Failed tool calls</a></li></ul>
+    </div>
+    <div class="items">
+    <div class="item"><h3 id="stop-exposure">Which keys your agents saw</h3>
+    <p>Shows the keys and passwords Claude Code, Codex CLI, Gemini CLI and Cursor’s terminal agent saw. Each is a hint, never the key, and the list ends with “Rotate these”: keys to replace with new ones.<br>Example: a line like <code>ghp_…LmPq</code>.<br>Command: <code>cloakroom exposure</code><br>Limit: <a href="#limit-exposure">The exposure list</a>.</p></div>
+    <div class="item"><h3 id="stop-pull">Warns when a pull changes what your agent runs</h3>
+    <p><code>cloakroom scan</code> lists every command a repo’s agent and editor config would run. It flags the setup the October 2026 npm worm used: an agent hook and an editor task that run each other’s files. After <code>cloakroom install git-hook</code>, each pull, checkout or merge that adds or changes such a command prints it. It warns, never blocks.<br>Example: a pull adds an editor task that runs a file an agent hook also runs.<br>Command: <code>cloakroom scan</code></p></div>
+    <div class="item"><h3 id="stop-destinations">Where your agent sends data</h3>
+    <p>Lists the sites your agent’s commands, web fetches and MCP calls went to, with the kinds of data they carried. The dashboard shows the same in “Where data went”. <code>cloakroom allow-host example.com</code> builds an approved-sites list; once it is on, a call to any other site is held. An email, phone number, name or your username in a web address or header is held too.<br>Example: after you allow <code>example.com</code>, a fetch to another site is held.<br>Command: <code>cloakroom report --destinations</code></p></div>
+    <div class="item"><h3 id="stop-failed">Failed tool calls counted as not checked</h3>
+    <p>A tool call that fails in Claude Code is counted as “not checked”. It shows in the event log, in “Checks skipped” in <code>cloakroom report</code>, on the dashboard, and as one note per session.<br>Example: a command with a non-zero exit.<br>Limit: <a href="#limit-failed">Failed commands</a>.</p></div>
+    </div>
   </div>
-  <div class="qa">
-    <h3 id="stop-exposure">Which keys your agents saw</h3>
-    <p>Shows the keys and passwords Claude Code, Codex CLI, Gemini CLI and Cursor’s terminal agent saw. Each is a hint, never the key, and the list ends with “Rotate these”: keys to replace with new ones.<br>Example: a line like <code>ghp_…LmPq</code>.<br>Command: <code>cloakroom exposure</code><br>Limit: <a href="#limit-exposure">The exposure list</a>.</p>
-    <h3 id="stop-pull">Warns when a pull changes what your agent runs</h3>
-    <p><code>cloakroom scan</code> lists every command a repo’s agent and editor config would run. It flags the setup the October 2026 npm worm used: an agent hook and an editor task that run each other’s files. After <code>cloakroom install git-hook</code>, each pull, checkout or merge that adds or changes such a command prints it. It warns, never blocks.<br>Example: a pull adds an editor task that runs a file an agent hook also runs.<br>Command: <code>cloakroom scan</code></p>
-    <h3 id="stop-destinations">Where your agent sends data</h3>
-    <p>Lists the sites your agent’s commands, web fetches and MCP calls went to, with the kinds of data they carried. The dashboard shows the same in “Where data went”. <code>cloakroom allow-host example.com</code> builds an approved-sites list; once it is on, a call to any other site is held. An email, phone number, name or your username in a web address or header is held too.<br>Example: after you allow <code>example.com</code>, a fetch to another site is held.<br>Command: <code>cloakroom report --destinations</code></p>
-    <h3 id="stop-failed">Failed tool calls counted as not checked</h3>
-    <p>A tool call that fails in Claude Code is counted as “not checked”. It shows in the event log, in “Checks skipped” in <code>cloakroom report</code>, on the dashboard, and as one note per session.<br>Example: a command with a non-zero exit.<br>Limit: <a href="#limit-failed">Failed commands</a>.</p>
-  </div>
-  <div class="sec-body">
-    <h3>Safer handling</h3>
-  </div>
-  <div class="qa">
-    <h3 id="stop-give">Hand the agent a key safely</h3>
-    <p>Asks for the value in a hidden terminal prompt and gives you a placeholder to paste. When the agent writes that placeholder into a local file or command, the real value goes back in. The AI never sees it.<br>Example: <code>cloakroom give STRIPE_KEY</code>, then paste the placeholder into your prompt.<br>Command: <code>cloakroom give NAME</code></p>
-    <h3 id="stop-scrub">Stopped prompts leave the saved chat</h3>
-    <p>Claude Code also saves every chat on your disk. A prompt Cloakroom stops is taken out of that saved copy for the current session (right away, after the next reply and when the session ends), so the key you typed doesn’t stay behind. Claude Code only.<br>Example: you paste a key into a prompt and it is stopped; the saved chat doesn’t keep it.<br>Limit: <a href="#limit-prompts">Prompts</a>.</p>
+
+  <div class="group">
+    <div class="group-aside"><h3>Safer handling</h3>
+      <ul><li><a href="#stop-give">Hand the agent a key safely</a></li><li><a href="#stop-scrub">Stopped prompts leave the saved chat</a></li></ul>
+    </div>
+    <div class="items">
+    <div class="item"><h3 id="stop-give">Hand the agent a key safely</h3>
+    <p>Asks for the value in a hidden terminal prompt and gives you a placeholder to paste. When the agent writes that placeholder into a local file or command, the real value goes back in. The AI never sees it.<br>Example: <code>cloakroom give STRIPE_KEY</code>, then paste the placeholder into your prompt.<br>Command: <code>cloakroom give NAME</code></p></div>
+    <div class="item"><h3 id="stop-scrub">Stopped prompts leave the saved chat</h3>
+    <p>Claude Code also saves every chat on your disk. A prompt Cloakroom stops is taken out of that saved copy for the current session (right away, after the next reply and when the session ends), so the key you typed doesn’t stay behind. Claude Code only.<br>Example: you paste a key into a prompt and it is stopped; the saved chat doesn’t keep it.<br>Limit: <a href="#limit-prompts">Prompts</a>.</p></div>
+    </div>
   </div>
 </section>
 
-<section class="sec container" id="cannot" aria-labelledby="cannot-title">
-  <h2 id="cannot-title">What it cannot catch</h2>
-  <div class="sec-body">
-    <p>It stops <strong>accidental</strong> exposure: secrets and personal data in files, logs and command output an agent reads while working. It is not a sandbox (a sealed-off space the AI can’t get out of). A prompt injection (hidden instructions in a file that steer the AI) is contained, not prevented. The agent only ever has placeholders. Secrets Cloakroom has seen are held on the way out, whatever tool carries them. And the agent can’t approve its own held call, switch Cloakroom off or add a hook. Out of scope: an AI taken over this way that is set on sneaking data out through its own encodings, or a value built a piece at a time; data you paste into prompts on purpose (prompts can be blocked, not rewritten); what other tools on your machine send elsewhere.</p>
-  </div>
-  <div class="qa">
-    <h3 id="limit-prompts">Prompts</h3>
-    <p>Prompts can only be blocked, not masked. A blocked prompt never reaches the model. Claude Code writes it to the chat it saves on disk, and Cloakroom takes it out of the current session’s copy (see <a href="#stops">Stopped prompts leave the saved chat</a>). Codex and Gemini keep it in their saved chats.</p>
-    <h3 id="limit-failed">Failed commands</h3>
-    <p>In Claude Code, the error output of a tool call that fails goes through a hook step that can add notes but can’t change the text. So it can’t be masked and may reach the model with a key or personal value in it. Keep keys out of commands that print them.</p>
-    <h3 id="limit-unseen">Secrets it has never seen</h3>
-    <p>Cloakroom looks for disguised copies (encoded or hashed) of values it already knows, so a secret it has never seen isn’t caught in any form. Not covered: salted or keyed hashes (HMAC, bcrypt, scrypt: hashes mixed with random extra data or a secret key, so Cloakroom can’t work them out from the value alone), other hashes (SHA-512, CRC), base32, upper/lower case changes of a key, and values shorter than 8 characters.</p>
-    <h3 id="limit-scripts">Keys written by scripts</h3>
-    <p>A key split into pieces, or one with no known pattern and not seen earlier in the session, isn’t caught when a file is written.</p>
-    <h3 id="limit-money">Money moved by programs</h3>
-    <p>The money-movement hold sees the command or tool call, not what a program does once it runs. A script or app that calls a payment API isn’t held.</p>
-    <h3 id="limit-runtime">Built at run time</h3>
-    <p>These two holds read the command’s text. The agent runs as you, so one that builds Cloakroom’s folder name or a command piece by piece, and fakes a terminal, can still edit Cloakroom’s files or approve a hold. Only the agent’s own sandbox, if it runs in one, stops that.</p>
-    <h3 id="limit-exposure">The exposure list</h3>
-    <p><code>cloakroom exposure</code> lists only what Cloakroom detected: a key it missed leaves no line, so an empty list is not proof nothing leaked.</p>
-  </div>
-  <div class="sec-body">
-    <p>Every limit found in live tests, per agent: <a href="https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-LIMITS.md">Known limits</a>.</p>
+<section class="cannot" id="cannot" aria-labelledby="cannot-title">
+  <div class="frame">
+    <h2 id="cannot-title" data-rise>What it cannot catch</h2>
+    <p class="intro" data-rise>It stops <strong>accidental</strong> exposure: secrets and personal data in files, logs and command output an agent reads while working. It is not a sandbox (a sealed-off space the AI can’t get out of). A prompt injection (hidden instructions in a file that steer the AI) is contained, not prevented. The agent only ever has placeholders. Secrets Cloakroom has seen are held on the way out, whatever tool carries them. And the agent can’t approve its own held call, switch Cloakroom off or add a hook. Out of scope: an AI taken over this way that is set on sneaking data out through its own encodings, or a value built a piece at a time; data you paste into prompts on purpose (prompts can be blocked, not rewritten); what other tools on your machine send elsewhere.</p>
+    <div class="limits">
+      <div class="limit"><h3 id="limit-prompts">Prompts</h3>
+      <p>Prompts can only be blocked, not masked. A blocked prompt never reaches the model. Claude Code writes it to the chat it saves on disk, and Cloakroom takes it out of the current session’s copy (see <a href="#stops">Stopped prompts leave the saved chat</a>). Codex and Gemini keep it in their saved chats.</p></div>
+      <div class="limit"><h3 id="limit-failed">Failed commands</h3>
+      <p>In Claude Code, the error output of a tool call that fails goes through a hook step that can add notes but can’t change the text. So it can’t be masked and may reach the model with a key or personal value in it. Keep keys out of commands that print them.</p></div>
+      <div class="limit"><h3 id="limit-unseen">Secrets it has never seen</h3>
+      <p>Cloakroom looks for disguised copies (encoded or hashed) of values it already knows, so a secret it has never seen isn’t caught in any form. Not covered: salted or keyed hashes (HMAC, bcrypt, scrypt: hashes mixed with random extra data or a secret key, so Cloakroom can’t work them out from the value alone), other hashes (SHA-512, CRC), base32, upper/lower case changes of a key, and values shorter than 8 characters.</p></div>
+      <div class="limit"><h3 id="limit-scripts">Keys written by scripts</h3>
+      <p>A key split into pieces, or one with no known pattern and not seen earlier in the session, isn’t caught when a file is written.</p></div>
+      <div class="limit"><h3 id="limit-money">Money moved by programs</h3>
+      <p>The money-movement hold sees the command or tool call, not what a program does once it runs. A script or app that calls a payment API isn’t held.</p></div>
+      <div class="limit"><h3 id="limit-runtime">Built at run time</h3>
+      <p>These two holds read the command’s text. The agent runs as you, so one that builds Cloakroom’s folder name or a command piece by piece, and fakes a terminal, can still edit Cloakroom’s files or approve a hold. Only the agent’s own sandbox, if it runs in one, stops that.</p></div>
+      <div class="limit"><h3 id="limit-exposure">The exposure list</h3>
+      <p><code>cloakroom exposure</code> lists only what Cloakroom detected: a key it missed leaves no line, so an empty list is not proof nothing leaked.</p></div>
+    </div>
+    <p class="after" data-rise>Every limit found in live tests, per agent: <a href="https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-LIMITS.md">Known limits</a>.</p>
   </div>
 </section>
 
-<section class="sec container" id="report" aria-labelledby="report-title">
-  <h2 id="report-title">Report a way around it</h2>
-  <div class="sec-body">
-    <dl class="defs">
-      <div><dt>Privately</dt><dd>Please report privately through GitHub: the <strong>Security</strong> tab of the repo, then <strong>Report a vulnerability</strong>. Don’t open a public issue for a way around it; that would teach everyone the trick before there’s a fix.</dd></div>
-      <div><dt>What to include</dt><dd>The Cloakroom version (<code>uv tool list</code> or <code>pip show cloakroom</code>), your OS, the mode (<code>full</code> or <code>rules</code>), and a minimal example with <strong>fake</strong> values that shows the problem.</dd></div>
-      <div><dt>Response</dt><dd>This is a one-person project. I aim to reply within a week and to ship a fix, with credit if you want it, before the details are public.</dd></div>
-    </dl>
-    <ul class="links"><li><a href="https://github.com/shanjeevrajendran/cloakroom/security">Report a vulnerability</a></li><li><a href="https://github.com/shanjeevrajendran/cloakroom/blob/main/SECURITY.md">SECURITY.md</a></li></ul>
+<section class="report" id="report" aria-labelledby="report-title">
+  <div class="report-aside">
+    <h2 id="report-title" data-rise>Report a way around it</h2>
+    <figure class="token" data-rise>
+      <img src="bakeoff-b/cloakroom-token.jpg" width="1024" height="768" loading="lazy" decoding="async" alt="A copper cloakroom token stamped 088, lying on two folded paper programmes.">
+      <figcaption>A cloakroom token: you keep the number, the coat stays behind the counter.</figcaption>
+    </figure>
+  </div>
+  <div class="ticket">
+    <div class="sheet">
+      <dl>
+        <div><dt>Privately</dt><dd>Please report privately through GitHub: the <strong>Security</strong> tab of the repo, then <strong>Report a vulnerability</strong>. Don’t open a public issue for a way around it; that would teach everyone the trick before there’s a fix.</dd></div>
+        <div><dt>What to include</dt><dd>The Cloakroom version (<code>uv tool list</code> or <code>pip show cloakroom</code>), your OS, the mode (<code>full</code> or <code>rules</code>), and a minimal example with <strong>fake</strong> values that shows the problem.</dd></div>
+        <div><dt>Response</dt><dd>This is a one-person project. I aim to reply within a week and to ship a fix, with credit if you want it, before the details are public.</dd></div>
+      </dl>
+    </div>
+    <div class="stub">
+      <ul class="links"><li><a href="https://github.com/shanjeevrajendran/cloakroom/security">Report a vulnerability</a></li><li><a href="https://github.com/shanjeevrajendran/cloakroom/blob/main/SECURITY.md">SECURITY.md</a></li></ul>
+    </div>
   </div>
 </section>
 
 </main>
 
 <footer class="foot">
-  <div class="container foot-inner">
-    <nav aria-label="Project links">
-      <a href="https://github.com/shanjeevrajendran/cloakroom">GitHub</a>
-      <a href="https://pypi.org/project/cloakroom/">PyPI</a>
-      <a href="https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-LIMITS.md">Known limits</a>
-      <a href="https://github.com/shanjeevrajendran/cloakroom/blob/main/LICENSE">Apache-2.0</a>
-    </nav>
-    <p>Made by <a href="https://shanjeevrajendran.github.io/">Shanjeev Rajendran</a>.</p>
-  </div>
+  <p>Made by <a href="https://shanjeevrajendran.github.io/">Shanjeev Rajendran</a>.</p>
+  <nav aria-label="Project links">
+    <a href="https://github.com/shanjeevrajendran/cloakroom">GitHub</a>
+    <a href="https://pypi.org/project/cloakroom/">PyPI</a>
+    <a href="https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-LIMITS.md">Known limits</a>
+    <a href="https://github.com/shanjeevrajendran/cloakroom/blob/main/LICENSE">Apache-2.0</a>
+  </nav>
+  <p class="credit">Photos: “Opernhaus Leipzig Garderobe” by Andreas Praefcke, <a href="https://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>, via <a href="https://commons.wikimedia.org/w/index.php?curid=3815725">Wikimedia Commons</a>; “Garderobenmarke 88” by kohlmann.sascha, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC BY-SA 2.0</a>, via <a href="https://www.flickr.com/photos/96323831@N06/12073303574">Flickr</a>.</p>
 </footer>
 
+<script src="bakeoff-b.js"></script>
 </body>
 </html>
