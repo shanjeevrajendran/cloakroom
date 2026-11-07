@@ -122,10 +122,10 @@ mark.real { background: #3a2a14; color: #ffd9a8; }
 mark.ph { background: var(--accent); color: var(--accent-ink); font-weight: 600; }
 @media (prefers-reduced-motion: no-preference) {
   .site-js .swap { display: grid; }
-  .site-js .swap .pane { grid-area: 2 / 1; margin: 0; transition: opacity 260ms ease; }
+  .site-js .swap .pane { grid-area: 2 / 1; margin: 0; transition: opacity 240ms ease, filter 240ms ease, visibility 0s linear 0s; }
   .site-js .swap .pane figcaption { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
-  .site-js .swap[data-show="disk"] .pane--seen, .site-js .swap[data-show="seen"] .pane--disk { opacity: 0; visibility: hidden; }
-  .site-js .swap .pane mark { display: inline-block; transition: transform 420ms var(--ease-out), opacity 420ms ease; transition-delay: calc(var(--k, 0) * 90ms); }
+  .site-js .swap[data-show="disk"] .pane--seen, .site-js .swap[data-show="seen"] .pane--disk { opacity: 0; filter: blur(2px); visibility: hidden; transition-delay: 0s, 0s, 240ms; }
+  .site-js .swap .pane mark { display: inline-block; transition: transform 320ms var(--ease-out), opacity 240ms ease; transition-delay: calc(var(--k, 0) * 60ms); }
   .site-js .swap[data-show="disk"] .pane--seen mark, .site-js .swap[data-show="seen"] .pane--disk mark { transform: translateY(8px); opacity: 0; }
 }
 @media (prefers-reduced-motion: reduce) { .js .swap-switch { display: none; } }
@@ -185,24 +185,25 @@ mark.ph { background: var(--accent); color: var(--accent-ink); font-weight: 600;
 .out { width: 100%; margin: 0; display: grid; }
 .out figcaption { grid-area: 1 / 1; font-size: var(--s-small); font-weight: 600; margin-bottom: 14px; }
 .out figcaption span { grid-area: 1 / 1; }
-.out > pre, .out > img { grid-area: 2 / 1; margin: 0; transition: opacity 320ms ease, transform 420ms var(--ease-out); }
+.out > pre, .out > img { grid-area: 2 / 1; margin: 0; transition: opacity 240ms ease, transform 300ms var(--ease-out), visibility 0s linear 0s; }
 .out > pre { background: var(--field-1-row); border-radius: var(--ui-radius); padding: 32px; white-space: pre-wrap; overflow-wrap: anywhere; font-size: var(--s-lead); line-height: 1.7; align-self: start; }
 .out > img { border-radius: var(--ui-radius); }
 .out figcaption { display: grid; }
-.out:not([data-state="read"]) [data-for="read"], .out:not([data-state="write"]) [data-for="write"], .out:not([data-state="learn"]) [data-for="learn"] { opacity: 0; visibility: hidden; transform: translateY(10px); }
-.out figcaption span { transition: opacity 240ms ease; }
+.out:not([data-state="read"]) [data-for="read"], .out:not([data-state="write"]) [data-for="write"], .out:not([data-state="learn"]) [data-for="learn"] { opacity: 0; visibility: hidden; transform: translateY(8px); transition-delay: 0s, 0s, 240ms; }
+.out figcaption span { transition: opacity 200ms ease, visibility 0s linear 0s; }
+.out:not([data-state="read"]) figcaption [data-for="read"], .out:not([data-state="write"]) figcaption [data-for="write"], .out:not([data-state="learn"]) figcaption [data-for="learn"] { transition-delay: 0s, 200ms; }
 
 /* ---------- Common questions: filled tiles ---------- */
 .faq { max-width: 1440px; margin-inline: auto; padding: 0 var(--gutter) var(--section); display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--gap); align-items: start; }
 .faq h2 { grid-column: 1 / 5; position: sticky; top: 96px; font-size: var(--s-head); max-width: 8ch; }
 .tiles { grid-column: 5 / 13; display: grid; gap: 8px; }
-.tiles details { background: var(--surface); transition: background-color 220ms ease; }
+.tiles details { background: var(--surface); transition: background-color 200ms ease; }
 .tiles summary { list-style: none; display: flex; align-items: center; justify-content: space-between; gap: 24px; min-height: 76px; padding: 18px 24px; cursor: pointer; }
 .tiles summary::-webkit-details-marker { display: none; }
 .tiles summary h3 { font-size: var(--s-lead); font-weight: 600; max-width: 36ch; }
 .tiles summary:hover { background: var(--surface-2); }
 .plus { position: relative; flex: 0 0 18px; height: 18px; }
-.plus::before, .plus::after { content: ""; position: absolute; left: 0; top: 7.5px; width: 18px; height: 3px; background: currentColor; transition: transform 260ms var(--ease-out); }
+.plus::before, .plus::after { content: ""; position: absolute; left: 0; top: 7.5px; width: 18px; height: 3px; background: currentColor; transition: transform 200ms var(--ease-out); }
 .plus::after { transform: rotate(90deg); }
 .tiles details[open] { background: var(--accent); color: var(--accent-ink); }
 .tiles details[open] summary:hover { background: transparent; }
@@ -508,22 +509,26 @@ td { background: var(--row); }
 
 /* ---------- Motion ---------- */
 @media (prefers-reduced-motion: no-preference) {
-  .js .lines [data-line] { transform: translateY(105%); animation: line-up 900ms var(--ease-out) forwards; animation-delay: calc(var(--i) * 110ms + 150ms); }
-  .site-js .hero [data-rise] { opacity: 0; transform: translateY(16px); animation: rise 700ms var(--ease-out) 520ms forwards; }
-  .site-js .hero .tabs[data-rise] { animation-delay: 600ms; }
-  .site-js .hero .hero-more[data-rise] { animation-delay: 660ms; }
-  .site-js .hero .actions[data-rise] { animation-delay: 700ms; }
-  .site-js .hero-stage .swap { opacity: 0; transform: translateY(24px) scale(0.98); animation: rise 900ms var(--ease-out) 300ms forwards; }
-  .site-js .hero-photo img { animation: drift 24s ease-in-out infinite alternate; }
+/* Entrances are keyframes that fill backwards only: once played, each element's own hover and press transitions apply again. */
+@media (prefers-reduced-motion: no-preference) {
+  .js .lines [data-line] { animation: line-up 700ms var(--ease-out) backwards; animation-delay: calc(var(--i) * 80ms + 100ms); }
+  .site-js .hero [data-rise] { animation: rise 500ms var(--ease-out) 300ms backwards; }
+  .site-js .hero .tabs[data-rise] { animation-delay: 350ms; }
+  .site-js .hero .hero-more[data-rise] { animation-delay: 400ms; }
+  .site-js .hero .actions[data-rise] { animation-delay: 450ms; }
+  .site-js .hero-stage .swap { animation: rise-in 600ms var(--ease-out) 150ms backwards; }
+  .tiles details[open] .answer, .site-js .row.is-open .row-more { animation: open-in 220ms var(--ease-out); }
+  .menu[open] nav { transform-origin: top right; animation: pop-in 160ms var(--ease-out); }
 }
 @media (prefers-reduced-motion: no-preference) and (min-width: 40.01rem) {
-  .site-js main > :not(.hero) [data-rise], .site-js .row, .site-js .feat > *, .site-js .tiles details, .site-js .group-aside, .site-js .defs-board > div, .site-js .leaves dl > div, .site-js .qa-list > div, .site-js .ticket > * { opacity: 0; transform: translateY(24px); transition: opacity 700ms ease, transform 800ms var(--ease-out); transition-delay: calc(var(--d, 0) * 75ms); }
-  .site-js main > :not(.hero) .in, .site-js main > :not(.hero) .in[data-rise] { opacity: 1; transform: none; }
-  .site-js .feat > .mini, .site-js .feat > .ctl { transition-property: opacity, transform, background-color, color; }
+  .site-js main > :not(.hero) [data-rise]:not(.in), .site-js .row:not(.in), .site-js .feat > :not(.in), .site-js .tiles details:not(.in), .site-js .group-aside:not(.in), .site-js .defs-board > div:not(.in), .site-js .leaves dl > div:not(.in), .site-js .qa-list > div:not(.in), .site-js .ticket > :not(.in) { opacity: 0; }
+  .site-js main > :not(.hero) .in { animation: rise 500ms var(--ease-out) backwards; animation-delay: calc(var(--d, 0) * 50ms); }
 }
-@keyframes line-up { to { transform: none; } }
-@keyframes rise { to { opacity: 1; transform: none; } }
-@keyframes drift { from { transform: scale(1.04) translateX(0); } to { transform: scale(1.1) translateX(-2%); } }
+@keyframes line-up { from { transform: translateY(105%); } }
+@keyframes rise { from { opacity: 0; transform: translateY(16px); } }
+@keyframes rise-in { from { opacity: 0; transform: translateY(16px) scale(0.98); } }
+@keyframes open-in { from { opacity: 0; transform: translateY(-4px); } }
+@keyframes pop-in { from { opacity: 0; transform: scale(0.97); } }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
 }
