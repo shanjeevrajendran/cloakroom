@@ -164,7 +164,8 @@ def main(argv=None):
                        "transcripts), with a rotate list; hints only, never values")
     e.add_argument("--since", default="", help="first day, YYYY-MM-DD")
     e.add_argument("--personal", action="store_true", help="also look for personal data (names, emails, "
-                   "addresses, account numbers) in what you typed in old Claude Code chats; slow, uses the model")
+                   "addresses, account numbers) in what you typed in old Claude Code, Codex, Cursor and Gemini chats; "
+                   "slow, uses the model")
     e.add_argument("--format", choices=["text", "json"], default="text")
     a = p.parse_args(argv)
 

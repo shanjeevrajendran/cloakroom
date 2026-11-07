@@ -158,12 +158,89 @@ def typed(rec) -> list[str]:
     return [p for p in parts if isinstance(p, str) and p.strip() and not p.lstrip().startswith("<")]
 
 
-def _typed_strings(path: Path):
-    # shortcut: Claude transcripts only; Codex, Gemini and Cursor need their own typed() for their record shapes
+def _kept(parts) -> list[str]:
+    return [p for p in parts if isinstance(p, str) and p.strip()]
+
+
+def codex_typed(rec) -> list[str]:
+    """Text the user typed in one Codex record: a UserMessage item, an older user_message event, or a line of
+    ~/.codex/history.jsonl. Not response_item lines: they repeat the same text and carry Codex's own context."""
+    if not isinstance(rec, dict):
+        return []
+    pl = rec.get("payload")
+    if rec.get("type") == "event_msg" and isinstance(pl, dict):
+        if pl.get("type") == "user_message":
+            return _kept([pl.get("message")])
+        item = pl.get("item")
+        if pl.get("type") == "item_completed" and isinstance(item, dict) and item.get("type") == "UserMessage":
+            content = item.get("content")
+            return _kept(c.get("text") for c in content if isinstance(c, dict) and c.get("type") == "text") \
+                if isinstance(content, list) else []
+        return []
+    if "type" not in rec and "session_id" in rec:  # history.jsonl: {"session_id", "ts", "text"}
+        return _kept([rec.get("text")])
+    return []
+
+
+_USER_QUERY = re.compile(r"<user_query>(.*?)</user_query>", re.S)
+
+
+def cursor_typed(rec) -> list[str]:
+    """Text the user typed in one Cursor agent-transcript record: what sits inside <user_query>; <timestamp> and
+    other tags are Cursor's own."""
+    if not isinstance(rec, dict) or rec.get("role") != "user":
+        return []
+    content = (rec.get("message") or {}).get("content")
+    if isinstance(content, str):
+        content = [{"type": "text", "text": content}]
+    if not isinstance(content, list):
+        return []
+    out = []
+    for c in content:
+        t = c.get("text") if isinstance(c, dict) and c.get("type") == "text" else None
+        if isinstance(t, str):
+            out += _USER_QUERY.findall(t) or ([] if t.lstrip().startswith("<") else [t])
+    return _kept(out)
+
+
+GEMINI_FILES = "--- Content from referenced files ---"  # Gemini CLI appends @file contents after this line
+
+
+def gemini_typed(rec) -> list[str]:
+    """Text the user typed in one Gemini CLI record (type "user"): displayContent when present (what was typed,
+    before @file expansion), else content up to the referenced-files block; a logs.json entry's "message".
+    Built from Gemini CLI's public source (chat recording), not checked against a live chat."""
+    if not isinstance(rec, dict) or rec.get("type") != "user":
+        return []
+    if isinstance(rec.get("message"), str):
+        return _kept([rec["message"]])
+    shown = rec.get("displayContent")
+    content = shown if shown else rec.get("content")
+    parts = content if isinstance(content, list) else [content]
+    out = [p if isinstance(p, str) else p.get("text") for p in parts if isinstance(p, (str, dict))]
+    if not shown:
+        out = [p.split(GEMINI_FILES)[0] if isinstance(p, str) else p for p in out]
+    return _kept(out)
+
+
+TYPED = {"claude": typed, "codex": codex_typed, "cursor": cursor_typed, "gemini": gemini_typed}
+
+
+def _typed_strings(path: Path, agent: str = "claude"):
+    read = TYPED[agent]
     with open(path, encoding="utf-8", errors="replace") as f:
+        if path.suffix == ".json":  # Gemini's older whole-file chats ({"messages": [...]}) and logs.json ([...])
+            try:
+                doc = json.load(f)
+            except ValueError:
+                return
+            recs = doc.get("messages") if isinstance(doc, dict) else doc
+            for rec in recs if isinstance(recs, list) else []:
+                yield from read(rec)
+            return
         for line in f:
             try:
-                yield from typed(json.loads(line))
+                yield from read(json.loads(line))
             except ValueError:
                 continue
 
@@ -203,8 +280,8 @@ def found(since: str = "", personal: bool = False) -> tuple[list[dict], dict]:
                                               "file": "~" + str(path)[len(home):] if str(path).startswith(home)
                                               else str(path), "date": day, "count": 0})
                     row["count"] += 1
-            if personal and agent == "claude" and path.suffix == ".jsonl":
-                for s in _typed_strings(path):
+            if personal and agent in TYPED and (agent != "claude" or path.suffix == ".jsonl"):
+                for s in _typed_strings(path, agent):
                     hits, _ = engine.detect(s, "full", cfg["allow"])
                     for f in hits:
                         if f.kind in KINDS:

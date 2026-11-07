@@ -210,3 +210,137 @@ def test_personal_without_the_model_says_so(tmp_path, monkeypatch, capsys, no_hi
     monkeypatch.setattr(engine, "detect", no_model)
     assert cli.main(["exposure", "--personal"]) == 2
     assert "--personal needs the model" in capsys.readouterr().err
+
+
+# Codex, Cursor and Gemini: only what the user typed is read for personal data. Synthetic lines in each agent's shape.
+NAME, MAIL = "Marisol Quintanilla", "marisol.q.test@example.org"
+
+
+def _typed_line(agent):
+    said = f"invoice for {NAME}, write to {MAIL}"
+    return {
+        "codex": {"type": "event_msg", "payload": {"type": "item_completed", "item": {
+            "type": "UserMessage", "content": [{"type": "text", "text": said}]}}},
+        "cursor": {"role": "user", "message": {"content": [{"type": "text", "text":
+                   f"<timestamp>Friday</timestamp>\n<user_query>\n{said}\n</user_query>"}]}},
+        "gemini": {"id": "m1", "timestamp": "2026-11-01T10:00:00Z", "type": "user", "content": [{"text": said}]},
+    }[agent]
+
+
+def _other_lines(agent):
+    """The same values in tool output, the agent's own text and the agent's injected context: never counted."""
+    both = f"{NAME} <{MAIL}>"
+    return {
+        "codex": [
+            {"type": "response_item", "payload": {"type": "message", "role": "user",
+                                                   "content": [{"type": "input_text", "text": f"say {both}"}]}},
+            {"type": "response_item", "payload": {"type": "function_call_output", "output": f"git log: {both}"}},
+            {"type": "response_item", "payload": {"type": "message", "role": "assistant",
+                                                   "content": [{"type": "output_text", "text": f"Sent to {both}"}]}},
+            {"type": "event_msg", "payload": {"type": "item_completed", "item": {
+                "type": "AgentMessage", "content": [{"type": "text", "text": f"Done, {both}"}]}}},
+            {"type": "event_msg", "payload": {"type": "agent_message", "message": f"Done, {both}"}},
+        ],
+        "cursor": [
+            {"role": "assistant", "message": {"content": [{"type": "text", "text": f"Mailing {both}"},
+                                                          {"type": "tool_use", "name": "Shell",
+                                                           "input": {"command": f"echo {both}"}}]}},
+            {"role": "user", "message": {"content": [{"type": "text",
+                                                      "text": f"<attached_files>{both}</attached_files>"}]}},
+            {"type": "turn_ended", "status": "success"},
+        ],
+        "gemini": [
+            {"type": "gemini", "content": f"Mailing {both}",
+             "toolCalls": [{"name": "run_shell_command", "result": [{"functionResponse": {"response": {
+                 "output": f"{both}"}}}]}]},
+            {"type": "info", "content": f"note {both}"},
+            {"$set": {"summary": f"chat with {both}"}},
+        ],
+    }[agent]
+
+
+def _write_chat(tmp_path, agent, lines, name="chat.jsonl"):
+    where = {"codex": tmp_path / "codex" / "sessions" / "2026" / "11" / "01",
+             "cursor": tmp_path / "home" / ".cursor" / "projects" / "p" / "agent-transcripts" / "c1",
+             "gemini": tmp_path / "gem" / ".gemini" / "tmp" / "abc123" / "chats"}[agent]
+    where.mkdir(parents=True, exist_ok=True)
+    f = where / name
+    f.write_text(json.dumps(lines) if name.endswith(".json") else "\n".join(json.dumps(x) for x in lines) + "\n")
+    os.utime(f, (time.time() - 3600,) * 2)
+    return f
+
+
+@pytest.fixture
+def typed_homes(tmp_path, monkeypatch, no_history):
+    monkeypatch.setenv("CODEX_HOME", str(tmp_path / "codex"))
+    monkeypatch.setenv("HOME", str(tmp_path / "home"))
+    monkeypatch.setenv("GEMINI_CLI_HOME", str(tmp_path / "gem"))
+
+
+@pytest.fixture
+def fake_model(monkeypatch):
+    """Finds NAME and MAIL in "full" mode only, so the test runs without the model."""
+    from cloakroom import engine, rules
+
+    def detect(text, mode="full", *a, **k):
+        if mode != "full":
+            return [], []
+        hits = [rules.Finding(text.find(v), text.find(v) + len(v), kind, "test")
+                for v, kind in ((NAME, "PERSON"), (MAIL, "EMAIL")) if v in text]
+        return hits, []
+    monkeypatch.setattr(engine, "detect", detect)
+
+
+@pytest.mark.parametrize("agent", ["codex", "cursor", "gemini"])
+def test_personal_reads_what_was_typed_in_each_agent(agent, tmp_path, typed_homes, fake_model):
+    from cloakroom import exposure
+    _write_chat(tmp_path, agent, _other_lines(agent)[:1] + [_typed_line(agent)] + _other_lines(agent)[1:])
+    rows = [r for r in exposure.build(personal=True)["history"] if r["kind"] not in exposure.KINDS]
+    assert sorted((r["agent"], r["kind"], r["count"]) for r in rows) == [(agent, "EMAIL", 1), (agent, "PERSON", 1)]
+    text = _text(exposure.build(personal=True))
+    assert MAIL not in text and NAME not in text and "Quintanilla" not in text
+
+
+@pytest.mark.parametrize("agent", ["codex", "cursor", "gemini"])
+def test_personal_skips_tool_output_and_agent_text(agent, tmp_path, typed_homes, fake_model):
+    from cloakroom import exposure
+    _write_chat(tmp_path, agent, _other_lines(agent))
+    assert not [r for r in exposure.build(personal=True)["history"] if r["kind"] not in exposure.KINDS]
+
+
+def test_codex_typed_shapes():
+    from cloakroom.exposure import codex_typed
+    assert codex_typed(_typed_line("codex")) == [f"invoice for {NAME}, write to {MAIL}"]
+    assert codex_typed({"type": "event_msg", "payload": {"type": "user_message", "message": "hi there"}}) == ["hi there"]
+    assert codex_typed({"session_id": "s", "ts": 1, "text": "from history"}) == ["from history"]  # history.jsonl
+    assert codex_typed({"type": "event_msg", "payload": {"type": "user_message", "message": "  "}}) == []
+    assert all(codex_typed(x) == [] for x in _other_lines("codex")) and codex_typed("x") == []
+
+
+def test_cursor_typed_shapes():
+    from cloakroom.exposure import cursor_typed
+    assert cursor_typed(_typed_line("cursor")) == [f"\ninvoice for {NAME}, write to {MAIL}\n"]
+    assert cursor_typed({"role": "user", "message": {"content": "plain words"}}) == ["plain words"]
+    assert cursor_typed({"role": "user", "message": {"content": [{"type": "text", "text": "<timestamp>x</timestamp>"}]}}) == []
+    assert all(cursor_typed(x) == [] for x in _other_lines("cursor")) and cursor_typed(None) == []
+
+
+def test_gemini_typed_shapes():
+    from cloakroom.exposure import gemini_typed, GEMINI_FILES
+    assert gemini_typed({"type": "user", "content": "just a string"}) == ["just a string"]
+    # @file expansion: displayContent is what was typed; without it, the referenced-file block is cut off
+    assert gemini_typed({"type": "user", "content": [{"text": f"see @a.txt\n{GEMINI_FILES}\n{MAIL}"}],
+                         "displayContent": [{"text": "see @a.txt"}]}) == ["see @a.txt"]
+    assert gemini_typed({"type": "user", "content": [{"text": f"see @a.txt\n{GEMINI_FILES}\n{MAIL}"}]}) == ["see @a.txt\n"]
+    assert gemini_typed({"type": "user", "content": [{"inlineData": {"data": "x"}}]}) == []
+    assert gemini_typed({"sessionId": "s", "messageId": 0, "type": "user", "message": "from logs.json"}) == ["from logs.json"]
+    assert all(gemini_typed(x) == [] for x in _other_lines("gemini"))
+
+
+def test_gemini_whole_file_chats(tmp_path, typed_homes, fake_model):
+    """Older Gemini CLI writes one JSON document per chat ({"messages": [...]}); logs.json is a plain list."""
+    from cloakroom import exposure
+    _write_chat(tmp_path, "gemini", {"sessionId": "s", "messages": [_typed_line("gemini")] + _other_lines("gemini")},
+                name="session-1.json")
+    rows = [r for r in exposure.build(personal=True)["history"] if r["kind"] not in exposure.KINDS]
+    assert sorted((r["kind"], r["count"]) for r in rows) == [("EMAIL", 1), ("PERSON", 1)]
