@@ -39,6 +39,8 @@ The full guide, settings and FAQ live at **[cloakroom.sh](https://cloakroom.sh)*
 
 ## Install
 
+<a id="get-started"></a>
+
 **Claude Code** (Mac, Windows, Linux). Inside Claude Code, one line at a time, then restart it:
 
 ```
@@ -48,6 +50,8 @@ The full guide, settings and FAQ live at **[cloakroom.sh](https://cloakroom.sh)*
 
 The plugin installs the `cloakroom` program on first start. Until it is ready, the agent's file reads and commands
 wait instead of passing unchecked.
+
+<a id="codex"></a><a id="gemini-cli"></a><a id="cursor"></a>
 
 **Codex, Gemini CLI, Cursor** (Mac, Linux):
 
@@ -122,6 +126,8 @@ All releases: [cloakroom.sh/releases](https://cloakroom.sh/releases) · [CHANGEL
   as you, so the agent's own sandbox is the outer wall.
 - **Not everything has a hook.** Cursor's Tab completion and the vendors' own server-side web search aren't seen.
 - **Typed prompts are stopped, not rewritten.** Agents let a hook block a prompt but not reliably change it.
+
+<a id="ways-to-run"></a>
 
 ## Commands you'll use
 
