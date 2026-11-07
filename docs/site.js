@@ -1,8 +1,8 @@
-// Candidate B behaviour: the swap switch, the ticket board, the pinned output, and section entrances.
+// Site behaviour: the swap switch, the ticket board, the pinned output, and section entrances.
 // Without this script every pane, row and fragment stays visible.
 (() => {
   const root = document.documentElement;
-  root.classList.add('bjs');
+  root.classList.add('site-js');
   const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   // The swap: On disk / What the agent sees
