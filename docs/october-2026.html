@@ -69,16 +69,16 @@
       <tr><td>LiteLLM: key used on their agent API, which returned a GitHub token</td><td>none</td></tr>
       <tr><td>LiteLLM: stolen token sends repo secrets to a webhook through CI</td><td>none</td></tr>
       <tr><td>LiteLLM: release workflow pointed at a lookalike fork</td><td>none</td></tr>
-      <tr><td>LiteLLM: wheels run remote code at every Python start</td><td>none</td></tr>
-      <tr><td>LiteLLM: stealer reads disk, browsers, cloud metadata</td><td>none</td></tr>
+      <tr><td>LiteLLM: the installed package (wheel) runs the attacker’s code at every Python start</td><td>none</td></tr>
+      <tr><td>LiteLLM: the stealing code reads the disk, browsers and the cloud server’s own settings (metadata)</td><td>none</td></tr>
       <tr><td>LiteLLM: encrypted archive sent out</td><td>none</td></tr>
       <tr><td>LiteLLM: Claude Code puts a GitHub token in a response body</td><td>reduces if it passed through a tool result; none if Claude Code added it to its own API request</td></tr>
-      <tr><td>Tensorlake: admin account commits the payload</td><td>none</td></tr>
+      <tr><td>Tensorlake: admin account commits the malicious code (payload)</td><td>none</td></tr>
       <tr><td>Tensorlake: <code>npm install</code> runs the payload</td><td>reduces (narrow: only if the agent runs the install; it masks output, doesn’t block)</td></tr>
       <tr><td>Tensorlake: reads credential files and <code>.env*</code> files</td><td>none</td></tr>
       <tr><td>Tensorlake: plants <code>.claude/settings.json</code> in repos</td><td>none</td></tr>
       <tr><td>Tensorlake: republishes the victim’s packages</td><td>none</td></tr>
-      <tr><td>Railway: privilege escalation in build infrastructure</td><td>none</td></tr>
+      <tr><td>Railway: attacker gains higher access (privilege escalation) in the build servers</td><td>none</td></tr>
       <tr><td>Railway: encrypted variables pulled, some decrypted</td><td>none</td></tr>
       <tr><td>Railway: search for AI provider key names</td><td>none</td></tr>
       <tr><td>OpenCode: legacy system behind Console reached</td><td>none</td></tr>
@@ -106,10 +106,10 @@
   <h2>Honest limits</h2>
   <ul>
     <li>Cloakroom would not have stopped any of the four incidents. Every theft step reads disk, a server or CI directly.</li>
-    <li>The only steps it touches are upstream copies: a key committed through the agent, and a token passing through tool output into model context and gateway logs. Even the commit step depends on how it was made, which LiteLLM didn’t say.</li>
+    <li>The only steps it touches are earlier copies of a key: one committed through the agent, and a token passing through tool output into what the model reads and into gateway logs. Even the commit step depends on how it was made, which LiteLLM didn’t say.</li>
     <li>Neither stealer read agent session transcripts, so keeping secrets out of transcripts would not have changed these thefts either. Both took agent credentials straight from disk, which Cloakroom’s placeholders never touch.</li>
     <li>Placeholders are restored to real values in files the agent writes, by design, and Claude Code’s session log records what was written (a known limit in the repo’s limits file). In this run the agent wrote no values into the setup file, so that path wasn’t exercised. A task that copies a key into a new file would put it back on disk and in the transcript.</li>
-    <li>The Tensorlake payload is mostly encoded, so what I know about what it reads comes from the plain strings only.</li>
+    <li>The Tensorlake malicious code is mostly encoded, so what I know about what it reads comes from the plain strings only.</li>
     <li>I found no first-hand statement from OpenCode, only users’ issues. Railway’s report is preliminary.</li>
     <li>One machine, one model, one prompt: counts can move a little between runs.</li>
   </ul>

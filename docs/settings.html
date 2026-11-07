@@ -54,7 +54,7 @@
 <section class="sec container" id="exceptions" aria-labelledby="exceptions-title">
   <h2 id="exceptions-title">Fewer false alarms: your own exceptions</h2>
   <div class="sec-body">
-    <p>Cloakroom already leaves documented examples alone (published test cards and keys, <code>example.com</code>, fictional 555 numbers, loopback addresses, UUIDs and hashes). To add your own, list them under <code>allow</code> in <code>~/.cloakroom/config.json</code>, either as exact values or as <code>re:</code> regular expressions matched against the whole value:</p>
+    <p>Cloakroom already leaves documented examples alone (published test cards and keys, <code>example.com</code>, fictional 555 numbers, your own machine’s address, UUIDs and hashes). To add your own, list them under <code>allow</code> in <code>~/.cloakroom/config.json</code>, either as exact values or as <code>re:</code> regular expressions matched against the whole value:</p>
 <pre class="cmd"><code>{
   "mode": "full",
   "allow": ["Ada Lovelace", "support@mycompany.com", "re:ACME-[0-9]{6}"]

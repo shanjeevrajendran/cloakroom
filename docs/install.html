@@ -134,7 +134,7 @@ ok   program: ~/.local/bin/cloakroom</code></pre>
         <tbody>
           <tr><td>Apple Silicon Mac, or an NVIDIA GPU</td><td><code>uv tool install "cloakroom[model,torch]"</code></td><td>Full mode (keys plus names and addresses) on the GPU, about 20 ms per check</td></tr>
           <tr><td>Any other machine (Intel Mac, most Windows and Linux)</td><td><code>uv tool install "cloakroom[model,torch]"</code>, then once: <code>cloakroom export-onnx</code> (saves a copy of the model that runs fast on a CPU)</td><td>Full mode on the CPU. Before the export it works but is slow (about 0.5 s per check); after it, about 60 ms on a modern CPU</td></tr>
-          <tr><td>Just trying it, or a CI box</td><td><code>uv tool install cloakroom</code> and <code>CLOAKROOM_MODE=rules</code></td><td>Rules only: instant, no model download, but misses names and personal data in ordinary sentences</td></tr>
+          <tr><td>Just trying it, or an automated build machine (CI)</td><td><code>uv tool install cloakroom</code> and <code>CLOAKROOM_MODE=rules</code></td><td>Rules only: instant, no model download, but misses names and personal data in ordinary sentences</td></tr>
         </tbody>
       </table>
     </div>
@@ -160,13 +160,13 @@ cloakroom check --mode rules .env</code></pre>
 </section>
 
 <section class="sec container" id="ci" aria-labelledby="ci-title">
-  <h2 id="ci-title">Headless machines, CI and testing</h2>
+  <h2 id="ci-title">Machines with no screen, automated builds (CI) and testing</h2>
   <div class="sec-body">
-<pre class="cmd"><code><span class="c"># just trying it, or a CI box: rules only, no model download</span>
+<pre class="cmd"><code><span class="c"># just trying it, or a CI machine: rules only, no model download</span>
 uv tool install cloakroom
 CLOAKROOM_MODE=rules</code></pre>
     <dl class="defs">
-      <div><dt>Vault key</dt><dd>The vault is Cloakroom’s encrypted file of the real values it hid. Its key lives in your system’s password store (Keychain, Credential Manager, Secret Service). On a machine without one, set <code>CLOAKROOM_VAULT_KEY</code> (a 256-bit key, base64 or 64 hex characters), or Cloakroom falls back to a key file readable only by you, and <code>doctor</code> says so.</dd></div>
+      <div><dt>Vault key</dt><dd>The vault is Cloakroom’s encrypted file of the real values it hid. Its key lives in your system’s password store (Keychain, Credential Manager, Secret Service). On a machine without one, set <code>CLOAKROOM_VAULT_KEY</code> (a 256-bit key, base64 or 64 hex characters). Otherwise Cloakroom uses a key file only you can read, and <code>cloakroom doctor</code> says so.</dd></div>
       <div><dt>Dry run</dt><dd><code>CLOAKROOM_DRY_RUN=1</code> lets everything through and logs what Cloakroom would have done to <code>~/.cloakroom/dry-run.log</code>. Useful for trying it on a real project before trusting it.</dd></div>
       <div><dt>Separate homes</dt><dd><code>CLOAKROOM_HOME</code> moves the config, vault and model files; <code>CLOAKROOM_PORT</code> moves the local service (default 37787).</dd></div>
     </dl>

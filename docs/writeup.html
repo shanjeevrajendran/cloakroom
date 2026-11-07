@@ -75,7 +75,7 @@ DATABASE_URL=postgres://admin:Hunter2x9@10.0.4.12/prod
 # what Claude sees
 PII_PERSON_1 called about a double charge. Reach her at PII_EMAIL_1, PII_ADDRESS_1.
 DATABASE_URL=postgres://admin:PII_SECRET_1@10.0.4.12/prod</code></pre>
-  <p>Claude can still do the job. It knows there’s a person, an email and a password, and where each one sits. It just doesn’t know the values. A value keeps the same placeholder for the whole session, so <code>PII_PERSON_1</code> in one file is the same person in the next.</p>
+  <p>Claude can still do the job. It knows there’s a person, an email and a password, and where each one sits. It just doesn’t know the values. A value keeps the same placeholder for the whole session, so the same person has the same placeholder in every file.</p>
 
   <h2>Scans and photos</h2>
   <p>A lot of personal data lives in pictures: a scanned form, a photo of an ID. Cloakroom can’t check pixels, so it reads them instead. A scanned PDF page or a photo that Claude opens goes through OCR (software that reads text out of a picture) on your own machine, and Claude gets the masked text instead of the image. The OCR models ship inside the package, so nothing is uploaded. A photo of a form that says <code>Patient: Nadia Petrov DOB 03/14/1986</code> reaches Claude as <code>Patient: PII_PERSON_1 DOB PII_DATE_1</code>.</p>
@@ -83,7 +83,7 @@ DATABASE_URL=postgres://admin:PII_SECRET_1@10.0.4.12/prod</code></pre>
 
   <h2>How the real values go back</h2>
   <p>Masking alone breaks things. If Claude writes <code>Hi PII_PERSON_1,</code> into a reply draft, that’s useless to you.</p>
-  <p>So the original values go into a vault, an encrypted file kept for the session, with the key in your OS’s secure store (Keychain on macOS, Credential Manager on Windows, Secret Service on Linux). When Claude writes a file or runs a command that contains a placeholder, the hook swaps the real value back in, locally, just before the tool runs. The draft on your disk says <code>Hi Nadia Petrov,</code>. The model never saw the name.</p>
+  <p>So the original values go into a vault: an encrypted file kept for the session. Its key sits in your system’s password store (Keychain on macOS, Credential Manager on Windows, Secret Service on Linux). When Claude writes a file or runs a command that contains a placeholder, the hook swaps the real value back in, locally, just before the tool runs. The draft on your disk says <code>Hi Nadia Petrov,</code>. The model never saw the name.</p>
   <p>Prompts are different. Claude Code lets a hook block a prompt but not rewrite it, so if you paste a key or an email straight into the chat, Cloakroom stops that prompt and tells you what it found. Put the detail in a file and ask Claude to read it instead, or start the prompt with <code>cr!</code> to send it as is.</p>
 
   <h2>Fixing false alarms</h2>
@@ -96,7 +96,7 @@ DATABASE_URL=postgres://admin:PII_SECRET_1@10.0.4.12/prod</code></pre>
   <p><strong>Restore is the hard part.</strong> Detection gets the attention, but the real work was putting values back reliably: the same placeholder everywhere in a session, the right shape for each tool’s input, and edge cases like Claude’s Edit tool checking text against the file before any hook runs.</p>
   <p><strong>If it can’t check, it waits.</strong> If Cloakroom can’t check something (the model still loading, the service down, OCR timing out), tool calls are held back rather than waved through. Prompts fall back to the fast rules, so you’re never locked out.</p>
   <p><strong>Encoded output counts.</strong> A command like <code>base64 .env</code> or <code>xxd</code> turns a secret into something no pattern matches. Cloakroom turns those dumps back into text and checks them too.</p>
-  <p><strong>Know what it isn’t.</strong> Cloakroom stops accidental exposure: the key in a file Claude happened to open, the customer list in a log. It isn’t a sandbox, and a model determined to leak data piece by piece is out of scope.</p>
+  <p><strong>Know what it isn’t.</strong> Cloakroom stops accidental exposure: the key in a file Claude happened to open, the customer list in a log. It isn’t a sandbox (a sealed-off space the AI can’t get out of), and a model set on leaking data a piece at a time is out of scope.</p>
 
   <h2>Try it</h2>
   <p>It’s open source, runs locally, needs no account, and works on macOS, Windows and Linux. Inside Claude Code:</p>
