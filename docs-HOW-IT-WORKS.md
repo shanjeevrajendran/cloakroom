@@ -17,13 +17,13 @@ browser. OCR reads text out of pictures.
   and the PII-Tracer model for names, addresses and other free-text personal data. A value found once is masked
   everywhere it repeats.
 - **Filter:** a known-safe filter leaves harmless look-alikes alone, such as documented examples: published test cards and keys, sandbox IDs,
-  reserved domains, bot and role mailboxes, loopback addresses, UUIDs and hashes, redaction markers, filler
+  reserved domains, bot and role mailboxes, your own machine's address (loopback), UUIDs and hashes, redaction markers, filler
   placeholders (`AC000…`, `sk-...`), standard numbers after RFC / ISO / ICAO / IEEE / PEP, and default dates
   (1970-01-01, 1900-01-01).
 - **Pictures:** PDFs become their text layer; scans, Read pictures and images in MCP tool results are read by local
   OCR (the `ocr` extra) and only the masked text goes to Claude. Without OCR they are held back.
-- **Put back (restore):** values go into the vault, an encrypted file kept per session (AES-GCM, key in the OS
-  secure store). When Claude
+- **Put back (restore):** values go into the vault, an encrypted file kept per session (AES-GCM, with the key in
+  your system's password store). When Claude
   writes a file or runs a command with a placeholder, the real value is put back locally. The model never sees it.
 - **Placeholders that can't be guessed (signed placeholders):** a placeholder is `PII_<KIND>_<n>_<tag>`. The tag is 6 characters (30 bits) of an HMAC
   over the vault's random id, the session and `PII_<KIND>_<n>`, keyed by a key derived from the vault key (never
@@ -160,6 +160,6 @@ to write through the shell. Cursor's Grep tool is refused when it would show fil
 What Cloakroom protects against, and what it doesn't. It stops **accidental** exposure: secrets and personal data
 in files, logs and command output an agent reads while working. It is not a sandbox (a sealed-off space the AI
 can't get out of). A prompt injection (hidden instructions in a file that steer the AI) is contained, not
-prevented: the agent only ever has placeholders, known secrets are held on the way out by any tool, and it can't
-approve its own hold, switch Cloakroom off or plant a hook. Out of scope: an injected AI determined to sneak data out through custom encodings or values built piece by piece; data you paste into prompts on purpose (prompts can be
+prevented: the agent only ever has placeholders, secrets Cloakroom has seen are held on the way out, whatever tool
+carries them, and it can't approve its own held call, switch Cloakroom off or add a hook. Out of scope: an AI taken over this way that is set on sneaking data out through its own encodings, or a value built a piece at a time; data you paste into prompts on purpose (prompts can be
 blocked, not rewritten); what other tools on your machine send elsewhere. Details: [docs-LIMITS.md](docs-LIMITS.md).

@@ -6,7 +6,7 @@
 <title>What Cloakroom would and wouldn't have done in October's incidents</title>
 <meta name="description" content="Four October 2026 incidents (LiteLLM, Tensorlake, Railway, OpenCode), step by step: what Cloakroom stops, reduces or can't touch, plus a test you can rerun.">
 <meta name="color-scheme" content="dark">
-<meta name="theme-color" content="#0a100c">
+<meta name="theme-color" content="#0f1f10">
 <link rel="canonical" href="https://cloakroom.sh/october-2026.html">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="Cloakroom">
@@ -21,20 +21,31 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 44 44'%3E%3Crect width='44' height='44' rx='9' fill='%230d1117'/%3E%3Cg fill='%2356d364' stroke='%2356d364' stroke-width='2.6' stroke-linejoin='round' stroke-linecap='round' transform='translate(4 4) scale(.82)'%3E%3Cpath d='M4 6H40V16A6 6 0 0 0 40 28V38H4V28A6 6 0 0 0 4 16Z'/%3E%3Cpath d='M14 22H30' stroke='%230d1117' stroke-dasharray='3 3'/%3E%3C/g%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Martian+Mono:wdth,wght@75..112.5,400..700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@700&family=Figtree:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 <script>document.documentElement.classList.add('js')</script>
 </head>
-<body class="t-terminal">
+<body>
 <a class="skip" href="#main">Skip to content</a>
 
-<header class="bar">
-  <div class="container bar-inner">
-    <a class="brand" href="./" aria-label="Cloakroom, home">
-      <svg viewBox="0 0 44 44" width="26" height="26" aria-hidden="true"><rect width="44" height="44" rx="9" fill="#0d1117"/><g fill="#56d364" stroke="#56d364" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round" transform="translate(4 4) scale(.82)"><path d="M4 6H40V16A6 6 0 0 0 40 28V38H4V28A6 6 0 0 0 4 16Z"/><path d="M14 22H30" stroke="#0d1117" stroke-dasharray="3 3"/></g></svg>
-      <span>Cloakroom</span>
-    </a>
-    <nav aria-label="Site">
+<header class="top">
+  <a class="brand" href="./" aria-label="Cloakroom, home">
+    <svg viewBox="0 0 44 44" width="28" height="28" aria-hidden="true"><g fill="#c6f19d" stroke="#c6f19d" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"><path d="M4 6H40V16A6 6 0 0 0 40 28V38H4V28A6 6 0 0 0 4 16Z"/><path d="M14 22H30" stroke="#0f1f10" stroke-dasharray="3 3"/></g></svg>
+    <span>Cloakroom</span>
+  </a>
+  <nav class="site" aria-label="Site">
+    <a href="install.html">Install</a>
+    <a href="commands.html">Commands</a>
+    <a href="how-it-works.html">How it works</a>
+    <a href="security.html">Security</a>
+    <a href="settings.html">Settings</a>
+    <a href="releases.html">Releases</a>
+    <a href="writing.html">Writing</a>
+    <a href="https://github.com/shanjeevrajendran/cloakroom">GitHub</a>
+  </nav>
+  <details class="menu">
+    <summary>Menu</summary>
+    <nav aria-label="Site menu">
       <a href="install.html">Install</a>
       <a href="commands.html">Commands</a>
       <a href="how-it-works.html">How it works</a>
@@ -44,7 +55,7 @@
       <a href="writing.html">Writing</a>
       <a href="https://github.com/shanjeevrajendran/cloakroom">GitHub</a>
     </nav>
-  </div>
+  </details>
 </header>
 
 <main id="main">
@@ -69,16 +80,16 @@
       <tr><td>LiteLLM: key used on their agent API, which returned a GitHub token</td><td>none</td></tr>
       <tr><td>LiteLLM: stolen token sends repo secrets to a webhook through CI</td><td>none</td></tr>
       <tr><td>LiteLLM: release workflow pointed at a lookalike fork</td><td>none</td></tr>
-      <tr><td>LiteLLM: wheels run remote code at every Python start</td><td>none</td></tr>
-      <tr><td>LiteLLM: stealer reads disk, browsers, cloud metadata</td><td>none</td></tr>
+      <tr><td>LiteLLM: the installed package (wheel) runs the attacker’s code at every Python start</td><td>none</td></tr>
+      <tr><td>LiteLLM: the stealing code reads the disk, browsers and the cloud server’s own settings (metadata)</td><td>none</td></tr>
       <tr><td>LiteLLM: encrypted archive sent out</td><td>none</td></tr>
       <tr><td>LiteLLM: Claude Code puts a GitHub token in a response body</td><td>reduces if it passed through a tool result; none if Claude Code added it to its own API request</td></tr>
-      <tr><td>Tensorlake: admin account commits the payload</td><td>none</td></tr>
+      <tr><td>Tensorlake: admin account commits the malicious code (payload)</td><td>none</td></tr>
       <tr><td>Tensorlake: <code>npm install</code> runs the payload</td><td>reduces (narrow: only if the agent runs the install; it masks output, doesn’t block)</td></tr>
       <tr><td>Tensorlake: reads credential files and <code>.env*</code> files</td><td>none</td></tr>
       <tr><td>Tensorlake: plants <code>.claude/settings.json</code> in repos</td><td>none</td></tr>
       <tr><td>Tensorlake: republishes the victim’s packages</td><td>none</td></tr>
-      <tr><td>Railway: privilege escalation in build infrastructure</td><td>none</td></tr>
+      <tr><td>Railway: attacker gains higher access (privilege escalation) in the build servers</td><td>none</td></tr>
       <tr><td>Railway: encrypted variables pulled, some decrypted</td><td>none</td></tr>
       <tr><td>Railway: search for AI provider key names</td><td>none</td></tr>
       <tr><td>OpenCode: legacy system behind Console reached</td><td>none</td></tr>
@@ -106,10 +117,10 @@
   <h2>Honest limits</h2>
   <ul>
     <li>Cloakroom would not have stopped any of the four incidents. Every theft step reads disk, a server or CI directly.</li>
-    <li>The only steps it touches are upstream copies: a key committed through the agent, and a token passing through tool output into model context and gateway logs. Even the commit step depends on how it was made, which LiteLLM didn’t say.</li>
+    <li>The only steps it touches are earlier copies of a key: one committed through the agent, and a token passing through tool output into what the model reads and into gateway logs. Even the commit step depends on how it was made, which LiteLLM didn’t say.</li>
     <li>Neither stealer read agent session transcripts, so keeping secrets out of transcripts would not have changed these thefts either. Both took agent credentials straight from disk, which Cloakroom’s placeholders never touch.</li>
     <li>Placeholders are restored to real values in files the agent writes, by design, and Claude Code’s session log records what was written (a known limit in the repo’s limits file). In this run the agent wrote no values into the setup file, so that path wasn’t exercised. A task that copies a key into a new file would put it back on disk and in the transcript.</li>
-    <li>The Tensorlake payload is mostly encoded, so what I know about what it reads comes from the plain strings only.</li>
+    <li>The Tensorlake malicious code is mostly encoded, so what I know about what it reads comes from the plain strings only.</li>
     <li>I found no first-hand statement from OpenCode, only users’ issues. Railway’s report is preliminary.</li>
     <li>One machine, one model, one prompt: counts can move a little between runs.</li>
   </ul>
@@ -123,15 +134,15 @@
 </main>
 
 <footer class="foot">
-  <div class="container foot-inner">
-    <nav aria-label="Project links">
-      <a href="https://github.com/shanjeevrajendran/cloakroom">GitHub</a>
-      <a href="https://pypi.org/project/cloakroom/">PyPI</a>
-      <a href="https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-LIMITS.md">Known limits</a>
-      <a href="https://github.com/shanjeevrajendran/cloakroom/blob/main/LICENSE">Apache-2.0</a>
-    </nav>
-    <p>Made by <a href="https://github.com/shanjeevrajendran">Shanjeev Rajendran</a>.</p>
-  </div>
+  <p>Made by <a href="https://github.com/shanjeevrajendran">Shanjeev Rajendran</a>.</p>
+  <nav aria-label="Project links">
+    <a href="https://github.com/shanjeevrajendran/cloakroom">GitHub</a>
+    <a href="https://pypi.org/project/cloakroom/">PyPI</a>
+    <a href="https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-LIMITS.md">Known limits</a>
+    <a href="https://github.com/shanjeevrajendran/cloakroom/blob/main/LICENSE">Apache-2.0</a>
+  </nav>
 </footer>
+
+<script src="site.js"></script>
 </body>
 </html>

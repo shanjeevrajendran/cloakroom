@@ -73,8 +73,8 @@ Silicon or CUDA), otherwise the ONNX export if you've made one, otherwise PyTorc
 
 Nothing changes in how you work. What you'll notice:
 
-- **Placeholders.** Values in what Claude reads show up to Claude as `PII_PERSON_1`, `PII_EMAIL_1`, `PII_SECRET_1`
-  and so on. The same value gets the same placeholder for the whole session.
+- **Placeholders.** Values in what Claude reads show up to Claude as placeholders: short labels that take each
+  value's place. The same value gets the same placeholder for the whole session.
 - **Real values come back locally.** When Claude writes a file or runs a command with a placeholder, the real
   value is put back on your machine before it runs.
 - **Short notices.** A line like `cloakroom: masked 2 PERSON, 1 EMAIL in Read output` tells you something was
@@ -119,7 +119,7 @@ by hand; it normally starts on first use), `cloakroom doctor`, `cloakroom export
 ## 6. Fewer false alarms: your own exceptions
 
 Cloakroom already leaves documented examples alone (published test cards and keys, `example.com`, fictional 555
-numbers, loopback addresses, UUIDs and hashes). To add your own, list them under `allow` in
+numbers, your own machine's address, UUIDs and hashes). To add your own, list them under `allow` in
 `~/.cloakroom/config.json`, either as exact values or as `re:` regular expressions matched against the whole value:
 
 ```json
@@ -141,9 +141,10 @@ are stored encrypted in `~/.cloakroom/rules.bin`; the `allow` list above stays y
 
 ## 7. Headless machines, CI and testing
 
-- **Vault key.** The vault key lives in the OS secure store (Keychain, Credential Manager, Secret Service). On a
-  machine without one, set `CLOAKROOM_VAULT_KEY` (a 256-bit key, base64 or 64 hex characters), or Cloakroom falls back to a key file readable only by
-  you, and `doctor` says so.
+- **Vault key.** The vault is Cloakroom's encrypted file of the real values it hid. Its key lives in your system's
+  password store (Keychain, Credential Manager, Secret Service). On a machine without one, set `CLOAKROOM_VAULT_KEY`
+  (a 256-bit key, base64 or 64 hex characters). Otherwise Cloakroom uses a key file only you can read, and
+  `cloakroom doctor` says so.
 - **Dry run.** `CLOAKROOM_DRY_RUN=1` lets everything through and logs what Cloakroom would have done to
   `~/.cloakroom/dry-run.log`. Useful for trying it on a real project before trusting it.
 - **Separate homes.** `CLOAKROOM_HOME` moves the config, vault and model files; `CLOAKROOM_PORT` moves the local
@@ -163,7 +164,7 @@ are stored encrypted in `~/.cloakroom/rules.bin`; the `allow` list above stays y
 | ONNX variant | `CLOAKROOM_ONNX` | `fp32` | `fp32`, `int8` |
 | ONNX folder | `CLOAKROOM_ONNX_DIR` | `~/.cloakroom/onnx/<model version>` | a path |
 | home | `CLOAKROOM_HOME` | `~/.cloakroom` | a path |
-| vault key | `CLOAKROOM_VAULT_KEY` | OS secure store | 256-bit key, base64 or hex |
+| vault key | `CLOAKROOM_VAULT_KEY` | your system's password store | 256-bit key, base64 or hex |
 | dry run | `CLOAKROOM_DRY_RUN` | off | any value turns it on |
 
 ## 9. When something's wrong

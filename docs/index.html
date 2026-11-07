@@ -4,51 +4,55 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Cloakroom: keep secrets and personal data out of your AI coding agent</title>
-<meta name="description" content="Free and open source. Cloakroom masks API keys, secrets and personal data on your own machine before your AI coding agent sees them. Works with Claude Code, Codex CLI, Gemini CLI and Cursor’s terminal agent.">
+<meta name="description" content="Free and open source. Cloakroom masks API keys, secrets and personal data on your own machine before your AI coding agent sees them. Works with Claude Code, Codex CLI, Gemini CLI and Cursor (editor and command-line agent).">
 <meta name="author" content="Shanjeev Rajendran">
 <meta name="color-scheme" content="dark">
-<meta name="theme-color" content="#0a100c">
+<meta name="theme-color" content="#0f1f10">
 <link rel="canonical" href="https://cloakroom.sh/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Cloakroom">
 <meta property="og:title" content="Cloakroom: keep secrets and personal data out of your AI coding agent">
-<meta property="og:description" content="Free and open source. Cloakroom masks API keys, secrets and personal data on your own machine before your AI coding agent sees them. Works with Claude Code, Codex CLI, Gemini CLI and Cursor’s terminal agent.">
+<meta property="og:description" content="Free and open source. Cloakroom masks API keys, secrets and personal data on your own machine before your AI coding agent sees them. Works with Claude Code, Codex CLI, Gemini CLI and Cursor (editor and command-line agent).">
 <meta property="og:url" content="https://cloakroom.sh/">
 <meta property="og:image" content="https://raw.githubusercontent.com/shanjeevrajendran/cloakroom/main/assets/social-card.png">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Cloakroom: keep secrets and personal data out of your AI coding agent">
-<meta name="twitter:description" content="Free and open source. Cloakroom masks API keys, secrets and personal data on your own machine before your AI coding agent sees them. Works with Claude Code, Codex CLI, Gemini CLI and Cursor’s terminal agent.">
+<meta name="twitter:description" content="Free and open source. Cloakroom masks API keys, secrets and personal data on your own machine before your AI coding agent sees them. Works with Claude Code, Codex CLI, Gemini CLI and Cursor (editor and command-line agent).">
 <meta name="twitter:image" content="https://raw.githubusercontent.com/shanjeevrajendran/cloakroom/main/assets/social-card.png">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 44 44'%3E%3Crect width='44' height='44' rx='9' fill='%230d1117'/%3E%3Cg fill='%2356d364' stroke='%2356d364' stroke-width='2.6' stroke-linejoin='round' stroke-linecap='round' transform='translate(4 4) scale(.82)'%3E%3Cpath d='M4 6H40V16A6 6 0 0 0 40 28V38H4V28A6 6 0 0 0 4 16Z'/%3E%3Cpath d='M14 22H30' stroke='%230d1117' stroke-dasharray='3 3'/%3E%3C/g%3E%3C/svg%3E">
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Cloakroom","description":"Free and open source. Cloakroom masks API keys, secrets and personal data on your own machine before your AI coding agent sees them. Works with Claude Code, Codex CLI, Gemini CLI and Cursor’s terminal agent.","applicationCategory":"SecurityApplication","operatingSystem":"macOS, Windows, Linux","license":"https://www.apache.org/licenses/LICENSE-2.0","url":"https://cloakroom.sh/","codeRepository":"https://github.com/shanjeevrajendran/cloakroom","author":{"@type":"Person","name":"Shanjeev Rajendran","url":"https://shanjeevrajendran.github.io/"},"sameAs":["https://github.com/shanjeevrajendran/cloakroom","https://pypi.org/project/cloakroom/"],"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
+{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Cloakroom","description":"Free and open source. Cloakroom masks API keys, secrets and personal data on your own machine before your AI coding agent sees them. Works with Claude Code, Codex CLI, Gemini CLI and Cursor (editor and command-line agent).","applicationCategory":"SecurityApplication","operatingSystem":"macOS, Windows, Linux","license":"https://www.apache.org/licenses/LICENSE-2.0","url":"https://cloakroom.sh/","codeRepository":"https://github.com/shanjeevrajendran/cloakroom","author":{"@type":"Person","name":"Shanjeev Rajendran","url":"https://shanjeevrajendran.github.io/"},"sameAs":["https://github.com/shanjeevrajendran/cloakroom","https://pypi.org/project/cloakroom/"],"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
 </script>
 <script type="application/ld+json">
-{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Does Cloakroom send my data anywhere?", "acceptedAnswer": {"@type": "Answer", "text": "No. It downloads the detection model once from Hugging Face, and everything else runs on your own machine."}}, {"@type": "Question", "name": "What does it mask?", "acceptedAnswer": {"@type": "Answer", "text": "API keys, secrets and personal data such as names, emails and addresses. Scanned pages and photos are read on your machine and masked like any other file."}}, {"@type": "Question", "name": "Does the agent still work normally?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. The agent works with placeholders like PII_PERSON_1, and the real values are put back, locally, in the files Claude writes."}}, {"@type": "Question", "name": "What happens when my prompt contains a secret?", "acceptedAnswer": {"@type": "Answer", "text": "A prompt can be blocked but not rewritten, so Cloakroom stops it and tells you what it found. Put the detail in a file and ask Claude to read it instead."}}, {"@type": "Question", "name": "Does Cloakroom work with Codex, Gemini CLI or Cursor?", "acceptedAnswer": {"@type": "Answer", "text": "Yes, on Mac and Linux: run cloakroom install codex, cloakroom install gemini or cloakroom install cursor (Cursor’s terminal agent; the editor isn’t checked yet). Claude Code works on Mac, Linux and Windows."}}, {"@type": "Question", "name": "Can the agent switch Cloakroom off?", "acceptedAnswer": {"@type": "Answer", "text": "No. It can't approve its own held call, remove Cloakroom, or add a hook or MCP server to its config without you: those wait for you to type cr: allow, or for your own terminal."}}, {"@type": "Question", "name": "What is stored and what leaves my machine?", "acceptedAnswer": {"@type": "Answer", "text": "The Security model page at https://cloakroom.sh/security.html lists what is stored, where, what leaves your machine and what it cannot catch."}}, {"@type": "Question", "name": "What doesn't it protect?", "acceptedAnswer": {"@type": "Answer", "text": "It stops accidental leaks, like a key in a file the AI happened to open. It isn't a sandbox that walls the AI off. Out of scope: an AI steered by hidden instructions (a prompt injection) that leaks data piece by piece; Cloakroom contains the rest: the AI only has placeholders, known secrets are held on the way out, and it can't approve its own hold or switch Cloakroom off; what you type into a prompt, which Cloakroom can stop but not rewrite; and Claude Code's own logs on your disk."}}]}
+{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Does Cloakroom send my data anywhere?", "acceptedAnswer": {"@type": "Answer", "text": "No. It downloads its AI model once from Hugging Face, and everything else runs on your own machine."}}, {"@type": "Question", "name": "What does it mask?", "acceptedAnswer": {"@type": "Answer", "text": "API keys, passwords, tokens and personal data such as names, emails and addresses. Text in scanned pages and photos is read on your machine and hidden like any other file."}}, {"@type": "Question", "name": "Does the agent still work normally?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. The agent works with placeholders, and the real values are put back, on your machine, in the files the agent writes."}}, {"@type": "Question", "name": "What happens when my prompt contains a secret?", "acceptedAnswer": {"@type": "Answer", "text": "Cloakroom can stop a prompt but can’t edit it, so it stops it and tells you what it found. Put the detail in a file and ask the agent to read it instead."}}, {"@type": "Question", "name": "Does Cloakroom work with Codex, Gemini CLI or Cursor?", "acceptedAnswer": {"@type": "Answer", "text": "Yes, on Mac and Linux: run cloakroom install codex, cloakroom install gemini or cloakroom install cursor (Cursor’s editor and command-line agent; Tab completion isn’t covered, and typed prompts are checked in the editor only). Claude Code works on Mac, Linux and Windows."}}, {"@type": "Question", "name": "Can the agent switch Cloakroom off?", "acceptedAnswer": {"@type": "Answer", "text": "No. It can’t approve a call Cloakroom held, remove Cloakroom, or add a hook (a command it runs by itself) or an MCP server (an add-on tool) to its settings. Those wait until you type cr: allow, or run the command in your own terminal."}}, {"@type": "Question", "name": "What is stored and what leaves my machine?", "acceptedAnswer": {"@type": "Answer", "text": "The Security page lists what Cloakroom keeps, where it keeps it, what leaves your machine and what it cannot catch."}}, {"@type": "Question", "name": "What doesn't it protect?", "acceptedAnswer": {"@type": "Answer", "text": "It stops accidental leaks, like a key in a file the agent happened to open. It isn’t a sandbox (a sealed-off space the agent can’t get out of). Out of scope: an agent taken over by hidden instructions (a prompt injection) that sneaks data out a piece at a time. Cloakroom limits the rest of what such an agent can do: it only has placeholders, secrets Cloakroom has seen are held on the way out, and it can’t approve its own held call or switch Cloakroom off; what you type into a prompt, which Cloakroom can stop but not edit; Claude Code’s own logs on your disk. The full list: What it cannot catch."}}]}
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Martian+Mono:wdth,wght@75..112.5,400..700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@700&family=Figtree:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 <script>document.documentElement.classList.add('js')</script>
-<style>
-/* home: three feature cards, two across */
-.feats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.feat:nth-child(3n + 1) { border-left: 0; padding-left: 0; }
-.feat:nth-child(2) { border-left: var(--rule-hair) solid var(--color-rule); padding-left: var(--space-lg); }
-@media (max-width: 60rem) { .feats { grid-template-columns: minmax(0, 1fr); } .feat:nth-child(2) { border-left: 0; padding-left: 0; } }
-</style>
 </head>
-<body class="t-terminal">
+<body>
 <a class="skip" href="#main">Skip to content</a>
 
-<header class="bar">
-  <div class="container bar-inner">
-    <a class="brand" href="#top" aria-label="Cloakroom, back to top">
-      <svg viewBox="0 0 44 44" width="26" height="26" aria-hidden="true"><rect width="44" height="44" rx="9" fill="#0d1117"/><g fill="#56d364" stroke="#56d364" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round" transform="translate(4 4) scale(.82)"><path d="M4 6H40V16A6 6 0 0 0 40 28V38H4V28A6 6 0 0 0 4 16Z"/><path d="M14 22H30" stroke="#0d1117" stroke-dasharray="3 3"/></g></svg>
-      <span>Cloakroom</span>
-    </a>
-    <nav aria-label="Site">
+<header class="top">
+  <a class="brand" href="#top" aria-label="Cloakroom, back to top">
+    <svg viewBox="0 0 44 44" width="28" height="28" aria-hidden="true"><g fill="#c6f19d" stroke="#c6f19d" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"><path d="M4 6H40V16A6 6 0 0 0 40 28V38H4V28A6 6 0 0 0 4 16Z"/><path d="M14 22H30" stroke="#0f1f10" stroke-dasharray="3 3"/></g></svg>
+    <span>Cloakroom</span>
+  </a>
+  <nav class="site" aria-label="Site">
+    <a href="install.html">Install</a>
+    <a href="commands.html">Commands</a>
+    <a href="how-it-works.html">How it works</a>
+    <a href="security.html">Security</a>
+    <a href="settings.html">Settings</a>
+    <a href="releases.html">Releases</a>
+    <a href="writing.html">Writing</a>
+    <a href="https://github.com/shanjeevrajendran/cloakroom">GitHub</a>
+  </nav>
+  <details class="menu">
+    <summary>Menu</summary>
+    <nav aria-label="Site menu">
       <a href="install.html">Install</a>
       <a href="commands.html">Commands</a>
       <a href="how-it-works.html">How it works</a>
@@ -58,131 +62,176 @@
       <a href="writing.html">Writing</a>
       <a href="https://github.com/shanjeevrajendran/cloakroom">GitHub</a>
     </nav>
-  </div>
+  </details>
 </header>
 
 <main id="main">
 
-<div class="top container">
-<section class="hero" id="top">
-  <h1>Keeps your secrets out of AI coding agents</h1>
-  <p class="lead">Cloakroom swaps your secrets and personal data for placeholders before your AI coding agent sees them, and puts the real values back in the files it writes.</p>
-  <div class="tabs" data-tabs>
-    <div class="tablist" role="tablist" aria-label="Install for your agent">
-      <button type="button" role="tab" id="tab-claude" aria-controls="panel-claude" aria-selected="true">Claude Code</button>
-      <button type="button" role="tab" id="tab-codex" aria-controls="panel-codex" aria-selected="false">Codex CLI</button>
-      <button type="button" role="tab" id="tab-gemini" aria-controls="panel-gemini" aria-selected="false">Gemini CLI</button>
-      <button type="button" role="tab" id="tab-cursor" aria-controls="panel-cursor" aria-selected="false">Cursor</button>
-    </div>
-    <div class="tabpanel" role="tabpanel" id="panel-claude" aria-labelledby="tab-claude">
-      <p class="tab-note">Mac, Windows and Linux. Inside Claude Code:</p>
-      <div class="cmd-row"><pre><code>/plugin marketplace add shanjeevrajendran/cloakroom
+<section class="hero" id="top" aria-labelledby="hero-title">
+  <div class="hero-copy">
+    <h1 id="hero-title" class="lines"><span class="line"><span data-line style="--i:0">Your agent sees the code,</span></span> <span class="line"><span data-line style="--i:1">not your secrets</span></span></h1>
+    <p class="lead" data-rise>Cloakroom swaps your secrets and personal data for placeholders before your AI coding agent sees them, and puts the real values back in the files it writes.</p>
+    <div class="tabs" data-tabs data-ui data-rise>
+      <div class="tablist" role="tablist" aria-label="Install for your agent">
+        <button type="button" role="tab" id="tab-claude" aria-controls="panel-claude" aria-selected="true">Claude Code</button>
+        <button type="button" role="tab" id="tab-codex" aria-controls="panel-codex" aria-selected="false">Codex CLI</button>
+        <button type="button" role="tab" id="tab-gemini" aria-controls="panel-gemini" aria-selected="false">Gemini CLI</button>
+        <button type="button" role="tab" id="tab-cursor" aria-controls="panel-cursor" aria-selected="false">Cursor</button>
+      </div>
+      <div class="tabpanel" role="tabpanel" id="panel-claude" aria-labelledby="tab-claude">
+        <p class="tab-note">Mac, Windows and Linux. Inside Claude Code:</p>
+        <div class="cmd-row"><pre><code>/plugin marketplace add shanjeevrajendran/cloakroom
 /plugin install cloakroom@cloakroom</code></pre><button type="button" class="copy">Copy</button></div>
-    </div>
-    <div class="tabpanel" role="tabpanel" id="panel-codex" aria-labelledby="tab-codex">
-      <p class="tab-note">Mac and Linux. In a terminal:</p>
-      <div class="cmd-row"><pre><code>uv tool install "cloakroom[model,torch,ocr]"
+      </div>
+      <div class="tabpanel" role="tabpanel" id="panel-codex" aria-labelledby="tab-codex">
+        <p class="tab-note">Mac and Linux. In a terminal:</p>
+        <div class="cmd-row"><pre><code>uv tool install "cloakroom[model,torch,ocr]"
 cloakroom install codex</code></pre><button type="button" class="copy">Copy</button></div>
-      <p class="tab-note">The part in brackets adds the AI model that finds names and addresses on your machine, and reading text in screenshots and scans.</p>
-    </div>
-    <div class="tabpanel" role="tabpanel" id="panel-gemini" aria-labelledby="tab-gemini">
-      <p class="tab-note">Mac and Linux. In a terminal:</p>
-      <div class="cmd-row"><pre><code>uv tool install "cloakroom[model,torch,ocr]"
+        <p class="tab-note">The part in brackets adds the AI model that finds names and addresses on your machine, and reading text in screenshots and scans.</p>
+      </div>
+      <div class="tabpanel" role="tabpanel" id="panel-gemini" aria-labelledby="tab-gemini">
+        <p class="tab-note">Mac and Linux. In a terminal:</p>
+        <div class="cmd-row"><pre><code>uv tool install "cloakroom[model,torch,ocr]"
 cloakroom install gemini</code></pre><button type="button" class="copy">Copy</button></div>
-      <p class="tab-note">The part in brackets adds the AI model that finds names and addresses on your machine, and reading text in screenshots and scans.</p>
-    </div>
-    <div class="tabpanel" role="tabpanel" id="panel-cursor" aria-labelledby="tab-cursor">
-      <p class="tab-note">Cursor’s terminal agent (<code>agent</code>), not the editor. Mac and Linux.</p>
-      <div class="cmd-row"><pre><code>uv tool install "cloakroom[model,torch,ocr]"
+        <p class="tab-note">The part in brackets adds the AI model that finds names and addresses on your machine, and reading text in screenshots and scans.</p>
+      </div>
+      <div class="tabpanel" role="tabpanel" id="panel-cursor" aria-labelledby="tab-cursor">
+        <p class="tab-note">Cursor’s editor and its command-line agent (<code>agent</code>). Tab completion isn’t covered. Mac and Linux.</p>
+        <div class="cmd-row"><pre><code>uv tool install "cloakroom[model,torch,ocr]"
 cloakroom install cursor</code></pre><button type="button" class="copy">Copy</button></div>
-      <p class="tab-note">The part in brackets adds the AI model that finds names and addresses on your machine, and reading text in screenshots and scans.</p>
+        <p class="tab-note">The part in brackets adds the AI model that finds names and addresses on your machine, and reading text in screenshots and scans.</p>
+      </div>
     </div>
+    <p class="hero-more" id="install" data-rise>Steps for every agent, what the first start does, and fixes: <a href="install.html">Install Cloakroom</a>.</p>
+    <p class="actions" data-rise>
+      <a class="btn" href="https://github.com/shanjeevrajendran/cloakroom">Star on GitHub</a>
+      <a class="text-link" href="https://www.youtube.com/shorts/U9lN4emgeE0">40-second demo (Claude Code)</a>
+    </p>
   </div>
-  <p class="hero-more" id="install">Steps for every agent, what the first start does, and fixes: <a href="install.html">Install Cloakroom</a>.</p>
-  <p class="actions">
-    <a class="btn" href="https://github.com/shanjeevrajendran/cloakroom">Star on GitHub</a>
-    <a class="btn btn--quiet" href="https://www.youtube.com/shorts/U9lN4emgeE0">40-second demo (Claude Code)</a>
-  </p>
-</section>
-
-<section class="compare" aria-labelledby="compare-title">
-  <h2 id="compare-title">What the agent sees</h2>
-  <div class="panes">
-    <figure class="pane pane--disk">
-      <figcaption>On disk</figcaption>
+  <div class="hero-stage">
+    <div class="swap" data-ui data-swap data-show="disk">
+      <div class="swap-switch" role="group" aria-label="Show the sample">
+        <button type="button" data-set="disk" aria-pressed="true">On disk</button>
+        <button type="button" data-set="seen" aria-pressed="false">What the agent sees</button>
+      </div>
+      <figure class="pane pane--disk" data-pane="disk">
+        <figcaption>On disk</figcaption>
 <pre><code><span class="ln"><mark class="real">Nadia Petrov</mark> called about a double charge. Reach her at <mark class="real">nadia.petrov@quillmere.net</mark>, <mark class="real">18 Larkspur Lane, Charlotte NC</mark>.</span><span class="ln">DATABASE_URL=postgres://admin:<mark class="real">Hunter2x9</mark>@10.0.4.12/prod</span></code></pre>
-    </figure>
-    <figure class="pane pane--seen">
-      <figcaption>What the agent sees</figcaption>
+      </figure>
+      <figure class="pane pane--seen" data-pane="seen">
+        <figcaption>What the agent sees</figcaption>
 <pre><code><span class="ln"><mark class="ph">PII_PERSON_1</mark> called about a double charge. Reach her at <mark class="ph">PII_EMAIL_1</mark>, <mark class="ph">PII_ADDRESS_1</mark>.</span><span class="ln">DATABASE_URL=postgres://admin:<mark class="ph">PII_SECRET_1</mark>@10.0.4.12/prod</span></code></pre>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<section class="compare" id="sees" aria-labelledby="compare-title">
+  <div class="frame">
+    <div class="board-top">
+      <h2 id="compare-title" data-rise>What the agent sees</h2>
+      <figure class="token" data-rise>
+        <img src="img/cloakroom-token.jpg" width="1024" height="768" loading="lazy" decoding="async" alt="A copper cloakroom token stamped 088, lying on two folded paper programmes.">
+        <figcaption>A cloakroom token: you keep the number, the coat stays behind the counter.</figcaption>
+      </figure>
+    </div>
+    <ul class="board" data-ui data-board>
+      <li class="row is-open"><button type="button" class="row-head" aria-expanded="true" aria-controls="row-person"><code class="tk">PII_PERSON_1</code><span class="kind">Person</span><span class="state">On your machine</span></button>
+        <div class="row-more" id="row-person"><p>On disk: <span class="was">Nadia Petrov</span></p><p>In the support note</p></div></li>
+      <li class="row"><button type="button" class="row-head" aria-expanded="false" aria-controls="row-email"><code class="tk">PII_EMAIL_1</code><span class="kind">Email</span><span class="state">On your machine</span></button>
+        <div class="row-more" id="row-email"><p>On disk: <span class="was">nadia.petrov@quillmere.net</span></p><p>In the support note</p></div></li>
+      <li class="row"><button type="button" class="row-head" aria-expanded="false" aria-controls="row-address"><code class="tk">PII_ADDRESS_1</code><span class="kind">Address</span><span class="state">On your machine</span></button>
+        <div class="row-more" id="row-address"><p>On disk: <span class="was">18 Larkspur Lane, Charlotte NC</span></p><p>In the support note</p></div></li>
+      <li class="row"><button type="button" class="row-head" aria-expanded="false" aria-controls="row-secret"><code class="tk">PII_SECRET_1</code><span class="kind">Password</span><span class="state">On your machine</span></button>
+        <div class="row-more" id="row-secret"><p>On disk: <span class="was">Hunter2x9</span></p><p>In the config line</p></div></li>
+    </ul>
+    <div class="notes">
+      <p class="note" data-rise>Secrets means API keys, passwords and tokens. Each highlighted label the agent sees is a placeholder: it takes the real value’s place. The agent works with the placeholder; the real value stays on your machine.</p>
+      <p class="note" data-rise>The first start downloads a small AI model once, to spot names and addresses (about 1 GB on a Mac, up to about 4 GB elsewhere). After that, nothing leaves your machine.</p>
+      <p class="note" data-rise>The agent can still do the job. It knows there’s a person, an email and a password, and where each one sits. It just doesn’t know the values.</p>
+    </div>
+  </div>
+</section>
+
+<section class="features" aria-labelledby="feats-title">
+  <div class="feat-field">
+    <figure class="out" data-ui data-out data-state="read" aria-live="polite">
+      <figcaption><span data-for="read">What the agent reads</span><span data-for="write">Written on your machine</span><span data-for="learn">The dashboard</span></figcaption>
+      <pre data-for="read"><code>DATABASE_URL=postgres://admin:<mark class="ph">PII_SECRET_1</mark>@10.0.4.12/prod</code></pre>
+      <pre data-for="write"><code>DATABASE_URL=postgres://admin:<mark class="real">Hunter2x9</mark>@10.0.4.12/prod</code></pre>
+      <img data-for="learn" src="https://raw.githubusercontent.com/shanjeevrajendran/cloakroom/main/assets/dashboard-preview.png" width="2800" height="2000" loading="lazy" decoding="async" alt="The Cloakroom dashboard: a list of recent alerts, each showing the tool, the file and what was masked, with labels like Correct, To review and Missed something, and a panel that turns your labels into suggested rules to approve or dismiss.">
     </figure>
   </div>
-  <p class="note">Secrets means API keys, passwords and tokens. A placeholder is a label like PII_PERSON_1 (PII is short for personal data). The agent works with the label; the real value stays on your machine.</p>
-  <p class="note">The first start downloads a small AI model once, to spot names and addresses (about 1 GB on a Mac, up to about 4 GB elsewhere). After that, nothing leaves your machine.</p>
-  <p class="note">The agent can still do the job. It knows there’s a person, an email and a password, and where each one sits. It just doesn’t know the values.</p>
-</section>
-</div>
-
-<section class="features container" aria-label="What it does">
-  <div class="feats">
-  <article class="feat">
-    <h3>Hides your data before the agent sees it</h3>
-    <p>Keys and passwords with a known pattern, card and ID numbers, and names, emails, addresses and birth dates in ordinary sentences. A small AI model on your machine finds the ones with no fixed pattern.</p>
-  </article>
-  <article class="feat">
-    <h3>Puts the real values back in files it writes</h3>
-    <p>Each value it finds is swapped for a placeholder. When the agent writes a file or runs a command that contains a placeholder, the real value goes back in, on your machine, just before it runs.</p>
-  </article>
-  <article class="feat feat--lead">
-    <div class="feat-text">
-      <h3>Learns from your corrections</h3>
-      <p>When it hides something harmless (a false alarm), mark it once in the dashboard and a rule stops it next time. The AI model itself never changes. Your labels become rules that run before it.</p>
-    </div>
-    <img src="https://raw.githubusercontent.com/shanjeevrajendran/cloakroom/main/assets/dashboard-preview.png" width="2800" height="2000" loading="lazy" decoding="async" alt="The Cloakroom dashboard: a list of recent alerts, each showing the tool, the file and what was masked, with labels like Correct, To review and Missed something, and a panel that turns your labels into suggested rules to approve or dismiss.">
-  </article>
+  <div class="feat-col">
+    <h2 id="feats-title" data-rise>What it does</h2>
+    <article class="feat" data-step="read">
+      <h3 data-rise>Hides your data before the agent sees it</h3>
+      <p data-rise>Keys and passwords with a known pattern, card and ID numbers, and names, emails, addresses and birth dates in ordinary sentences. A small AI model on your machine finds the ones with no fixed pattern.</p>
+      <button type="button" class="ctl" data-set="read" aria-pressed="true">Show what the agent reads</button>
+      <figure class="mini" data-ui><figcaption>What the agent reads</figcaption><pre><code>DATABASE_URL=postgres://admin:<mark class="ph">PII_SECRET_1</mark>@10.0.4.12/prod</code></pre></figure>
+    </article>
+    <article class="feat" data-step="write">
+      <h3 data-rise>Puts the real values back in files it writes</h3>
+      <p data-rise>Each value it finds is swapped for a placeholder. When the agent writes a file or runs a command that contains a placeholder, the real value goes back in, on your machine, just before it runs.</p>
+      <button type="button" class="ctl" data-set="write" aria-pressed="false">Show the file it writes</button>
+      <figure class="mini" data-ui><figcaption>Written on your machine</figcaption><pre><code>DATABASE_URL=postgres://admin:<mark class="real">Hunter2x9</mark>@10.0.4.12/prod</code></pre></figure>
+    </article>
+    <article class="feat" data-step="learn">
+      <h3 data-rise>Learns from your corrections</h3>
+      <p data-rise>When it hides something harmless (a false alarm), mark it once in the dashboard and a rule stops it next time. The AI model itself never changes. Your labels become rules that run before it.</p>
+      <button type="button" class="ctl" data-set="learn" aria-pressed="false">Show the dashboard</button>
+      <figure class="mini mini--pic"><img src="https://raw.githubusercontent.com/shanjeevrajendran/cloakroom/main/assets/dashboard-preview.png" width="2800" height="2000" loading="lazy" decoding="async" alt="The Cloakroom dashboard: a list of recent alerts, each showing the tool, the file and what was masked, with labels like Correct, To review and Missed something, and a panel that turns your labels into suggested rules to approve or dismiss."></figure>
+    </article>
   </div>
 </section>
 
-<section class="faq container" id="faq" aria-labelledby="faq-title">
-  <h2 id="faq-title">Common questions</h2>
-  <div class="qa">
-  <h3>Does Cloakroom send my data anywhere?</h3>
-  <p>No. It downloads its AI model once from Hugging Face, and everything else runs on your own machine.</p>
-  <h3>What does it mask?</h3>
-  <p>API keys, passwords, tokens and personal data such as names, emails and addresses. Text in scanned pages and photos is read on your machine and hidden like any other file.</p>
-  <h3>Does the agent still work normally?</h3>
-  <p>Yes. The agent works with placeholders like PII_PERSON_1, and the real values are put back, locally, in the files the agent writes.</p>
-  <h3>What happens when my prompt contains a secret?</h3>
-  <p>Cloakroom can stop a prompt but can’t edit it, so it stops it and tells you what it found. Put the detail in a file and ask the agent to read it instead.</p>
-  <h3>Does Cloakroom work with Codex, Gemini CLI or Cursor?</h3>
-  <p>Yes, on Mac and Linux: run cloakroom install codex, cloakroom install gemini or cloakroom install cursor (Cursor’s terminal agent; the editor isn’t checked yet). Claude Code works on Mac, Linux and Windows.</p>
-  <h3>Can the agent switch Cloakroom off?</h3>
-  <p>No. It can’t approve its own held call, remove Cloakroom, or add a hook or MCP server to its config without you: those wait for you to type cr: allow, or for your own terminal.</p>
-  <h3>What is stored and what leaves my machine?</h3>
-  <p>The <a href="security.html">Security model</a> lists what is stored, where, what leaves your machine and what it cannot catch.</p>
-  <h3>What doesn't it protect?</h3>
-  <p>It stops accidental leaks, like a key in a file the agent happened to open. It isn’t a sandbox that walls the agent off. Out of scope:</p>
-  <ul>
-    <li>an agent steered by hidden instructions (a prompt injection) that leaks data piece by piece; Cloakroom contains the rest: the agent only has placeholders, known secrets are held on the way out, and it can’t approve its own hold or switch Cloakroom off</li>
-    <li>what you type into a prompt, which Cloakroom can stop but not edit</li>
-    <li>Claude Code’s own logs on your disk</li>
-  </ul>
-  <p>The full list: <a href="security.html#cannot">What it cannot catch</a>.</p>
+<section class="faq" id="faq" aria-labelledby="faq-title">
+  <h2 id="faq-title" data-rise>Common questions</h2>
+  <div class="tiles">
+    <details name="faq" open><summary><h3>Does Cloakroom send my data anywhere?</h3><span class="plus" aria-hidden="true"></span></summary>
+      <div class="answer"><p>No. It downloads its AI model once from Hugging Face, and everything else runs on your own machine.</p></div></details>
+    <details name="faq"><summary><h3>What does it mask?</h3><span class="plus" aria-hidden="true"></span></summary>
+      <div class="answer"><p>API keys, passwords, tokens and personal data such as names, emails and addresses. Text in scanned pages and photos is read on your machine and hidden like any other file.</p></div></details>
+    <details name="faq"><summary><h3>Does the agent still work normally?</h3><span class="plus" aria-hidden="true"></span></summary>
+      <div class="answer"><p>Yes. The agent works with placeholders, and the real values are put back, on your machine, in the files the agent writes.</p></div></details>
+    <details name="faq"><summary><h3>What happens when my prompt contains a secret?</h3><span class="plus" aria-hidden="true"></span></summary>
+      <div class="answer"><p>Cloakroom can stop a prompt but can’t edit it, so it stops it and tells you what it found. Put the detail in a file and ask the agent to read it instead.</p></div></details>
+    <details name="faq"><summary><h3>Does Cloakroom work with Codex, Gemini CLI or Cursor?</h3><span class="plus" aria-hidden="true"></span></summary>
+      <div class="answer"><p>Yes, on Mac and Linux: run cloakroom install codex, cloakroom install gemini or cloakroom install cursor (Cursor’s editor and command-line agent; Tab completion isn’t covered, and typed prompts are checked in the editor only). Claude Code works on Mac, Linux and Windows.</p></div></details>
+    <details name="faq"><summary><h3>Can the agent switch Cloakroom off?</h3><span class="plus" aria-hidden="true"></span></summary>
+      <div class="answer"><p>No. It can’t approve a call Cloakroom held, remove Cloakroom, or add a hook (a command it runs by itself) or an MCP server (an add-on tool) to its settings. Those wait until you type cr: allow, or run the command in your own terminal.</p></div></details>
+    <details name="faq"><summary><h3>What is stored and what leaves my machine?</h3><span class="plus" aria-hidden="true"></span></summary>
+      <div class="answer"><p>The <a href="security.html">Security page</a> lists what Cloakroom keeps, where it keeps it, what leaves your machine and what it cannot catch.</p></div></details>
+    <details name="faq"><summary><h3>What doesn't it protect?</h3><span class="plus" aria-hidden="true"></span></summary>
+      <div class="answer">
+        <p>It stops accidental leaks, like a key in a file the agent happened to open. It isn’t a sandbox (a sealed-off space the agent can’t get out of). Out of scope:</p>
+        <ul>
+          <li>an agent taken over by hidden instructions (a prompt injection) that sneaks data out a piece at a time. Cloakroom limits the rest of what such an agent can do: it only has placeholders, secrets Cloakroom has seen are held on the way out, and it can’t approve its own held call or switch Cloakroom off</li>
+          <li>what you type into a prompt, which Cloakroom can stop but not edit</li>
+          <li>Claude Code’s own logs on your disk</li>
+        </ul>
+        <p>The full list: <a href="security.html#cannot">What it cannot catch</a>.</p>
+      </div></details>
   </div>
 </section>
 
-<article class="writeup container" id="writeup" aria-labelledby="writeup-title">
-<div class="doc">
-  <h2 id="writeup-title" class="article-title">How I keep secrets and personal data out of Claude Code</h2>
+<article class="writeup" id="writeup" aria-labelledby="writeup-title">
+  <figure class="wu-photo" data-rise>
+    <img src="img/cloakroom-leipzig.jpg" width="1600" height="1200" loading="lazy" decoding="async" alt="The cloakroom of the Leipzig Opera House: coats hang on racks behind two long wooden counters under pendant lamps.">
+    <figcaption>The cloakroom of the Leipzig Opera House.</figcaption>
+  </figure>
+  <div class="ticket">
+    <div class="sheet doc">
+      <h2 id="writeup-title">How I keep secrets and personal data out of Claude Code</h2>
 
-  <h3>What the agent sees</h3>
-  <p>Claude Code lets a plugin run hooks: small checks before and after every action Claude takes, such as reading a file or running a command. Cloakroom runs in those hooks. When Claude reads a file or runs a command, the output goes through Cloakroom first. It looks for:</p>
-  <ul>
-    <li>secrets with a known shape (cloud keys, tokens, private keys, passwords in URLs and config lines)</li>
-    <li>numbers with a built-in check digit (cards, IBAN bank account numbers, US Social Security numbers)</li>
-    <li>personal data in ordinary text (names, emails, addresses, birth dates), found by a small AI model that runs on your machine</li>
-  </ul>
-  <p>Each value it finds is swapped for a placeholder. Here’s a support note and a config line, on disk and as Claude gets them:</p>
+      <h3>What the agent sees</h3>
+      <p>Claude Code lets a plugin run hooks: small checks before and after every action Claude takes, such as reading a file or running a command. Cloakroom runs in those hooks. When Claude reads a file or runs a command, the output goes through Cloakroom first. It looks for:</p>
+      <ul>
+        <li>secrets with a known shape (cloud keys, tokens, private keys, passwords in URLs and config lines)</li>
+        <li>numbers with a built-in check digit (cards, IBAN bank account numbers, US Social Security numbers)</li>
+        <li>personal data in ordinary text (names, emails, addresses, birth dates), found by a small AI model that runs on your machine</li>
+      </ul>
+      <p>Each value it finds is swapped for a placeholder. Here’s a support note and a config line, on disk and as Claude gets them:</p>
 <pre><code># on disk
 Nadia Petrov called about a double charge. Reach her at nadia.petrov@quillmere.net, 18 Larkspur Lane, Charlotte NC.
 DATABASE_URL=postgres://admin:Hunter2x9@10.0.4.12/prod
@@ -190,28 +239,30 @@ DATABASE_URL=postgres://admin:Hunter2x9@10.0.4.12/prod
 # what the agent sees
 PII_PERSON_1 called about a double charge. Reach her at PII_EMAIL_1, PII_ADDRESS_1.
 DATABASE_URL=postgres://admin:PII_SECRET_1@10.0.4.12/prod</code></pre>
-  <p>Claude can still do the job. It knows there’s a person, an email and a password, and where each one sits. It just doesn’t know the values. A value keeps the same placeholder for the whole session, so <code>PII_PERSON_1</code> in one file is the same person in the next.</p>
-
-  <p>I’d like to hear what it misses and what it over-masks: <a href="https://github.com/shanjeevrajendran/cloakroom">https://github.com/shanjeevrajendran/cloakroom</a></p>
-  <p>More: <a href="october-2026.html">What Cloakroom would and wouldn’t have done in October’s incidents</a></p>
-  <p><a href="writeup.html">Read the full write-up</a></p>
-</div>
+      <p>Claude can still do the job. It knows there’s a person, an email and a password, and where each one sits. It just doesn’t know the values. A value keeps the same placeholder for the whole session, so the same person has the same placeholder in every file.</p>
+    </div>
+    <div class="stub">
+      <p>I’d like to hear what it misses and what it over-masks: <a href="https://github.com/shanjeevrajendran/cloakroom">https://github.com/shanjeevrajendran/cloakroom</a></p>
+      <p>More: <a href="october-2026.html">What Cloakroom would and wouldn’t have done in October’s incidents</a></p>
+      <p><a class="btn" href="writeup.html">Read the full write-up</a></p>
+    </div>
+  </div>
 </article>
 
 </main>
 
 <footer class="foot">
-  <div class="container foot-inner">
-    <nav aria-label="Project links">
-      <a href="https://github.com/shanjeevrajendran/cloakroom">GitHub</a>
-      <a href="https://pypi.org/project/cloakroom/">PyPI</a>
-      <a href="https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-LIMITS.md">Known limits</a>
-      <a href="https://github.com/shanjeevrajendran/cloakroom/blob/main/LICENSE">Apache-2.0</a>
-    </nav>
-    <p>Made by <a href="https://shanjeevrajendran.github.io/">Shanjeev Rajendran</a>.</p>
-  </div>
+  <p>Made by <a href="https://shanjeevrajendran.github.io/">Shanjeev Rajendran</a>.</p>
+  <nav aria-label="Project links">
+    <a href="https://github.com/shanjeevrajendran/cloakroom">GitHub</a>
+    <a href="https://pypi.org/project/cloakroom/">PyPI</a>
+    <a href="https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-LIMITS.md">Known limits</a>
+    <a href="https://github.com/shanjeevrajendran/cloakroom/blob/main/LICENSE">Apache-2.0</a>
+  </nav>
+  <p class="credit">Photos: “Garderobenmarke 88” by kohlmann.sascha, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC BY-SA 2.0</a>, via <a href="https://www.flickr.com/photos/96323831@N06/12073303574">Flickr</a>; “Opernhaus Leipzig Garderobe” by Andreas Praefcke, <a href="https://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>, via <a href="https://commons.wikimedia.org/w/index.php?curid=3815725">Wikimedia Commons</a>.</p>
 </footer>
 
 <script src="install.js"></script>
+<script src="site.js"></script>
 </body>
 </html>

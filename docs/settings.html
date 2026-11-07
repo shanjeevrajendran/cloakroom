@@ -6,7 +6,7 @@
 <title>Cloakroom settings and fixes</title>
 <meta name="description" content="Your own exceptions, the dashboard rules, every setting, and what to do when something is wrong.">
 <meta name="color-scheme" content="dark">
-<meta name="theme-color" content="#0a100c">
+<meta name="theme-color" content="#0f1f10">
 <link rel="canonical" href="https://cloakroom.sh/settings.html">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Cloakroom">
@@ -18,20 +18,31 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 44 44'%3E%3Crect width='44' height='44' rx='9' fill='%230d1117'/%3E%3Cg fill='%2356d364' stroke='%2356d364' stroke-width='2.6' stroke-linejoin='round' stroke-linecap='round' transform='translate(4 4) scale(.82)'%3E%3Cpath d='M4 6H40V16A6 6 0 0 0 40 28V38H4V28A6 6 0 0 0 4 16Z'/%3E%3Cpath d='M14 22H30' stroke='%230d1117' stroke-dasharray='3 3'/%3E%3C/g%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Martian+Mono:wdth,wght@75..112.5,400..700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@700&family=Figtree:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 <script>document.documentElement.classList.add('js')</script>
 </head>
-<body class="t-terminal">
+<body>
 <a class="skip" href="#main">Skip to content</a>
 
-<header class="bar">
-  <div class="container bar-inner">
-    <a class="brand" href="./" aria-label="Cloakroom, home">
-      <svg viewBox="0 0 44 44" width="26" height="26" aria-hidden="true"><rect width="44" height="44" rx="9" fill="#0d1117"/><g fill="#56d364" stroke="#56d364" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round" transform="translate(4 4) scale(.82)"><path d="M4 6H40V16A6 6 0 0 0 40 28V38H4V28A6 6 0 0 0 4 16Z"/><path d="M14 22H30" stroke="#0d1117" stroke-dasharray="3 3"/></g></svg>
-      <span>Cloakroom</span>
-    </a>
-    <nav aria-label="Site">
+<header class="top">
+  <a class="brand" href="./" aria-label="Cloakroom, home">
+    <svg viewBox="0 0 44 44" width="28" height="28" aria-hidden="true"><g fill="#c6f19d" stroke="#c6f19d" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"><path d="M4 6H40V16A6 6 0 0 0 40 28V38H4V28A6 6 0 0 0 4 16Z"/><path d="M14 22H30" stroke="#0f1f10" stroke-dasharray="3 3"/></g></svg>
+    <span>Cloakroom</span>
+  </a>
+  <nav class="site" aria-label="Site">
+    <a href="install.html">Install</a>
+    <a href="commands.html">Commands</a>
+    <a href="how-it-works.html">How it works</a>
+    <a href="security.html">Security</a>
+    <a href="settings.html" aria-current="page">Settings</a>
+    <a href="releases.html">Releases</a>
+    <a href="writing.html">Writing</a>
+    <a href="https://github.com/shanjeevrajendran/cloakroom">GitHub</a>
+  </nav>
+  <details class="menu">
+    <summary>Menu</summary>
+    <nav aria-label="Site menu">
       <a href="install.html">Install</a>
       <a href="commands.html">Commands</a>
       <a href="how-it-works.html">How it works</a>
@@ -41,7 +52,7 @@
       <a href="writing.html">Writing</a>
       <a href="https://github.com/shanjeevrajendran/cloakroom">GitHub</a>
     </nav>
-  </div>
+  </details>
 </header>
 
 <main id="main">
@@ -54,7 +65,7 @@
 <section class="sec container" id="exceptions" aria-labelledby="exceptions-title">
   <h2 id="exceptions-title">Fewer false alarms: your own exceptions</h2>
   <div class="sec-body">
-    <p>Cloakroom already leaves documented examples alone (published test cards and keys, <code>example.com</code>, fictional 555 numbers, loopback addresses, UUIDs and hashes). To add your own, list them under <code>allow</code> in <code>~/.cloakroom/config.json</code>, either as exact values or as <code>re:</code> regular expressions matched against the whole value:</p>
+    <p>Cloakroom already leaves documented examples alone (published test cards and keys, <code>example.com</code>, fictional 555 numbers, your own machine’s address, UUIDs and hashes). To add your own, list them under <code>allow</code> in <code>~/.cloakroom/config.json</code>, either as exact values or as <code>re:</code> regular expressions matched against the whole value:</p>
 <pre class="cmd"><code>{
   "mode": "full",
   "allow": ["Ada Lovelace", "support@mycompany.com", "re:ACME-[0-9]{6}"]
@@ -76,6 +87,7 @@
           <tr><td>mask_all_dates</td><td data-label="Where"><code>config.json</code></td><td data-label="Default"><code>false</code></td><td data-label="Values"><code>true</code> masks every date, not only birth dates and dates in someone’s record</td></tr>
           <tr><td>mask_own_username</td><td data-label="Where"><code>config.json</code></td><td data-label="Default"><code>false</code></td><td data-label="Values"><code>true</code> masks your own login name in home-folder paths too</td></tr>
           <tr><td>allow_images</td><td data-label="Where"><code>config.json</code></td><td data-label="Default"><code>false</code></td><td data-label="Values"><code>true</code> lets pictures from Read through unchecked, with a warning (by default they are held back)</td></tr>
+          <tr><td>codex_hold_long_running</td><td data-label="Where"><code>config.json</code></td><td data-label="Default"><code>false</code></td><td data-label="Values"><code>true</code> (Codex only) holds commands that obviously keep running: <code>tail -f</code>, <code>watch</code>, <code>npm run dev</code> and other dev servers, <code>docker logs -f</code>, <code>docker compose up</code>, <code>kubectl logs -f</code>, <code>journalctl -f</code>, <code>ping</code> without <code>-c</code>, <code>--watch</code>. Codex hands such a command’s first output to the model while it is still running, and no hook sees that output, so it isn’t masked. <code>cr: allow</code> lets one run once. A slow build, or a command that only sometimes runs long, isn’t caught</td></tr>
           <tr><td>port</td><td data-label="Where"><code>config.json</code> <code>port</code>, <code>CLOAKROOM_PORT</code></td><td data-label="Default"><code>37787</code></td><td data-label="Values">any free local port</td></tr>
           <tr><td>backend</td><td data-label="Where"><code>CLOAKROOM_BACKEND</code></td><td data-label="Default"><code>auto</code></td><td data-label="Values"><code>auto</code>, <code>torch</code>, <code>onnx</code></td></tr>
           <tr><td>ONNX variant (CPU model format)</td><td data-label="Where"><code>CLOAKROOM_ONNX</code></td><td data-label="Default"><code>fp32</code></td><td data-label="Values"><code>fp32</code>, <code>int8</code></td></tr>
@@ -117,16 +129,15 @@
 </main>
 
 <footer class="foot">
-  <div class="container foot-inner">
-    <nav aria-label="Project links">
-      <a href="https://github.com/shanjeevrajendran/cloakroom">GitHub</a>
-      <a href="https://pypi.org/project/cloakroom/">PyPI</a>
-      <a href="https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-LIMITS.md">Known limits</a>
-      <a href="https://github.com/shanjeevrajendran/cloakroom/blob/main/LICENSE">Apache-2.0</a>
-    </nav>
-    <p>Made by <a href="https://shanjeevrajendran.github.io/">Shanjeev Rajendran</a>.</p>
-  </div>
+  <p>Made by <a href="https://shanjeevrajendran.github.io/">Shanjeev Rajendran</a>.</p>
+  <nav aria-label="Project links">
+    <a href="https://github.com/shanjeevrajendran/cloakroom">GitHub</a>
+    <a href="https://pypi.org/project/cloakroom/">PyPI</a>
+    <a href="https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-LIMITS.md">Known limits</a>
+    <a href="https://github.com/shanjeevrajendran/cloakroom/blob/main/LICENSE">Apache-2.0</a>
+  </nav>
 </footer>
 
+<script src="site.js"></script>
 </body>
 </html>

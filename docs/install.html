@@ -4,34 +4,45 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Install Cloakroom</title>
-<meta name="description" content="Install Cloakroom for Claude Code, Codex CLI, Gemini CLI or Cursor’s terminal agent, pick the right install for your machine, and run it on headless machines and CI.">
+<meta name="description" content="Install Cloakroom for Claude Code, Codex CLI, Gemini CLI or Cursor (editor and command-line agent), pick the right install for your machine, and run it on headless machines and CI.">
 <meta name="color-scheme" content="dark">
-<meta name="theme-color" content="#0a100c">
+<meta name="theme-color" content="#0f1f10">
 <link rel="canonical" href="https://cloakroom.sh/install.html">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Cloakroom">
 <meta property="og:title" content="Install Cloakroom">
-<meta property="og:description" content="Install Cloakroom for Claude Code, Codex CLI, Gemini CLI or Cursor’s terminal agent, pick the right install for your machine, and run it on headless machines and CI.">
+<meta property="og:description" content="Install Cloakroom for Claude Code, Codex CLI, Gemini CLI or Cursor (editor and command-line agent), pick the right install for your machine, and run it on headless machines and CI.">
 <meta property="og:url" content="https://cloakroom.sh/install.html">
 <meta property="og:image" content="https://raw.githubusercontent.com/shanjeevrajendran/cloakroom/main/assets/social-card.png">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 44 44'%3E%3Crect width='44' height='44' rx='9' fill='%230d1117'/%3E%3Cg fill='%2356d364' stroke='%2356d364' stroke-width='2.6' stroke-linejoin='round' stroke-linecap='round' transform='translate(4 4) scale(.82)'%3E%3Cpath d='M4 6H40V16A6 6 0 0 0 40 28V38H4V28A6 6 0 0 0 4 16Z'/%3E%3Cpath d='M14 22H30' stroke='%230d1117' stroke-dasharray='3 3'/%3E%3C/g%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Martian+Mono:wdth,wght@75..112.5,400..700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@700&family=Figtree:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 <script>document.documentElement.classList.add('js')</script>
 </head>
-<body class="t-terminal">
+<body>
 <a class="skip" href="#main">Skip to content</a>
 
-<header class="bar">
-  <div class="container bar-inner">
-    <a class="brand" href="./" aria-label="Cloakroom, home">
-      <svg viewBox="0 0 44 44" width="26" height="26" aria-hidden="true"><rect width="44" height="44" rx="9" fill="#0d1117"/><g fill="#56d364" stroke="#56d364" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round" transform="translate(4 4) scale(.82)"><path d="M4 6H40V16A6 6 0 0 0 40 28V38H4V28A6 6 0 0 0 4 16Z"/><path d="M14 22H30" stroke="#0d1117" stroke-dasharray="3 3"/></g></svg>
-      <span>Cloakroom</span>
-    </a>
-    <nav aria-label="Site">
+<header class="top">
+  <a class="brand" href="./" aria-label="Cloakroom, home">
+    <svg viewBox="0 0 44 44" width="28" height="28" aria-hidden="true"><g fill="#c6f19d" stroke="#c6f19d" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"><path d="M4 6H40V16A6 6 0 0 0 40 28V38H4V28A6 6 0 0 0 4 16Z"/><path d="M14 22H30" stroke="#0f1f10" stroke-dasharray="3 3"/></g></svg>
+    <span>Cloakroom</span>
+  </a>
+  <nav class="site" aria-label="Site">
+    <a href="install.html" aria-current="page">Install</a>
+    <a href="commands.html">Commands</a>
+    <a href="how-it-works.html">How it works</a>
+    <a href="security.html">Security</a>
+    <a href="settings.html">Settings</a>
+    <a href="releases.html">Releases</a>
+    <a href="writing.html">Writing</a>
+    <a href="https://github.com/shanjeevrajendran/cloakroom">GitHub</a>
+  </nav>
+  <details class="menu">
+    <summary>Menu</summary>
+    <nav aria-label="Site menu">
       <a href="install.html" aria-current="page">Install</a>
       <a href="commands.html">Commands</a>
       <a href="how-it-works.html">How it works</a>
@@ -41,14 +52,14 @@
       <a href="writing.html">Writing</a>
       <a href="https://github.com/shanjeevrajendran/cloakroom">GitHub</a>
     </nav>
-  </div>
+  </details>
 </header>
 
 <main id="main">
 
 <section class="hero page-hero container" aria-labelledby="page-title">
   <h1 id="page-title">Install Cloakroom</h1>
-  <p class="lead">Works with Claude Code, Codex CLI, Gemini CLI and Cursor’s terminal agent.</p>
+  <p class="lead">Works with Claude Code, Codex CLI, Gemini CLI and Cursor (editor and command-line agent).</p>
   <div class="tabs" data-tabs>
     <div class="tablist" role="tablist" aria-label="Install for your agent">
       <button type="button" role="tab" id="tab-claude" aria-controls="panel-claude" aria-selected="true">Claude Code</button>
@@ -104,23 +115,42 @@ ok   program: ~/.local/bin/cloakroom</code></pre>
       </ol>
     </div>
     <div class="tabpanel" role="tabpanel" id="panel-cursor" aria-labelledby="tab-cursor">
-      <p class="tab-note">Cursor’s terminal agent (<code>agent</code>), not the editor. Mac and Linux.</p>
+      <p class="tab-note">Cursor’s editor and its command-line agent (<code>agent</code>). Tab completion isn’t covered. Mac and Linux.</p>
       <ol class="steps">
         <li><p><strong>Install the program by hand.</strong></p>
           <div class="cmd-row"><pre><code>uv tool install "cloakroom[model,torch,ocr]"</code></pre><button type="button" class="copy">Copy</button></div>
           <p class="tab-note">The part in brackets adds the AI model that finds names and addresses on your machine, and reading text in screenshots and scans.</p></li>
         <li><p><strong>Run <code>cloakroom install cursor</code>.</strong> It adds nine hooks (small checks the agent runs before and after each action) to <code>~/.cursor/hooks.json</code> and leaves your own hooks alone.</p>
           <div class="cmd-row"><pre><code>cloakroom install cursor</code></pre><button type="button" class="copy">Copy</button></div></li>
-        <li><p>Cursor’s terminal agent (<code>agent</code>) runs them from its next start. The editor reads the same file but hasn’t been checked with Cloakroom yet. <code>cloakroom doctor</code> shows whether they’re installed.</p></li>
+        <li><p>Cursor’s editor and its command-line agent (<code>agent</code>) run them from their next start. Tab completion has no hook, so it isn’t covered, and the command-line agent doesn’t check the prompts you type; the editor does. <code>cloakroom doctor</code> shows whether they’re installed.</p></li>
       </ol>
     </div>
+  </div>
+</section>
+
+<section class="sec container" id="editors" aria-labelledby="editors-title">
+  <h2 id="editors-title">In an editor</h2>
+  <div class="sec-body">
+    <p><strong>Claude Code in VS Code or JetBrains:</strong> Cloakroom works as in the terminal. The VS Code extension runs Claude Code with your plugins, and the JetBrains plugin runs <code>claude</code> in the editor’s built-in terminal.</p>
+    <p><strong>Codex in VS Code</strong> (OpenAI’s Codex extension): the extension’s own Codex reads the same <code>~/.codex/hooks.json</code>, so it loads Cloakroom’s hooks. Trust them first in the <code>codex</code> command-line tool (type <code>/hooks</code>, as in the Codex steps above); the same Codex limits apply.</p>
+    <p><strong>Gemini Code Assist in VS Code:</strong> Cloakroom does not protect you there. Its agent mode doesn’t run the hooks that Gemini extensions bring. Use the Gemini CLI in a terminal instead (VS Code’s own terminal is fine).</p>
+    <p><strong>Antigravity</strong>, and editors not listed here: not supported. Cloakroom installs nothing there.</p>
+    <p>More in <a href="https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-LIMITS.md#editors">Known limits</a>.</p>
   </div>
 </section>
 
 <section class="sec container" id="updating" aria-labelledby="updating-title">
   <h2 id="updating-title">Updating</h2>
   <div class="sec-body">
-    <p>Run <code>cloakroom update</code> in a terminal. It updates Cloakroom with the installer you used (uv, pipx or pip) and keeps the optional parts you had. Then it sets up Cloakroom’s checks again for Codex, Gemini CLI, Cursor’s terminal agent and git commits, only where they were set up before.</p>
+    <p><strong>Claude Code:</strong> Claude Code updates the Cloakroom plugin, and the plugin then updates the <code>cloakroom</code> program the next time you start Claude Code. A plugin update comes out a few days after each new Cloakroom release. Claude Code only does this by itself if automatic updates are on for the place you added Cloakroom from (Claude Code calls it a marketplace). They’re on if you added Cloakroom from the plugin directory on claude.ai, and off otherwise. To switch them on:</p>
+    <ol class="steps">
+      <li><p>In Claude Code, type <code>/plugin</code> and press Enter.</p></li>
+      <li><p>Go to the <strong>Marketplaces</strong> tab and choose <strong>cloakroom</strong>.</p></li>
+      <li><p>Choose <strong>Enable auto-update</strong>.</p></li>
+    </ol>
+    <p>When an update arrives, Claude Code says “Run /reload-plugins”: type that, or restart Claude Code. To update right away instead, run this in a terminal:</p>
+<pre class="cmd"><code>claude plugin update cloakroom@cloakroom</code></pre>
+    <p><strong>Codex, Gemini CLI, Cursor, git commits, or a <code>cloakroom</code> you installed yourself:</strong> run <code>cloakroom update</code> in a terminal. It updates Cloakroom with the installer you used (uv, pipx or pip) and keeps the optional parts you had. Then it sets up Cloakroom’s checks again for Codex, Gemini CLI, Cursor and git commits, only where they were set up before.</p>
   </div>
 </section>
 
@@ -134,7 +164,7 @@ ok   program: ~/.local/bin/cloakroom</code></pre>
         <tbody>
           <tr><td>Apple Silicon Mac, or an NVIDIA GPU</td><td><code>uv tool install "cloakroom[model,torch]"</code></td><td>Full mode (keys plus names and addresses) on the GPU, about 20 ms per check</td></tr>
           <tr><td>Any other machine (Intel Mac, most Windows and Linux)</td><td><code>uv tool install "cloakroom[model,torch]"</code>, then once: <code>cloakroom export-onnx</code> (saves a copy of the model that runs fast on a CPU)</td><td>Full mode on the CPU. Before the export it works but is slow (about 0.5 s per check); after it, about 60 ms on a modern CPU</td></tr>
-          <tr><td>Just trying it, or a CI box</td><td><code>uv tool install cloakroom</code> and <code>CLOAKROOM_MODE=rules</code></td><td>Rules only: instant, no model download, but misses names and personal data in ordinary sentences</td></tr>
+          <tr><td>Just trying it, or an automated build machine (CI)</td><td><code>uv tool install cloakroom</code> and <code>CLOAKROOM_MODE=rules</code></td><td>Rules only: instant, no model download, but misses names and personal data in ordinary sentences</td></tr>
         </tbody>
       </table>
     </div>
@@ -160,13 +190,13 @@ cloakroom check --mode rules .env</code></pre>
 </section>
 
 <section class="sec container" id="ci" aria-labelledby="ci-title">
-  <h2 id="ci-title">Headless machines, CI and testing</h2>
+  <h2 id="ci-title">Machines with no screen, automated builds (CI) and testing</h2>
   <div class="sec-body">
-<pre class="cmd"><code><span class="c"># just trying it, or a CI box: rules only, no model download</span>
+<pre class="cmd"><code><span class="c"># just trying it, or a CI machine: rules only, no model download</span>
 uv tool install cloakroom
 CLOAKROOM_MODE=rules</code></pre>
     <dl class="defs">
-      <div><dt>Vault key</dt><dd>The vault is Cloakroom’s encrypted file of the real values it hid. Its key lives in your system’s password store (Keychain, Credential Manager, Secret Service). On a machine without one, set <code>CLOAKROOM_VAULT_KEY</code> (a 256-bit key, base64 or 64 hex characters), or Cloakroom falls back to a key file readable only by you, and <code>doctor</code> says so.</dd></div>
+      <div><dt>Vault key</dt><dd>The vault is Cloakroom’s encrypted file of the real values it hid. Its key lives in your system’s password store (Keychain, Credential Manager, Secret Service). On a machine without one, set <code>CLOAKROOM_VAULT_KEY</code> (a 256-bit key, base64 or 64 hex characters). Otherwise Cloakroom uses a key file only you can read, and <code>cloakroom doctor</code> says so.</dd></div>
       <div><dt>Dry run</dt><dd><code>CLOAKROOM_DRY_RUN=1</code> lets everything through and logs what Cloakroom would have done to <code>~/.cloakroom/dry-run.log</code>. Useful for trying it on a real project before trusting it.</dd></div>
       <div><dt>Separate homes</dt><dd><code>CLOAKROOM_HOME</code> moves the config, vault and model files; <code>CLOAKROOM_PORT</code> moves the local service (default 37787).</dd></div>
     </dl>
@@ -192,17 +222,16 @@ CLOAKROOM_MODE=rules</code></pre>
 </main>
 
 <footer class="foot">
-  <div class="container foot-inner">
-    <nav aria-label="Project links">
-      <a href="https://github.com/shanjeevrajendran/cloakroom">GitHub</a>
-      <a href="https://pypi.org/project/cloakroom/">PyPI</a>
-      <a href="https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-LIMITS.md">Known limits</a>
-      <a href="https://github.com/shanjeevrajendran/cloakroom/blob/main/LICENSE">Apache-2.0</a>
-    </nav>
-    <p>Made by <a href="https://shanjeevrajendran.github.io/">Shanjeev Rajendran</a>.</p>
-  </div>
+  <p>Made by <a href="https://shanjeevrajendran.github.io/">Shanjeev Rajendran</a>.</p>
+  <nav aria-label="Project links">
+    <a href="https://github.com/shanjeevrajendran/cloakroom">GitHub</a>
+    <a href="https://pypi.org/project/cloakroom/">PyPI</a>
+    <a href="https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-LIMITS.md">Known limits</a>
+    <a href="https://github.com/shanjeevrajendran/cloakroom/blob/main/LICENSE">Apache-2.0</a>
+  </nav>
 </footer>
 
 <script src="install.js"></script>
+<script src="site.js"></script>
 </body>
 </html>

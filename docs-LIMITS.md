@@ -106,8 +106,9 @@ Cloakroom can't check, the action is blocked rather than let through.
   `<your password>`.
 - In files and command output, a lone first name ("Sarah") is masked, which is a common false alarm in support text;
   mark it on the dashboard to turn it into a rule.
-- Vault files are AES-GCM encrypted; the key lives in the OS secure store (macOS Keychain, Windows Credential
-  Manager, Linux Secret Service), or CLOAKROOM_VAULT_KEY, or a 0600 key file when no store exists (doctor warns).
+- Vault files are encrypted with AES-GCM. The key lives in your system's password store (macOS Keychain, Windows
+  Credential Manager, Linux Secret Service), or in CLOAKROOM_VAULT_KEY. When there is no password store, it goes in a
+  key file only you can read (0600), and `cloakroom doctor` warns you.
 - A replacement tool result must keep its structural fields (`type`, `filePath`, ...) unchanged: a result Claude
   Code can't parse is dropped and the original passes through. Cloakroom never touches those fields and withholds
   per field.
@@ -176,7 +177,7 @@ Cloakroom can't check, the action is blocked rather than let through.
   proof nothing leaked. The agent column starts with this release (older lines say "unknown"); a hint needs the
   session's vault, so keys Cloakroom denied or withheld show "not kept". The scan uses rules only, skips files changed
   in the last 10 minutes or over 200 MB, and dates a find by the file's last change.
-- Signed placeholders: placeholders from before 0.6.1 (`PII_EMAIL_1`) are no longer restored, by design. A resumed
+- Signed placeholders: placeholders from before 0.6.1 (the ones with no tag at the end) are no longer restored, by design. A resumed
   session's old placeholders stay as text until you give the value again. The tag stops guessing, not a program
   that already runs as you and can read the vault key.
 - File log: it holds at most 5,000 value positions or 10 MB, and drops the oldest files first; a value in a file
@@ -212,7 +213,7 @@ Cloakroom can't check, the action is blocked rather than let through.
 
 ## Outgoing data (`cloakroom report --destinations`, approved sites)
 
-- The ledger and the approved-sites list cover only calls that pass through Cloakroom's checks: commands, WebFetch,
+- The where-data-went list (`cloakroom report --destinations`) and the approved-sites list cover only calls that pass through Cloakroom's checks: commands, WebFetch,
   WebSearch and MCP calls. They don't see the agent's own calls to its model provider, or any tool or agent that runs
   no Cloakroom check (see Codex and Gemini CLI for what those two check).
 - The host of a command is read from its web addresses, `user@host` words, the first host-like word of `ssh`, `scp`,

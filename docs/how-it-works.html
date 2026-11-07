@@ -6,7 +6,7 @@
 <title>How Cloakroom works</title>
 <meta name="description" content="How Cloakroom finds values, swaps them for placeholders, keeps them in an encrypted vault and puts them back on your machine; the two modes and the model backends.">
 <meta name="color-scheme" content="dark">
-<meta name="theme-color" content="#0a100c">
+<meta name="theme-color" content="#0f1f10">
 <link rel="canonical" href="https://cloakroom.sh/how-it-works.html">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Cloakroom">
@@ -18,20 +18,31 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 44 44'%3E%3Crect width='44' height='44' rx='9' fill='%230d1117'/%3E%3Cg fill='%2356d364' stroke='%2356d364' stroke-width='2.6' stroke-linejoin='round' stroke-linecap='round' transform='translate(4 4) scale(.82)'%3E%3Cpath d='M4 6H40V16A6 6 0 0 0 40 28V38H4V28A6 6 0 0 0 4 16Z'/%3E%3Cpath d='M14 22H30' stroke='%230d1117' stroke-dasharray='3 3'/%3E%3C/g%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Martian+Mono:wdth,wght@75..112.5,400..700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@700&family=Figtree:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 <script>document.documentElement.classList.add('js')</script>
 </head>
-<body class="t-terminal">
+<body>
 <a class="skip" href="#main">Skip to content</a>
 
-<header class="bar">
-  <div class="container bar-inner">
-    <a class="brand" href="./" aria-label="Cloakroom, home">
-      <svg viewBox="0 0 44 44" width="26" height="26" aria-hidden="true"><rect width="44" height="44" rx="9" fill="#0d1117"/><g fill="#56d364" stroke="#56d364" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round" transform="translate(4 4) scale(.82)"><path d="M4 6H40V16A6 6 0 0 0 40 28V38H4V28A6 6 0 0 0 4 16Z"/><path d="M14 22H30" stroke="#0d1117" stroke-dasharray="3 3"/></g></svg>
-      <span>Cloakroom</span>
-    </a>
-    <nav aria-label="Site">
+<header class="top">
+  <a class="brand" href="./" aria-label="Cloakroom, home">
+    <svg viewBox="0 0 44 44" width="28" height="28" aria-hidden="true"><g fill="#c6f19d" stroke="#c6f19d" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"><path d="M4 6H40V16A6 6 0 0 0 40 28V38H4V28A6 6 0 0 0 4 16Z"/><path d="M14 22H30" stroke="#0f1f10" stroke-dasharray="3 3"/></g></svg>
+    <span>Cloakroom</span>
+  </a>
+  <nav class="site" aria-label="Site">
+    <a href="install.html">Install</a>
+    <a href="commands.html">Commands</a>
+    <a href="how-it-works.html" aria-current="page">How it works</a>
+    <a href="security.html">Security</a>
+    <a href="settings.html">Settings</a>
+    <a href="releases.html">Releases</a>
+    <a href="writing.html">Writing</a>
+    <a href="https://github.com/shanjeevrajendran/cloakroom">GitHub</a>
+  </nav>
+  <details class="menu">
+    <summary>Menu</summary>
+    <nav aria-label="Site menu">
       <a href="install.html">Install</a>
       <a href="commands.html">Commands</a>
       <a href="how-it-works.html" aria-current="page">How it works</a>
@@ -41,7 +52,7 @@
       <a href="writing.html">Writing</a>
       <a href="https://github.com/shanjeevrajendran/cloakroom">GitHub</a>
     </nav>
-  </div>
+  </details>
 </header>
 
 <main id="main">
@@ -55,8 +66,8 @@
 <section class="sec container" id="trip" aria-labelledby="trip-title">
   <h2 id="trip-title">In short</h2>
   <div class="sec-body">
-    <p>Every time the AI reads a file, runs a command or uses an add-on, Cloakroom checks what goes to the AI and swaps real values for placeholders. When the AI writes or runs something that holds a placeholder, Cloakroom puts the real value back on your machine. Commands that would send a secret off your machine, or move money, wait for your OK, and so does a hook or MCP server the agent adds to its own config. The agent can’t approve its own hold or switch Cloakroom off (<a href="security.html#stops">what it stops</a>).</p>
-    <p>Words used below: hooks are small checks the agent runs before and after each action (a “tool call”). PII is personal data such as names, emails and addresses. MCP tools are add-ons that give the agent extra abilities, such as a browser. OCR reads text out of pictures. The vault is an encrypted file on your machine that holds the real values for one session.</p>
+    <p>Every time the AI reads a file, runs a command or uses an add-on, Cloakroom checks what goes to the AI and swaps real values for placeholders. When the AI writes or runs something that holds a placeholder, Cloakroom puts the real value back on your machine. Commands that would send a secret off your machine, or move money, wait for your OK, and so does a hook or MCP server the agent adds to its own settings. The agent can’t approve a call Cloakroom held or switch Cloakroom off (<a href="security.html#stops">what it stops</a>).</p>
+    <p>Words used below: hooks are small checks the agent runs before and after each action (a “tool call”). MCP tools are add-ons that give the agent extra abilities, such as a browser. OCR reads text out of pictures. The vault is an encrypted file on your machine that holds the real values for one session.</p>
 <pre class="cmd diagram" aria-label="Diagram: a file read goes through Cloakroom, the model sees placeholders, and the real value is put back in the file on disk"><code>  Claude Code reads a file or runs a tool
         |   "Nadia Petrov called about..."    sk_live_51Hx9Q...
         v
@@ -103,33 +114,33 @@
     <h3>Hide</h3>
     <p>A hook checks what goes into each tool and what comes back out. It runs pattern rules for secrets with known shapes, numbers with a check digit, rules that read the words around a value, and the PII-Tracer model for names, addresses and other personal data in sentences. A prompt with sensitive data is blocked instead, since a prompt can’t be rewritten. A value found once is masked everywhere it repeats.</p>
     <h3>Filter</h3>
-    <p>A known-safe filter leaves harmless look-alikes alone, such as documented examples: published test cards and keys, IDs from test (sandbox) accounts, reserved domains like <code>example.com</code>, bot and role mailboxes (<code>noreply@</code>, <code>support@</code>), loopback addresses (<code>127.0.0.1</code>), UUIDs and hashes, text that already hides a value (<code>[REDACTED]</code>, <code>***</code>), filler placeholders (<code>AC000…</code>, <code>sk-...</code>), standard numbers after RFC / ISO / ICAO / IEEE / PEP, and default dates (1970-01-01, 1900-01-01).</p>
+    <p>A known-safe filter leaves harmless look-alikes alone, such as documented examples: published test cards and keys, IDs from test (sandbox) accounts, reserved domains like <code>example.com</code>, bot and role mailboxes (<code>noreply@</code>, <code>support@</code>), your own machine’s address (<code>127.0.0.1</code>), UUIDs and hashes, text that already hides a value (<code>[REDACTED]</code>, <code>***</code>), filler placeholders (<code>AC000…</code>, <code>sk-...</code>), standard numbers after RFC / ISO / ICAO / IEEE / PEP, and default dates (1970-01-01, 1900-01-01).</p>
     <h3>Pictures</h3>
     <p>PDFs become their text. Scans, pictures the agent opens and images in add-on tool results are read on your machine (OCR, the <code>ocr</code> extra), and only the masked text goes to the agent. Without the extra they are held back.</p>
     <h3>Put back (restore)</h3>
     <p>Values go into the vault. It is locked with AES-GCM, a standard encryption method, and its key sits in your system’s password store (Keychain on a Mac). When the agent writes a file or runs a command with a placeholder, the real value is put back locally. The AI never sees it.</p>
     <h3>Placeholders that can’t be guessed</h3>
-    <p>A placeholder is <code>PII_&lt;KIND&gt;_&lt;n&gt;_&lt;tag&gt;</code>. The tag is a short code signed with a key from the vault, so it can’t be guessed. A value comes back only when the tag checks out and the placeholder is in this session’s vault. Anything else in placeholder shape stays as text. Three refused guesses in one session show you one line.</p>
+    <p>Each placeholder ends in a short tag signed with a key from the vault, so it can’t be guessed. A value comes back only when the tag checks out and the placeholder is in this session’s vault. Anything else in placeholder shape stays as text. Three refused guesses in one session show you one line.</p>
     <h3>Files the agent wrote stay masked</h3>
-    <p>When real values are put back into a file, the hook records per file its path, its SHA-256, size and time, and per value the byte position, the value’s SHA-256, kind and placeholder. The log (<code>~/.cloakroom/filelog.bin</code>) is encrypted like the vault and holds no values: they are read back from the file when needed.</p>
+    <p>When real values are put back into a file, the hook records, for each file, its path, a fingerprint of its contents (SHA-256), its size and time. For each value it records where in the file it sits, a fingerprint of the value, its kind and its placeholder. The log (<code>~/.cloakroom/filelog.bin</code>) is encrypted like the vault and holds no values: they are read back from the file when needed.</p>
     <h3>Holds the agent can’t lift</h3>
-    <p><code>cloakroom allow</code>, <code>allow-host</code> and <code>uninstall</code> refuse to run in an agent’s shell, and a shell command that runs them is denied. Removing Cloakroom is held. A hook or MCP server written into an agent’s config waits until you type <code>cr: allow</code>; the message names the file, the line and the command. Cloakroom reads the command’s text, so the agent’s own sandbox is the wall against a name built at run time.</p>
+    <p><code>cloakroom allow</code>, <code>allow-host</code> and <code>uninstall</code> refuse to run in an agent’s shell, and a shell command that runs them is denied. Removing Cloakroom is held. A hook or MCP server written into an agent’s config waits until you type <code>cr: allow</code>; the message names the file, the line and the command. Cloakroom reads the command’s text, so an agent that builds the name at run time is stopped only by its own sandbox, if it runs in one.</p>
     <h3>Encoded dumps and secrets</h3>
-    <p><code>od</code>, <code>xxd</code>, <code>base64</code> and spaced-out output are turned back into text and checked; a hit holds the output back (it isn’t passed on). Each secret already in the session vault is also looked for in its encoded forms (base64, URL-encoded and JSON-escaped), and as an MD5, SHA-1 or SHA-256 hash, as hex, and reversed.</p>
+    <p><code>od</code>, <code>xxd</code>, <code>base64</code> and spaced-out output are turned back into text and checked; a hit holds the output back (it isn’t passed on). Each secret Cloakroom has already seen this session is also looked for in its encoded forms (base64, URL-encoded and JSON-escaped), and as an MD5, SHA-1 or SHA-256 hash, as hex, and reversed.</p>
   </div>
 </section>
 
 <section class="sec container" id="agents" aria-labelledby="agents-title">
   <h2 id="agents-title">Other coding agents</h2>
   <div class="sec-body">
-    <p>Codex and Gemini CLI can’t swap a tool’s output for a masked copy, so Cloakroom blocks the original and the AI reads the masked text in the block message. Cursor’s terminal agent can’t swap output either, so Cloakroom changes the input instead: a file read goes to a masked copy of the file, and a shell command runs inside Cloakroom, which prints only masked output.</p>
+    <p>Codex and Gemini CLI can’t swap a tool’s output for a masked copy, so Cloakroom blocks the original and the AI reads the masked text in the block message. Cursor can’t swap output either, so Cloakroom changes the input instead: a file read goes to a masked copy of the file, and a shell command runs inside Cloakroom, which prints only masked output.</p>
     <dl class="defs defs--2">
       <div><dt>Codex</dt><dd><code>cloakroom hook &lt;event&gt; --agent codex</code> reads Codex’s hook input and turns the answer into Codex’s. Codex’s file edits (<code>apply_patch</code>) are restored and checked like Write. <code>cloakroom install codex</code> writes the four hooks into <code>~/.codex/hooks.json</code>.</dd></div>
       <div><dt>Gemini CLI</dt><dd>Gemini CLI uses its own tool names with Claude Code’s argument names, so <code>--agent gemini</code> first renames the tool. Gemini lets a call through when a hook times out, so with the model not loaded yet the hook doesn’t wait: it checks with the rules inside the hook itself. <code>cloakroom install gemini</code> writes these hooks as an extension of its own.</dd></div>
-      <div><dt>Cursor</dt><dd>Cursor’s terminal agent sends its own tool names (Shell, Read, Write) with its own events, so <code>--agent cursor</code> first maps them. A read is redirected to a masked copy kept in Cloakroom’s home; a command is wrapped in <code>cloakroom cursor-run</code>, which runs it and masks what it prints; add-on (MCP) output is replaced with a masked copy. A write that carries a placeholder is refused, because Cursor ignores a hook’s rewritten input there, and the agent is told to write through the shell. Cursor’s Grep tool is refused when it would show file contents.</dd></div>
+      <div><dt>Cursor</dt><dd>Cursor’s agent sends its own tool names (Shell, Read, Write) with its own events, so <code>--agent cursor</code> first maps them. A read is redirected to a masked copy kept in Cloakroom’s home; a command is wrapped in <code>cloakroom cursor-run</code>, which runs it and masks what it prints; add-on (MCP) output is replaced with a masked copy. A write that carries a placeholder is refused, because Cursor ignores a hook’s rewritten input there, and the agent is told to write through the shell. Cursor’s Grep tool is refused when it would show file contents.</dd></div>
     </dl>
     <p>For tools that let you set their API address, such as Claude Code, Codex CLI and Gemini CLI, <code>cloakroom proxy</code> runs a small server on your own machine. Point the tool at it and every request is masked before it goes to the AI company; replies stream back unchanged. It is off until you start it, and works on Mac, Linux and Windows.</p>
-    <p>What it protects against, and what it doesn’t: <a href="security.html">Security model</a>. Every detail: <a href="https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-HOW-IT-WORKS.md">docs-HOW-IT-WORKS.md</a>.</p>
+    <p>What it protects against, and what it doesn’t: <a href="security.html">Security</a>. Every detail: <a href="https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-HOW-IT-WORKS.md">docs-HOW-IT-WORKS.md</a>.</p>
   </div>
 </section>
 
@@ -150,16 +161,15 @@
 </main>
 
 <footer class="foot">
-  <div class="container foot-inner">
-    <nav aria-label="Project links">
-      <a href="https://github.com/shanjeevrajendran/cloakroom">GitHub</a>
-      <a href="https://pypi.org/project/cloakroom/">PyPI</a>
-      <a href="https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-LIMITS.md">Known limits</a>
-      <a href="https://github.com/shanjeevrajendran/cloakroom/blob/main/LICENSE">Apache-2.0</a>
-    </nav>
-    <p>Made by <a href="https://shanjeevrajendran.github.io/">Shanjeev Rajendran</a>.</p>
-  </div>
+  <p>Made by <a href="https://shanjeevrajendran.github.io/">Shanjeev Rajendran</a>.</p>
+  <nav aria-label="Project links">
+    <a href="https://github.com/shanjeevrajendran/cloakroom">GitHub</a>
+    <a href="https://pypi.org/project/cloakroom/">PyPI</a>
+    <a href="https://github.com/shanjeevrajendran/cloakroom/blob/main/docs-LIMITS.md">Known limits</a>
+    <a href="https://github.com/shanjeevrajendran/cloakroom/blob/main/LICENSE">Apache-2.0</a>
+  </nav>
 </footer>
 
+<script src="site.js"></script>
 </body>
 </html>
