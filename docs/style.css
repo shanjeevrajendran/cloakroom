@@ -461,8 +461,9 @@ td { background: var(--row); }
 .writeup--page > .doc-hero { grid-column: 1 / 11; display: grid; gap: 24px; padding-bottom: 56px; }
 .doc-hero h1 { font-size: var(--s-head); }
 .doc-hero p { font-size: var(--s-lead); line-height: 1.4; max-width: 52ch; }
+.doc-hero p + p { font-size: var(--s-body); line-height: 1.55; max-width: 62ch; }
 .doc-hero p:first-child:not(:only-child) { font-size: var(--s-small); color: var(--muted); max-width: none; }
-.writeup--page > .doc { --row: var(--field-1-row); grid-column: 1 / -1; background: var(--field-1); padding: 72px max(32px, calc((100% - 72ch) / 2)); display: grid; gap: 20px; }
+.writeup--page > .doc { --row: var(--field-1-row); grid-column: 1 / -1; background: var(--field-1); padding: 72px max(32px, calc((100% - 680px) / 2)); display: grid; gap: 20px; }
 .doc h2 { font-size: var(--s-title); line-height: 1.05; margin-top: 40px; }
 .doc h2:first-child { margin-top: 0; }
 .doc h3 { font-size: var(--s-lead); margin-top: 16px; }
@@ -476,7 +477,9 @@ td { background: var(--row); }
 }
 @media (max-width: 40rem) {
   .hero.page-hero { padding-top: 112px; padding-bottom: 56px; }
-  .page-hero h1, .doc-hero h1 { font-size: 2rem; }
+  .page-hero h1 { font-size: 2rem; }
+  .doc-hero h1 { font-size: 1.25rem; line-height: 1.05; }
+  .doc-hero p { font-size: var(--s-body); }
   .sec > h2 { font-size: var(--s-title); }
   .page-hero .tabs { margin-top: 16px; padding: 6px; }
   .page-hero .tabpanel { padding: 18px 10px 12px; }
