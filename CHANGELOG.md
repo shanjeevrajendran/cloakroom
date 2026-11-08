@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.4.0 (2026-11-07)
+## 1.4.0 (2026-11-08)
 - `cloakroom exposure --personal` also finds personal data you typed in old Codex, Cursor and Gemini CLI chats, not only Claude Code ([details](#commands-youll-use)). Only what you typed is read, never tool output or the agent's replies.
 - macOS: no more Keychain password prompt naming "python" on first run or after a Python update ([details](#how-it-works)). The vault key now sits in a Keychain item Apple's own `security` tool creates and reads; if you used 1.3 or older, macOS may ask one last time while the key is copied, and the old item is left as it was. An agent's shell command that tries to read the key out of the Keychain is denied.
 - Known limit: Gemini CLI chats were checked against Gemini CLI's published source, not a live chat (see docs-LIMITS, "cloakroom exposure --personal").
