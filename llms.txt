@@ -6,7 +6,7 @@ Install: `/plugin marketplace add shanjeevrajendran/cloakroom`, then `/plugin in
 
 Where data goes: `cloakroom report --destinations` lists the hosts commands, web fetches and MCP calls sent data to, with the kinds of data carried (never values). `cloakroom allow-host example.com` builds an opt-in approved-sites list; a call to any other site is held. See the README section "See where your agent sends data".
 
-What your agents saw: `cloakroom exposure` lists the keys and passwords your agents saw, from Cloakroom's log and old agent transcripts, with a rotate checklist; `--personal` also looks for personal data you typed in old Claude Code chats.
+What your agents saw: `cloakroom exposure` lists the keys and passwords your agents saw, from Cloakroom's log and old agent transcripts, with a rotate checklist; `--personal` also looks for personal data you typed in old chats with Claude Code, Codex, Cursor and Gemini CLI.
 
 Agent can't undo it: `cloakroom allow`, `allow-host` and `uninstall` refuse to run in an agent's shell, removing Cloakroom is held, and a hook or MCP server the agent writes into its config is held until the user types `cr: allow`.
 

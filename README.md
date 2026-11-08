@@ -74,7 +74,8 @@ Step-by-step guide, updates and uninstall: [cloakroom.sh/install](https://cloakr
 Cloakroom runs as hooks: checks the agent calls before and after each tool call. On the way in, pattern rules plus a
 small local detection model find secrets and personal data, and each value is swapped for a placeholder such as
 `PII_SECRET_1` that stays the same for the session. The pairs live in an encrypted vault on your machine, its key in
-the OS keystore (Keychain, Credential Manager, Secret Service). On the way out, placeholders in writes and commands
+the OS keystore (Keychain, Credential Manager, Secret Service). On a Mac there is no Keychain password prompt on
+first run or after a Python update, and the agent can't read the key. On the way out, placeholders in writes and commands
 get their real values back just before they run.
 
 ```
@@ -136,7 +137,7 @@ All releases: [cloakroom.sh/releases](https://cloakroom.sh/releases) · [CHANGEL
 | `cloakroom doctor` | Health check, versions, per-check timing |
 | `cloakroom dashboard` | Alerts in the browser: when it masks something harmless (a false alarm), mark it once in the dashboard and a rule stops it next time. |
 | `cloakroom check FILE` · `explain FILE` · `mask FILE` | Preview what would be masked, and why |
-| `cloakroom exposure` | It lists the keys and passwords your coding agents saw, so you know what to rotate. Hints only, never the key. |
+| `cloakroom exposure` | It lists the keys and passwords your coding agents saw, so you know what to rotate. Hints only, never the key. `--personal` also finds personal data you typed in old chats with Claude Code, Codex, Cursor or Gemini CLI. |
 | `cloakroom scan` | Commands a repo's agent and editor config would run |
 | `cloakroom give NAME` | When the agent needs a key (a Stripe key, a database password), don't paste it into a prompt. This asks for it in a hidden prompt and gives you a placeholder to paste. |
 | `cloakroom proxy` | Local masking proxy for tools that let you set their API address |

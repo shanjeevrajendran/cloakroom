@@ -4,7 +4,11 @@ One random 256-bit key per user, kept in the OS secure store through `keyring` (
 Manager/DPAPI, Linux Secret Service). Vault files are AES-GCM encrypted with it. Key lookup order:
   1. CLOAKROOM_VAULT_KEY (base64, or 64 hex characters), for CI and headless machines
   2. the OS secure store, unless HOME is not the account's own home (a test, a kit, a sandbox): the store would
-     answer for the wrong user and macOS would pop a Keychain dialog
+     answer for the wrong user and macOS would pop a Keychain dialog. On macOS the item is created and read through
+     Apple's /usr/bin/security tool (account vault-key-v2), so its access list trusts that signed tool rather than
+     one python build: no "python wants to use your Keychain" dialog on first run or after a Python update. The
+     key reaches the tool on stdin, never on a command line. A 1.3 item (account vault-key, made by python through
+     keyring) is copied once into vault-key-v2 and left as it was.
   3. a key file readable only by you, when no secure store exists (headless Linux, some WSL) or HOME is borrowed;
      `cloakroom doctor` says so. Vaults are never written in plain text.
 A secure store that exists but refuses access (a locked macOS Keychain in an SSH shell) raises KeyUnavailable: a
@@ -25,14 +29,18 @@ import time
 from . import config
 
 SERVICE, ACCOUNT = "cloakroom", "vault-key"
+ACCOUNT_V2, SECURITY = "vault-key-v2", "/usr/bin/security"  # macOS: the item /usr/bin/security creates and reads
+NOT_FOUND = 44  # /usr/bin/security's exit status for errSecItemNotFound
 MAGIC, AAD = b"CRV1", b"cloakroom-vault-v1"
 _KEY: bytes | None = None
 KEY_SOURCE = ""
 
 
 STORE = "macOS Keychain" if sys.platform == "darwin" else "system key store"
-PREWARN = ("macOS may ask whether 'python' can use the 'cloakroom' item in your Keychain. Click Always Allow: it "
-           "only lets Cloakroom read its own key. If you deny, your own rules turn off; built-in checks keep running.")
+PREWARN = ("If you used Cloakroom 1.3 or older, macOS may ask once more whether 'python' can use the 'cloakroom' item "
+           "in your Keychain. Click Always Allow: it only lets Cloakroom read its own key, which it then keeps in an "
+           "item a Python update won't ask about again. If you deny, your own rules turn off; built-in checks keep "
+           "running.")
 RETRY = "cloakroom doctor --retry-key"
 DENIED = (f"Cloakroom can't read its key from the {STORE} (access was denied, or it is locked, for example "
           "over SSH), so your own rules are off. Built-in checks still run. To turn them back on: unlock it or click "
@@ -97,6 +105,37 @@ def _write_marker(state: dict):
         json.dump(state, f)
 
 
+def _mac_tool() -> bool:
+    return sys.platform == "darwin" and os.path.exists(SECURITY)
+
+
+def _security(args: list[str], stdin: str | None = None) -> tuple[int, str]:
+    """Run /usr/bin/security; (exit status, stdout). A secret only ever travels on stdin or stdout."""
+    import subprocess
+    r = subprocess.run([SECURITY, *args], input=stdin, capture_output=True, text=True)
+    return r.returncode, r.stdout
+
+
+def _mac_read() -> str | None:
+    """The key from the vault-key-v2 item, None when there is none. Any other failure (denied, locked) raises."""
+    code, out = _security(["find-generic-password", "-s", SERVICE, "-a", ACCOUNT_V2, "-w"])
+    if code == NOT_FOUND:
+        return None
+    if code:
+        raise PermissionError(f"security exit status {code}")
+    return out.strip() or None
+
+
+def _mac_write(value: str) -> str:
+    """Create the vault-key-v2 item trusting /usr/bin/security, and return what the item holds afterwards (another
+    process may have created it first). `security -i` reads the command from stdin, so `ps` never shows the key."""
+    _security(["-i"], f"add-generic-password -s {SERVICE} -a {ACCOUNT_V2} -T {SECURITY} -w {value}\n")
+    stored = _mac_read()
+    if not stored:
+        raise PermissionError("the vault-key-v2 item could not be created")
+    return stored
+
+
 def key() -> bytes:
     global _KEY, KEY_SOURCE
     if _KEY:
@@ -110,10 +149,15 @@ def key() -> bytes:
         if denied():  # asked and refused: don't ask again (and don't prompt again) until cleared
             raise KeyUnavailable(DENIED)
         try:
-            stored = store.get_password(SERVICE, ACCOUNT)
+            mac = _mac_tool()
+            stored = _mac_read() if mac else None
             if not stored:
-                stored = base64.b64encode(secrets.token_bytes(32)).decode()
-                store.set_password(SERVICE, ACCOUNT, stored)
+                stored = store.get_password(SERVICE, ACCOUNT)  # Windows, Linux, or a macOS key from 1.3 and older
+                if mac:  # copy it (or a new key) into vault-key-v2; the old item is left as it was
+                    stored = _mac_write(stored or base64.b64encode(secrets.token_bytes(32)).decode())
+                elif not stored:
+                    stored = base64.b64encode(secrets.token_bytes(32)).decode()
+                    store.set_password(SERVICE, ACCOUNT, stored)
             _KEY, KEY_SOURCE = base64.b64decode(stored), "os-secure-store"
             return _KEY
         except Exception as e:

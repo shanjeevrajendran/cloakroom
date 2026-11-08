@@ -88,6 +88,10 @@ Cloakroom can't check, the action is blocked rather than let through.
   add no command, and reading config, go through. Removing Cloakroom itself is denied the same way: `uv tool`,
   `pipx`, `pip`, `uv pip` or `brew` uninstall of cloakroom, and `rm`, `mv` or `chmod` of the installed program or
   its uv or pipx tool folder. Updating it (`cloakroom update`) and removing other packages go through.
+- An agent can't read Cloakroom's vault key: its shell commands that read the `cloakroom` item with macOS's
+  `security` tool (also inside `bash -c`, `$(...)` or a pipe into `security -i`), dump the Keychain decrypted
+  (`dump-keychain -d`), or read it through `keyring` are denied. Like the other holds, this reads the command's text,
+  so a command built piece by piece at run time can get past it.
 - If the cloakroom program is gone anyway (removed by hand, a broken install): Claude Code's plugin finds no program,
   holds tool calls and reinstalls Cloakroom in the background. Codex and Gemini CLI run Cloakroom's tool-call hooks
   with a fallback that exits 2, which both treat as a block. Prompts and session starts go on with a warning, so
@@ -109,6 +113,11 @@ Cloakroom can't check, the action is blocked rather than let through.
 - Vault files are encrypted with AES-GCM. The key lives in your system's password store (macOS Keychain, Windows
   Credential Manager, Linux Secret Service), or in CLOAKROOM_VAULT_KEY. When there is no password store, it goes in a
   key file only you can read (0600), and `cloakroom doctor` warns you.
+- Keychain password prompt (macOS): since 1.4.0 the key is kept in a Keychain item that Apple's `security` tool
+  creates and reads, so macOS doesn't ask whether "python" may use it, on first run or after a Python update. If you
+  used 1.3 or older, macOS may ask one last time while Cloakroom copies the key into the new item (click Always
+  Allow); the old item is left as it was. A locked Keychain (for example over SSH) still refuses, and your own rules
+  turn off until you unlock it and run `cloakroom doctor --retry-key`.
 - A replacement tool result must keep its structural fields (`type`, `filePath`, ...) unchanged: a result Claude
   Code can't parse is dropped and the original passes through. Cloakroom never touches those fields and withholds
   per field.
@@ -177,6 +186,10 @@ Cloakroom can't check, the action is blocked rather than let through.
   proof nothing leaked. The agent column starts with this release (older lines say "unknown"); a hint needs the
   session's vault, so keys Cloakroom denied or withheld show "not kept". The scan uses rules only, skips files changed
   in the last 10 minutes or over 200 MB, and dates a find by the file's last change.
+- `cloakroom exposure --personal` (personal data in old chats) reads only what you typed in Claude Code, Codex,
+  Cursor and Gemini CLI chats, not tool output or the agent's replies. For Cursor that is the text inside its own
+  tags; for Gemini CLI, the text before an `@file` expansion. Gemini CLI chats were checked against Gemini CLI's
+  published source code, not against a live chat: if a Gemini version saves chats another way, typed text may be missed.
 - Signed placeholders: placeholders from before 0.6.1 (the ones with no tag at the end) are no longer restored, by design. A resumed
   session's old placeholders stay as text until you give the value again. The tag stops guessing, not a program
   that already runs as you and can read the vault key.

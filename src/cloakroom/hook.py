@@ -567,6 +567,21 @@ def _touches_home(tool: str, args: dict, cwd: str = "") -> bool:
     return False
 
 
+KEY_DENY = ("Cloakroom: its vault key in your Keychain is read only by Cloakroom: it unlocks the real values behind "
+            "the placeholders. Claude can't read it.")
+# Anywhere in the command (bash -c, $(...), a pipe into `security -i`): Apple's security tool with a read of
+# Cloakroom's item, a decrypted dump of the whole Keychain, or keyring reading it the way 1.3 stored it
+_SECURITY_TOOL = re.compile(r"(?:^|[\s;&|(`'\"/])security(?:\s|$)")
+_KEY_ITEM = re.compile(r"(?i)\b(?:find-generic-password|find-internet-password|export)\b[^\n]*?(?:cloakroom|vault-key)"
+                       r"|(?:cloakroom|vault-key)[^\n]*?\b(?:find-generic-password|find-internet-password)\b"
+                       r"|\bdump-keychain\b[^;&|\n]*?(?:\s-[a-zA-Z]*d|cloakroom)")
+_KEYRING_READ = re.compile(r"(?i)\bkeyring\s+get\s+['\"]?cloakroom\b|get_password\s*\(\s*['\"]cloakroom['\"]")
+
+
+def _reads_key(command: str) -> bool:
+    return bool(_SECURITY_TOOL.search(command) and _KEY_ITEM.search(command) or _KEYRING_READ.search(command))
+
+
 SELF_DENY = ("Cloakroom: approving a held call, approving a site, or switching Cloakroom off is yours to do: type "
              "cr: allow, or run the command in your own terminal. Claude can't run it.")
 # The cloakroom program (any path, python -m, uvx, a pty wrapper's ['cloakroom', 'allow']) with a subcommand that
@@ -1324,6 +1339,8 @@ def _on_pre(data: dict) -> dict | None:
     cwd = data.get("cwd") or os.getcwd()
     if _touches_home(tool, args, cwd):
         return _deny(HOME_DENY)
+    if tool in SHELL_TOOLS and _reads_key(str(args.get("command", ""))):
+        return _deny(KEY_DENY)
     if tool in SHELL_TOOLS and _self_cli(str(args.get("command", "")), cwd):
         return _deny(SELF_DENY)
     blob = json.dumps(args)

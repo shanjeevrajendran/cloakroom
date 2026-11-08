@@ -18,7 +18,14 @@ def isolated_home(tmp_path, monkeypatch):
     from cloakroom import config, crypto
     importlib.reload(config)
     crypto._KEY = None
+    # never the real macOS Keychain: tests that need /usr/bin/security put a fake in place of these two
+    monkeypatch.setattr(crypto, "_mac_tool", lambda: False)
+    monkeypatch.setattr(crypto, "_security", _no_keychain)
     yield
+
+
+def _no_keychain(*a, **k):
+    raise AssertionError("a test reached /usr/bin/security; fake crypto._security instead")
 
 
 def tag(text, session="default"):
