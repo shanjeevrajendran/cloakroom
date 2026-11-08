@@ -219,6 +219,7 @@ The dashboard, on 127.0.0.1.
 
 #### The vault key
 The vault files are encrypted with AES-GCM. The key lives in your system’s password store (macOS Keychain, Windows Credential Manager, Linux Secret Service), or in CLOAKROOM_VAULT_KEY. When there is no password store, it goes in a key file only you can read (permissions 0600), and cloakroom doctor warns you.
+On a Mac, Apple’s own security tool creates and reads the Keychain item, so there is no Keychain password prompt naming “python” on first run or after a Python update. If you used Cloakroom 1.3 or older, macOS may ask one last time while the key is copied into the new item.
 
 #### Cloakroom’s own folder
 The agent can’t change ~/.cloakroom: a write there, or a shell command that names it, is refused. So the agent can’t pause Cloakroom or edit its rules.
@@ -259,7 +260,7 @@ Stops a tool call that would move money: a request that changes something at a p
 Stops a key or password from landing in a file in a git repo that is not git-ignored. The call is denied and the agent is told to put the value in .env. Before the agent runs git commit or git push, a key or password in what would be committed holds the command.Example: the agent tries to write an API key into config.py.Limit: Keys written by scripts.
 
 #### The agent can’t approve its own hold or switch Cloakroom off
-Stops an agent from lifting a hold itself or turning Cloakroom off. cloakroom allow, allow-host and uninstall refuse to run in an agent’s shell, and a shell command that runs them is denied. Uninstalling Cloakroom, or removing its program, is held too.Example: the agent runs cloakroom allow to let its own held command through; it is refused.Type cr: allow in the chat, or run the command in your own terminal.Limit: Built at run time.
+Stops an agent from lifting a hold itself or turning Cloakroom off. cloakroom allow, allow-host and uninstall refuse to run in an agent’s shell, and a shell command that runs them is denied. Uninstalling Cloakroom, or removing its program, is held too. So is reading Cloakroom’s vault key out of the Keychain (security find-generic-password naming it, a decrypted dump-keychain, or keyring).Example: the agent runs cloakroom allow to let its own held command through; it is refused.Type cr: allow in the chat, or run the command in your own terminal.Limit: Built at run time.
 
 #### A hook or MCP server the agent adds is held
 Stops an agent from slipping a command into its own settings. A hook (a command the agent runs by itself before or after an action) or an MCP server (an add-on tool) written into .mcp.json, .claude/settings.json, Codex’s config.toml or hooks.json, Cursor’s hooks.json or mcp.json, .gemini/settings.json or a Gemini extension waits for cr: allow. The message names the file, the line and the command. Edits that add no command go through.Example: the agent adds a hook that runs a script from a file it wrote.Limit: Built at run time.
@@ -274,7 +275,7 @@ If the cloakroom command is missing, the plugin blocks prompts and denies tool c
 - Failed tool calls
 
 #### Which keys your agents saw
-Shows the keys and passwords Claude Code, Codex CLI, Gemini CLI and Cursor’s agent saw. Each is a hint, never the key, and the list ends with “Rotate these”: keys to replace with new ones.Example: a line like ghp_…LmPq.Command: cloakroom exposureLimit: The exposure list.
+Shows the keys and passwords Claude Code, Codex CLI, Gemini CLI and Cursor’s agent saw. Each is a hint, never the key, and the list ends with “Rotate these”: keys to replace with new ones. With --personal it also finds personal data you typed in old chats with any of the four agents (names, emails, addresses, account numbers).Example: a line like ghp_…LmPq.Command: cloakroom exposureLimit: The exposure list.
 
 #### Warns when a pull changes what your agent runs
 cloakroom scan lists every command a repo’s agent and editor config would run. It flags the setup the October 2026 npm worm used: an agent hook and an editor task that run each other’s files. After cloakroom install git-hook, each pull, checkout or merge that adds or changes such a command prints it. It warns, never blocks.Example: a pull adds an editor task that runs a file an agent hook also runs.Command: cloakroom scan
@@ -314,10 +315,10 @@ A key split into pieces, or one with no known pattern and not seen earlier in th
 The money-movement hold sees the command or tool call, not what a program does once it runs. A script or app that calls a payment API isn’t held.
 
 #### Built at run time
-These two holds read the command’s text. The agent runs as you, so one that builds Cloakroom’s folder name or a command piece by piece, and fakes a terminal, can still edit Cloakroom’s files or approve a hold. Only the agent’s own sandbox, if it runs in one, stops that.
+These holds read the command’s text. The agent runs as you, so one that builds Cloakroom’s folder name or a command piece by piece, and fakes a terminal, can still edit Cloakroom’s files or approve a hold. Only the agent’s own sandbox, if it runs in one, stops that.
 
 #### The exposure list
-cloakroom exposure lists only what Cloakroom detected: a key it missed leaves no line, so an empty list is not proof nothing leaked.
+cloakroom exposure lists only what Cloakroom detected: a key it missed leaves no line, so an empty list is not proof nothing leaked. --personal reads only what you typed; for Gemini CLI that was checked against its published source code, not a live chat.
 Every limit found in live tests, per agent: Known limits.
 
 ### Report a way around it
