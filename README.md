@@ -88,6 +88,11 @@ Nothing leaves the machine except the one-time model download. If Cloakroom can'
 instead of letting it through. More: [cloakroom.sh/how-it-works](https://cloakroom.sh/how-it-works) ·
 [docs-HOW-IT-WORKS.md](docs-HOW-IT-WORKS.md).
 
+New in 1.4:
+
+- **Personal data in old chats, for every agent:** `cloakroom exposure --personal` also finds personal data you typed in old Codex, Cursor and Gemini CLI chats, not only Claude Code ([details](#commands-youll-use)).
+- **No Keychain password prompt on a Mac:** none on first run or after a Python update, and an agent can't read the vault key ([details](#how-it-works)).
+
 ## What works where
 
 ✓ masked · ⛔ stopped or held · ✗ not covered
@@ -112,12 +117,13 @@ text than secret-only scanners. Method and raw numbers: [bench/RESULTS.md](bench
 
 ## Recent releases
 
+- **1.4.0**: `cloakroom exposure --personal` also finds personal data you typed in old Codex, Cursor and Gemini CLI
+  chats ([details](#commands-youll-use)). On a Mac there is no Keychain password prompt on first run or after a Python
+  update, and an agent can't read the vault key ([details](#how-it-works)).
 - **1.3.0**: an agent can't approve its own held call or switch Cloakroom off, and a hook or MCP server it writes
   into agent config is held until you type `cr: allow`.
 - **1.2.0**: Cursor's editor is checked with Cloakroom (Tab completion isn't covered). Codex signed in with ChatGPT is
   masked through `cloakroom proxy`. Fewer false alarms on Codex's plugin list.
-- **1.1.0**: Cursor's command-line agent (`cloakroom install cursor`), and `cloakroom allow` lets a held command run
-  once.
 
 All releases: [cloakroom.sh/releases](https://cloakroom.sh/releases) · [CHANGELOG.md](CHANGELOG.md).
 

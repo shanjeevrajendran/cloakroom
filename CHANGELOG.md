@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.4.0 (2026-11-08)
+- `cloakroom exposure --personal` also finds personal data you typed in old Codex, Cursor and Gemini CLI chats, not only Claude Code ([details](#commands-youll-use)). Only what you typed is read, never tool output or the agent's replies.
+- macOS: no more Keychain password prompt naming "python" on first run or after a Python update ([details](#how-it-works)). The vault key now sits in a Keychain item Apple's own `security` tool creates and reads; if you used 1.3 or older, macOS may ask one last time while the key is copied, and the old item is left as it was. An agent's shell command that tries to read the key out of the Keychain is denied.
+- Known limit: Gemini CLI chats were checked against Gemini CLI's published source, not a live chat (see docs-LIMITS, "cloakroom exposure --personal").
+- Known limit: the gate reads the command's text, so a command built piece by piece at run time can still read the key (see docs-LIMITS, "An agent can't read Cloakroom's vault key").
+
 ## 1.3.0 (2026-11-01)
 - An agent can no longer approve its own held call: its shell commands that run `cloakroom allow`, `allow-host` or `uninstall` (any path, `python -m`, `uvx`, inside `bash -c`, `$(...)`, a script it runs, or a fake terminal) are denied. These commands also refuse to run in an agent's shell or without a terminal; in your own terminal they work as before.
 - A hook or MCP server written into an agent's config (`.mcp.json`, `.claude/settings.json`, Codex's `config.toml` and `hooks.json`, Cursor's `hooks.json` and `mcp.json`, `.gemini/settings.json`, Gemini extensions) is held until you type `cr: allow`. The hold names the file, the line and the command. Removing Cloakroom's own entry there is held the same way. Edits that add no command, and reading config, go through.
