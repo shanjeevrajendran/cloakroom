@@ -14,17 +14,19 @@
 <meta property="og:title" content="Cloakroom: keep secrets and personal data out of your AI coding agent">
 <meta property="og:description" content="Free and open source. Cloakroom masks API keys, secrets and personal data on your own machine before your AI coding agent sees them. Works with Claude Code, Codex CLI, Gemini CLI and Cursor (editor and command-line agent).">
 <meta property="og:url" content="https://cloakroom.sh/">
-<meta property="og:image" content="https://raw.githubusercontent.com/shanjeevrajendran/cloakroom/main/assets/social-card.png">
+<meta property="og:image" content="https://cloakroom.sh/img/social-card.png">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Cloakroom: keep secrets and personal data out of your AI coding agent">
 <meta name="twitter:description" content="Free and open source. Cloakroom masks API keys, secrets and personal data on your own machine before your AI coding agent sees them. Works with Claude Code, Codex CLI, Gemini CLI and Cursor (editor and command-line agent).">
-<meta name="twitter:image" content="https://raw.githubusercontent.com/shanjeevrajendran/cloakroom/main/assets/social-card.png">
+<meta name="twitter:image" content="https://cloakroom.sh/img/social-card.png">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 44 44'%3E%3Crect width='44' height='44' rx='9' fill='%230d1117'/%3E%3Cg fill='%2356d364' stroke='%2356d364' stroke-width='2.6' stroke-linejoin='round' stroke-linecap='round' transform='translate(4 4) scale(.82)'%3E%3Cpath d='M4 6H40V16A6 6 0 0 0 40 28V38H4V28A6 6 0 0 0 4 16Z'/%3E%3Cpath d='M14 22H30' stroke='%230d1117' stroke-dasharray='3 3'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="icon" href="favicon.ico" sizes="32x32">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Cloakroom","description":"Free and open source. Cloakroom masks API keys, secrets and personal data on your own machine before your AI coding agent sees them. Works with Claude Code, Codex CLI, Gemini CLI and Cursor (editor and command-line agent).","applicationCategory":"SecurityApplication","operatingSystem":"macOS, Windows, Linux","license":"https://www.apache.org/licenses/LICENSE-2.0","url":"https://cloakroom.sh/","codeRepository":"https://github.com/shanjeevrajendran/cloakroom","author":{"@type":"Person","name":"Shanjeev Rajendran","url":"https://shanjeevrajendran.github.io/"},"sameAs":["https://github.com/shanjeevrajendran/cloakroom","https://pypi.org/project/cloakroom/"],"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
 </script>
 <script type="application/ld+json">
-{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Does Cloakroom send my data anywhere?", "acceptedAnswer": {"@type": "Answer", "text": "No. It downloads its AI model once from Hugging Face, and everything else runs on your own machine."}}, {"@type": "Question", "name": "What does it mask?", "acceptedAnswer": {"@type": "Answer", "text": "API keys, passwords, tokens and personal data such as names, emails and addresses. Text in scanned pages and photos is read on your machine and hidden like any other file."}}, {"@type": "Question", "name": "Does the agent still work normally?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. The agent works with placeholders, and the real values are put back, on your machine, in the files the agent writes."}}, {"@type": "Question", "name": "What happens when my prompt contains a secret?", "acceptedAnswer": {"@type": "Answer", "text": "Cloakroom can stop a prompt but can’t edit it, so it stops it and tells you what it found. Put the detail in a file and ask the agent to read it instead."}}, {"@type": "Question", "name": "Does Cloakroom work with Codex, Gemini CLI or Cursor?", "acceptedAnswer": {"@type": "Answer", "text": "Yes, on Mac and Linux: run cloakroom install codex, cloakroom install gemini or cloakroom install cursor (Cursor’s editor and command-line agent; Tab completion isn’t covered, and typed prompts are checked in the editor only). Claude Code works on Mac, Linux and Windows."}}, {"@type": "Question", "name": "Can the agent switch Cloakroom off?", "acceptedAnswer": {"@type": "Answer", "text": "No. It can’t approve a call Cloakroom held, remove Cloakroom, or add a hook (a command it runs by itself) or an MCP server (an add-on tool) to its settings. Those wait until you type cr: allow, or run the command in your own terminal."}}, {"@type": "Question", "name": "What is stored and what leaves my machine?", "acceptedAnswer": {"@type": "Answer", "text": "The Security page lists what Cloakroom keeps, where it keeps it, what leaves your machine and what it cannot catch."}}, {"@type": "Question", "name": "What doesn't it protect?", "acceptedAnswer": {"@type": "Answer", "text": "It stops accidental leaks, like a key in a file the agent happened to open. It isn’t a sandbox (a sealed-off space the agent can’t get out of). Out of scope: an agent taken over by hidden instructions (a prompt injection) that sneaks data out a piece at a time. Cloakroom limits the rest of what such an agent can do: it only has placeholders, secrets Cloakroom has seen are held on the way out, and it can’t approve its own held call or switch Cloakroom off; what you type into a prompt, which Cloakroom can stop but not edit; Claude Code’s own logs on your disk. The full list: What it cannot catch."}}]}
+{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Does Cloakroom send my data anywhere?", "acceptedAnswer": {"@type": "Answer", "text": "No. Cloakroom itself sends nothing. It downloads its AI model once from Hugging Face, and everything else runs on your own machine. Your agent still talks to its AI company as before, with placeholders in place of the values Cloakroom found. The limits are on the Security page."}}, {"@type": "Question", "name": "What does it mask?", "acceptedAnswer": {"@type": "Answer", "text": "API keys, passwords, tokens and personal data such as names, emails and addresses. Text in scanned pages and photos is read on your machine and hidden like any other file."}}, {"@type": "Question", "name": "Does the agent still work normally?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. The agent works with placeholders, and the real values are put back, on your machine, in the files the agent writes."}}, {"@type": "Question", "name": "What happens when my prompt contains a secret?", "acceptedAnswer": {"@type": "Answer", "text": "Cloakroom can stop a prompt but can’t edit it, so it stops it and tells you what it found. Put the detail in a file and ask the agent to read it instead."}}, {"@type": "Question", "name": "Does Cloakroom work with Codex, Gemini CLI or Cursor?", "acceptedAnswer": {"@type": "Answer", "text": "Yes, on Mac and Linux: run cloakroom install codex, cloakroom install gemini or cloakroom install cursor (Cursor’s editor and command-line agent; Tab completion isn’t covered, and typed prompts are checked in the editor only). Claude Code works on Mac, Linux and Windows."}}, {"@type": "Question", "name": "Can the agent switch Cloakroom off?", "acceptedAnswer": {"@type": "Answer", "text": "No. It can’t approve a call Cloakroom held, remove Cloakroom, or add a hook (a command it runs by itself) or an MCP server (an add-on tool) to its settings. Those wait until you type cr: allow, or run the command in your own terminal."}}, {"@type": "Question", "name": "What is stored and what leaves my machine?", "acceptedAnswer": {"@type": "Answer", "text": "The Security page lists what Cloakroom keeps, where it keeps it, what leaves your machine and what it cannot catch."}}, {"@type": "Question", "name": "What doesn't it protect?", "acceptedAnswer": {"@type": "Answer", "text": "It stops accidental leaks, like a key in a file the agent happened to open. It isn’t a sandbox (a sealed-off space the agent can’t get out of). Out of scope: an agent taken over by hidden instructions (a prompt injection) that sneaks data out a piece at a time. Cloakroom limits the rest of what such an agent can do: it only has placeholders, secrets Cloakroom has seen are held on the way out, and it can’t approve its own held call or switch Cloakroom off; what you type into a prompt, which Cloakroom can stop but not edit; Claude Code’s own logs on your disk. The full list: What it cannot catch."}}]}
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -71,6 +73,7 @@
   <div class="hero-copy">
     <h1 id="hero-title" class="lines"><span class="line"><span data-line style="--i:0">Your agent sees the code,</span></span> <span class="line"><span data-line style="--i:1">not your secrets</span></span></h1>
     <p class="lead" data-rise>Cloakroom swaps your secrets and personal data for placeholders before your AI coding agent sees them, and puts the real values back in the files it writes.</p>
+    <p class="hero-more" data-rise>Free and open source.</p>
     <div class="tabs" data-tabs data-ui data-rise>
       <div class="tablist" role="tablist" aria-label="Install for your agent">
         <button type="button" role="tab" id="tab-claude" aria-controls="panel-claude" aria-selected="true">Claude Code</button>
@@ -80,24 +83,24 @@
       </div>
       <div class="tabpanel" role="tabpanel" id="panel-claude" aria-labelledby="tab-claude">
         <p class="tab-note">Mac, Windows and Linux. Inside Claude Code:</p>
-        <div class="cmd-row"><pre><code>/plugin marketplace add shanjeevrajendran/cloakroom
+        <div class="cmd-row"><pre tabindex="0"><code>/plugin marketplace add shanjeevrajendran/cloakroom
 /plugin install cloakroom@cloakroom</code></pre><button type="button" class="copy">Copy</button></div>
       </div>
       <div class="tabpanel" role="tabpanel" id="panel-codex" aria-labelledby="tab-codex">
         <p class="tab-note">Mac and Linux. In a terminal:</p>
-        <div class="cmd-row"><pre><code>uv tool install "cloakroom[model,torch,ocr]"
+        <div class="cmd-row"><pre tabindex="0"><code>uv tool install "cloakroom[model,torch,ocr]"
 cloakroom install codex</code></pre><button type="button" class="copy">Copy</button></div>
         <p class="tab-note">The part in brackets adds the AI model that finds names and addresses on your machine, and reading text in screenshots and scans.</p>
       </div>
       <div class="tabpanel" role="tabpanel" id="panel-gemini" aria-labelledby="tab-gemini">
         <p class="tab-note">Mac and Linux. In a terminal:</p>
-        <div class="cmd-row"><pre><code>uv tool install "cloakroom[model,torch,ocr]"
+        <div class="cmd-row"><pre tabindex="0"><code>uv tool install "cloakroom[model,torch,ocr]"
 cloakroom install gemini</code></pre><button type="button" class="copy">Copy</button></div>
         <p class="tab-note">The part in brackets adds the AI model that finds names and addresses on your machine, and reading text in screenshots and scans.</p>
       </div>
       <div class="tabpanel" role="tabpanel" id="panel-cursor" aria-labelledby="tab-cursor">
         <p class="tab-note">Cursor’s editor and its command-line agent (<code>agent</code>). Tab completion isn’t covered. Mac and Linux.</p>
-        <div class="cmd-row"><pre><code>uv tool install "cloakroom[model,torch,ocr]"
+        <div class="cmd-row"><pre tabindex="0"><code>uv tool install "cloakroom[model,torch,ocr]"
 cloakroom install cursor</code></pre><button type="button" class="copy">Copy</button></div>
         <p class="tab-note">The part in brackets adds the AI model that finds names and addresses on your machine, and reading text in screenshots and scans.</p>
       </div>
@@ -159,7 +162,7 @@ cloakroom install cursor</code></pre><button type="button" class="copy">Copy</bu
       <figcaption><span data-for="read">What the agent reads</span><span data-for="write">Written on your machine</span><span data-for="learn">The dashboard</span></figcaption>
       <pre data-for="read"><code>DATABASE_URL=postgres://admin:<mark class="ph">PII_SECRET_1</mark>@10.0.4.12/prod</code></pre>
       <pre data-for="write"><code>DATABASE_URL=postgres://admin:<mark class="real">Hunter2x9</mark>@10.0.4.12/prod</code></pre>
-      <img data-for="learn" src="https://raw.githubusercontent.com/shanjeevrajendran/cloakroom/main/assets/dashboard-preview.png" width="2800" height="2000" loading="lazy" decoding="async" alt="The Cloakroom dashboard: a list of recent alerts, each showing the tool, the file and what was masked, with labels like Correct, To review and Missed something, and a panel that turns your labels into suggested rules to approve or dismiss.">
+      <img data-for="learn" src="img/dashboard-preview.webp" width="1200" height="857" loading="lazy" decoding="async" alt="The Cloakroom dashboard: a list of recent alerts, each showing the tool, the file and what was masked, with labels like Correct, To review and Missed something, and a panel that turns your labels into suggested rules to approve or dismiss.">
     </figure>
   </div>
   <div class="feat-col">
@@ -180,7 +183,7 @@ cloakroom install cursor</code></pre><button type="button" class="copy">Copy</bu
       <h3 data-rise>Learns from your corrections</h3>
       <p data-rise>When it hides something harmless (a false alarm), mark it once in the dashboard and a rule stops it next time. The AI model itself never changes. Your labels become rules that run before it.</p>
       <button type="button" class="ctl" data-set="learn" aria-pressed="false">Show the dashboard</button>
-      <figure class="mini mini--pic"><img src="https://raw.githubusercontent.com/shanjeevrajendran/cloakroom/main/assets/dashboard-preview.png" width="2800" height="2000" loading="lazy" decoding="async" alt="The Cloakroom dashboard: a list of recent alerts, each showing the tool, the file and what was masked, with labels like Correct, To review and Missed something, and a panel that turns your labels into suggested rules to approve or dismiss."></figure>
+      <figure class="mini mini--pic"><img src="img/dashboard-preview.webp" width="1200" height="857" loading="lazy" decoding="async" alt="The Cloakroom dashboard: a list of recent alerts, each showing the tool, the file and what was masked, with labels like Correct, To review and Missed something, and a panel that turns your labels into suggested rules to approve or dismiss."></figure>
     </article>
     <p class="hero-more" data-rise>New in 1.4: personal data in old Codex, Cursor and Gemini CLI chats can be found too (<a href="https://github.com/shanjeevrajendran/cloakroom#commands-youll-use">Commands you'll use</a>), and on a Mac there is no Keychain password prompt (<a href="https://github.com/shanjeevrajendran/cloakroom#how-it-works">How it works</a>).</p>
   </div>
@@ -190,7 +193,7 @@ cloakroom install cursor</code></pre><button type="button" class="copy">Copy</bu
   <h2 id="faq-title" data-rise>Common questions</h2>
   <div class="tiles">
     <details name="faq" open><summary><h3>Does Cloakroom send my data anywhere?</h3><span class="plus" aria-hidden="true"></span></summary>
-      <div class="answer"><p>No. It downloads its AI model once from Hugging Face, and everything else runs on your own machine.</p></div></details>
+      <div class="answer"><p>No. Cloakroom itself sends nothing. It downloads its AI model once from Hugging Face, and everything else runs on your own machine. Your agent still talks to its AI company as before, with placeholders in place of the values Cloakroom found. The limits are on the <a href="security.html">Security page</a>.</p></div></details>
     <details name="faq"><summary><h3>What does it mask?</h3><span class="plus" aria-hidden="true"></span></summary>
       <div class="answer"><p>API keys, passwords, tokens and personal data such as names, emails and addresses. Text in scanned pages and photos is read on your machine and hidden like any other file.</p></div></details>
     <details name="faq"><summary><h3>Does the agent still work normally?</h3><span class="plus" aria-hidden="true"></span></summary>
