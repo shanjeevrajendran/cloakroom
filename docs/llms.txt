@@ -40,7 +40,7 @@ Example result:
 
 ```
 ok   python: 3.14.7 on Darwin arm64
-ok   version: cloakroom 1.1.0
+ok   version: cloakroom 1.4.0
 ok   mode: full
 ok   vault key: OS secure store
 ...   model: loading (the first run downloads it once, about 1 GB; that can take a minute or two)
@@ -128,12 +128,21 @@ claude plugin update cloakroom@cloakroom
 
 Codex, Gemini CLI, Cursor, git commits, or a cloakroom you installed yourself: run cloakroom update in a terminal. It updates Cloakroom with the installer you used (uv, pipx or pip) and keeps the optional parts you had. Then it sets up Cloakroom’s checks again for Codex, Gemini CLI, Cursor and git commits, only where they were set up before.
 
+### Uninstall
+- In Claude Code: /plugin uninstall cloakroom@cloakroom.
+- Stop the service: cloakroom status shows if it runs; it stops when you log out, or end the python process listening on port 37787.
+- Remove the program, with whatever installed it: uv tool uninstall cloakroom or pipx uninstall cloakroom. If the plugin installed it without uv or pipx, it lives in ~/.cloakroom/venv and step 4 removes it.
+- Delete ~/.cloakroom (config, encrypted vault, labels, rules, logs).
+- Delete the vault key: Keychain Access on macOS (search "cloakroom"), Credential Manager on Windows, or your Secret Service keyring on Linux.
+- Delete the downloaded model (about 1 GB): run hf cache delete (or huggingface-cli delete-cache) and pick perplexity-ai/PII-Tracer. Deleting only the models--perplexity-ai--PII-Tracer folder can leave the weights behind, since they may be stored as links to a shared folder.
+
 ### Pick how you’ll run it
 Easiest: add the plugin (above) and let it install Cloakroom on the next start. It uses uv or pipx if either is installed, otherwise a private Python environment in ~/.cloakroom/venv (needs Python 3.10+). If the install fails, Claude Code says so and it retries after 10 minutes. The table is for installing by hand.
 | Your machine | Install | What you get
 | Apple Silicon Mac, or an NVIDIA GPU | uv tool install "cloakroom[model,torch]" | Full mode (keys plus names and addresses) on the GPU, about 20 ms per check
 | Any other machine (Intel Mac, most Windows and Linux) | uv tool install "cloakroom[model,torch]", then once: cloakroom export-onnx (saves a copy of the model that runs fast on a CPU) | Full mode on the CPU. Before the export it works but is slow (about 0.5 s per check); after it, about 60 ms on a modern CPU
 | Just trying it, or an automated build machine (CI) | uv tool install cloakroom and CLOAKROOM_MODE=rules | Rules only: instant, no model download, but misses names and personal data in ordinary sentences
+Add ocr inside the brackets to also read text in screenshots and scans. Without it, scans and pictures are held back.
 pipx install ... works the same way as uv tool install .... The model extras need about 1 GB of disk on a Mac and up to about 4 GB elsewhere (mostly PyTorch). Python 3.10 or newer.
 To try it on one project first, install the plugin for that folder only. From inside the folder:
 
