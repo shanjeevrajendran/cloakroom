@@ -203,6 +203,9 @@ mark.ph { background: var(--accent); color: var(--accent-ink); font-weight: 600;
 .faq { max-width: 1440px; margin-inline: auto; padding: 0 var(--gutter) var(--section); display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--gap); align-items: start; }
 .faq h2 { grid-column: 1 / 5; position: sticky; top: 96px; font-size: var(--s-head); max-width: 8ch; }
 .tiles { grid-column: 5 / 13; display: grid; gap: 8px; }
+.results-body { grid-column: 5 / 13; display: grid; gap: 14px; font-size: var(--s-body); max-width: 60ch; }
+.results-lead { font-size: var(--s-lead); line-height: 1.35; }
+.results-body a { font-weight: 600; }
 .tiles details { background: var(--surface); transition: background-color 200ms ease; }
 .tiles summary { list-style: none; display: flex; align-items: center; justify-content: space-between; gap: 24px; min-height: 76px; padding: 18px 24px; cursor: pointer; }
 .tiles summary::-webkit-details-marker { display: none; }
@@ -348,7 +351,7 @@ mark.ph { background: var(--accent); color: var(--accent-ink); font-weight: 600;
   .row-more { grid-template-columns: 1fr; gap: 6px; }
   .faq, .writeup, .split, .report, .group, .stops-head { grid-template-columns: 1fr; }
   .faq h2 { position: static; grid-column: auto; max-width: none; }
-  .tiles, .wu-photo, .ticket, .split > .body, .split .aside, .report-aside, .report .ticket, .items, .group-aside, .stops-head h2, .stops-head p { grid-column: auto; }
+  .tiles, .results-body, .wu-photo, .ticket, .split > .body, .split .aside, .report-aside, .report .ticket, .items, .group-aside, .stops-head h2, .stops-head p { grid-column: auto; }
   .group-aside { position: static; }
   .group-aside ul { display: none; }
   .split .aside { grid-template-columns: 1fr 1fr; align-items: start; }
