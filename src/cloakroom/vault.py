@@ -12,6 +12,7 @@ for a placeholder this session issued: a guessed number, a wrong tag, one from a
 from __future__ import annotations
 
 import base64
+import contextlib
 import hashlib
 import hmac
 import json
@@ -45,20 +46,67 @@ class Vault:
         self.given: dict[str, str] = {}  # placeholder -> value from `cloakroom give` (handoff.py): never saved here
         self.id = secrets.token_hex(16)
         self._key = None if self.path else secrets.token_bytes(32)  # no file: tags only need to hold for this object
+        self._stamp = None  # the session file as this object last read or wrote it
+        self._depth, self._dirty = 0, False  # inside batch(); a placeholder was made that the file doesn't hold yet
         if self.path and self.path.exists():
-            from . import crypto
-            raw = self.path.read_bytes()
-            data = json.loads(raw) if raw.startswith(b"{") else json.loads(crypto.decrypt(raw))
-            # a vault from before 0.6.1 has no id: derive one from the file, so every process reading it agrees
-            self.id = data.get("id") or hashlib.sha256(raw).hexdigest()[:32]
-            self.counts = data["counts"]
-            # and its values get signed placeholders with the same numbers; the old names are no longer restored
-            self.by_placeholder = {(ph if PLACEHOLDER.fullmatch(ph) else self._sign(ph)): v
-                                   for ph, v in data["map"].items()}
-            self.by_value = {v: k for k, v in self.by_placeholder.items()}
-            self.derived = set(data.get("derived", []))  # 0.6.6+; derived copies are always signed
+            self._read()
         if self.path:
             self.load_given()
+
+    def _file_stamp(self):
+        try:
+            st = os.stat(self.path)
+        except OSError:
+            return None
+        return st.st_size, st.st_mtime_ns, st.st_ino
+
+    def _read(self):
+        from . import crypto
+        self._stamp = self._file_stamp()  # before the read: a write during it shows as a change next time
+        raw = self.path.read_bytes()
+        data = json.loads(raw) if raw.startswith(b"{") else json.loads(crypto.decrypt(raw))
+        # a vault from before 0.6.1 has no id: derive one from the file, so every process reading it agrees
+        self.id = data.get("id") or hashlib.sha256(raw).hexdigest()[:32]
+        self.counts = data["counts"]
+        # and its values get signed placeholders with the same numbers; the old names are no longer restored
+        self.by_placeholder = {(ph if PLACEHOLDER.fullmatch(ph) else self._sign(ph)): v
+                               for ph, v in data["map"].items()}
+        self.by_value = {v: k for k, v in self.by_placeholder.items()}
+        self.derived = set(data.get("derived", []))  # 0.6.6+; derived copies are always signed
+        self.given = {}
+
+    def refresh(self):
+        """Take in what another process wrote to the session file since this object read it (the service keeps
+        vaults for hours; a hook that ran on the rules alone writes the file itself), and the handed-over values."""
+        if self.path and self.path.exists() and self._file_stamp() != self._stamp:
+            self._read()
+        self.load_given()
+
+    @contextlib.contextmanager
+    def batch(self):
+        """Make placeholders as one step: the session file is locked, read again if another process changed it, and
+        written once at the end. Without this two hooks running at the same time each gave the next number to a
+        different value, the same placeholder twice, and the file kept only one of them."""
+        if self.path is None or self._depth:
+            self._depth += 1
+            try:
+                yield self
+            finally:
+                self._depth -= 1
+            return
+        from . import store
+        self.path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
+        with store.locked(self.path.with_suffix(".lock")):
+            if self.path.exists() and self._file_stamp() != self._stamp:
+                self._read()
+                self.load_given()
+            self._depth = 1
+            try:
+                yield self
+            finally:
+                self._depth = 0
+                if self._dirty:
+                    self._save()
 
     def load_given(self):
         """Read the values handed over for this session's project and the ones the proxy masked, fresh (the service keeps
@@ -84,13 +132,16 @@ class Vault:
         """derived: value is a hash, encoding or part of a known value (decode.find_known), kept out of the seeds."""
         if value in self.by_value:
             return self.by_value[value]
-        self.counts[kind] = self.counts.get(kind, 0) + 1
-        ph = self._sign(f"PII_{kind}_{self.counts[kind]}")
-        self.by_value[value], self.by_placeholder[ph] = ph, value
-        if derived:
-            self.derived.add(ph)
-        self._save()
-        return ph
+        with self.batch():
+            if value in self.by_value:  # another process made it since this object read the file
+                return self.by_value[value]
+            self.counts[kind] = self.counts.get(kind, 0) + 1
+            ph = self._sign(f"PII_{kind}_{self.counts[kind]}")
+            self.by_value[value], self.by_placeholder[ph] = ph, value
+            if derived:
+                self.derived.add(ph)
+            self._dirty = True
+            return ph
 
     def lookup(self, placeholder: str) -> str | None:
         """The real value for a placeholder this session issued, else None (and the refusal is noted)."""
@@ -122,12 +173,9 @@ class Vault:
         if not self.path:
             return
         self.path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
-        from . import crypto
+        from . import crypto, store
         own = {p: v for p, v in self.by_placeholder.items() if p not in self.given}  # handed-over values stay in handoff.py
         blob = crypto.encrypt(json.dumps({"id": self.id, "map": own, "counts": self.counts,
                                        "derived": sorted(self.derived)}).encode())
-        tmp = self.path.with_suffix(".tmp")
-        fd = os.open(tmp, os.O_WRONLY | os.O_CREAT | os.O_TRUNC | getattr(os, "O_BINARY", 0), 0o600)
-        with os.fdopen(fd, "wb") as f:
-            f.write(blob)
-        os.replace(tmp, self.path)
+        store.write_atomic(self.path, blob)
+        self._stamp, self._dirty = self._file_stamp(), False

@@ -19,14 +19,21 @@ from . import __version__, config, crypto, dashboard, engine, filelog, handoff
 from .vault import Vault
 
 LOCK = Lock()  # one model instance; calls are serialized
-VAULTS: dict[str, Vault] = {}
+VAULTS: dict[str, Vault] = {}  # most recently used last
+KEEP_VAULTS = 32  # sessions whose values stay in memory; an older one is read from its file again when it comes back
 
 
 def _vault(session: str) -> Vault:
-    if session not in VAULTS:
-        VAULTS[session] = handoff.vault_for(session)
-    VAULTS[session].load_given()
-    return VAULTS[session]
+    """The session's vault, with what its file and the handed-over values hold now. Call with LOCK held."""
+    vault = VAULTS.pop(session, None)
+    if vault is None:
+        vault = handoff.vault_for(session)
+    else:
+        vault.refresh()
+    VAULTS[session] = vault
+    while len(VAULTS) > KEEP_VAULTS:
+        del VAULTS[next(iter(VAULTS))]
+    return vault
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -99,8 +106,8 @@ class Handler(BaseHTTPRequestHandler):
             return self._send(200, {"code": dashboard.new_code()})
         try:
             req = json.loads(self.rfile.read(int(self.headers.get("Content-Length", 0))))
-            vault = _vault(req.get("session", "default"))
             with LOCK:
+                vault = _vault(req.get("session", "default"))
                 if self.path == "/mask":
                     cfg = config.load()
                     files = filelog.known(req.get("roots") or [], req.get("read") or "") if req.get("roots") else None

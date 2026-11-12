@@ -640,10 +640,11 @@ def mask(text: str, vault: Vault | None = None, mode: str = "full", allow=(), al
     vault = vault if vault is not None else Vault()
     findings, skipped = detect(text, mode, allow, always, ocr, known_values(vault, always), files)
     out, last, masked = [], 0, []
-    for f in findings:
-        ph = vault.placeholder(f.value(text), f.kind, derived=f.source.startswith("known-"))
-        out += [text[last:f.start], ph]
-        last = f.end
-        masked.append((ph, f.kind, f.source))
+    with vault.batch():  # one write of the session file for all of them (it was one per new value)
+        for f in findings:
+            ph = vault.placeholder(f.value(text), f.kind, derived=f.source.startswith("known-"))
+            out += [text[last:f.start], ph]
+            last = f.end
+            masked.append((ph, f.kind, f.source))
     out.append(text[last:])
     return Result("".join(out), mode, masked, skipped)
