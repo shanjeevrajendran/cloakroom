@@ -1,17 +1,17 @@
 # Changelog
 
-## Unreleased
-- Personal data near the end of long, dense output (a log, a CSV of numbers, a hex dump, minified JSON) could reach the agent unmasked. The model reads at most 4,096 tokens at a time and was handed 6,000 characters whatever they held, so the last 9 to 31% of each stretch of such text got no model check. Keys, cards, emails and phones there were still caught by the rules; names, addresses and other things only the model finds were not. Text now goes to the model in pieces it reads in full, cut at line breaks, and a value on a cut is read whole.
+## 1.5.0 (2026-11-12)
+- Personal data near the end of long, dense output (a log, a CSV of numbers, a hex dump, minified JSON) could reach the agent unmasked. The model reads a limited amount of text at a time and was handed more than that, so the last part of each stretch of such text got no model check. Keys, cards, emails and phones there were still caught by the rules; names, addresses and other things only the model finds were not. Text now goes to the model in pieces it reads in full, cut at line breaks.
 - Rules mode: a name written a second time into a file Cloakroom had already logged went through unmasked in that tool call's output. It is masked now.
-- Rules mode: two tool calls that ran at the same moment could give the same placeholder to two different values, or leave a value that could not be restored. A session's vault file now has one writer at a time.
-- A check that would take longer than the agent waits for a hook now stops early and the output is withheld, as on any error. Before, each step of a hook had 30 seconds of its own whatever the hook had left, and an agent that stops waiting decides for itself what happens (Gemini CLI goes on with the unchecked original).
-- Faster on large text. The rules over a 491 KB CSV with 16,000 findings: 8.7 s before, 0.3 s now. Masking 800 values never seen before: 211 ms before, 21 ms now (the vault file was written once per value).
-- The model reads a text once. A file a command names is checked before the command runs and again as its output; the second check took as long as the first (23 s for 30,000 characters of log lines on a CPU) and now takes 22 ms.
-- 30,000 characters of log lines, first read, on a CPU: 22.6 s before, 16.8 s now, and all of it is read. On Apple's graphics chip a first read is about a tenth slower than before (2.1 s against 1.8 s for the same log), the cost of reading the part that was skipped.
-- A call to the service that times out is no longer sent a second time, and no second service is started. The service was busy, not down, and did the same work twice.
-- The service keeps the vaults of the 32 most recent sessions in memory, not every session's for as long as it runs, and takes in what a hook wrote to a session's vault file.
+- Rules mode: two tool calls that ran at the same moment could give one placeholder to two different values, or leave a value that could not be restored. A session's vault file now has one writer at a time.
+- A check that would take longer than the agent waits for a hook now stops early and the output is withheld, as on any error. Before, an agent that stopped waiting decided for itself what happened next (Gemini CLI goes on with the unchecked original).
+- Much faster on large files and long output. A large CSV is checked in a fraction of the time it took, and a file a command names is read by the model once, not once before the command runs and again as its output.
+- A call to the local service that times out is no longer sent a second time, and no second service is started. The service was busy, not down, and did the same work twice.
+- The service keeps the vaults of the most recent sessions in memory, not every session's for as long as it runs, and takes in what a hook wrote to a session's vault file.
 - `python bench/speed.py` prints how long each step takes on your machine (`--model` adds the model).
-- Inside: `hook.py` is three modules (`hookcall.py`: what a hook call notes down and holding a call; `gitcheck.py`: the git commit and push check), one hold function in place of six copies, and `store.py` for locked and atomic file writes. No command, setting or file format changed.
+- Inside: `hook.py` is three modules, the long functions are split into named steps, and modules use each other's public names. No command, setting or file format changed.
+- Known limit: a first check by the model takes a little longer on dense text than in 1.4.0, because all of the text is now read (see docs-LIMITS, "Speed").
+- Known limit: on Windows, when another process keeps a session's vault file locked for two seconds, the write goes ahead without the lock (see docs-LIMITS, "Vault file lock on Windows").
 
 ## 1.4.0 (2026-11-08)
 - `cloakroom exposure --personal` also finds personal data you typed in old Codex, Cursor and Gemini CLI chats, not only Claude Code ([details](#commands-youll-use)). Only what you typed is read, never tool output or the agent's replies.
