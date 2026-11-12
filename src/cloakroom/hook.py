@@ -201,6 +201,20 @@ def _allowed_once(command: str) -> bool:
     return True
 
 
+def _hold(key: str, reason: str, dry: str = "") -> dict | None:
+    """Hold a call until you type cr: allow: the deny answer with reason, and the call is noted (as a keyed hash of
+    key: the command, or the tool name and its input) so that only the same call passes, once, within HOLD_MINUTES.
+    None when this is that call, or in a dry run (dry: its log line; "" for a hold that a dry run keeps)."""
+    if _allowed_once(key):
+        _ACTION[0] = "allowed once"
+        return None
+    if dry and _dry("pre", dry):
+        return None
+    _write_held({"mac": _command_mac(key), "until": time.time() + 60 * HOLD_MINUTES, "armed": False})
+    _ACTION[0] = "held"
+    return _deny(reason)
+
+
 def _egress_hold(command: str, session: str, vault: Vault, powershell: bool, money_why: str = "") -> dict | None:
     """Hold a command that would send a known secret off this machine: a value already in the session vault (plain
     or encoded), a key the rules recognise, or a literal token in a credential header. Labels only in the reason.
@@ -235,35 +249,22 @@ def _egress_hold(command: str, session: str, vault: Vault, powershell: bool, mon
         return _money_hold(command, money_why) if money_why else None
     if money_why:
         _NOTE[0], _EXTRA["money"] = f"money: {money_why}", money_why
-    if _allowed_once(command):
-        _ACTION[0] = "allowed once"
-        return None
     what = ", ".join(dict.fromkeys(found))
-    if _dry("pre", f"egress via {via}: would hold"):
-        return None
-    _write_held({"mac": _command_mac(command), "until": time.time() + 60 * HOLD_MINUTES, "armed": False})
-    _ACTION[0] = "held"
     also = f" and it would move money ({money_why})" if money_why else ""
-    return _deny(f"Cloakroom held this command: it would send {what} off this machine (via {via}){also}. A secret that "
-                 f"has left can't be called back. To send it anyway, type cr: allow, then ask Claude to run the same "
-                 f"command again: it passes once, within {HOLD_MINUTES} min. Claude: don't change or re-encode the "
-                 f"value to get past this; use an environment variable the user sets, or ask the user.")
+    return _hold(command, f"Cloakroom held this command: it would send {what} off this machine (via {via}){also}. A "
+                          f"secret that has left can't be called back. To send it anyway, type cr: allow, then ask "
+                          f"Claude to run the same command again: it passes once, within {HOLD_MINUTES} min. Claude: "
+                          f"don't change or re-encode the value to get past this; use an environment variable the "
+                          f"user sets, or ask the user.", f"egress via {via}: would hold")
 
 
 def _money_hold(key: str, why: str) -> dict | None:
     """Hold a call that would move money (money.py) until you type cr: allow; key is the command, or the tool name and
     its input, so only the same call passes once."""
     _NOTE[0], _EXTRA["money"] = f"money: {why}", why
-    if _allowed_once(key):
-        _ACTION[0] = "allowed once"
-        return None
-    if _dry("pre", f"money ({why}): would hold"):
-        return None
-    _write_held({"mac": _command_mac(key), "until": time.time() + 60 * HOLD_MINUTES, "armed": False})
-    _ACTION[0] = "held"
-    return _deny(f"Cloakroom held this call: it would move money ({why}). To run it, type cr: allow, then ask Claude "
-                 f"to run the same call again: it passes once, within {HOLD_MINUTES} min. Claude: don't change the "
-                 f"call to get past this; ask the user.")
+    return _hold(key, f"Cloakroom held this call: it would move money ({why}). To run it, type cr: allow, then ask "
+                      f"Claude to run the same call again: it passes once, within {HOLD_MINUTES} min. Claude: don't "
+                      f"change the call to get past this; ask the user.", f"money ({why}): would hold")
 
 
 def _long_hold(command: str) -> dict | None:
@@ -274,17 +275,10 @@ def _long_hold(command: str) -> dict | None:
     if not what:
         return None
     _NOTE[0], _EXTRA["hold"] = f"long-running: {what}", "long-running"
-    if _allowed_once(command):
-        _ACTION[0] = "allowed once"
-        return None
-    if _dry("pre", f"long-running ({what}): would hold"):
-        return None
-    _write_held({"mac": _command_mac(command), "until": time.time() + 60 * HOLD_MINUTES, "armed": False})
-    _ACTION[0] = "held"
-    return _deny(f"Cloakroom held this command: {what} keeps running, and what it prints after Codex stops waiting "
-                 f"won't be masked. To run it anyway, type cr: allow, then ask Codex to run the same command again: it "
-                 f"passes once, within {HOLD_MINUTES} min. Codex: don't change the command to get past this; ask the "
-                 "user.")
+    return _hold(command, f"Cloakroom held this command: {what} keeps running, and what it prints after Codex stops "
+                          f"waiting won't be masked. To run it anyway, type cr: allow, then ask Codex to run the same "
+                          f"command again: it passes once, within {HOLD_MINUTES} min. Codex: don't change the command "
+                          "to get past this; ask the user.", f"long-running ({what}): would hold")
 
 
 def on_prompt(data: dict) -> dict | None:
@@ -768,13 +762,9 @@ def _config_hold(tool: str, args: dict, cwd: str) -> dict | None:
         key = tool + "\0" + json.dumps(args, sort_keys=True)
     if not why:
         return None
-    if _allowed_once(key):
-        _ACTION[0] = "allowed once"
-        return None
-    _write_held({"mac": _command_mac(key), "until": time.time() + 60 * HOLD_MINUTES, "armed": False})
-    _ACTION[0] = "held"
-    return _deny(f"Cloakroom held this call: {'; '.join(why)}. A planted hook or MCP server runs with your rights. "
-                 "If you meant it, type cr: allow, then ask Claude to run the same call again: it runs once.")
+    return _hold(key, f"Cloakroom held this call: {'; '.join(why)}. A planted hook or MCP server runs with your "
+                      "rights. If you meant it, type cr: allow, then ask Claude to run the same call again: it runs "
+                      "once.")
 
 
 def _config_literals(text: str) -> list[str]:
@@ -1153,19 +1143,13 @@ def _git_hold(command: str, cwd: str, vault: Vault, powershell: bool) -> dict | 
     if not found:
         return None
     _FOUND.extend((ph, k) for _, ph, k in found)
-    if _allowed_once(command):
-        _ACTION[0] = "allowed once"
-        return None
     pairs = list(dict.fromkeys(f"{ph or 'a ' + k} in {name}" for name, ph, k in found))
     what = "; ".join(pairs[:3]) + (f" (and {len(pairs) - 3} more)" if len(pairs) > 3 else "")
-    if _dry("pre", f"git {verb}: would hold ({_summary([k for _, _, k in found])})"):
-        return None
-    _write_held({"mac": _command_mac(command), "until": time.time() + 60 * HOLD_MINUTES, "armed": False})
-    _ACTION[0] = "held"
-    return _deny(f"Cloakroom held this git {verb}: {what}. A pushed secret can't be called back. Move the value to "
-                 f".env (git-ignored) and unstage it, or, to {verb} anyway, type cr: allow, then ask Claude to run the "
-                 f"same command again: it passes once, within {HOLD_MINUTES} min. Claude: don't change or re-encode the "
-                 "value to get past this; ask the user.")
+    return _hold(command, f"Cloakroom held this git {verb}: {what}. A pushed secret can't be called back. Move the "
+                          f"value to .env (git-ignored) and unstage it, or, to {verb} anyway, type cr: allow, then ask "
+                          f"Claude to run the same command again: it passes once, within {HOLD_MINUTES} min. Claude: "
+                          "don't change or re-encode the value to get past this; ask the user.",
+                 f"git {verb}: would hold ({_summary([k for _, _, k in found])})")
 
 
 GUESS_NOTICE = 3  # refused placeholders in one session before the user is told
@@ -1267,16 +1251,9 @@ def _site_hold(hosts: list[str], key: str, tool: str, args: dict, session: str, 
     if not why:
         return None
     _NOTE[0], _EXTRA["hold"] = "egress: " + " + ".join(holds), "+".join(holds)
-    if _allowed_once(key):
-        _ACTION[0] = "allowed once"
-        return None
-    if _dry("pre", f"egress ({'+'.join(holds)}): would hold"):
-        return None
-    _write_held({"mac": _command_mac(key), "until": time.time() + 60 * HOLD_MINUTES, "armed": False})
-    _ACTION[0] = "held"
-    return _deny(f"Cloakroom held this call: {'; '.join(why)}. To run it anyway, type cr: allow, then ask Claude to run "
-                 f"the same call again: it passes once, within {HOLD_MINUTES} min.{hint} Claude: don't change the call "
-                 "to get past this; ask the user.")
+    return _hold(key, f"Cloakroom held this call: {'; '.join(why)}. To run it anyway, type cr: allow, then ask Claude "
+                      f"to run the same call again: it passes once, within {HOLD_MINUTES} min.{hint} Claude: don't "
+                      "change the call to get past this; ask the user.", f"egress ({'+'.join(holds)}): would hold")
 
 
 def on_pre(data: dict) -> dict | None:
