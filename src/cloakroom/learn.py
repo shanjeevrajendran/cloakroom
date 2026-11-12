@@ -101,5 +101,5 @@ def after_label(new_rules: list[dict], values_of) -> list[dict]:
                 r.update(state="suggested", auto=False, why=r["why"] + f" · paused: {note}")
                 changed.append(r)
     if changed or new_rules:
-        userrules._save(rules)
+        userrules.save(rules)
     return changed

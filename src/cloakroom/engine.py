@@ -5,8 +5,12 @@
 """
 from __future__ import annotations
 
+import hashlib
 import os
 import re
+import time
+from bisect import bisect_left, bisect_right
+from collections import OrderedDict
 
 # The model is public: no Hugging Face login needed, so hide the "unauthenticated requests" warning.
 os.environ.setdefault("HF_HUB_VERBOSITY", "error")
@@ -23,7 +27,13 @@ MODEL_REVISION = "d25c16f2e57e321f6d2527715c01df9112f956f5"  # remote code revie
 SPAN_THRESHOLD = 0.8   # tuned on the 200-item gate test: true spans >= 0.96, false alarms <= 0.75
 # Raising it was tried 2026-10-10: true spans go down to 0.959 and false alarms sit at 0.95-0.97, so no bar helps.
 KIND_THRESHOLD: dict = {}
-CHUNK_CHARS = 6000     # model truncates at 4096 tokens
+# The model reads a window at a time. A window is at most CHUNK_CHARS characters and at most WINDOW_TOKENS tokens:
+# both backends drop what is past the model's 4096 tokens without a word, and dense text (logs, CSV, hex, minified
+# JSON) holds far more tokens per character than prose (6000 characters of digits is 6000 tokens). Half the model's
+# limit also costs about a third less time per character, measured on ONNX.
+CHUNK_CHARS = 6000
+WINDOW_TOKENS = 2048
+OVERLAP_CHARS = 200    # the next window starts at most this far back, so a value on a cut is read whole once
 MODEL_KIND = {"private_person": "PERSON", "private_email": "EMAIL", "private_phone": "PHONE",
               "private_address": "ADDRESS", "private_url": "URL", "private_date": "DATE",
               "account_number": "ACCOUNT", "secret": "SECRET"}
@@ -34,6 +44,34 @@ _EDGE_PUNCT = ",;\"'`"  # model spans sometimes take the separator next to a val
 
 class ModelUnavailable(RuntimeError):
     """full mode was asked for but the model can't run. Install cloakroom[model,torch] or use mode='rules'."""
+
+
+class OutOfTime(ModelUnavailable):
+    """The model check was stopped: it would have run past the time its caller has (time_limit). Callers fail
+    closed on it like on any ModelUnavailable."""
+
+
+SLOW = "this check would take longer than the agent waits for Cloakroom"
+_STOP_AT = [0.0]  # time.monotonic() after which model_findings stops; 0: no limit
+
+
+class time_limit:
+    """with time_limit(seconds): a model check inside raises OutOfTime between two windows once the time is up, so
+    work nobody is waiting for any more stops (the service runs one check at a time). None: no limit. Zero or
+    less: the time is up already, and the first window is not read."""
+
+    def __init__(self, seconds: float | None):
+        self.seconds = seconds
+
+    def __enter__(self):
+        self.before = _STOP_AT[0]
+        if self.seconds is None:
+            _STOP_AT[0] = 0.0
+        else:
+            _STOP_AT[0] = max(1e-9, time.monotonic() + (self.seconds if self.seconds > 0 else -1.0))
+
+    def __exit__(self, *exc):
+        _STOP_AT[0] = self.before
 
 
 _MODEL = None
@@ -73,6 +111,15 @@ def _model():
     return _MODEL
 
 
+def model_loaded() -> bool:
+    return _MODEL is not None
+
+
+def load_model():
+    """The model, loaded on first use (_model): raises ModelUnavailable when it can't run."""
+    return _model()
+
+
 def _onnx_model():
     try:
         from . import onnx_backend
@@ -99,17 +146,87 @@ def _torch_model():
     return AutoModel.from_pretrained(MODEL_ID, revision=MODEL_REVISION, trust_remote_code=True).to(device).eval()
 
 
-def model_findings(text: str) -> list[rules.Finding]:
-    out = []
-    for offset in range(0, max(len(text), 1), CHUNK_CHARS):
-        chunk = text[offset:offset + CHUNK_CHARS]
-        spans, _ = _model().predict(chunk)
-        for s in spans:
-            if s.label in MODEL_KIND and s.score >= KIND_THRESHOLD.get(MODEL_KIND[s.label], SPAN_THRESHOLD):
-                kind = MODEL_KIND[s.label]
-                for start, end, k in _pieces(text, offset + s.start, offset + s.end, kind):
-                    out.append(rules.Finding(start, end, k, f"model:{s.label}"))
+def _fit(model, text: str) -> int:
+    """How many leading characters of text fit in one window's tokens: len(text) when all of it does."""
+    fit = getattr(model, "fit", None)
+    if fit is not None:  # onnx_backend.OnnxModel
+        return fit(text, WINDOW_TOKENS)
+    tokenizer = getattr(model, "tokenizer", None)  # the PyTorch model's own
+    if tokenizer is None:
+        return len(text)  # a stand-in model (tests)
+    ends = [e for _, e in tokenizer(text, return_offsets_mapping=True, truncation=True,
+                                    max_length=WINDOW_TOKENS + 1)["offset_mapping"]]
+    return len(text) if len(ends) <= WINDOW_TOKENS else max(ends[:WINDOW_TOKENS])
+
+
+_CUT = re.compile(r"[ \t,;|]")
+
+
+def _windows(text: str, fit) -> list[tuple[int, int]]:
+    """(start, end) of each stretch of text the model reads, in order. Together they cover every character. A window
+    ends at a line break when its second half has one, else at a space or separator, and the next one starts at the
+    last line (or word) of this one: a value is then whole in at least one window, unless it is longer than the
+    overlap. fit(chunk) says how many leading characters of chunk the model reads."""
+    out, pos, n = [], 0, len(text)
+    while pos < n:
+        end = min(n, pos + CHUNK_CHARS)
+        end = pos + max(1, fit(text[pos:end]))
+        half = pos + (end - pos) // 2
+        if end < n:
+            cut = text.rfind("\n", half, end)
+            if cut < 0:
+                cut = max(text.rfind(c, half, end) for c in " \t,;|")
+            if cut >= 0:
+                end = cut + 1
+        out.append((pos, end))
+        if end >= n:
+            break
+        low = max(half, end - OVERLAP_CHARS)
+        line = text.rfind("\n", low, end - 1)
+        word = _CUT.search(text, low, end - 1)
+        pos = max(pos + 1, line + 1 if line >= 0 else word.end() if word else low)
     return out
+
+
+KEEP_WINDOWS = 512
+_READ: OrderedDict = OrderedDict()  # hash of a window's text -> what the model found in it, most recent last
+_READ_BY = [None]  # the model those came from
+
+
+def _predict(model, chunk: str) -> list[tuple[int, int, str, float]]:
+    """(start, end, label, score) of the model's spans in chunk. The same window is often read twice in a row: a file
+    a command names is checked before the command runs and again as its output. The answer is kept under a hash of
+    the text (never the text), for the model that gave it."""
+    if _READ_BY[0] is not model:
+        _READ.clear()
+        _READ_BY[0] = model
+    key = hashlib.sha256(chunk.encode("utf-8", "surrogatepass")).digest()
+    spans = _READ.get(key)
+    if spans is None:
+        spans = [(s.start, s.end, s.label, s.score) for s in model.predict(chunk)[0]]
+        _READ[key] = spans
+        while len(_READ) > KEEP_WINDOWS:
+            _READ.popitem(last=False)
+    else:
+        _READ.move_to_end(key)
+    return spans
+
+
+def model_findings(text: str) -> list[rules.Finding]:
+    model = _model()
+    out: dict = {}  # in order, without the doubles from the overlap between windows
+    for start, end in _windows(text, lambda chunk: _fit(model, chunk)):
+        chunk = text[start:end]
+        if not chunk.strip():
+            continue
+        if _STOP_AT[0] and time.monotonic() > _STOP_AT[0]:
+            raise OutOfTime(SLOW)
+        for a, b, label, score in _predict(model, chunk):
+            if label in MODEL_KIND and score >= KIND_THRESHOLD.get(MODEL_KIND[label], SPAN_THRESHOLD):
+                kind = MODEL_KIND[label]
+                for a2, b2, k in _pieces(text, start + a, start + b, kind):
+                    out.setdefault((a2, b2, k, label), rules.Finding(a2, b2, k, f"model:{label}"))
+    return list(out.values())
 
 
 _FIELD_TAG = re.compile(r":?\d{2,3}[A-Z]?:|\d{1,3}=")  # SWIFT MT ":35E:" / FIX "54=" field tags
@@ -254,11 +371,34 @@ class Result:
 def _merge(findings: list[rules.Finding]) -> list[rules.Finding]:
     """Keep non-overlapping findings, longest first; a keyed secret wins over an overlapping shape match. (Other keyed
     findings - an address or birth date under its key - don't: a longer model match covers a multi-line address.)"""
+    ranked = sorted(findings, key=lambda f: (-(f.keyed and f.kind == "SECRET"), -(f.end - f.start), f.start))
+    if any(f.end <= f.start for f in ranked):
+        return _merge_slow(ranked)
+    # the kept ones never overlap, so sorted by start they are sorted by end too: a new one can only touch the
+    # one before it and the one after it (every finding against every kept one took seconds on a large CSV)
+    starts: list[int] = []
     chosen: list[rules.Finding] = []
-    for f in sorted(findings, key=lambda f: (-(f.keyed and f.kind == "SECRET"), -(f.end - f.start), f.start)):
+    for f in ranked:
+        i = bisect_left(starts, f.start)
+        if (i == 0 or chosen[i - 1].end <= f.start) and (i == len(starts) or f.end <= starts[i]):
+            starts.insert(i, f.start)
+            chosen.insert(i, f)
+    return chosen
+
+
+def _merge_slow(ranked: list[rules.Finding]) -> list[rules.Finding]:
+    """_merge's rule, every finding against every kept one: for an empty finding, which the fast way can't place."""
+    chosen: list[rules.Finding] = []
+    for f in ranked:
         if all(f.end <= c.start or f.start >= c.end for c in chosen):
             chosen.append(f)
     return sorted(chosen, key=lambda f: f.start)
+
+
+def _covered(spans: list[tuple[int, int]], starts: list[int], a: int, b: int) -> bool:
+    """a..b lies inside one of spans (in order, not overlapping; starts: their first positions)."""
+    i = bisect_right(starts, a) - 1
+    return i >= 0 and b <= spans[i][1]
 
 
 def _own_username(value: str) -> bool:
@@ -382,6 +522,107 @@ def _logged(text: str, files: dict) -> list[rules.Finding]:
     return out
 
 
+class _Where:
+    """What the checks below need to know about the text around a finding."""
+
+    def __init__(self, text: str, found: list[rules.Finding]):
+        self.text = text
+        self.ui = _ui_strings(text)
+        self.ui_starts = [a for a, _ in self.ui]
+        self._found, self._people = found, None
+
+    def people(self) -> list[tuple[int, int]]:
+        """Where the people in the text are, worked out at the first model date."""
+        if self._people is None:
+            self._people = [(n.start, n.end) for n in self._found
+                            if n.kind == "PERSON" and not _own_account(n.value(self.text))]
+        return self._people
+
+
+# Why a finding is safe where it stands, when its value alone doesn't say so. Each takes the finding and its
+# surroundings and gives the reason, or nothing. _CONTEXT_CHECKS is their order: the first reason found is the one
+# reported.
+
+def _plain_date(f: rules.Finding, w: _Where):
+    if f.kind == "DATE" and f.source.startswith("model:") and not _personal_date(w.text, f.start, f.end, w.people()):
+        return "plain date (no birth, death or age words near it)"
+
+
+def _own_name(f: rules.Finding, w: _Where):
+    if (f.source == "home-dir-user" and _own_username(f.value(w.text))
+            or f.kind == "PERSON" and _own_account(f.value(w.text))):
+        return "your own username (already visible in the working folder)"
+
+
+def _cut_short(f: rules.Finding, w: _Where):
+    if f.kind in ("SECRET", "ACCOUNT") and not f.keyed and safe.ELLIPSIS.match(w.text, f.end) \
+            and safe.reason(f.value(w.text) + "...", f.kind, f.keyed):
+        return "cut short with ... (a placeholder, not a key)"  # "sk-...your-key-here...": the span stops at "sk-"
+
+
+def _spec_number(f: rules.Finding, w: _Where):
+    if f.kind == "ACCOUNT" and _STANDARD.search(w.text, max(0, f.start - 12), f.start) \
+            and re.fullmatch(r"\d{1,5}(?:[-:]\d{1,4})?", f.value(w.text).strip()):
+        return "standard or spec number (RFC 5737, ISO 27001)"
+
+
+def _xaml_name(f: rules.Finding, w: _Where):
+    if f.kind == "PERSON" and _XAML_NAME.search(w.text, max(0, f.start - 8), f.start):
+        return "XAML resource name"
+
+
+def _ui_text(f: rules.Finding, w: _Where):
+    if f.kind in ("SECRET", "PERSON") and _covered(w.ui, w.ui_starts, f.start, f.end):
+        return "UI text under a message or label key"
+
+
+def _constant_number(f: rules.Finding, w: _Where):
+    if f.kind in ("ACCOUNT", "SECRET") and not f.keyed and re.fullmatch(r"\d{1,6}", f.value(w.text)):
+        c = _CONSTANT.search(w.text, max(0, f.start - 80), f.start)
+        if c and not _SECRET_IN_NAME.search(c.group(1)):
+            return "number given to a code constant"
+
+
+def _gpg_id(f: rules.Finding, w: _Where):
+    if f.kind in ("ACCOUNT", "SECRET") and not f.keyed \
+            and re.fullmatch(r"[0-9A-Fa-f]{8}|[0-9A-Fa-f]{16}", f.value(w.text)) \
+            and _GPG_ID.search(w.text, max(0, f.start - 40), f.start):
+        return "GPG key id (public)"
+
+
+def _test_card(f: rules.Finding, w: _Where):
+    if f.kind in ("CARD", "ACCOUNT") and _digit_run(w.text, f) in safe.TEST_CARDS:
+        return "published test card"
+
+
+def _part_of_a_word(f: rules.Finding, w: _Where):
+    """A PERSON finding that is part of a longer word: judged as that whole word."""
+    if f.kind == "PERSON":
+        a, b = f.start, f.end
+        while a > 0 and w.text[a - 1].isalpha():
+            a -= 1
+        while b < len(w.text) and w.text[b].isalpha():
+            b += 1
+        if (a, b) != (f.start, f.end):
+            return safe.reason(w.text[a:b], f.kind, f.keyed)
+
+
+_CONTEXT_CHECKS = (_plain_date, _own_name, _cut_short, _spec_number, _xaml_name, _ui_text, _constant_number, _gpg_id,
+                   _test_card, _part_of_a_word)
+
+
+def _why_safe(f: rules.Finding, w: _Where, allow) -> str | None:
+    """The reason a finding is not masked: on your allowlist, safe by its value (safe.reason), or safe where it
+    stands (the checks above, in their order). Nothing when it is to be masked."""
+    value = f.value(w.text)
+    why = "on your allowlist" if _allowed(value, allow) else safe.reason(value, f.kind, f.keyed)
+    for check in () if why else _CONTEXT_CHECKS:
+        why = check(f, w)
+        if why:
+            break
+    return why
+
+
 def detect(text: str, mode: str = "full", allow=(), always=(), ocr: bool = False,
            known: dict | None = None, files: dict | None = None) -> tuple[list[rules.Finding], list[tuple]]:
     """Findings to mask, and findings skipped as safe (with the reason). ocr: the text came from OCR.
@@ -393,11 +634,12 @@ def detect(text: str, mode: str = "full", allow=(), always=(), ocr: bool = False
     if mode == "full":
         found += model_findings(text)
     own = [m.span() for m in rules.OWN_PLACEHOLDER.finditer(text)]
+    own_starts = [a for a, _ in own]
     keep, skipped = [], []
-    ui = _ui_strings(text)
+    where = _Where(text, found)
     rule_verdict: dict = {}  # (start, end) -> (rule kind, skip reason or None); rules come before the model in found
     for f in _logged(text, files or {}) + found + _always(text, always) + _known(text, known or {}):
-        if any(s <= f.start and f.end <= e for s, e in own):
+        if _covered(own, own_starts, f.start, f.end):
             continue
         if f.source in ("your-rule", "file-log") or f.source.startswith("known"):  # no safe-value judgement
             keep.append(f)
@@ -410,48 +652,13 @@ def detect(text: str, mode: str = "full", allow=(), always=(), ocr: bool = False
                 skipped.append((f.kind, f.source, rule_why))
                 continue
             f = rules.Finding(f.start, f.end, kind, f.source, f.keyed)
-        why = "on your allowlist" if _allowed(f.value(text), allow) else safe.reason(f.value(text), f.kind, f.keyed)
-        if not why and f.kind == "DATE" and f.source.startswith("model:") and not _personal_date(
-                text, f.start, f.end, [(n.start, n.end) for n in found
-                                   if n.kind == "PERSON" and not _own_account(n.value(text))]):
-            why = "plain date (no birth, death or age words near it)"
-        if not why and (f.source == "home-dir-user" and _own_username(f.value(text))
-                        or f.kind == "PERSON" and _own_account(f.value(text))):
-            why = "your own username (already visible in the working folder)"
-        if not why and f.kind in ("SECRET", "ACCOUNT") and not f.keyed and safe.ELLIPSIS.match(text, f.end) \
-                and safe.reason(f.value(text) + "...", f.kind, f.keyed):
-            why = "cut short with ... (a placeholder, not a key)"  # "sk-...your-key-here...": the span stops at "sk-"
-        if not why and f.kind == "ACCOUNT" and _STANDARD.search(text, max(0, f.start - 12), f.start) \
-                and re.fullmatch(r"\d{1,5}(?:[-:]\d{1,4})?", f.value(text).strip()):
-            why = "standard or spec number (RFC 5737, ISO 27001)"
-        if not why and f.kind == "PERSON" and _XAML_NAME.search(text, max(0, f.start - 8), f.start):
-            why = "XAML resource name"
-        if not why and f.kind in ("SECRET", "PERSON") and any(s <= f.start and f.end <= e for s, e in ui):
-            why = "UI text under a message or label key"
-        if not why and f.kind in ("ACCOUNT", "SECRET") and not f.keyed and re.fullmatch(r"\d{1,6}", f.value(text)):
-            c = _CONSTANT.search(text, max(0, f.start - 80), f.start)
-            if c and not _SECRET_IN_NAME.search(c.group(1)):
-                why = "number given to a code constant"
-        if not why and f.kind in ("ACCOUNT", "SECRET") and not f.keyed \
-                and re.fullmatch(r"[0-9A-Fa-f]{8}|[0-9A-Fa-f]{16}", f.value(text)) \
-                and _GPG_ID.search(text, max(0, f.start - 40), f.start):
-            why = "GPG key id (public)"
-        if not why and f.kind in ("CARD", "ACCOUNT") and _digit_run(text, f) in safe.TEST_CARDS:
-            why = "published test card"
-        if not why and f.kind == "PERSON":
-            a, b = f.start, f.end
-            while a > 0 and text[a - 1].isalpha():
-                a -= 1
-            while b < len(text) and text[b].isalpha():
-                b += 1
-            if (a, b) != (f.start, f.end):
-                why = safe.reason(text[a:b], f.kind, f.keyed)
+        why = _why_safe(f, where, allow)
         if not f.source.startswith("model:"):
             rule_verdict.setdefault((f.start, f.end), (f.kind, why))
         (skipped.append((f.kind, f.source, why)) if why else keep.append(f))
     if ocr:
         keep += [rules.Finding(m.start(), m.end(), "ACCOUNT", "ocr-digits") for m in OCR_DIGITS.finditer(text)
-                 if not any(s <= m.start() and m.end() <= e for s, e in own)]
+                 if not _covered(own, own_starts, m.start(), m.end())]
     keep = _unmerge_runs(text, keep)
     return _merge(keep + _repeats(text, keep)), skipped
 
@@ -463,8 +670,11 @@ def _unmerge_runs(text: str, keep: list[rules.Finding]) -> list[rules.Finding]:
     by_rule = [f for f in keep if not f.source.startswith("model:")]
     out = []
     for f in keep:
+        if not (f.source.startswith("model:") and f.kind in ("ACCOUNT", "SECRET")):
+            out.append(f)
+            continue
         inside = sorted((r for r in by_rule if f.start <= r.start and r.end <= f.end), key=lambda r: r.start)
-        if not (f.source.startswith("model:") and f.kind in ("ACCOUNT", "SECRET") and len(inside) >= 2):
+        if len(inside) < 2:
             out.append(f)
             continue
         last = f.start
@@ -490,15 +700,63 @@ def _digit_run(text: str, f: rules.Finding) -> str:
     return re.sub(r"\D", "", text[a:b])
 
 
+REPEAT_MIN = 4  # shorter values are left alone, to avoid masking common words
+_REPEAT_SCANS = 4_000_000  # values x characters above which one pass over the text beats one search per value
+
+
+def _longest_of(values: list[str], k: int = 0) -> str:
+    """A pattern for what follows the first k characters of values (sorted, all different, the same up to k): at any
+    position it matches the longest value that starts there. Shared starts are written once, so the text is read
+    once however many values there are."""
+    ends_here = len(values[0]) == k
+    rest = values[1:] if ends_here else values
+    branches, i = [], 0
+    while i < len(rest):
+        j = i
+        while j + 1 < len(rest) and rest[j + 1][k] == rest[i][k]:
+            j += 1
+        first, last, same = rest[i], rest[j], k + 1  # sorted: what the first and last share, all between share
+        while same < len(first) and same < len(last) and first[same] == last[same]:
+            same += 1
+        branches.append(re.escape(first[k:same]) + _longest_of(rest[i:j + 1], same))
+        i = j + 1
+    if not branches:
+        return ""
+    if len(branches) == 1 and not ends_here:
+        return branches[0]
+    return "(?:" + "|".join(branches) + ")" + ("?" if ends_here else "")
+
+
 def _repeats(text: str, found: list[rules.Finding]) -> list[rules.Finding]:
     """Every other exact appearance of a value already judged sensitive (a username caught in one path
     still leaks where it repeats). Values under 4 characters are left alone to avoid masking common words."""
-    out = []
-    for value, kind in {(f.value(text), f.kind) for f in found}:
-        if len(value) < 4:
-            continue
-        for m in re.finditer(re.escape(value), text):
-            out.append(rules.Finding(m.start(), m.end(), kind, "repeat"))
+    wanted = {(f.value(text), f.kind) for f in found}
+    wanted = [(v, k) for v, k in wanted if len(v) >= REPEAT_MIN]
+    if len(wanted) * len(text) > _REPEAT_SCANS:
+        try:
+            return _repeats_one_pass(text, wanted)
+        except (RecursionError, re.error, OverflowError):  # values nested too deep for one pattern
+            pass
+    return [rules.Finding(m.start(), m.end(), kind, "repeat")
+            for value, kind in wanted for m in re.finditer(re.escape(value), text)]
+
+
+def _repeats_one_pass(text: str, wanted: list[tuple[str, str]]) -> list[rules.Finding]:
+    """_repeats for a customer list: thousands of values, each searched through the whole text, took seconds. Here
+    the text is read once. Per value the same matches as one search each (left to right, not overlapping itself)."""
+    kinds: dict[str, list[str]] = {}
+    for value, kind in wanted:
+        kinds.setdefault(value, []).append(kind)
+    at_position = re.compile("(?=(" + _longest_of(sorted(kinds)) + "))")
+    out, free, also = [], {}, {}  # free: where a value's next match may start; also: the values a value starts with
+    for m in at_position.finditer(text):
+        i, longest = m.start(), m.group(1)
+        if longest not in also:
+            also[longest] = [longest] + [longest[:n] for n in range(REPEAT_MIN, len(longest)) if longest[:n] in kinds]
+        for value in also[longest]:
+            if i >= free.get(value, 0):
+                free[value] = i + len(value)
+                out += [rules.Finding(i, i + len(value), kind, "repeat") for kind in kinds[value]]
     return out
 
 
@@ -507,10 +765,11 @@ def mask(text: str, vault: Vault | None = None, mode: str = "full", allow=(), al
     vault = vault if vault is not None else Vault()
     findings, skipped = detect(text, mode, allow, always, ocr, known_values(vault, always), files)
     out, last, masked = [], 0, []
-    for f in findings:
-        ph = vault.placeholder(f.value(text), f.kind, derived=f.source.startswith("known-"))
-        out += [text[last:f.start], ph]
-        last = f.end
-        masked.append((ph, f.kind, f.source))
+    with vault.batch():  # one write of the session file for all of them (it was one per new value)
+        for f in findings:
+            ph = vault.placeholder(f.value(text), f.kind, derived=f.source.startswith("known-"))
+            out += [text[last:f.start], ph]
+            last = f.end
+            masked.append((ph, f.kind, f.source))
     out.append(text[last:])
     return Result("".join(out), mode, masked, skipped)

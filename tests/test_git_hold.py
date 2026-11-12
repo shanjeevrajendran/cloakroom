@@ -149,7 +149,7 @@ def test_git_errors_and_slow_git_fail_open(repo, monkeypatch, capsys):
     assert out == {"systemMessage": "Cloakroom didn't check this git push: git returned an error"}
     assert bash("git push origin no-such-branch", repo, monkeypatch, capsys) is None  # said once
     assert bash("git commit -m x", repo.parent, monkeypatch, capsys) is None  # not a repo: git can't commit either
-    monkeypatch.setattr(hook, "GIT_SECONDS", 0.0)
+    monkeypatch.setattr("cloakroom.gitcheck.GIT_SECONDS", 0.0)
     out = bash("git commit -m x", repo, monkeypatch, capsys)
     assert decision(out) is None and out["systemMessage"].startswith("Cloakroom didn't check this git commit: it took")
     from cloakroom import events

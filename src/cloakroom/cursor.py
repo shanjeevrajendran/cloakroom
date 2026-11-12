@@ -20,7 +20,7 @@ import time
 from fnmatch import fnmatch
 from pathlib import Path
 
-from . import agents, client, config, hook, media, shell
+from . import agents, client, config, hook, hookcall, media, shell
 from .vault import Vault
 
 READ_MAX = 1024 * 1024  # a bigger file is denied, not copied (a PDF is read from disk and has no limit)
@@ -45,7 +45,7 @@ _IMAGES = (b"\x89PNG\r\n\x1a\n", b"\xff\xd8\xff", b"GIF87a", b"GIF89a")
 
 
 def _safe(session: str) -> str:
-    return "".join(c for c in str(session) if c.isalnum() or c in "-_")[:80] or "default"
+    return config.safe_name(session)
 
 
 def _dir(*parts: str) -> Path:
@@ -133,7 +133,7 @@ def masked_read(data: dict) -> dict | None:
         head = f.read(8192)
     kind = _kind(head)
     if kind != "pdf" and os.path.getsize(p) > READ_MAX:
-        return hook._deny(READ_BIG.format(name=name))
+        return hookcall.deny(READ_BIG.format(name=name))
     if kind == "text":
         with open(p, encoding="utf-8", errors="replace") as f:
             resp = media.text_result(p, f.read())
@@ -152,13 +152,13 @@ def masked_read(data: dict) -> dict | None:
     content = (new.get("file") or {}).get("content") if isinstance(new, dict) else None
     if not isinstance(content, str):  # clean (or a picture you let through): the original is read unchanged
         marker = _marker(p, session)
-        if marker and not hook._FOUND and not out:
+        if marker and not hookcall.FOUND and not out:
             marker.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
             marker.touch(mode=0o600)
         return None
     copy = _dir(_safe(session)) / f"{hashlib.sha256(p.encode()).hexdigest()[:12]}-{name}{'' if kind == 'text' else '.txt'}"
     _write(copy, content.encode("utf-8"))
-    hook._ACTION[0] = hook._ACTION[0] or "masked"
+    hookcall.ACTION[0] = hookcall.ACTION[0] or "masked"
     res = {"hookSpecificOutput": {"hookEventName": "PreToolUse", "updatedInput": {**args, "file_path": str(copy)}}}
     if out.get("systemMessage"):
         res["systemMessage"] = out["systemMessage"]
@@ -179,11 +179,11 @@ def read_gate(data: dict) -> dict | None:
     r = client.mask(content, session, roots=[cwd], read=path)
     if not r["masked"]:
         return None
-    hook._FOUND.extend((p, k) for p, k, _ in r["masked"])
-    kinds = hook._summary([k for _, k, _ in r["masked"]])
-    if hook._dry("pre", f"beforeReadFile: would deny ({kinds})"):
+    hookcall.FOUND.extend((p, k) for p, k, _ in r["masked"])
+    kinds = hookcall.summary([k for _, k, _ in r["masked"]])
+    if hookcall.dry("pre", f"beforeReadFile: would deny ({kinds})"):
         return None
-    return hook._deny(READ_DENY.format(name=os.path.basename(path), kinds=kinds))
+    return hookcall.deny(READ_DENY.format(name=os.path.basename(path), kinds=kinds))
 
 
 # --- masked command output -------------------------------------------------------------------------------------
@@ -199,9 +199,9 @@ def wrap(data: dict, out: dict | None) -> dict | None:
     if h.get("permissionDecision") in ("deny", "ask"):
         return out
     args = data.get("tool_input") or {}
-    program = agents._program()
+    program = agents.program()
     if not program:
-        return hook._deny(NO_PROGRAM)
+        return hookcall.deny(NO_PROGRAM)
     shown, ident = str(args.get("command", "")), "r" + secrets.token_urlsafe(11)  # 16 characters; a leading "-" would read as an option
     # the shell Cursor runs this in has no CLOAKROOM_* of its own; never the vault key: the agent sees this command
     env = "".join(f"{k}={shlex.quote(os.environ[k])} " for k in ("CLOAKROOM_HOME", "CLOAKROOM_PORT") if os.environ.get(k))
@@ -231,7 +231,7 @@ def gate(data: dict) -> dict | None:
     rec = _record(m.group(1)) if m else None
     if rec and rec.get("wrapper") == command:
         return None
-    return hook._deny(GATE_DENY)
+    return hookcall.deny(GATE_DENY)
 
 
 class _Stream:

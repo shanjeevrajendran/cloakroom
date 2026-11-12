@@ -6,10 +6,9 @@ learning step needs to propose a rule. One label per event; labelling again repl
 from __future__ import annotations
 
 import json
-import os
 import time
 
-from . import config, crypto
+from . import config, crypto, store
 
 KINDS = ("false_alarm", "correct", "missed")
 
@@ -25,11 +24,7 @@ def load() -> dict[str, dict]:
 
 def _save(labels: dict[str, dict]):
     path = _path()
-    tmp = path.with_suffix(".tmp")
-    fd = os.open(tmp, os.O_WRONLY | os.O_CREAT | os.O_TRUNC | getattr(os, "O_BINARY", 0), 0o600)
-    with os.fdopen(fd, "wb") as f:
-        f.write(crypto.encrypt(json.dumps(labels).encode()))
-    os.replace(tmp, path)
+    store.write_atomic(path, crypto.encrypt(json.dumps(labels).encode()))
 
 
 def put(event_id: str, label: str, items: list[dict] | None = None) -> dict:

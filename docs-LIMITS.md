@@ -356,8 +356,9 @@ Checked against Gemini CLI 0.65 (hooks docs: https://geminicli.com/docs/hooks/re
 - **Timeouts let the call through:** Gemini treats a hook that runs past its time limit (30 s at session start,
   60 s for prompts and tool input, 120 s for tool output) as a warning and goes on with the original. Cloakroom
   doesn't wait for its model to load: until the local service is ready, checks run on the rules only (keys, cards,
-  IDs; names and addresses may be missed), noted once per session and logged as a skipped check. A very slow check (a huge output, many OCR
-  pages) can still run past the limit.
+  IDs; names and addresses may be missed), noted once per session and logged as a skipped check. A model check that would run past the limit
+  stops before it and the output is withheld (from the next release after 1.4.0); reading many OCR pages can still
+  run past it.
 - Prompts can only be blocked, not masked: Gemini keeps the original prompt in the conversation and also sends it
   to the model from places no hook sees (model routing, history compression, loop checks). Pictures in a prompt
   (pasted, or `@image.png`) aren't seen by the prompt hook and go unchecked; text from `@file` is checked.

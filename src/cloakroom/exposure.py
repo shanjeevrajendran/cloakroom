@@ -248,7 +248,7 @@ def _typed_strings(path: Path, agent: str = "claude"):
 def found(since: str = "", personal: bool = False) -> tuple[list[dict], dict]:
     """Rows per (file, key) from old transcripts, and what was skipped. Never writes."""
     cfg = config.load()
-    known = history._known()
+    known = history.known()
     always = [(e, k) for e, k in cfg["always"] if k in KINDS]
     rows, skipped = [], {"busy": 0, "big": 0, "unreadable": 0}
     home, now = str(Path.home()), time.time()

@@ -111,11 +111,11 @@ def _show(cmd) -> str:
 def _codex_hooks():
     """Our Codex hook entries, to see whether the new version's text differs (Codex then asks for trust again)."""
     try:
-        hooks = agents._load(os.path.join(agents.codex_home(), "hooks.json")).get("hooks", {})
+        hooks = agents.load_json(os.path.join(agents.codex_home(), "hooks.json")).get("hooks", {})
     except (ValueError, OSError):
         return None
     return sorted(json.dumps(h, sort_keys=True) for gs in hooks.values() if isinstance(gs, list) for g in gs
-                  if isinstance(g, dict) for h in g.get("hooks") or [] if agents._ours(h))
+                  if isinstance(g, dict) for h in g.get("hooks") or [] if agents.ours(h))
 
 
 def _git_hook_here() -> bool:
@@ -124,7 +124,7 @@ def _git_hook_here() -> bool:
         d = githook.hooks_dir(".")
     except (ValueError, OSError):
         return False
-    return any(githook._ours(os.path.join(d, n)) for n in githook.HOOKS)
+    return any(githook.ours(os.path.join(d, n)) for n in githook.HOOKS)
 
 
 def installed() -> list[str]:
@@ -161,7 +161,7 @@ def run(check: bool = False) -> int:
         print(f"cloakroom: the update didn't work (the reason is above). Version {__version__} stays and keeps "
               "protecting you.", file=sys.stderr)
         return 1
-    program = agents._program() or "cloakroom"
+    program = agents.program() or "cloakroom"
     try:
         new = subprocess.run([program, "--version"], capture_output=True, text=True, timeout=60).stdout.strip()
     except (OSError, subprocess.SubprocessError):

@@ -1,7 +1,7 @@
 """Local service that keeps the model loaded. Listens on 127.0.0.1 only and requires the token from
 ~/.cloakroom/token on every call. Never logs request bodies or values.
 
-POST /mask     {"text", "session", "mode"?, "ocr"?} -> {"text", "mode", "masked": [[placeholder, kind, source]], "skipped": [...]}
+POST /mask     {"text", "session", "mode"?, "ocr"?, "seconds"?} -> {"text", "mode", "masked": [[placeholder, kind, source]], "skipped": [...]}
 POST /restore  {"text", "session"}          -> {"text", "unknown": [placeholders not in the vault]}
 GET  /health                                 -> {"ok": true, "service": "cloakroom", "model": bool}
 POST /dashboard/code                         -> {"code"}: one-time sign-in code for `cloakroom dashboard`
@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import hmac
 import json
+import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from threading import Lock
 from urllib.parse import parse_qs, urlsplit
@@ -19,14 +20,21 @@ from . import __version__, config, crypto, dashboard, engine, filelog, handoff
 from .vault import Vault
 
 LOCK = Lock()  # one model instance; calls are serialized
-VAULTS: dict[str, Vault] = {}
+VAULTS: dict[str, Vault] = {}  # most recently used last
+KEEP_VAULTS = 32  # sessions whose values stay in memory; an older one is read from its file again when it comes back
 
 
 def _vault(session: str) -> Vault:
-    if session not in VAULTS:
-        VAULTS[session] = handoff.vault_for(session)
-    VAULTS[session].load_given()
-    return VAULTS[session]
+    """The session's vault, with what its file and the handed-over values hold now. Call with LOCK held."""
+    vault = VAULTS.pop(session, None)
+    if vault is None:
+        vault = handoff.vault_for(session)
+    else:
+        vault.refresh()
+    VAULTS[session] = vault
+    while len(VAULTS) > KEEP_VAULTS:
+        del VAULTS[next(iter(VAULTS))]
+    return vault
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -56,7 +64,7 @@ class Handler(BaseHTTPRequestHandler):
         url = urlsplit(self.path)
         if url.path == "/health":
             return self._send(200, {"ok": True, "service": "cloakroom", "version": __version__,
-                                    "model": engine._MODEL is not None})
+                                    "model": engine.model_loaded()})
         if url.path == "/dashboard":
             code = parse_qs(url.query).get("code", [""])[0]
             if code and self._local_host() and dashboard.redeem(code):
@@ -99,13 +107,20 @@ class Handler(BaseHTTPRequestHandler):
             return self._send(200, {"code": dashboard.new_code()})
         try:
             req = json.loads(self.rfile.read(int(self.headers.get("Content-Length", 0))))
-            vault = _vault(req.get("session", "default"))
+            # what the caller has left (client.py): past it nobody waits for the answer. Counted from here, so the
+            # wait for another call's check is part of it.
+            seconds = req.get("seconds") if isinstance(req.get("seconds"), (int, float)) else None
+            stop = None if seconds is None else time.monotonic() + seconds  # 0 or less: out of time already
             with LOCK:
+                vault = _vault(req.get("session", "default"))
                 if self.path == "/mask":
+                    if stop is not None and time.monotonic() >= stop:
+                        raise engine.OutOfTime(engine.SLOW)
                     cfg = config.load()
                     files = filelog.known(req.get("roots") or [], req.get("read") or "") if req.get("roots") else None
-                    r = engine.mask(req["text"], vault, req.get("mode") or self.server.mode, cfg["allow"], cfg["always"],
-                                    bool(req.get("ocr")), files)
+                    with engine.time_limit(None if stop is None else stop - time.monotonic()):
+                        r = engine.mask(req["text"], vault, req.get("mode") or self.server.mode, cfg["allow"],
+                                        cfg["always"], bool(req.get("ocr")), files)
                     return self._send(200, {"text": r.text, "mode": r.mode, "masked": r.masked, "skipped": r.skipped})
                 if self.path == "/restore":
                     text, unknown = vault.restore(req["text"])
@@ -126,6 +141,6 @@ def serve():
     server = ThreadingHTTPServer(("127.0.0.1", cfg["port"]), Handler)
     server.mode = cfg["mode"]
     if cfg["mode"] == "full":
-        engine._model()  # load once at start; raises ModelUnavailable if extras are missing
+        engine.load_model()  # load once at start; raises ModelUnavailable if extras are missing
         engine.mask("warm up")
     server.serve_forever()
