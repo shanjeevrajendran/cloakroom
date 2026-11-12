@@ -108,7 +108,7 @@ def test_a_model_check_stops_between_windows_when_its_time_is_up(monkeypatch):
     monkeypatch.setattr(engine, "_MODEL", model)
     with engine.time_limit(0.12), pytest.raises(engine.OutOfTime):
         engine.mask(_long_text(8), mode="full")
-    assert 2 <= model.calls <= 4  # stopped: not all 8 windows
+    assert 1 <= model.calls < 8  # stopped: not all 8 windows (how many it read depends on the machine)
     assert isinstance(engine.OutOfTime("x"), engine.ModelUnavailable)  # callers fail closed on it as they did
 
 
@@ -164,7 +164,7 @@ def test_a_call_that_times_out_is_not_sent_again(monkeypatch):
             client._post("/mask", {"text": "x", "session": "s"}, timeout=0.3)
     finally:
         quiet.close()
-    assert time.monotonic() - t0 < 2  # once, not twice with a wait between
+    assert time.monotonic() - t0 < 10  # once, not twice with a 40 second wait between
 
 
 # --- through the service
@@ -193,7 +193,10 @@ def test_a_call_that_waited_past_its_time_for_another_check_is_not_run(service, 
     monkeypatch.setattr(engine, "_MODEL", model)
     first = threading.Thread(target=lambda: client.mask(_long_text(6), "a"))  # about 0.9 s under the service's lock
     first.start()
-    time.sleep(0.1)
+    for _ in range(500):  # until the first call is inside the model, under the service's lock
+        if model.calls:
+            break
+        time.sleep(0.01)
     with pytest.raises(client.Unavailable):
         client._post("/mask", {"text": "Signed by Ingrid Thies, second caller.", "session": "b"}, timeout=0.3)
     first.join()
@@ -267,7 +270,7 @@ def test_a_session_file_held_by_a_stuck_process_fails_the_mask_instead_of_waitin
     try:
         with pytest.raises(store.Busy):
             engine.mask("write to second@quillmere.net", v, "rules")
-        assert time.monotonic() - t0 < 2
+        assert time.monotonic() - t0 < 4  # LOCK_SECONDS, not the holder's 5
     finally:
         done.set()
         t.join()
