@@ -162,8 +162,17 @@ class OnnxModel:
         x = np.array([ids], dtype=np.int64)
         return self.session.run(["logits"], {"input_ids": x, "attention_mask": np.ones_like(x)})[0][0]
 
+    def fit(self, text: str, limit: int) -> int:
+        """How many leading characters of text fit in limit tokens: len(text) when all of it does."""
+        if not 0 < limit < MAX_TOKENS:
+            raise ValueError(f"limit must be under the model's {MAX_TOKENS} tokens")
+        enc = self.tokenizer.encode(text)
+        return len(text) if len(enc.ids) <= limit else max(e for _, e in enc.offsets[:limit])
+
     def predict(self, text: str):
         enc = self.tokenizer.encode(text)
         if not enc.ids:
             return [], 0.0
+        if len(enc.ids) >= MAX_TOKENS:  # the tokenizer cut it there: the rest would go unread, and unmasked
+            raise ValueError(f"text is longer than the model reads ({MAX_TOKENS} tokens): split it first (engine._windows)")
         return self.decoder.decode(self.logits(enc.ids), [tuple(o) for o in enc.offsets], text=text), None

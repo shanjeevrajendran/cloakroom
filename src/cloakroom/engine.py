@@ -23,7 +23,13 @@ MODEL_REVISION = "d25c16f2e57e321f6d2527715c01df9112f956f5"  # remote code revie
 SPAN_THRESHOLD = 0.8   # tuned on the 200-item gate test: true spans >= 0.96, false alarms <= 0.75
 # Raising it was tried 2026-10-10: true spans go down to 0.959 and false alarms sit at 0.95-0.97, so no bar helps.
 KIND_THRESHOLD: dict = {}
-CHUNK_CHARS = 6000     # model truncates at 4096 tokens
+# The model reads a window at a time. A window is at most CHUNK_CHARS characters and at most WINDOW_TOKENS tokens:
+# both backends drop what is past the model's 4096 tokens without a word, and dense text (logs, CSV, hex, minified
+# JSON) holds far more tokens per character than prose (6000 characters of digits is 6000 tokens). Half the model's
+# limit also costs about a third less time per character, measured on ONNX.
+CHUNK_CHARS = 6000
+WINDOW_TOKENS = 2048
+OVERLAP_CHARS = 200    # the next window starts at most this far back, so a value on a cut is read whole once
 MODEL_KIND = {"private_person": "PERSON", "private_email": "EMAIL", "private_phone": "PHONE",
               "private_address": "ADDRESS", "private_url": "URL", "private_date": "DATE",
               "account_number": "ACCOUNT", "secret": "SECRET"}
@@ -99,17 +105,62 @@ def _torch_model():
     return AutoModel.from_pretrained(MODEL_ID, revision=MODEL_REVISION, trust_remote_code=True).to(device).eval()
 
 
+def _fit(model, text: str) -> int:
+    """How many leading characters of text fit in one window's tokens: len(text) when all of it does."""
+    fit = getattr(model, "fit", None)
+    if fit is not None:  # onnx_backend.OnnxModel
+        return fit(text, WINDOW_TOKENS)
+    tokenizer = getattr(model, "tokenizer", None)  # the PyTorch model's own
+    if tokenizer is None:
+        return len(text)  # a stand-in model (tests)
+    ends = [e for _, e in tokenizer(text, return_offsets_mapping=True, truncation=True,
+                                    max_length=WINDOW_TOKENS + 1)["offset_mapping"]]
+    return len(text) if len(ends) <= WINDOW_TOKENS else max(ends[:WINDOW_TOKENS])
+
+
+_CUT = re.compile(r"[ \t,;|]")
+
+
+def _windows(text: str, fit) -> list[tuple[int, int]]:
+    """(start, end) of each stretch of text the model reads, in order. Together they cover every character. A window
+    ends at a line break when its second half has one, else at a space or separator, and the next one starts at the
+    last line (or word) of this one: a value is then whole in at least one window, unless it is longer than the
+    overlap. fit(chunk) says how many leading characters of chunk the model reads."""
+    out, pos, n = [], 0, len(text)
+    while pos < n:
+        end = min(n, pos + CHUNK_CHARS)
+        end = pos + max(1, fit(text[pos:end]))
+        half = pos + (end - pos) // 2
+        if end < n:
+            cut = text.rfind("\n", half, end)
+            if cut < 0:
+                cut = max(text.rfind(c, half, end) for c in " \t,;|")
+            if cut >= 0:
+                end = cut + 1
+        out.append((pos, end))
+        if end >= n:
+            break
+        low = max(half, end - OVERLAP_CHARS)
+        line = text.rfind("\n", low, end - 1)
+        word = _CUT.search(text, low, end - 1)
+        pos = max(pos + 1, line + 1 if line >= 0 else word.end() if word else low)
+    return out
+
+
 def model_findings(text: str) -> list[rules.Finding]:
-    out = []
-    for offset in range(0, max(len(text), 1), CHUNK_CHARS):
-        chunk = text[offset:offset + CHUNK_CHARS]
-        spans, _ = _model().predict(chunk)
+    model = _model()
+    out: dict = {}  # in order, without the doubles from the overlap between windows
+    for start, end in _windows(text, lambda chunk: _fit(model, chunk)):
+        chunk = text[start:end]
+        if not chunk.strip():
+            continue
+        spans, _ = model.predict(chunk)
         for s in spans:
             if s.label in MODEL_KIND and s.score >= KIND_THRESHOLD.get(MODEL_KIND[s.label], SPAN_THRESHOLD):
                 kind = MODEL_KIND[s.label]
-                for start, end, k in _pieces(text, offset + s.start, offset + s.end, kind):
-                    out.append(rules.Finding(start, end, k, f"model:{s.label}"))
-    return out
+                for a, b, k in _pieces(text, start + s.start, start + s.end, kind):
+                    out.setdefault((a, b, k, s.label), rules.Finding(a, b, k, f"model:{s.label}"))
+    return list(out.values())
 
 
 _FIELD_TAG = re.compile(r":?\d{2,3}[A-Z]?:|\d{1,3}=")  # SWIFT MT ":35E:" / FIX "54=" field tags
