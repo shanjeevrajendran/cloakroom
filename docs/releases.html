@@ -65,6 +65,24 @@
 
 <section class="sec container" aria-label="Changelog">
   <div class="rel-list">
+  <article class="release" id="v1-5-0" aria-labelledby="v1-5-0-t">
+    <div><h2 id="v1-5-0-t">1.5.0</h2></div>
+    <div class="release-body">
+    <ul>
+      <li>Personal data near the end of long, dense output (a log, a CSV of numbers, a hex dump, minified JSON) could reach the agent unmasked. The model reads a limited amount of text at a time and was handed more than that, so the last part of each stretch of such text got no model check. Keys, cards, emails and phones there were still caught by the rules; names, addresses and other things only the model finds were not. Text now goes to the model in pieces it reads in full, cut at line breaks.</li>
+      <li>Rules mode: a name written a second time into a file Cloakroom had already logged went through unmasked in that tool call's output. It is masked now.</li>
+      <li>Rules mode: two tool calls that ran at the same moment could give one placeholder to two different values, or leave a value that could not be restored. A session's vault file now has one writer at a time.</li>
+      <li>A check that would take longer than the agent waits for a hook now stops early and the output is withheld, as on any error. Before, an agent that stopped waiting decided for itself what happened next (Gemini CLI goes on with the unchecked original).</li>
+      <li>Much faster on large files and long output. A large CSV is checked in a fraction of the time it took, and a file a command names is read by the model once, not once before the command runs and again as its output.</li>
+      <li>A call to the local service that times out is no longer sent a second time, and no second service is started. The service was busy, not down, and did the same work twice.</li>
+      <li>The service keeps the vaults of the most recent sessions in memory, not every session's for as long as it runs, and takes in what a hook wrote to a session's vault file.</li>
+      <li><code>python bench/speed.py</code> prints how long each step takes on your machine (<code>--model</code> adds the model).</li>
+      <li>Inside: <code>hook.py</code> is three modules, the long functions are split into named steps, and modules use each other's public names. No command, setting or file format changed.</li>
+      <li>Known limit: a first check by the model takes a little longer on dense text than in 1.4.0, because all of the text is now read (see docs-LIMITS, "Speed").</li>
+      <li>Known limit: on Windows, when another process keeps a session's vault file locked for two seconds, the write goes ahead without the lock (see docs-LIMITS, "Vault file lock on Windows").</li>
+    </ul>
+    </div>
+  </article>
   <article class="release" id="v1-4-0" aria-labelledby="v1-4-0-t">
     <div><h2 id="v1-4-0-t">1.4.0</h2></div>
     <div class="release-body">

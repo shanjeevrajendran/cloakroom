@@ -271,3 +271,7 @@ def restore(command: str, lookup, powershell: bool = False) -> tuple[str, list[s
         out.append(c)
         i += 1
     return "".join(out), unknown
+
+
+# What other modules use from here (egress.py, gitcheck.py)
+SEGMENT_SPLIT, PS_SEGMENT_SPLIT, scan = _SEGMENT_SPLIT, _PS_SEGMENT_SPLIT, _scan

@@ -113,13 +113,13 @@ def command_hosts(command: str, powershell: bool = False, cwd: str = "") -> list
     [] when it only talks to this machine. The caller has already checked shell.egress(command)."""
     found = _urls(command) + [m.group(1).lower() for m in _SCP.finditer(command)]
     network = remote_segments = 0
-    for seg in (shell._PS_SEGMENT_SPLIT if powershell else shell._SEGMENT_SPLIT).split(command):
+    for seg in (shell.PS_SEGMENT_SPLIT if powershell else shell.SEGMENT_SPLIT).split(command):
         words = _words(seg, powershell)
         if not words:
             continue
         prog = re.split(r"[\\/]", words[0])[-1].lower()
         prog = prog[:-4] if prog.endswith(".exe") else prog
-        network += shell._scan(seg, powershell)[0] == "network"
+        network += shell.scan(seg, powershell)[0] == "network"
         if prog == "git":
             sub = next((w for w in words[1:] if not w.startswith("-")), "")
             if sub == "remote":

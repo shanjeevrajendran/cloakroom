@@ -60,7 +60,7 @@ def test_push_over_the_size_cap_runs_is_logged_and_told_once(repo, tmp_path, mon
     (repo / "app.py").write_text(f"TOKEN = '{KEY}'\n" + "x = 1\n" * 300)
     git(repo, "add", "app.py")
     git(repo, "commit", "-q", "-m", "big")
-    monkeypatch.setattr(hook, "GIT_MAX_TEXT", 1024)
+    monkeypatch.setattr("cloakroom.gitcheck.GIT_MAX_TEXT", 1024)
     out = bash("git push", repo, monkeypatch, capsys)
     assert out == {"systemMessage": "Cloakroom didn't check this git push: it was larger than 1 KB"}  # not held
     assert bash("git push", repo, monkeypatch, capsys) is None  # once per session
@@ -78,7 +78,7 @@ def test_slow_git_on_commit_is_logged_with_its_time(repo, monkeypatch, capsys):
     from cloakroom import hook
     (repo / "app.py").write_text(f"TOKEN = '{KEY}'\n")
     git(repo, "add", "app.py")
-    monkeypatch.setattr(hook, "GIT_SECONDS", 0.0)
+    monkeypatch.setattr("cloakroom.gitcheck.GIT_SECONDS", 0.0)
     out = bash("git commit -m x", repo, monkeypatch, capsys)
     assert "hookSpecificOutput" not in out and "this git commit: it took longer" in out["systemMessage"]
     ev = skips()[0]
@@ -87,7 +87,7 @@ def test_slow_git_on_commit_is_logged_with_its_time(repo, monkeypatch, capsys):
 
 def test_a_new_file_over_the_cap_is_skipped_in_the_commit_scan(repo, monkeypatch, capsys):
     from cloakroom import hook
-    monkeypatch.setattr(hook, "PRIME_MAX_BYTES", 16)  # untracked files are read up to 4x this
+    monkeypatch.setattr("cloakroom.gitcheck.NEW_FILE_MAX", 64)  # the most of a new file that is read
     (repo / "big.py").write_text(f"TOKEN = '{KEY}'\n" * 3)
     out = bash("git add -A && git commit -m x", repo, monkeypatch, capsys)
     assert out == {"systemMessage": "Cloakroom didn't check a new file in this git commit: it was larger than 64 bytes"}
@@ -150,7 +150,7 @@ def test_codex_gets_the_note_too(repo, monkeypatch, capsys):
     from cloakroom import hook
     (repo / "app.py").write_text(f"TOKEN = '{KEY}'\n")
     git(repo, "add", "app.py")
-    monkeypatch.setattr(hook, "GIT_MAX_TEXT", 8)
+    monkeypatch.setattr("cloakroom.gitcheck.GIT_MAX_TEXT", 8)
     out = bash("git commit -m x", repo, monkeypatch, capsys, agent="codex")
     assert out == {"systemMessage": "Cloakroom didn't check this git commit: it was larger than 8 bytes"}
 
@@ -159,11 +159,11 @@ def test_report_has_a_checks_skipped_section(repo, monkeypatch, capsys):
     from cloakroom import hook, report
     (repo / "app.py").write_text(f"TOKEN = '{KEY}'\n")
     git(repo, "add", "app.py")
-    monkeypatch.setattr(hook, "GIT_MAX_TEXT", 8)
+    monkeypatch.setattr("cloakroom.gitcheck.GIT_MAX_TEXT", 8)
     bash("git commit -m x", repo, monkeypatch, capsys)
     bash("git commit -m x", repo, monkeypatch, capsys, session="s2")
-    monkeypatch.setattr(hook, "GIT_MAX_TEXT", 4 * 1024 * 1024)
-    monkeypatch.setattr(hook, "GIT_SECONDS", 0.0)
+    monkeypatch.setattr("cloakroom.gitcheck.GIT_MAX_TEXT", 4 * 1024 * 1024)
+    monkeypatch.setattr("cloakroom.gitcheck.GIT_SECONDS", 0.0)
     bash("git commit -m x", repo, monkeypatch, capsys)
     text = report.export("csv")
     assert "# Checks skipped: 3\n#   2 x git commit: it was larger than 8 bytes\n" \

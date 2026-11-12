@@ -13,7 +13,6 @@ import shutil
 import subprocess
 import sys
 
-import base64
 import tempfile
 
 root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "plugin")).replace("\\", "/")
@@ -59,7 +58,9 @@ ps_shim_dir = tempfile.mkdtemp()
 with open(os.path.join(ps_shim_dir, "cloakroom.cmd"), "w") as f:
     f.write(f'@set "PYTHONPATH={src};%PYTHONPATH%"\n@"{sys.executable}" -m cloakroom %*\n')
 ps_shim_path = ps_shim_dir + os.pathsep + os.environ["PATH"]
-vault_key = base64.b64encode(os.urandom(32)).decode()  # one key for own_home's vault across all runs
+# one key for own_home's vault across all runs. Hex, not base64: a base64 key that starts with "/" is rewritten
+# into a Windows path by Git Bash on its way to the hook, which then fails closed (one run in 64)
+vault_key = os.urandom(32).hex()
 os.environ.update(CLAUDE_PLUGIN_ROOT=root)
 
 
