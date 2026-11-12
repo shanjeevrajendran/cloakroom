@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import os
 import re
+from bisect import bisect_left, bisect_right
 
 # The model is public: no Hugging Face login needed, so hide the "unauthenticated requests" warning.
 os.environ.setdefault("HF_HUB_VERBOSITY", "error")
@@ -305,11 +306,34 @@ class Result:
 def _merge(findings: list[rules.Finding]) -> list[rules.Finding]:
     """Keep non-overlapping findings, longest first; a keyed secret wins over an overlapping shape match. (Other keyed
     findings - an address or birth date under its key - don't: a longer model match covers a multi-line address.)"""
+    ranked = sorted(findings, key=lambda f: (-(f.keyed and f.kind == "SECRET"), -(f.end - f.start), f.start))
+    if any(f.end <= f.start for f in ranked):
+        return _merge_slow(ranked)
+    # the kept ones never overlap, so sorted by start they are sorted by end too: a new one can only touch the
+    # one before it and the one after it (every finding against every kept one took seconds on a large CSV)
+    starts: list[int] = []
     chosen: list[rules.Finding] = []
-    for f in sorted(findings, key=lambda f: (-(f.keyed and f.kind == "SECRET"), -(f.end - f.start), f.start)):
+    for f in ranked:
+        i = bisect_left(starts, f.start)
+        if (i == 0 or chosen[i - 1].end <= f.start) and (i == len(starts) or f.end <= starts[i]):
+            starts.insert(i, f.start)
+            chosen.insert(i, f)
+    return chosen
+
+
+def _merge_slow(ranked: list[rules.Finding]) -> list[rules.Finding]:
+    """_merge's rule, every finding against every kept one: for an empty finding, which the fast way can't place."""
+    chosen: list[rules.Finding] = []
+    for f in ranked:
         if all(f.end <= c.start or f.start >= c.end for c in chosen):
             chosen.append(f)
     return sorted(chosen, key=lambda f: f.start)
+
+
+def _covered(spans: list[tuple[int, int]], starts: list[int], a: int, b: int) -> bool:
+    """a..b lies inside one of spans (in order, not overlapping; starts: their first positions)."""
+    i = bisect_right(starts, a) - 1
+    return i >= 0 and b <= spans[i][1]
 
 
 def _own_username(value: str) -> bool:
@@ -444,11 +468,19 @@ def detect(text: str, mode: str = "full", allow=(), always=(), ocr: bool = False
     if mode == "full":
         found += model_findings(text)
     own = [m.span() for m in rules.OWN_PLACEHOLDER.finditer(text)]
+    own_starts = [a for a, _ in own]
     keep, skipped = [], []
     ui = _ui_strings(text)
+    ui_starts = [a for a, _ in ui]
+    names: list = []  # where the people in the text are, worked out at the first model date
+
+    def people():
+        if not names:
+            names.append([(n.start, n.end) for n in found if n.kind == "PERSON" and not _own_account(n.value(text))])
+        return names[0]
     rule_verdict: dict = {}  # (start, end) -> (rule kind, skip reason or None); rules come before the model in found
     for f in _logged(text, files or {}) + found + _always(text, always) + _known(text, known or {}):
-        if any(s <= f.start and f.end <= e for s, e in own):
+        if _covered(own, own_starts, f.start, f.end):
             continue
         if f.source in ("your-rule", "file-log") or f.source.startswith("known"):  # no safe-value judgement
             keep.append(f)
@@ -463,8 +495,7 @@ def detect(text: str, mode: str = "full", allow=(), always=(), ocr: bool = False
             f = rules.Finding(f.start, f.end, kind, f.source, f.keyed)
         why = "on your allowlist" if _allowed(f.value(text), allow) else safe.reason(f.value(text), f.kind, f.keyed)
         if not why and f.kind == "DATE" and f.source.startswith("model:") and not _personal_date(
-                text, f.start, f.end, [(n.start, n.end) for n in found
-                                   if n.kind == "PERSON" and not _own_account(n.value(text))]):
+                text, f.start, f.end, people()):
             why = "plain date (no birth, death or age words near it)"
         if not why and (f.source == "home-dir-user" and _own_username(f.value(text))
                         or f.kind == "PERSON" and _own_account(f.value(text))):
@@ -477,7 +508,7 @@ def detect(text: str, mode: str = "full", allow=(), always=(), ocr: bool = False
             why = "standard or spec number (RFC 5737, ISO 27001)"
         if not why and f.kind == "PERSON" and _XAML_NAME.search(text, max(0, f.start - 8), f.start):
             why = "XAML resource name"
-        if not why and f.kind in ("SECRET", "PERSON") and any(s <= f.start and f.end <= e for s, e in ui):
+        if not why and f.kind in ("SECRET", "PERSON") and _covered(ui, ui_starts, f.start, f.end):
             why = "UI text under a message or label key"
         if not why and f.kind in ("ACCOUNT", "SECRET") and not f.keyed and re.fullmatch(r"\d{1,6}", f.value(text)):
             c = _CONSTANT.search(text, max(0, f.start - 80), f.start)
@@ -502,7 +533,7 @@ def detect(text: str, mode: str = "full", allow=(), always=(), ocr: bool = False
         (skipped.append((f.kind, f.source, why)) if why else keep.append(f))
     if ocr:
         keep += [rules.Finding(m.start(), m.end(), "ACCOUNT", "ocr-digits") for m in OCR_DIGITS.finditer(text)
-                 if not any(s <= m.start() and m.end() <= e for s, e in own)]
+                 if not _covered(own, own_starts, m.start(), m.end())]
     keep = _unmerge_runs(text, keep)
     return _merge(keep + _repeats(text, keep)), skipped
 
@@ -514,8 +545,11 @@ def _unmerge_runs(text: str, keep: list[rules.Finding]) -> list[rules.Finding]:
     by_rule = [f for f in keep if not f.source.startswith("model:")]
     out = []
     for f in keep:
+        if not (f.source.startswith("model:") and f.kind in ("ACCOUNT", "SECRET")):
+            out.append(f)
+            continue
         inside = sorted((r for r in by_rule if f.start <= r.start and r.end <= f.end), key=lambda r: r.start)
-        if not (f.source.startswith("model:") and f.kind in ("ACCOUNT", "SECRET") and len(inside) >= 2):
+        if len(inside) < 2:
             out.append(f)
             continue
         last = f.start
@@ -541,15 +575,63 @@ def _digit_run(text: str, f: rules.Finding) -> str:
     return re.sub(r"\D", "", text[a:b])
 
 
+REPEAT_MIN = 4  # shorter values are left alone, to avoid masking common words
+_REPEAT_SCANS = 4_000_000  # values x characters above which one pass over the text beats one search per value
+
+
+def _longest_of(values: list[str], k: int = 0) -> str:
+    """A pattern for what follows the first k characters of values (sorted, all different, the same up to k): at any
+    position it matches the longest value that starts there. Shared starts are written once, so the text is read
+    once however many values there are."""
+    ends_here = len(values[0]) == k
+    rest = values[1:] if ends_here else values
+    branches, i = [], 0
+    while i < len(rest):
+        j = i
+        while j + 1 < len(rest) and rest[j + 1][k] == rest[i][k]:
+            j += 1
+        first, last, same = rest[i], rest[j], k + 1  # sorted: what the first and last share, all between share
+        while same < len(first) and same < len(last) and first[same] == last[same]:
+            same += 1
+        branches.append(re.escape(first[k:same]) + _longest_of(rest[i:j + 1], same))
+        i = j + 1
+    if not branches:
+        return ""
+    if len(branches) == 1 and not ends_here:
+        return branches[0]
+    return "(?:" + "|".join(branches) + ")" + ("?" if ends_here else "")
+
+
 def _repeats(text: str, found: list[rules.Finding]) -> list[rules.Finding]:
     """Every other exact appearance of a value already judged sensitive (a username caught in one path
     still leaks where it repeats). Values under 4 characters are left alone to avoid masking common words."""
-    out = []
-    for value, kind in {(f.value(text), f.kind) for f in found}:
-        if len(value) < 4:
-            continue
-        for m in re.finditer(re.escape(value), text):
-            out.append(rules.Finding(m.start(), m.end(), kind, "repeat"))
+    wanted = {(f.value(text), f.kind) for f in found}
+    wanted = [(v, k) for v, k in wanted if len(v) >= REPEAT_MIN]
+    if len(wanted) * len(text) > _REPEAT_SCANS:
+        try:
+            return _repeats_one_pass(text, wanted)
+        except (RecursionError, re.error, OverflowError):  # values nested too deep for one pattern
+            pass
+    return [rules.Finding(m.start(), m.end(), kind, "repeat")
+            for value, kind in wanted for m in re.finditer(re.escape(value), text)]
+
+
+def _repeats_one_pass(text: str, wanted: list[tuple[str, str]]) -> list[rules.Finding]:
+    """_repeats for a customer list: thousands of values, each searched through the whole text, took seconds. Here
+    the text is read once. Per value the same matches as one search each (left to right, not overlapping itself)."""
+    kinds: dict[str, list[str]] = {}
+    for value, kind in wanted:
+        kinds.setdefault(value, []).append(kind)
+    at_position = re.compile("(?=(" + _longest_of(sorted(kinds)) + "))")
+    out, free, also = [], {}, {}  # free: where a value's next match may start; also: the values a value starts with
+    for m in at_position.finditer(text):
+        i, longest = m.start(), m.group(1)
+        if longest not in also:
+            also[longest] = [longest] + [longest[:n] for n in range(REPEAT_MIN, len(longest)) if longest[:n] in kinds]
+        for value in also[longest]:
+            if i >= free.get(value, 0):
+                free[value] = i + len(value)
+                out += [rules.Finding(i, i + len(value), kind, "repeat") for kind in kinds[value]]
     return out
 
 
