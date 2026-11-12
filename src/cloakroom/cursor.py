@@ -45,7 +45,7 @@ _IMAGES = (b"\x89PNG\r\n\x1a\n", b"\xff\xd8\xff", b"GIF87a", b"GIF89a")
 
 
 def _safe(session: str) -> str:
-    return "".join(c for c in str(session) if c.isalnum() or c in "-_")[:80] or "default"
+    return config.safe_name(session)
 
 
 def _dir(*parts: str) -> Path:

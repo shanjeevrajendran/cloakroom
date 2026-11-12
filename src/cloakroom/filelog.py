@@ -20,7 +20,7 @@ import ntpath
 import os
 import time
 
-from . import config
+from . import config, store
 
 MAX_SPANS = 5000
 MAX_BYTES = 10 * 1024 * 1024
@@ -29,6 +29,7 @@ MIN_VALUE = 4  # shorter values would turn up by chance
 PENDING_SECONDS = 3600
 _CACHE: dict = {"key": None, "files": {}}  # the decrypted log, by the log file's (mtime_ns, size)
 _VALUES: dict = {}  # (path, size, mtime_ns) -> {value: kind}, read back from the file; in memory only
+KEEP_VALUES = 256  # files whose values are kept in memory
 
 
 def _path():
@@ -89,11 +90,7 @@ def _save(files: dict):
     files = _cap(files)
     p = _path()
     blob = crypto.encrypt(json.dumps({"files": files}).encode())
-    tmp = p.with_suffix(".tmp")
-    fd = os.open(tmp, os.O_WRONLY | os.O_CREAT | os.O_TRUNC | getattr(os, "O_BINARY", 0), 0o600)
-    with os.fdopen(fd, "wb") as f:
-        f.write(blob)
-    os.replace(tmp, p)
+    store.write_atomic(p, blob)
     _CACHE["key"] = None
 
 
@@ -133,6 +130,8 @@ def _check(path: str, entry: dict) -> tuple[dict | None, dict[str, str]]:
         with contextlib.suppress(UnicodeDecodeError):
             values[data[a:b].decode("utf-8")] = kind
     _VALUES[stamp] = values
+    while len(_VALUES) > KEEP_VALUES:  # the service runs for days: the oldest go, and are read from their file again
+        del _VALUES[next(iter(_VALUES))]
     return entry, values
 
 
@@ -149,16 +148,18 @@ def known(roots: list[str], read_path: str = "") -> dict[str, str]:
             continue
         new, values = _check(path, entry)
         if new != entry:
-            updates[path] = new
+            updates[path] = (entry, new)
         out.update(values)
     if updates:  # a file changed or went: write that back (under the lock, onto the log as it is now)
         from . import events
         with events._locked("filelog.lock"):
             current = _load()
-            for path, new in updates.items():
+            for path, (seen, new) in updates.items():
+                if current.get(path) != seen:
+                    continue  # another process logged this file since: its entry stands, the next read settles it
                 if new is None:
                     current.pop(path, None)
-                elif path in current:
+                else:
                     current[path] = new
             _save(current)
     return out
@@ -194,11 +195,15 @@ def record(path: str, values: list[tuple[str, str, str]]) -> int:
         files[key] = {"sha": _sha(data), "size": st.st_size, "mtime": st.st_mtime_ns, "ts": time.time(),
                       "spans": sorted(spans.values())}
         _save(files)
+        # the check above read the file's values for its entry as it was: without the ones just logged. In rules
+        # mode the same process looks them up next, to mask this very tool call's output.
+        for stamp in [s for s in _VALUES if s[0] == key]:
+            del _VALUES[stamp]
         return len(spans)
 
 
 def _pending_file(tool_use_id: str):
-    safe = "".join(c for c in tool_use_id if c.isalnum() or c in "-_")[:80] or "default"
+    safe = config.safe_name(tool_use_id)
     return config.private_dir("pending") / f"{safe}.json"
 
 

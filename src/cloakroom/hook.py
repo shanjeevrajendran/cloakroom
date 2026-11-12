@@ -83,8 +83,7 @@ def _skip_message(session: str) -> str:
     for reason, check, what, say, numbers in _SKIPS:
         if not say:
             continue
-        safe = "".join(c for c in session if c.isalnum() or c in "-_")[:80] or "default"
-        flag = config.private_dir("skip-noted") / f"{safe}.{reason}.{''.join(c for c in check if c.isalnum())}"
+        flag = config.private_dir("skip-noted") / f"{config.safe_name(session)}.{reason}.{''.join(c for c in check if c.isalnum())}"
         if flag.exists():
             continue
         flag.touch(mode=0o600)
@@ -437,7 +436,7 @@ def _prime(command: str, cwd: str, session: str, powershell: bool = False):
 
 
 def _guide_once(session: str) -> str | None:
-    flag = config.private_dir("guided") / ("".join(c for c in session if c.isalnum() or c in "-_")[:80] or "default")
+    flag = config.private_dir("guided") / config.safe_name(session)
     if flag.exists():
         return None
     flag.touch(mode=0o600)
@@ -1067,8 +1066,7 @@ def _install_note_once(session: str) -> str | None:
     note = _install_note(config.load())
     if not note:
         return None
-    flag = config.private_dir("install-noted") / ("".join(c for c in session if c.isalnum() or c in "-_")[:80]
-                                                  or "default")
+    flag = config.private_dir("install-noted") / config.safe_name(session)
     if flag.exists():
         return None
     flag.touch(mode=0o600)
