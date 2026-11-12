@@ -513,6 +513,107 @@ def _logged(text: str, files: dict) -> list[rules.Finding]:
     return out
 
 
+class _Where:
+    """What the checks below need to know about the text around a finding."""
+
+    def __init__(self, text: str, found: list[rules.Finding]):
+        self.text = text
+        self.ui = _ui_strings(text)
+        self.ui_starts = [a for a, _ in self.ui]
+        self._found, self._people = found, None
+
+    def people(self) -> list[tuple[int, int]]:
+        """Where the people in the text are, worked out at the first model date."""
+        if self._people is None:
+            self._people = [(n.start, n.end) for n in self._found
+                            if n.kind == "PERSON" and not _own_account(n.value(self.text))]
+        return self._people
+
+
+# Why a finding is safe where it stands, when its value alone doesn't say so. Each takes the finding and its
+# surroundings and gives the reason, or nothing. _CONTEXT_CHECKS is their order: the first reason found is the one
+# reported.
+
+def _plain_date(f: rules.Finding, w: _Where):
+    if f.kind == "DATE" and f.source.startswith("model:") and not _personal_date(w.text, f.start, f.end, w.people()):
+        return "plain date (no birth, death or age words near it)"
+
+
+def _own_name(f: rules.Finding, w: _Where):
+    if (f.source == "home-dir-user" and _own_username(f.value(w.text))
+            or f.kind == "PERSON" and _own_account(f.value(w.text))):
+        return "your own username (already visible in the working folder)"
+
+
+def _cut_short(f: rules.Finding, w: _Where):
+    if f.kind in ("SECRET", "ACCOUNT") and not f.keyed and safe.ELLIPSIS.match(w.text, f.end) \
+            and safe.reason(f.value(w.text) + "...", f.kind, f.keyed):
+        return "cut short with ... (a placeholder, not a key)"  # "sk-...your-key-here...": the span stops at "sk-"
+
+
+def _spec_number(f: rules.Finding, w: _Where):
+    if f.kind == "ACCOUNT" and _STANDARD.search(w.text, max(0, f.start - 12), f.start) \
+            and re.fullmatch(r"\d{1,5}(?:[-:]\d{1,4})?", f.value(w.text).strip()):
+        return "standard or spec number (RFC 5737, ISO 27001)"
+
+
+def _xaml_name(f: rules.Finding, w: _Where):
+    if f.kind == "PERSON" and _XAML_NAME.search(w.text, max(0, f.start - 8), f.start):
+        return "XAML resource name"
+
+
+def _ui_text(f: rules.Finding, w: _Where):
+    if f.kind in ("SECRET", "PERSON") and _covered(w.ui, w.ui_starts, f.start, f.end):
+        return "UI text under a message or label key"
+
+
+def _constant_number(f: rules.Finding, w: _Where):
+    if f.kind in ("ACCOUNT", "SECRET") and not f.keyed and re.fullmatch(r"\d{1,6}", f.value(w.text)):
+        c = _CONSTANT.search(w.text, max(0, f.start - 80), f.start)
+        if c and not _SECRET_IN_NAME.search(c.group(1)):
+            return "number given to a code constant"
+
+
+def _gpg_id(f: rules.Finding, w: _Where):
+    if f.kind in ("ACCOUNT", "SECRET") and not f.keyed \
+            and re.fullmatch(r"[0-9A-Fa-f]{8}|[0-9A-Fa-f]{16}", f.value(w.text)) \
+            and _GPG_ID.search(w.text, max(0, f.start - 40), f.start):
+        return "GPG key id (public)"
+
+
+def _test_card(f: rules.Finding, w: _Where):
+    if f.kind in ("CARD", "ACCOUNT") and _digit_run(w.text, f) in safe.TEST_CARDS:
+        return "published test card"
+
+
+def _part_of_a_word(f: rules.Finding, w: _Where):
+    """A PERSON finding that is part of a longer word: judged as that whole word."""
+    if f.kind == "PERSON":
+        a, b = f.start, f.end
+        while a > 0 and w.text[a - 1].isalpha():
+            a -= 1
+        while b < len(w.text) and w.text[b].isalpha():
+            b += 1
+        if (a, b) != (f.start, f.end):
+            return safe.reason(w.text[a:b], f.kind, f.keyed)
+
+
+_CONTEXT_CHECKS = (_plain_date, _own_name, _cut_short, _spec_number, _xaml_name, _ui_text, _constant_number, _gpg_id,
+                   _test_card, _part_of_a_word)
+
+
+def _why_safe(f: rules.Finding, w: _Where, allow) -> str | None:
+    """The reason a finding is not masked: on your allowlist, safe by its value (safe.reason), or safe where it
+    stands (the checks above, in their order). Nothing when it is to be masked."""
+    value = f.value(w.text)
+    why = "on your allowlist" if _allowed(value, allow) else safe.reason(value, f.kind, f.keyed)
+    for check in () if why else _CONTEXT_CHECKS:
+        why = check(f, w)
+        if why:
+            break
+    return why
+
+
 def detect(text: str, mode: str = "full", allow=(), always=(), ocr: bool = False,
            known: dict | None = None, files: dict | None = None) -> tuple[list[rules.Finding], list[tuple]]:
     """Findings to mask, and findings skipped as safe (with the reason). ocr: the text came from OCR.
@@ -526,14 +627,7 @@ def detect(text: str, mode: str = "full", allow=(), always=(), ocr: bool = False
     own = [m.span() for m in rules.OWN_PLACEHOLDER.finditer(text)]
     own_starts = [a for a, _ in own]
     keep, skipped = [], []
-    ui = _ui_strings(text)
-    ui_starts = [a for a, _ in ui]
-    names: list = []  # where the people in the text are, worked out at the first model date
-
-    def people():
-        if not names:
-            names.append([(n.start, n.end) for n in found if n.kind == "PERSON" and not _own_account(n.value(text))])
-        return names[0]
+    where = _Where(text, found)
     rule_verdict: dict = {}  # (start, end) -> (rule kind, skip reason or None); rules come before the model in found
     for f in _logged(text, files or {}) + found + _always(text, always) + _known(text, known or {}):
         if _covered(own, own_starts, f.start, f.end):
@@ -549,41 +643,7 @@ def detect(text: str, mode: str = "full", allow=(), always=(), ocr: bool = False
                 skipped.append((f.kind, f.source, rule_why))
                 continue
             f = rules.Finding(f.start, f.end, kind, f.source, f.keyed)
-        why = "on your allowlist" if _allowed(f.value(text), allow) else safe.reason(f.value(text), f.kind, f.keyed)
-        if not why and f.kind == "DATE" and f.source.startswith("model:") and not _personal_date(
-                text, f.start, f.end, people()):
-            why = "plain date (no birth, death or age words near it)"
-        if not why and (f.source == "home-dir-user" and _own_username(f.value(text))
-                        or f.kind == "PERSON" and _own_account(f.value(text))):
-            why = "your own username (already visible in the working folder)"
-        if not why and f.kind in ("SECRET", "ACCOUNT") and not f.keyed and safe.ELLIPSIS.match(text, f.end) \
-                and safe.reason(f.value(text) + "...", f.kind, f.keyed):
-            why = "cut short with ... (a placeholder, not a key)"  # "sk-...your-key-here...": the span stops at "sk-"
-        if not why and f.kind == "ACCOUNT" and _STANDARD.search(text, max(0, f.start - 12), f.start) \
-                and re.fullmatch(r"\d{1,5}(?:[-:]\d{1,4})?", f.value(text).strip()):
-            why = "standard or spec number (RFC 5737, ISO 27001)"
-        if not why and f.kind == "PERSON" and _XAML_NAME.search(text, max(0, f.start - 8), f.start):
-            why = "XAML resource name"
-        if not why and f.kind in ("SECRET", "PERSON") and _covered(ui, ui_starts, f.start, f.end):
-            why = "UI text under a message or label key"
-        if not why and f.kind in ("ACCOUNT", "SECRET") and not f.keyed and re.fullmatch(r"\d{1,6}", f.value(text)):
-            c = _CONSTANT.search(text, max(0, f.start - 80), f.start)
-            if c and not _SECRET_IN_NAME.search(c.group(1)):
-                why = "number given to a code constant"
-        if not why and f.kind in ("ACCOUNT", "SECRET") and not f.keyed \
-                and re.fullmatch(r"[0-9A-Fa-f]{8}|[0-9A-Fa-f]{16}", f.value(text)) \
-                and _GPG_ID.search(text, max(0, f.start - 40), f.start):
-            why = "GPG key id (public)"
-        if not why and f.kind in ("CARD", "ACCOUNT") and _digit_run(text, f) in safe.TEST_CARDS:
-            why = "published test card"
-        if not why and f.kind == "PERSON":
-            a, b = f.start, f.end
-            while a > 0 and text[a - 1].isalpha():
-                a -= 1
-            while b < len(text) and text[b].isalpha():
-                b += 1
-            if (a, b) != (f.start, f.end):
-                why = safe.reason(text[a:b], f.kind, f.keyed)
+        why = _why_safe(f, where, allow)
         if not f.source.startswith("model:"):
             rule_verdict.setdefault((f.start, f.end), (f.kind, why))
         (skipped.append((f.kind, f.source, why)) if why else keep.append(f))
