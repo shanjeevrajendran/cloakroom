@@ -1,7 +1,7 @@
 """Local service that keeps the model loaded. Listens on 127.0.0.1 only and requires the token from
 ~/.cloakroom/token on every call. Never logs request bodies or values.
 
-POST /mask     {"text", "session", "mode"?, "ocr"?} -> {"text", "mode", "masked": [[placeholder, kind, source]], "skipped": [...]}
+POST /mask     {"text", "session", "mode"?, "ocr"?, "seconds"?} -> {"text", "mode", "masked": [[placeholder, kind, source]], "skipped": [...]}
 POST /restore  {"text", "session"}          -> {"text", "unknown": [placeholders not in the vault]}
 GET  /health                                 -> {"ok": true, "service": "cloakroom", "model": bool}
 POST /dashboard/code                         -> {"code"}: one-time sign-in code for `cloakroom dashboard`
@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import hmac
 import json
+import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from threading import Lock
 from urllib.parse import parse_qs, urlsplit
@@ -106,13 +107,20 @@ class Handler(BaseHTTPRequestHandler):
             return self._send(200, {"code": dashboard.new_code()})
         try:
             req = json.loads(self.rfile.read(int(self.headers.get("Content-Length", 0))))
+            # what the caller has left (client.py): past it nobody waits for the answer. Counted from here, so the
+            # wait for another call's check is part of it.
+            seconds = req.get("seconds") if isinstance(req.get("seconds"), (int, float)) else None
+            stop = time.monotonic() + seconds if seconds and seconds > 0 else None
             with LOCK:
                 vault = _vault(req.get("session", "default"))
                 if self.path == "/mask":
+                    if stop and time.monotonic() >= stop:
+                        raise engine.OutOfTime(engine.SLOW)
                     cfg = config.load()
                     files = filelog.known(req.get("roots") or [], req.get("read") or "") if req.get("roots") else None
-                    r = engine.mask(req["text"], vault, req.get("mode") or self.server.mode, cfg["allow"], cfg["always"],
-                                    bool(req.get("ocr")), files)
+                    with engine.time_limit(stop - time.monotonic() if stop else None):
+                        r = engine.mask(req["text"], vault, req.get("mode") or self.server.mode, cfg["allow"],
+                                        cfg["always"], bool(req.get("ocr")), files)
                     return self._send(200, {"text": r.text, "mode": r.mode, "masked": r.masked, "skipped": r.skipped})
                 if self.path == "/restore":
                     text, unknown = vault.restore(req["text"])

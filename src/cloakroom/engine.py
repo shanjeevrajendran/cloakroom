@@ -5,9 +5,12 @@
 """
 from __future__ import annotations
 
+import hashlib
 import os
 import re
+import time
 from bisect import bisect_left, bisect_right
+from collections import OrderedDict
 
 # The model is public: no Hugging Face login needed, so hide the "unauthenticated requests" warning.
 os.environ.setdefault("HF_HUB_VERBOSITY", "error")
@@ -41,6 +44,30 @@ _EDGE_PUNCT = ",;\"'`"  # model spans sometimes take the separator next to a val
 
 class ModelUnavailable(RuntimeError):
     """full mode was asked for but the model can't run. Install cloakroom[model,torch] or use mode='rules'."""
+
+
+class OutOfTime(ModelUnavailable):
+    """The model check was stopped: it would have run past the time its caller has (time_limit). Callers fail
+    closed on it like on any ModelUnavailable."""
+
+
+SLOW = "this check would take longer than the agent waits for Cloakroom"
+_STOP_AT = [0.0]  # time.monotonic() after which model_findings stops; 0: no limit
+
+
+class time_limit:
+    """with time_limit(seconds): a model check inside raises OutOfTime between two windows once the time is up, so
+    work nobody is waiting for any more stops (the service runs one check at a time). None or 0: no limit."""
+
+    def __init__(self, seconds: float | None):
+        self.seconds = seconds
+
+    def __enter__(self):
+        self.before = _STOP_AT[0]
+        _STOP_AT[0] = time.monotonic() + self.seconds if self.seconds and self.seconds > 0 else 0.0
+
+    def __exit__(self, *exc):
+        _STOP_AT[0] = self.before
 
 
 _MODEL = None
@@ -148,6 +175,30 @@ def _windows(text: str, fit) -> list[tuple[int, int]]:
     return out
 
 
+KEEP_WINDOWS = 512
+_READ: OrderedDict = OrderedDict()  # hash of a window's text -> what the model found in it, most recent last
+_READ_BY = [None]  # the model those came from
+
+
+def _predict(model, chunk: str) -> list[tuple[int, int, str, float]]:
+    """(start, end, label, score) of the model's spans in chunk. The same window is often read twice in a row: a file
+    a command names is checked before the command runs and again as its output. The answer is kept under a hash of
+    the text (never the text), for the model that gave it."""
+    if _READ_BY[0] is not model:
+        _READ.clear()
+        _READ_BY[0] = model
+    key = hashlib.sha256(chunk.encode("utf-8", "surrogatepass")).digest()
+    spans = _READ.get(key)
+    if spans is None:
+        spans = [(s.start, s.end, s.label, s.score) for s in model.predict(chunk)[0]]
+        _READ[key] = spans
+        while len(_READ) > KEEP_WINDOWS:
+            _READ.popitem(last=False)
+    else:
+        _READ.move_to_end(key)
+    return spans
+
+
 def model_findings(text: str) -> list[rules.Finding]:
     model = _model()
     out: dict = {}  # in order, without the doubles from the overlap between windows
@@ -155,12 +206,13 @@ def model_findings(text: str) -> list[rules.Finding]:
         chunk = text[start:end]
         if not chunk.strip():
             continue
-        spans, _ = model.predict(chunk)
-        for s in spans:
-            if s.label in MODEL_KIND and s.score >= KIND_THRESHOLD.get(MODEL_KIND[s.label], SPAN_THRESHOLD):
-                kind = MODEL_KIND[s.label]
-                for a, b, k in _pieces(text, start + s.start, start + s.end, kind):
-                    out.setdefault((a, b, k, s.label), rules.Finding(a, b, k, f"model:{s.label}"))
+        if _STOP_AT[0] and time.monotonic() > _STOP_AT[0]:
+            raise OutOfTime(SLOW)
+        for a, b, label, score in _predict(model, chunk):
+            if label in MODEL_KIND and score >= KIND_THRESHOLD.get(MODEL_KIND[label], SPAN_THRESHOLD):
+                kind = MODEL_KIND[label]
+                for a2, b2, k in _pieces(text, start + a, start + b, kind):
+                    out.setdefault((a2, b2, k, label), rules.Finding(a2, b2, k, f"model:{label}"))
     return list(out.values())
 
 

@@ -1543,6 +1543,14 @@ def _model_fallback(event: str, data: dict):
 
 
 def handle(event: str, data: dict) -> dict | None:
+    client.start_clock(event)  # the agent's time limit for this hook: every call to the service shares it
+    try:
+        return _handle(event, data)
+    finally:
+        client.stop_clock()
+
+
+def _handle(event: str, data: dict) -> dict | None:
     _FOUND.clear()
     _EXTRA.clear()
     _SKIPS.clear()
