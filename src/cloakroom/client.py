@@ -89,14 +89,17 @@ def _post(path: str, body: dict, timeout: float | None = None, wait: float | Non
 
     def request():
         left = seconds_left(timeout)
-        sent = {**body, "seconds": round(left, 1)} if path == "/mask" else body  # the service stops there too
+        sent = {**body, "seconds": round(left, 2)} if path == "/mask" else body  # the service stops there too
         return urllib.request.Request(f"http://127.0.0.1:{cfg['port']}{path}", json.dumps(sent).encode(),
                                       {"Content-Type": "application/json", "X-Cloakroom-Token": config.token()}), left
     try:
         return _once(*request(), cfg["port"])
     except _Down:
         start_background()
-    if not _wait_until_up(cfg["port"], min(STARTUP_WAIT if wait is None else wait, max(0.0, seconds_left()))):
+    wait = STARTUP_WAIT if wait is None else wait
+    if _UNTIL[0]:  # a hook's clock runs: not past it
+        wait = min(wait, max(0.0, seconds_left()))
+    if not _wait_until_up(cfg["port"], wait):
         raise Unavailable("cloakroom service is starting; try again in a few seconds")
     try:
         return _once(*request(), cfg["port"])

@@ -22,6 +22,7 @@ import secrets
 from pathlib import Path
 
 TAG_LEN = 6  # base32 characters: 30 bits
+LOCK_SECONDS = 10.0  # the longest a mask call waits for another process's write to a session file, then it fails
 PLACEHOLDER = re.compile(r"\bPII_[A-Z]+_\d+_[a-z2-7]{6}\b")  # what Cloakroom issues: the only form restored
 ANY_PLACEHOLDER = re.compile(r"\bPII_[A-Z]+_\d+(?:_[a-z2-7]{6})?\b")  # also the form from before 0.6.1
 _PARTS = re.compile(r"(PII_[A-Z]+_\d+)(?:_([a-z2-7]{6}))?")
@@ -96,7 +97,7 @@ class Vault:
             return
         from . import store
         self.path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
-        with store.locked(self.path.with_suffix(".lock")):
+        with store.locked(self.path.with_suffix(".lock"), LOCK_SECONDS):
             if self.path.exists() and self._file_stamp() != self._stamp:
                 self._read()
                 self.load_given()

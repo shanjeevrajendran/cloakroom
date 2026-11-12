@@ -110,15 +110,15 @@ class Handler(BaseHTTPRequestHandler):
             # what the caller has left (client.py): past it nobody waits for the answer. Counted from here, so the
             # wait for another call's check is part of it.
             seconds = req.get("seconds") if isinstance(req.get("seconds"), (int, float)) else None
-            stop = time.monotonic() + seconds if seconds and seconds > 0 else None
+            stop = None if seconds is None else time.monotonic() + seconds  # 0 or less: out of time already
             with LOCK:
                 vault = _vault(req.get("session", "default"))
                 if self.path == "/mask":
-                    if stop and time.monotonic() >= stop:
+                    if stop is not None and time.monotonic() >= stop:
                         raise engine.OutOfTime(engine.SLOW)
                     cfg = config.load()
                     files = filelog.known(req.get("roots") or [], req.get("read") or "") if req.get("roots") else None
-                    with engine.time_limit(stop - time.monotonic() if stop else None):
+                    with engine.time_limit(None if stop is None else stop - time.monotonic()):
                         r = engine.mask(req["text"], vault, req.get("mode") or self.server.mode, cfg["allow"],
                                         cfg["always"], bool(req.get("ocr")), files)
                     return self._send(200, {"text": r.text, "mode": r.mode, "masked": r.masked, "skipped": r.skipped})

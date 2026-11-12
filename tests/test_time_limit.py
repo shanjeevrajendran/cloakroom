@@ -5,6 +5,7 @@ unchecked original. Before 1.5 each call to the service had 30 seconds of its ow
 again (so the service did the work twice, one after the other) and a second service was started for nothing."""
 import json
 import socket
+import sys
 import threading
 import time
 from collections import namedtuple
@@ -199,3 +200,75 @@ def test_a_call_that_waited_past_its_time_for_another_check_is_not_run(service, 
     calls = model.calls
     time.sleep(0.3)
     assert model.calls == calls  # the second call's text was never read: its caller had gone
+
+
+# --- found by the review of this branch
+
+def test_no_time_left_means_out_of_time_not_no_limit(monkeypatch):
+    model = SlowModel()
+    monkeypatch.setattr(engine, "_MODEL", model)
+    for seconds in (0, 0.0, -3):
+        with engine.time_limit(seconds), pytest.raises(engine.OutOfTime):
+            engine.mask(_long_text(2), mode="full")
+    assert model.calls == 0
+
+
+def test_the_service_does_not_start_a_check_for_a_caller_with_no_time_left(service, monkeypatch):
+    model = SlowModel()
+    monkeypatch.setattr(engine, "_MODEL", model)
+    monkeypatch.setattr(client, "seconds_left", lambda most=None: 5.0)  # the request itself gets through
+    real = client.urllib.request.Request
+
+    def no_time(url, data, headers):  # as sent with nothing left on the hook's clock
+        return real(url, json.dumps({**json.loads(data), "seconds": 0.0}).encode(), headers)
+    monkeypatch.setattr(client.urllib.request, "Request", no_time)
+    with pytest.raises(client.Unavailable, match="longer than the agent waits"):
+        client._post("/mask", {"text": _long_text(2), "session": "s"})
+    assert model.calls == 0
+
+
+def test_without_a_hook_clock_the_first_start_wait_is_what_it_was(monkeypatch):
+    waited = []
+    quiet = socket.socket()
+    quiet.bind(("127.0.0.1", 0))
+    port = quiet.getsockname()[1]
+    quiet.close()  # nothing listens there
+    monkeypatch.setenv("CLOAKROOM_MODE", "full")
+    monkeypatch.setenv("CLOAKROOM_PORT", str(port))
+    monkeypatch.setattr(client, "start_background", lambda *a: None)
+    monkeypatch.setattr(client, "_wait_until_up", lambda p, seconds: waited.append(seconds) or False)
+    with pytest.raises(client.Unavailable):
+        client._post("/mask", {"text": "x", "session": "s"})  # the proxy, the command line: no clock
+    client.start_clock("start")
+    try:
+        with pytest.raises(client.Unavailable):
+            client._post("/mask", {"text": "x", "session": "s"})
+    finally:
+        client.stop_clock()
+    assert waited[0] == client.STARTUP_WAIT and waited[1] < 30
+
+
+@pytest.mark.skipif(sys.platform == "win32", reason="Windows keeps its 2 second try, then runs without the lock")
+def test_a_session_file_held_by_a_stuck_process_fails_the_mask_instead_of_waiting_for_ever(monkeypatch):
+    from cloakroom import config, store, vault
+    monkeypatch.setattr(vault, "LOCK_SECONDS", 0.2)
+    v = vault.Vault(config.vault_path("stuck"))
+    v.placeholder("first@quillmere.net", "EMAIL")
+    held, done = threading.Event(), threading.Event()
+
+    def holder():  # another hook, stuck with the session's lock
+        with store.locked(config.vault_path("stuck").with_suffix(".lock")):
+            held.set()
+            done.wait(5)
+    t = threading.Thread(target=holder)
+    t.start()
+    held.wait(5)
+    t0 = time.monotonic()
+    try:
+        with pytest.raises(store.Busy):
+            engine.mask("write to second@quillmere.net", v, "rules")
+        assert time.monotonic() - t0 < 2
+    finally:
+        done.set()
+        t.join()
+    assert "second@quillmere.net" not in engine.mask("write to second@quillmere.net", v, "rules").text  # free again

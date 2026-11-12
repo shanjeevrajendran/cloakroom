@@ -8,10 +8,16 @@ import time
 from pathlib import Path
 
 
+class Busy(OSError):
+    """Another process held the lock for longer than the caller can wait."""
+
+
 @contextlib.contextmanager
-def locked(path: str | os.PathLike):
+def locked(path: str | os.PathLike, seconds: float | None = None):
     """Hold path (a lock file, made when missing) until the block ends: one process and one thread at a time.
-    Windows: after 2 seconds of trying the block runs without the lock, as before."""
+    seconds: the longest to wait for it, then Busy (a hook must answer before its agent stops waiting, and callers
+    fail closed on the error); None waits as long as it takes. Windows: after 2 seconds of trying the block runs
+    without the lock, as before."""
     fd = os.open(path, os.O_RDWR | os.O_CREAT, 0o600)
     try:
         if os.name == "nt":
@@ -24,7 +30,18 @@ def locked(path: str | os.PathLike):
                     time.sleep(0.01)
         else:
             import fcntl
-            fcntl.flock(fd, fcntl.LOCK_EX)
+            if seconds is None:
+                fcntl.flock(fd, fcntl.LOCK_EX)
+            else:
+                end = time.monotonic() + seconds
+                while True:
+                    try:
+                        fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                        break
+                    except OSError:
+                        if time.monotonic() >= end:
+                            raise Busy(f"{os.path.basename(path)} is held by another process") from None
+                        time.sleep(0.01)
         yield
     finally:
         if os.name == "nt":

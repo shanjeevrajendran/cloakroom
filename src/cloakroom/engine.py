@@ -57,14 +57,18 @@ _STOP_AT = [0.0]  # time.monotonic() after which model_findings stops; 0: no lim
 
 class time_limit:
     """with time_limit(seconds): a model check inside raises OutOfTime between two windows once the time is up, so
-    work nobody is waiting for any more stops (the service runs one check at a time). None or 0: no limit."""
+    work nobody is waiting for any more stops (the service runs one check at a time). None: no limit. Zero or
+    less: the time is up already, and the first window is not read."""
 
     def __init__(self, seconds: float | None):
         self.seconds = seconds
 
     def __enter__(self):
         self.before = _STOP_AT[0]
-        _STOP_AT[0] = time.monotonic() + self.seconds if self.seconds and self.seconds > 0 else 0.0
+        if self.seconds is None:
+            _STOP_AT[0] = 0.0
+        else:
+            _STOP_AT[0] = max(1e-9, time.monotonic() + (self.seconds if self.seconds > 0 else -1.0))
 
     def __exit__(self, *exc):
         _STOP_AT[0] = self.before
