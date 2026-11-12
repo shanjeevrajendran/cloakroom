@@ -24,6 +24,12 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 DOCS = ROOT / "docs"
 SOURCES = ("CHANGELOG.md", "docs-HANDBOOK.md", "README.md")
 
+# CHANGELOG.md links to README sections as (#anchor). Those sections that moved are linked where the text is today.
+MOVED = {
+    "#point-any-tool-at-cloakroom": "https://cloakroom.sh/how-it-works.html#agents",
+    "#see-where-your-agent-sends-data": "https://cloakroom.sh/security.html#stop-destinations",
+}
+
 # Typed by the machine or once at most (the handbook's "Other commands" line, the hook entry points).
 RARE = ["export-onnx", "status", "serve", "clean-history", "hook", "git-check"]
 
@@ -93,7 +99,9 @@ def inline(md):
     s = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", s)
     def link(m):
         href = m.group(2)
-        if not href.startswith("http"):
+        if href.startswith("#"):
+            href = MOVED.get(href, f"{REPO}/blob/main/README.md{href}")
+        elif not href.startswith("http"):
             href = f"{REPO}/blob/main/{href}"
         return f'<a href="{html.escape(href)}">{m.group(1)}</a>'
     s = re.sub(r"\[([^\]]+)\]\(([^)]+)\)", link, s)
