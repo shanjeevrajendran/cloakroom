@@ -291,7 +291,76 @@ def on_post(data: dict) -> dict | None:
         filelog.complete(str(data["tool_use_id"]), Vault(config.vault_path(session)))
     roots = [data.get("cwd") or os.getcwd()]
     read = str((data.get("tool_input") or {}).get("file_path") or "") if data.get("tool_name") == "Read" else ""
+    raw, converted = data.get("tool_response"), ""
+    if data.get("tool_name") == "Read":  # PDFs become their text layer, scans and pictures OCR text (media.py)
+        stop, answer, raw, converted = _convert_read(data, raw)
+        if stop:
+            return answer
+    img, n = "", None  # img: what happened to MCP images, for every message below
+    view = data.get("tool_name") == "view_image"  # Codex's picture tool: the same policy as MCP pictures
+    if str(data.get("tool_name", "")).startswith("mcp__") or view:  # screenshots and pictures: OCR text, never pixels
+        stop, answer, raw, converted, img, n = _convert_pictures(data, raw, roots, view, converted)
+        if stop:
+            return answer
+    new, changed = _mask_strings(raw, session, converted, roots, read, kinds)
+    new, hits = _encoded_check(new, data, session, roots)
+    return _post_answer(data, session, new, changed, converted, kinds, img, n, hits)
 
+
+def _convert_read(data: dict, raw):
+    """A Read result: PDFs become their text layer, scans and pictures OCR text (media.py).
+    Returns (stop, answer, raw, converted); stop is True when answer is already the hook's answer."""
+    cfg = config.load()
+    ocr = media.Ocr.from_config(cfg)
+    raw, converted = media.convert(raw, (data.get("tool_input") or {}).get("file_path", ""),
+                                   allow_images=bool(cfg.get("allow_images")), ocr=ocr)
+    if ocr.pages or ocr.error:
+        _NOTE[0] = (f"ocr pages={ocr.pages} ms={ocr.ms:.0f}" if not ocr.error else
+                    f"ocr failed ({ocr.error})")
+    if converted == "image-allowed":
+        _ACTION[0] = "image passed"
+        return True, {"systemMessage": "cloakroom: an image went to Claude unchecked (allow_images is on)"}, raw, converted
+    if converted == "held":
+        _ACTION[0] = "withheld"
+        if _dry("post", "Read: would hold back a non-text result"):
+            return True, None, raw, converted
+        return True, {"hookSpecificOutput": {"hookEventName": "PostToolUse", "updatedToolOutput": raw},
+                      "systemMessage": "cloakroom: held back a Read result it can't check (image or PDF without text)"
+                      }, raw, converted
+    return False, None, raw, converted
+
+
+def _convert_pictures(data: dict, raw, roots: list[str], view: bool, converted: str):
+    """MCP pictures and Codex's view_image: OCR text, never pixels.
+    Returns (stop, answer, raw, converted, img, n); stop is True when answer is already the hook's answer."""
+    cfg = config.load()
+    ocr = media.Ocr.from_config(cfg)
+    if view and cfg.get("allow_images"):
+        _ACTION[0] = "image passed"
+        return (True, {"systemMessage": "cloakroom: an image went to Claude unchecked (allow_images is on)"}, raw,
+                converted, "", None)
+    raw, n = media.convert_mcp(raw, allow_images=bool(cfg.get("allow_images")), ocr=ocr)
+    if view and not any(n.values()):  # a result shape Cloakroom doesn't know: read the picture from its path
+        ti = data.get("tool_input") or {}
+        where = str((ti.get("path") or ti.get("command") if isinstance(ti, dict) else ti) or "")
+        raw, n = media.convert_mcp(media.file_image(os.path.join(roots[0], where)), ocr=ocr)
+    if ocr.pages or ocr.error:
+        _NOTE[0] = f"ocr pages={ocr.pages} ms={ocr.ms:.0f}" + (f" ocr failed ({ocr.error})" if ocr.error else "")
+    img = "; ".join(x for x in (
+        f"{n['ocr']} image(s) read by local OCR, the picture not sent" if n["ocr"] else "",
+        f"{n['held']} image(s) held back (no OCR text)" if n["held"] else "",
+        f"{n['allowed']} image(s) sent unchecked (allow_images is on)" if n["allowed"] else "") if x)
+    if n["ocr"]:
+        converted = "ocr"  # the OCR text gets OCR masking (digit runs), like a Read picture
+    elif n["held"]:
+        converted = "held"
+    if n["allowed"] and not (n["ocr"] or n["held"]):
+        _ACTION[0] = "image passed"
+    return False, None, raw, converted, img, n
+
+
+def _mask_strings(raw, session: str, converted: str, roots: list[str], read: str, kinds: list):
+    """Mask every string in the tool result; kinds and _FOUND get what was found. Returns (new value, changed)."""
     def fn(s):
         if len(s) < 4:
             return s
@@ -299,50 +368,12 @@ def on_post(data: dict) -> dict | None:
         kinds.extend(k for _, k, _ in r["masked"])
         _FOUND.extend((p, k) for p, k, _ in r["masked"])
         return r["text"]
-    raw, converted = data.get("tool_response"), ""
-    if data.get("tool_name") == "Read":  # PDFs become their text layer, scans and pictures OCR text (media.py)
-        cfg = config.load()
-        ocr = media.Ocr.from_config(cfg)
-        raw, converted = media.convert(raw, (data.get("tool_input") or {}).get("file_path", ""),
-                                       allow_images=bool(cfg.get("allow_images")), ocr=ocr)
-        if ocr.pages or ocr.error:
-            _NOTE[0] = (f"ocr pages={ocr.pages} ms={ocr.ms:.0f}" if not ocr.error else
-                        f"ocr failed ({ocr.error})")
-        if converted == "image-allowed":
-            _ACTION[0] = "image passed"
-            return {"systemMessage": "cloakroom: an image went to Claude unchecked (allow_images is on)"}
-        if converted == "held":
-            _ACTION[0] = "withheld"
-            if _dry("post", "Read: would hold back a non-text result"):
-                return None
-            return {"hookSpecificOutput": {"hookEventName": "PostToolUse", "updatedToolOutput": raw},
-                    "systemMessage": "cloakroom: held back a Read result it can't check (image or PDF without text)"}
-    img = ""  # what happened to MCP images, for every message below
-    view = data.get("tool_name") == "view_image"  # Codex's picture tool: the same policy as MCP pictures
-    if str(data.get("tool_name", "")).startswith("mcp__") or view:  # screenshots and pictures: OCR text, never pixels
-        cfg = config.load()
-        ocr = media.Ocr.from_config(cfg)
-        if view and cfg.get("allow_images"):
-            _ACTION[0] = "image passed"
-            return {"systemMessage": "cloakroom: an image went to Claude unchecked (allow_images is on)"}
-        raw, n = media.convert_mcp(raw, allow_images=bool(cfg.get("allow_images")), ocr=ocr)
-        if view and not any(n.values()):  # a result shape Cloakroom doesn't know: read the picture from its path
-            ti = data.get("tool_input") or {}
-            where = str((ti.get("path") or ti.get("command") if isinstance(ti, dict) else ti) or "")
-            raw, n = media.convert_mcp(media.file_image(os.path.join(roots[0], where)), ocr=ocr)
-        if ocr.pages or ocr.error:
-            _NOTE[0] = f"ocr pages={ocr.pages} ms={ocr.ms:.0f}" + (f" ocr failed ({ocr.error})" if ocr.error else "")
-        img = "; ".join(x for x in (
-            f"{n['ocr']} image(s) read by local OCR, the picture not sent" if n["ocr"] else "",
-            f"{n['held']} image(s) held back (no OCR text)" if n["held"] else "",
-            f"{n['allowed']} image(s) sent unchecked (allow_images is on)" if n["allowed"] else "") if x)
-        if n["ocr"]:
-            converted = "ocr"  # the OCR text gets OCR masking (digit runs), like a Read picture
-        elif n["held"]:
-            converted = "held"
-        if n["allowed"] and not (n["ocr"] or n["held"]):
-            _ACTION[0] = "image passed"
-    new, changed = _strings(raw, fn)
+    return _strings(raw, fn)
+
+
+def _encoded_check(new, data: dict, session: str, roots: list[str]):
+    """Re-check the masked output for known values in an encoded or spaced-out form.
+    Returns (new value, hits); each text field that hit is replaced by the withheld note."""
     # Encoded output (od -c, xxd, base64, rev...) can carry values the detectors can't read: decode and re-check
     # each text field, and replace only the fields that hit (structural fields must stay as they are).
     # dates are left out: a fragment like "Oct 11 12:16" repeats harmlessly across a file listing or a log
@@ -371,6 +402,11 @@ def on_post(data: dict) -> dict | None:
             return msg
         return t
     new, _ = _strings(new, check)
+    return new, hits
+
+
+def _post_answer(data: dict, session: str, new, changed: bool, converted: str, kinds: list, img: str, n, hits: list):
+    """The PostToolUse answer: withheld, masked, checked with nothing to mask, or None when nothing changed."""
     tail = f" (MCP: {img})" if img else ""
     mcp = str(data.get("tool_name", "")).startswith("mcp__")
 
@@ -521,7 +557,7 @@ def _program_paths() -> list[str]:
              (home, ".local", "pipx", "venvs"), (home, "pipx", "venvs"), (home, ".local", "share", "pipx", "venvs"),
              (env("XDG_DATA_HOME"), "pipx", "venvs"), (home, "Library", "Application Support", "pipx", "venvs"),
              (env("LOCALAPPDATA"), "pipx", "pipx", "venvs"), (env("PIPX_HOME"), "venvs")]
-    found = [shutil.which("cloakroom"), agents._program()] + [os.path.join(*r, "cloakroom") for r in roots if r[0]]
+    found = [shutil.which("cloakroom"), agents.program()] + [os.path.join(*r, "cloakroom") for r in roots if r[0]]
     package = os.path.dirname(os.path.abspath(__file__))
     found += [package] if "site-packages" in package else []  # not a source checkout you work on
     # POSIX: also the link's own name (norm resolves links); Windows: norm's one spelling is the only one
@@ -945,15 +981,39 @@ def _cursor_pre(data: dict) -> tuple[bool, dict | None]:
 def _on_pre(data: dict) -> dict | None:
     tool, args, session = data.get("tool_name", ""), data.get("tool_input") or {}, data.get("session_id", "default")
     cwd = data.get("cwd") or os.getcwd()
+    denied = _self_deny(tool, args, cwd)
+    if denied:
+        return denied
+    blob = json.dumps(args)
+    has_ph = bool(ANY_PLACEHOLDER.search(blob))
+    vault = Vault(config.vault_path(session))
+    held = _pre_holds(data, tool, args, cwd, session, vault)
+    if held:
+        return held
+    if tool in LOCAL_FILE_TOOLS or tool in SHELL_TOOLS:
+        if not has_ph:  # nothing to restore; a key the model typed into a file is still checked
+            denied = _commit_check(tool, args, args, cwd, vault) if tool in WRITE_TOOLS else None
+            return None if denied is _DRY_DENY else denied
+        if tool in SHELL_TOOLS:
+            return _restore_shell(data, tool, args, cwd, session, vault)
+        return _restore_fields(data, tool, args, cwd, session, vault)
+    return _outbound_deny(tool, blob, session, cwd)
+
+
+def _self_deny(tool: str, args: dict, cwd: str) -> dict | None:
+    """Cloakroom protects itself: no writes to its home, no reading its vault key, no running its own approvals."""
     if _touches_home(tool, args, cwd):
         return _deny(HOME_DENY)
     if tool in SHELL_TOOLS and _reads_key(str(args.get("command", ""))):
         return _deny(KEY_DENY)
     if tool in SHELL_TOOLS and _self_cli(str(args.get("command", "")), cwd):
         return _deny(SELF_DENY)
-    blob = json.dumps(args)
-    has_ph = bool(ANY_PLACEHOLDER.search(blob))
-    vault = Vault(config.vault_path(session))
+    return None
+
+
+def _pre_holds(data: dict, tool: str, args: dict, cwd: str, session: str, vault: Vault) -> dict | None:
+    """The holds before any restore: agent config, then for shell commands secrets leaving, git, long-running
+    (Codex) and the file pre-read; money for any tool. The first hold, or None."""
     if tool in SHELL_TOOLS or tool in WRITE_TOOLS:
         held = _config_hold(tool, args, cwd)
         if held:  # a literal token in it is denied first: that message names the fix
@@ -977,58 +1037,64 @@ def _on_pre(data: dict) -> dict | None:
         held = _money_hold(tool + "\0" + json.dumps(args, sort_keys=True), money_why)
         if held:
             return held
-    if tool in LOCAL_FILE_TOOLS or tool in SHELL_TOOLS:
-        if not has_ph:  # nothing to restore; a key the model typed into a file is still checked
-            denied = _commit_check(tool, args, args, cwd, vault) if tool in WRITE_TOOLS else None
-            return None if denied is _DRY_DENY else denied
-        if tool in SHELL_TOOLS:
-            ps = tool == "PowerShell"
-            cmd = args.get("command", "")
-            kind = shell.classify(cmd, powershell=ps)
-            if kind == "network" or "<<" in cmd or "@'" in cmd or '@"' in cmd:
-                out = {"hookSpecificOutput": {"hookEventName": "PreToolUse", "permissionDecision": "ask",
-                       "permissionDecisionReason": "Cloakroom: this command can send data off this machine, so "
-                                                   "placeholders were left in place. Approve only if that's what you want."}}
-                return None if _dry("pre", "Bash network: would ask") else out
-            restored, _ = shell.restore(cmd, vault.lookup, powershell=ps)  # refusals: vault.refused
-            denied = _commit_check(tool, args, args, cwd, vault)
-            if denied:
-                return None if denied is _DRY_DENY else denied
-            if _dry("pre", f"Bash {kind}: would restore"):
-                return None
-            context, notice = _refusals(vault, session)
-            if restored == cmd:
-                return _with_notes({"hookEventName": "PreToolUse"}, context, notice) if context else None
-            _pending(data, _command_paths(cmd, cwd, ps), cmd, vault)
-            out = {"hookEventName": "PreToolUse", "updatedInput": {**args, "command": restored}}
-            if kind == "unknown":
-                out.update(permissionDecision="ask",
-                           permissionDecisionReason="Cloakroom restored real values into a command it doesn't know. "
-                                                    "Approve only if it stays on this machine.")
-            return _with_notes(out, context, notice)
-        changed_fields = {}
-        for key, value in args.items():
-            def fn(s):
-                return vault.restore(s)[0]  # refusals: vault.refused
-            new, changed = _strings(value, fn)
-            if changed:
-                changed_fields[key] = new
-        if tool in WRITE_TOOLS:
-            denied = _commit_check(tool, {**args, **changed_fields}, args, cwd, vault)
-            if denied:
-                return None if denied is _DRY_DENY else denied
-        if changed_fields and _dry("pre", f"{tool}: would restore {list(changed_fields)}"):
-            return None
-        context, notice = _refusals(vault, session)
-        if not changed_fields:
-            return _with_notes({"hookEventName": "PreToolUse"}, context, notice) if context else None
-        if tool in WRITE_TOOLS:
-            _pending(data, [filelog.norm(p, cwd) for p in _write_paths(tool, args) if p], json.dumps(args), vault)
-        # updatedInput replaces the whole input in practice (a partial one dropped Write's file_path): send it all
-        out = {"hookEventName": "PreToolUse", "updatedInput": {**args, **changed_fields}}
-        return _with_notes(out, context, notice)
+    return None
 
-    # Everything else may leave the machine (web, MCP, subagent prompts): never restore; deny real values.
+
+def _restore_shell(data: dict, tool: str, args: dict, cwd: str, session: str, vault: Vault) -> dict | None:
+    """A local shell command with placeholders: real values back in, unless it can send data off this machine."""
+    ps = tool == "PowerShell"
+    cmd = args.get("command", "")
+    kind = shell.classify(cmd, powershell=ps)
+    if kind == "network" or "<<" in cmd or "@'" in cmd or '@"' in cmd:
+        out = {"hookSpecificOutput": {"hookEventName": "PreToolUse", "permissionDecision": "ask",
+               "permissionDecisionReason": "Cloakroom: this command can send data off this machine, so "
+                                           "placeholders were left in place. Approve only if that's what you want."}}
+        return None if _dry("pre", "Bash network: would ask") else out
+    restored, _ = shell.restore(cmd, vault.lookup, powershell=ps)  # refusals: vault.refused
+    denied = _commit_check(tool, args, args, cwd, vault)
+    if denied:
+        return None if denied is _DRY_DENY else denied
+    if _dry("pre", f"Bash {kind}: would restore"):
+        return None
+    context, notice = _refusals(vault, session)
+    if restored == cmd:
+        return _with_notes({"hookEventName": "PreToolUse"}, context, notice) if context else None
+    _pending(data, _command_paths(cmd, cwd, ps), cmd, vault)
+    out = {"hookEventName": "PreToolUse", "updatedInput": {**args, "command": restored}}
+    if kind == "unknown":
+        out.update(permissionDecision="ask",
+                   permissionDecisionReason="Cloakroom restored real values into a command it doesn't know. "
+                                            "Approve only if it stays on this machine.")
+    return _with_notes(out, context, notice)
+
+
+def _restore_fields(data: dict, tool: str, args: dict, cwd: str, session: str, vault: Vault) -> dict | None:
+    """A local file tool with placeholders: real values back into every field that has one."""
+    changed_fields = {}
+    for key, value in args.items():
+        def fn(s):
+            return vault.restore(s)[0]  # refusals: vault.refused
+        new, changed = _strings(value, fn)
+        if changed:
+            changed_fields[key] = new
+    if tool in WRITE_TOOLS:
+        denied = _commit_check(tool, {**args, **changed_fields}, args, cwd, vault)
+        if denied:
+            return None if denied is _DRY_DENY else denied
+    if changed_fields and _dry("pre", f"{tool}: would restore {list(changed_fields)}"):
+        return None
+    context, notice = _refusals(vault, session)
+    if not changed_fields:
+        return _with_notes({"hookEventName": "PreToolUse"}, context, notice) if context else None
+    if tool in WRITE_TOOLS:
+        _pending(data, [filelog.norm(p, cwd) for p in _write_paths(tool, args) if p], json.dumps(args), vault)
+    # updatedInput replaces the whole input in practice (a partial one dropped Write's file_path): send it all
+    out = {"hookEventName": "PreToolUse", "updatedInput": {**args, **changed_fields}}
+    return _with_notes(out, context, notice)
+
+
+def _outbound_deny(tool: str, blob: str, session: str, cwd: str) -> dict | None:
+    """Everything else may leave the machine (web, MCP, subagent prompts): never restore; deny real values."""
     r = client.mask(blob, session, roots=[cwd])
     if r["masked"]:
         _FOUND.extend((p, k) for p, k, _ in r["masked"])
@@ -1089,7 +1155,7 @@ def on_start(data: dict) -> dict | None:
         try:
             # wait=0: start the service and return at once (the SessionStart hook only has 30 s; the first model
             # download alone can take longer). Tool calls wait for it instead.
-            client._post("/mask", {"text": "warm up", "session": data.get("session_id", "default")}, timeout=5, wait=0)
+            client.warm_up(data.get("session_id", "default"))
         except client.Unavailable:
             return {"systemMessage": "cloakroom: starting the local model in the background. The very first run also "
                                      "downloads it once (about a minute); tool calls wait for it."}
