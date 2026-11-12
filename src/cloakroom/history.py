@@ -259,3 +259,6 @@ def summary(tally: dict, root: str) -> str:
     """clean-history's report line, for one file."""
     what = "key(s) or password(s)" if set(tally) <= KINDS else "value(s)"
     return f"Cloakroom clean-history: {sum(tally.values())} {what} in 1 file(s) under {root}"
+
+
+known = _known  # exposure.py

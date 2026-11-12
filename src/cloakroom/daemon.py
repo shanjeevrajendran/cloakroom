@@ -64,7 +64,7 @@ class Handler(BaseHTTPRequestHandler):
         url = urlsplit(self.path)
         if url.path == "/health":
             return self._send(200, {"ok": True, "service": "cloakroom", "version": __version__,
-                                    "model": engine._MODEL is not None})
+                                    "model": engine.model_loaded()})
         if url.path == "/dashboard":
             code = parse_qs(url.query).get("code", [""])[0]
             if code and self._local_host() and dashboard.redeem(code):
@@ -141,6 +141,6 @@ def serve():
     server = ThreadingHTTPServer(("127.0.0.1", cfg["port"]), Handler)
     server.mode = cfg["mode"]
     if cfg["mode"] == "full":
-        engine._model()  # load once at start; raises ModelUnavailable if extras are missing
+        engine.load_model()  # load once at start; raises ModelUnavailable if extras are missing
         engine.mask("warm up")
     server.serve_forever()

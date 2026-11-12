@@ -115,6 +115,11 @@ class Masker:
         return r["text"]
 
 
+def reads_zstd() -> bool:
+    """A zstd-compressed request body can be read here (the standard library from 3.14, else backports.zstd)."""
+    return _zstd() is not None
+
+
 def _zstd():
     """compression.zstd (3.14+) or its backport; None when neither imports, and zstd bodies are then refused."""
     try:
@@ -498,14 +503,14 @@ def install(agent: str, p: int | None = None, show: bool = False) -> str:
     backup = _backup()
     mine = backup.get(agent) or {}
     if agent == "claude":
-        data = agents._load(where)
+        data = agents.load_json(where)
         env = data.setdefault("env", {})
         if not isinstance(env, dict):
             raise ValueError(f'{where}: "env" is not a table this version understands; left as it is')
         if not mine:
             mine = {"existed": os.path.exists(where), "old": env.get(ENV_KEY[agent])}
         env[ENV_KEY[agent]] = addr
-        agents._write(where, data)
+        agents.write_json(where, data)
     else:
         text = _read_text(where)
         eol = "\r\n" if text and "\r\n" in text else "\n"
@@ -545,7 +550,7 @@ def uninstall(agent: str) -> str:
     backup = _backup()
     mine = backup.pop(agent, {})
     if agent == "claude":
-        data = agents._load(where) if os.path.exists(where) else {}
+        data = agents.load_json(where) if os.path.exists(where) else {}
         env = data.get("env") if isinstance(data.get("env"), dict) else {}
         now = str(env.get(ENV_KEY[agent], ""))
         if re.fullmatch(r"http://127\.0\.0\.1:\d+/anthropic", now):  # only an address we wrote
@@ -558,7 +563,7 @@ def uninstall(agent: str) -> str:
             if not data and not mine.get("existed", True):
                 os.remove(where)
             else:
-                agents._write(where, data)
+                agents.write_json(where, data)
     else:
         text = _read_text(where)
         if text is not None:
@@ -584,7 +589,7 @@ def pointing() -> dict[str, str]:
     for agent in ADDRESS:
         try:
             if agent == "claude":
-                got = str((agents._load(_path(agent)).get("env") or {}).get(ENV_KEY[agent], ""))
+                got = str((agents.load_json(_path(agent)).get("env") or {}).get(ENV_KEY[agent], ""))
             else:
                 text = _read_text(_path(agent)) or ""
                 lines = text.splitlines()

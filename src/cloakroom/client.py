@@ -107,6 +107,16 @@ def _post(path: str, body: dict, timeout: float | None = None, wait: float | Non
         raise Unavailable("cloakroom service stopped answering; run: cloakroom doctor") from e
 
 
+def dashboard_code() -> str:
+    """A one-time sign-in code for the dashboard, from the running service."""
+    return _post("/dashboard/code", {})["code"]
+
+
+def warm_up(session: str):
+    """Start the service if it isn't running and return at once: Unavailable says it is still starting."""
+    _post("/mask", {"text": "warm up", "session": session}, timeout=5, wait=0)
+
+
 def health(port: int) -> dict | None:
     """The service's /health, or None if nothing answers. Another program on the port answers too: check 'service'."""
     try:

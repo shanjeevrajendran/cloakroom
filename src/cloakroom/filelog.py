@@ -151,8 +151,7 @@ def known(roots: list[str], read_path: str = "") -> dict[str, str]:
             updates[path] = (entry, new)
         out.update(values)
     if updates:  # a file changed or went: write that back (under the lock, onto the log as it is now)
-        from . import events
-        with events._locked("filelog.lock"):
+        with store.locked(config.private_dir() / "filelog.lock"):
             current = _load()
             for path, (seen, new) in updates.items():
                 if current.get(path) != seen:
@@ -170,9 +169,8 @@ def record(path: str, values: list[tuple[str, str, str]]) -> int:
     data = _read(path)
     if data is None:
         return 0
-    from . import events
     key = norm(path)
-    with events._locked("filelog.lock"):
+    with store.locked(config.private_dir() / "filelog.lock"):
         files = _load()
         for p in list(files):  # prune on every write: files gone or changed
             new, _ = _check(p, files[p])

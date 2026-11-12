@@ -13,7 +13,7 @@ import sys
 import time
 
 from . import config, engine, shell
-from .hookcall import HOLD_MINUTES, _FOUND, _hold, _skip, _summary
+from .hookcall import FOUND, HOLD_MINUTES, hold, skip, summary
 from .vault import Vault
 
 NEW_FILE_MAX = 4 * 512 * 1024  # a new file larger than this is not read (4 x hook.PRIME_MAX_BYTES)
@@ -31,7 +31,7 @@ def _git_would_commit(path: str) -> bool:
     try:
         r = subprocess.run(["git", "-C", d, "check-ignore", "-q", "--", path], capture_output=True, timeout=1)
     except subprocess.TimeoutExpired:
-        _skip("too-slow", "git check on a write holding a key",
+        skip("too-slow", "git check on a write holding a key",
               "whether git would commit this write, which holds a key", ms=1000, limit=1)
         return False
     except Exception:  # no git: nothing can commit the file
@@ -76,7 +76,7 @@ def _git_steps(command: str, cwd: str, powershell: bool) -> list[tuple[str, str,
     git commit or push in the command, following cd and git -C."""
     import shlex
     out, here, added = [], cwd, None
-    for seg in (shell._PS_SEGMENT_SPLIT if powershell else shell._SEGMENT_SPLIT).split(command):
+    for seg in (shell.PS_SEGMENT_SPLIT if powershell else shell.SEGMENT_SPLIT).split(command):
         try:
             words = shlex.split(seg, posix=not powershell)
         except ValueError:
@@ -201,16 +201,11 @@ def _git_out(repo: str, deadline: float, *argv) -> str:
     return r.stdout.decode("utf-8", "replace")
 
 
-def git_added(repo: str, argvs: list[list[str]], vault: Vault | None, cfg: dict,
-              deadline: float, check: str = "git commit") -> list[tuple[str, str, str]] | None:
-    """(file, placeholder or "", kind) for each key or password the added lines carry (the rules, your always-mask
-    entries and the session's known secrets). argvs: git commands (_commit_diffs, _push_logs). None when the change
-    set is too large to scan (fail open, a "too-large" skip is noted for check); running out of time raises
-    TimeoutError and a git error raises. Also the git hook's check (githook.py)."""
-    from fnmatch import fnmatch
-    known = {v: k for v, k in engine.known_values(vault, cfg["always"]).items() if k in COMMIT_KINDS}
-    always = [(e, k) for e, k in cfg["always"] if k in COMMIT_KINDS]
-    globs = cfg.get("allow_secret_paths") or []
+def _added_files(repo: str, argvs: list[list[str]], deadline: float) -> dict[str, list[str]]:
+    """{file: the lines git would add to it} for the git commands in argvs (_commit_diffs, _push_logs): the added
+    lines of each diff or log, and the whole of each new file a git add brings in. A new file larger than
+    NEW_FILE_MAX is left out, and a "too-large" skip is noted. Running out of time raises TimeoutError; a git error
+    raises."""
     files: dict[str, list[str]] = {}
     root = ""
     for argv in argvs:
@@ -229,7 +224,7 @@ def git_added(repo: str, argvs: list[list[str]], vault: Vault | None, cfg: dict,
                 if not (name and os.path.isfile(path)):
                     continue
                 if os.path.getsize(path) > NEW_FILE_MAX:
-                    _skip("too-large", "new file in a git commit", "a new file in this git commit",
+                    skip("too-large", "new file in a git commit", "a new file in this git commit",
                           size=os.path.getsize(path), limit=NEW_FILE_MAX)
                     continue
                 with open(path, encoding="utf-8", errors="replace") as f:
@@ -245,9 +240,23 @@ def git_added(repo: str, argvs: list[list[str]], vault: Vault | None, cfg: dict,
             out = _git_out(repo, deadline, *argv, "--no-color", "--no-ext-diff", "-U0")
         for name, lines in _added_lines(out).items():
             files.setdefault(name, []).extend(lines)
+    return files
+
+
+def git_added(repo: str, argvs: list[list[str]], vault: Vault | None, cfg: dict,
+              deadline: float, check: str = "git commit") -> list[tuple[str, str, str]] | None:
+    """(file, placeholder or "", kind) for each key or password the added lines carry (the rules, your always-mask
+    entries and the session's known secrets). argvs: git commands (_commit_diffs, _push_logs). None when the change
+    set is too large to scan (fail open, a "too-large" skip is noted for check); running out of time raises
+    TimeoutError and a git error raises. Also the git hook's check (githook.py)."""
+    from fnmatch import fnmatch
+    known = {v: k for v, k in engine.known_values(vault, cfg["always"]).items() if k in COMMIT_KINDS}
+    always = [(e, k) for e, k in cfg["always"] if k in COMMIT_KINDS]
+    globs = cfg.get("allow_secret_paths") or []
+    files = _added_files(repo, argvs, deadline)
     size = sum(len(x) for lines in files.values() for x in lines)
     if size > GIT_MAX_TEXT:
-        _skip("too-large", check, size=size, limit=GIT_MAX_TEXT)
+        skip("too-large", check, size=size, limit=GIT_MAX_TEXT)
         return None
     found = []
     for name, lines in files.items():
@@ -284,19 +293,19 @@ def _git_hold(command: str, cwd: str, vault: Vault, powershell: bool) -> dict | 
                 verb = sub
                 break
     except (TimeoutError, subprocess.TimeoutExpired):  # slow: the command runs as before, unchecked
-        _skip("too-slow", f"git {sub}", ms=1000 * (time.monotonic() - deadline + GIT_SECONDS), limit=GIT_SECONDS)
+        skip("too-slow", f"git {sub}", ms=1000 * (time.monotonic() - deadline + GIT_SECONDS), limit=GIT_SECONDS)
         return None
     except Exception:  # git missing or failing, not a repo: the command runs as before, unchecked
         if _in_repo(repo):  # no git, or no repo there: the command can't commit or push either
-            _skip("git-error", f"git {sub}")
+            skip("git-error", f"git {sub}")
         return None
     if not found:
         return None
-    _FOUND.extend((ph, k) for _, ph, k in found)
+    FOUND.extend((ph, k) for _, ph, k in found)
     pairs = list(dict.fromkeys(f"{ph or 'a ' + k} in {name}" for name, ph, k in found))
     what = "; ".join(pairs[:3]) + (f" (and {len(pairs) - 3} more)" if len(pairs) > 3 else "")
-    return _hold(command, f"Cloakroom held this git {verb}: {what}. A pushed secret can't be called back. Move the "
+    return hold(command, f"Cloakroom held this git {verb}: {what}. A pushed secret can't be called back. Move the "
                           f"value to .env (git-ignored) and unstage it, or, to {verb} anyway, type cr: allow, then ask "
                           f"Claude to run the same command again: it passes once, within {HOLD_MINUTES} min. Claude: "
                           "don't change or re-encode the value to get past this; ask the user.",
-                 f"git {verb}: would hold ({_summary([k for _, _, k in found])})")
+                 f"git {verb}: would hold ({summary([k for _, _, k in found])})")

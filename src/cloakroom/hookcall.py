@@ -109,3 +109,10 @@ def _hold(key: str, reason: str, dry: str = "") -> dict | None:
 def _deny(reason: str) -> dict:
     return {"hookSpecificOutput": {"hookEventName": "PreToolUse", "permissionDecision": "deny",
                                    "permissionDecisionReason": reason}}
+
+
+# What other modules use from here (cursor.py, githook.py, gitcheck.py). hook.py takes them under the names it
+# always had. _arm_held and _write_held have no public name on purpose: a command that imports them is refused
+# (hook._SELF_CLI), and that check goes by their names.
+ACTION, NOTE, FOUND, EXTRA, SKIPS = _ACTION, _NOTE, _FOUND, _EXTRA, _SKIPS
+skip, summary, dry, deny, hold = _skip, _summary, _dry, _deny, _hold

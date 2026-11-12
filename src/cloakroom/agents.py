@@ -742,3 +742,12 @@ def install(agent, remove=False):
           "Until you do, Codex skips them, and codex exec does so without a warning: nothing is masked.\n"
           "To remove them: cloakroom uninstall codex")
     return 0
+
+
+# What other modules use from here (update.py, proxy.py, cursor.py, githook.py, cli.py, hook.py)
+words, load_json, write_json, ours = _words, _load, _write, _ours
+
+
+def program():
+    """The program the agents' hooks run (_program)."""
+    return _program()

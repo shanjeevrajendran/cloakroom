@@ -219,7 +219,7 @@ def _cmd_cursor_run(a) -> int:
 
 def _cmd_allow(a) -> int:
     from . import agents, hook
-    print(agents._words(hook._arm_held(), "the agent"))
+    print(agents.words(hook._arm_held(), "the agent"))
     return 0
 
 
@@ -277,7 +277,7 @@ def _cmd_serve(a) -> int:
 def _cmd_dashboard(a) -> int:
     from . import client
     try:
-        code = client._post("/dashboard/code", {})["code"]
+        code = client.dashboard_code()
     except client.Unavailable as e:
         print(f"cloakroom: {e}", file=sys.stderr)
         return 2
@@ -422,14 +422,14 @@ def _doctor_model(line):
         print("...   model: loading (the first run downloads it once, about 1 GB; that can take a minute or two)",
               flush=True)
         t0 = time.perf_counter()
-        engine._model()
+        engine.load_model()
         t1 = time.perf_counter()
         sample = "Contact Jane Example at jane@example.org or +1 415 555 0100."
         engine.mask(sample, mode="full")  # the first check warms the backend up
         t2 = time.perf_counter()
         engine.mask(sample, mode="full")
         t3 = time.perf_counter()
-        detail = backend + (f" ({engine._model().path.name})" if backend == "onnx" else "")
+        detail = backend + (f" ({engine.load_model().path.name})" if backend == "onnx" else "")
         line(True, "model", f"{detail}, loaded in {t1 - t0:.1f} s, one check {1000 * (t3 - t2):.0f} ms "
                             f"(first check {1000 * (t2 - t1):.0f} ms, a one-time warm-up)")
     except engine.ModelUnavailable as e:
@@ -480,7 +480,7 @@ def _doctor_proxy(line):
         else:
             line(True, "proxy", f"running on port {proxy.port()}; pointing at it: "
                  + (", ".join(proxy.NAMES[k] for k in pointed) or "no tool yet (cloakroom proxy install claude)"))
-        if "codex" in pointed and proxy.codex_chatgpt() and proxy._zstd() is None:
+        if "codex" in pointed and proxy.codex_chatgpt() and not proxy.reads_zstd():
             line(False, "proxy", f"Codex is signed in with ChatGPT, but {proxy.NO_ZSTD}")
 
 

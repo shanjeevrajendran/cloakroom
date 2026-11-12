@@ -111,6 +111,15 @@ def _model():
     return _MODEL
 
 
+def model_loaded() -> bool:
+    return _MODEL is not None
+
+
+def load_model():
+    """The model, loaded on first use (_model): raises ModelUnavailable when it can't run."""
+    return _model()
+
+
 def _onnx_model():
     try:
         from . import onnx_backend

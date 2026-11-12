@@ -122,3 +122,6 @@ def decisions() -> int:
     path = config.HOME / "decisions.json"
     gone = sum(json.loads(path.read_text()).values()) if path.exists() else 0
     return gone + sum(1 for r in load() if r["decided"])
+
+
+save = _save  # learn.py
