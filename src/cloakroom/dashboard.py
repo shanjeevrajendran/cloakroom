@@ -62,7 +62,7 @@ def summary(limit: int = 2000) -> dict:
             e["label"] = found[e["id"]]["label"]
     sessions = config.HOME / "sessions"
     return {"version": __version__, "mode": cfg["mode"], "installing": cfg.get("installing"), "port": cfg["port"],
-            "model": engine._MODEL is not None, "allow": len(cfg.get("allow", [])),
+            "model": engine.model_loaded(), "allow": len(cfg.get("allow", [])),
             "vault_sessions": len(list(sessions.glob("*.json"))) if sessions.exists() else 0,
             "decisions": len(found) + userrules.decisions(), "rules": [_public(r) for r in userrules.load()],
             "learning": learn.mode(), "unlock": learn.UNLOCK,

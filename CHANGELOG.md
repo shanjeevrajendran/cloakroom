@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.5.0 (2026-11-12)
+- Personal data near the end of long, dense output (a log, a CSV of numbers, a hex dump, minified JSON) could reach the agent unmasked. The model reads a limited amount of text at a time and was handed more than that, so the last part of each stretch of such text got no model check. Keys, cards, emails and phones there were still caught by the rules; names, addresses and other things only the model finds were not. Text now goes to the model in pieces it reads in full, cut at line breaks.
+- Rules mode: a name written a second time into a file Cloakroom had already logged went through unmasked in that tool call's output. It is masked now.
+- Rules mode: two tool calls that ran at the same moment could give one placeholder to two different values, or leave a value that could not be restored. A session's vault file now has one writer at a time.
+- A check that would take longer than the agent waits for a hook now stops early and the output is withheld, as on any error. Before, an agent that stopped waiting decided for itself what happened next (Gemini CLI goes on with the unchecked original).
+- Much faster on large files and long output. A large CSV is checked in a fraction of the time it took, and a file a command names is read by the model once, not once before the command runs and again as its output.
+- A call to the local service that times out is no longer sent a second time, and no second service is started. The service was busy, not down, and did the same work twice.
+- The service keeps the vaults of the most recent sessions in memory, not every session's for as long as it runs, and takes in what a hook wrote to a session's vault file.
+- `python bench/speed.py` prints how long each step takes on your machine (`--model` adds the model).
+- Inside: `hook.py` is three modules, the long functions are split into named steps, and modules use each other's public names. No command, setting or file format changed.
+- Known limit: a first check by the model takes a little longer on dense text than in 1.4.0, because all of the text is now read (see docs-LIMITS, "Speed").
+- Known limit: on Windows, when another process keeps a session's vault file locked for two seconds, the write goes ahead without the lock (see docs-LIMITS, "Vault file lock on Windows").
+
 ## 1.4.0 (2026-11-08)
 - `cloakroom exposure --personal` also finds personal data you typed in old Codex, Cursor and Gemini CLI chats, not only Claude Code ([details](#commands-youll-use)). Only what you typed is read, never tool output or the agent's replies.
 - macOS: no more Keychain password prompt naming "python" on first run or after a Python update ([details](#how-it-works)). The vault key now sits in a Keychain item Apple's own `security` tool creates and reads; if you used 1.3 or older, macOS may ask one last time while the key is copied, and the old item is left as it was. An agent's shell command that tries to read the key out of the Keychain is denied.

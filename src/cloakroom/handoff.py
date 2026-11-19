@@ -20,6 +20,7 @@ import time
 from pathlib import Path
 
 from . import config, crypto
+from . import store as files  # `store` is this module's word for a project's handed-over values
 from .vault import TAG_INFO, TAG_LEN, Vault
 
 KIND = "SECRET"
@@ -46,11 +47,7 @@ def _load(project: str) -> dict:
 
 def _save(project: str, store: dict):
     path = _path(project)
-    tmp = path.with_suffix(".tmp")
-    fd = os.open(tmp, os.O_WRONLY | os.O_CREAT | os.O_TRUNC | getattr(os, "O_BINARY", 0), 0o600)
-    with os.fdopen(fd, "wb") as f:
-        f.write(crypto.encrypt(json.dumps(store).encode()))
-    os.replace(tmp, path)
+    files.write_atomic(path, crypto.encrypt(json.dumps(store).encode()))
 
 
 def _live(store: dict) -> dict:

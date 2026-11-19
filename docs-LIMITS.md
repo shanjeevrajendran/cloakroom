@@ -133,6 +133,11 @@ Cloakroom can't check, the action is blocked rather than let through.
   0.4 s per check and up to ~0.9 s for a long tool output. So on a modest laptop each tool call may gain under a
   second. `cloakroom doctor` prints your machine's time per check; `CLOAKROOM_MODE=rules` is instant but misses
   names and other personal data in ordinary text.
+- Speed on dense text (since 1.5.0): a log, a CSV of numbers or a hex dump holds more for the model to read than
+  prose of the same length, and all of it is now read, so a first check of such text takes a little longer than in
+  1.4.0. The same text checked again right after (a file a command names, then its output) is not read twice.
+- Vault file lock on Windows: a session's vault file has one writer at a time. On Windows, when another process
+  keeps it locked for two seconds, the write goes ahead without the lock, as the event log's write always has.
 - First run downloads the detection model (PII-Tracer, pinned revision) from Hugging Face; offline machines need
   it cached first. The CPU path (ONNX Runtime) needs a one-time export with PyTorch installed (about 4 GB of disk;
   on Windows, PyTorch also needs the Microsoft Visual C++ Redistributable, https://aka.ms/vs/17/release/vc_redist.x64.exe);
@@ -356,8 +361,9 @@ Checked against Gemini CLI 0.65 (hooks docs: https://geminicli.com/docs/hooks/re
 - **Timeouts let the call through:** Gemini treats a hook that runs past its time limit (30 s at session start,
   60 s for prompts and tool input, 120 s for tool output) as a warning and goes on with the original. Cloakroom
   doesn't wait for its model to load: until the local service is ready, checks run on the rules only (keys, cards,
-  IDs; names and addresses may be missed), noted once per session and logged as a skipped check. A very slow check (a huge output, many OCR
-  pages) can still run past the limit.
+  IDs; names and addresses may be missed), noted once per session and logged as a skipped check. A model check that would run past the limit
+  stops before it and the output is withheld (since 1.5.0); reading many OCR pages can still
+  run past it.
 - Prompts can only be blocked, not masked: Gemini keeps the original prompt in the conversation and also sends it
   to the model from places no hook sees (model routing, history compression, loop checks). Pictures in a prompt
   (pasted, or `@image.png`) aren't seen by the prompt hook and go unchecked; text from `@file` is checked.

@@ -17,7 +17,6 @@ One file per month (events-YYYY-MM.jsonl), kept for log_months months (config, d
 """
 from __future__ import annotations
 
-import contextlib
 import hashlib
 import json
 import os
@@ -26,7 +25,7 @@ import secrets
 import time
 from pathlib import Path
 
-from . import config
+from . import config, store
 
 PATH_KEYS = ("file_path", "notebook_path", "path")
 LEGACY = ("events.jsonl", "events.1.jsonl")
@@ -103,30 +102,10 @@ def head() -> str:
     return "start"
 
 
-@contextlib.contextmanager
 def _locked(name: str = "events.lock"):
     """One writer at a time: parallel hooks would otherwise read the same head and fork the chain (also used by
     filelog.py, with its own lock file)."""
-    fd = os.open(config.private_dir() / name, os.O_RDWR | os.O_CREAT, 0o600)
-    try:
-        if os.name == "nt":
-            import msvcrt
-            for _ in range(200):
-                try:
-                    msvcrt.locking(fd, msvcrt.LK_NBLCK, 1)
-                    break
-                except OSError:
-                    time.sleep(0.01)
-        else:
-            import fcntl
-            fcntl.flock(fd, fcntl.LOCK_EX)
-        yield
-    finally:
-        if os.name == "nt":
-            with contextlib.suppress(OSError):
-                os.lseek(fd, 0, 0)
-                msvcrt.locking(fd, msvcrt.LK_UNLCK, 1)
-        os.close(fd)
+    return store.locked(config.private_dir() / name)
 
 
 def _keep_months() -> int:

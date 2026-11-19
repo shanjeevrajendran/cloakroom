@@ -93,11 +93,8 @@ def _from_agent() -> str:
     return f"{marker} is set" if marker else "" if _has_tty() else "there is no terminal"
 
 
-def main(argv=None):
-    _utf8_stdio()
-    p = argparse.ArgumentParser(prog="cloakroom", description="Agents check their secrets at the door.")
-    p.add_argument("--version", action="version", version=f"cloakroom {__version__}")
-    sub = p.add_subparsers(dest="cmd", required=True)
+def _add_parsers_main(sub):
+    """The first half of the subcommands, in the original order. Returns the `give` parser (its error() is used)."""
     for name in ("check", "mask", "explain"):
         s = sub.add_parser(name)
         s.add_argument("file", nargs="?", default="-")
@@ -126,6 +123,10 @@ def main(argv=None):
     gv.add_argument("--list", action="store_true", help="names and hints for this project (never values)")
     gv.add_argument("--forget", metavar="NAME", help="remove one")
     gv.add_argument("--hours", type=float, default=24, help="how long it stays (default 24)")
+    return gv
+
+
+def _add_parsers_rest(sub):
     px = sub.add_parser("proxy", help="run the local proxy that masks what a tool sends to its AI company (base-URL "
                                       "mode), or point Claude Code, Codex CLI or Gemini CLI at it")
     px.add_argument("action", nargs="?", choices=["install", "uninstall"])
@@ -167,123 +168,147 @@ def main(argv=None):
                    "addresses, account numbers) in what you typed in old Claude Code, Codex, Cursor and Gemini chats; "
                    "slow, uses the model")
     e.add_argument("--format", choices=["text", "json"], default="text")
-    a = p.parse_args(argv)
 
-    if a.cmd == "report":
-        from . import report
-        if a.verify:
-            print(report.verify_text())
-            from . import events
-            return 0 if events.verify()["ok"] else 1
-        sys.stdout.write(report.destinations_text(a.format, a.since) if a.destinations else report.export(a.format, a.since))
-        return 0
-    if (a.cmd in ("allow", "uninstall") or (a.cmd == "allow-host" and not a.list)
-            or (a.cmd == "proxy" and a.action == "uninstall")) and (why := _from_agent()):
-        print(f"cloakroom: {a.cmd} approves a held call or a site, or switches Cloakroom off, so it runs only in your "
-              f"own terminal, not in an agent's shell ({why}). Type it in a terminal window yourself.", file=sys.stderr)
-        return 1
-    if a.cmd == "allow-host":
-        return _allow_host(a)
-    if a.cmd == "proxy":
-        from . import proxy
-        return proxy.run(a)
-    if a.cmd == "exposure":
-        from . import exposure
-        try:
-            data = exposure.build(a.since, a.personal)
-        except engine.ModelUnavailable as e:
-            print(f"cloakroom: --personal needs the model ({e}). Run cloakroom exposure without it for keys and "
-                  "passwords only.", file=sys.stderr)
-            return 2
-        sys.stdout.write(exposure.render(data, a.format))
-        return 0
-    if a.cmd == "clean-history":
-        from . import history
-        return history.run(dry_run=a.dry_run, yes=a.yes)
 
-    if a.cmd == "update":
-        from . import update
-        return update.run(check=a.check)
-    if a.cmd == "hook":
-        from . import hookentry
-        return hookentry.run(a.event, a.agent)
-    if a.cmd == "cursor-run":
-        from . import cursor
-        return cursor.run(a.id)
-    if a.cmd == "allow":
-        from . import agents, hook
-        print(agents._words(hook._arm_held(), "the agent"))
-        return 0
-    if a.cmd in ("install", "uninstall") and a.agent == "git-hook":
+def _cmd_report(a) -> int:
+    from . import report
+    if a.verify:
+        print(report.verify_text())
+        from . import events
+        return 0 if events.verify()["ok"] else 1
+    sys.stdout.write(report.destinations_text(a.format, a.since) if a.destinations else report.export(a.format, a.since))
+    return 0
+
+
+def _cmd_proxy(a) -> int:
+    from . import proxy
+    return proxy.run(a)
+
+
+def _cmd_exposure(a) -> int:
+    from . import exposure
+    try:
+        data = exposure.build(a.since, a.personal)
+    except engine.ModelUnavailable as e:
+        print(f"cloakroom: --personal needs the model ({e}). Run cloakroom exposure without it for keys and "
+              "passwords only.", file=sys.stderr)
+        return 2
+    sys.stdout.write(exposure.render(data, a.format))
+    return 0
+
+
+def _cmd_clean_history(a) -> int:
+    from . import history
+    return history.run(dry_run=a.dry_run, yes=a.yes)
+
+
+def _cmd_update(a) -> int:
+    from . import update
+    return update.run(check=a.check)
+
+
+def _cmd_hook(a) -> int:
+    from . import hookentry
+    return hookentry.run(a.event, a.agent)
+
+
+def _cmd_cursor_run(a) -> int:
+    from . import cursor
+    return cursor.run(a.id)
+
+
+def _cmd_allow(a) -> int:
+    from . import agents, hook
+    print(agents.words(hook._arm_held(), "the agent"))
+    return 0
+
+
+def _cmd_install(a) -> int:
+    """install / uninstall: this repo's git hooks, or another coding agent's."""
+    if a.agent == "git-hook":
         from . import githook
         return githook.install(remove=a.cmd == "uninstall")
-    if a.cmd == "git-check":
-        from . import githook
-        return githook.check(a.kind, args=a.args)
-    if a.cmd == "give":
-        return _give(a, gv)
-    if a.cmd == "scan":
-        from . import configscan
-        return configscan.scan(a.dir)
-    if a.cmd in ("install", "uninstall"):
-        from . import agents
-        return agents.install(a.agent, remove=a.cmd == "uninstall")
-    if a.cmd == "doctor":
-        if a.retry_key:
-            from . import crypto
-            crypto.clear_denial()
-        return _doctor()
-    if a.cmd == "export-onnx":
-        import pathlib
-        from . import onnx_backend, onnx_export
-        if a.if_no_gpu:
-            try:
-                import torch
-                if torch.backends.mps.is_available() or torch.cuda.is_available():
-                    print("GPU found: the model runs fast on it, no CPU model needed")
-                    return 0
-            except Exception:
-                pass
-            if onnx_backend.model_file().exists() and (onnx_backend.model_dir() / "tokenizer.json").exists():
-                print(f"CPU model already built: {onnx_backend.model_file()}")
-                return 0
-        # the first-start build skips the opt-in int8 copy: fp32 is the default, and quantizing needs the most memory
-        onnx_export.export(pathlib.Path(a.out) if a.out else onnx_backend.model_dir(), int8=not a.if_no_gpu)
-        return 0
-    if a.cmd == "serve":
-        from . import daemon
-        daemon.serve()
-        return 0
-    if a.cmd == "dashboard":
-        from . import client
-        try:
-            code = client._post("/dashboard/code", {})["code"]
-        except client.Unavailable as e:
-            print(f"cloakroom: {e}", file=sys.stderr)
-            return 2
-        url = f"http://127.0.0.1:{config.load()['port']}/dashboard?code={code}"
-        if a.print:
-            print(f"{url}\n(works once, for 60 seconds)")
-        else:
-            import webbrowser
-            webbrowser.open(url)
-            print("Opened the Cloakroom dashboard in your browser.")
-        return 0
-    if a.cmd == "status":
-        cfg = config.load()
-        from . import client
-        health = client.health(cfg["port"]) or {"ok": False}
-        if health.get("ok") and health.get("service") != "cloakroom":
-            print(client.port_taken(cfg["port"]), file=sys.stderr)
-            health = {"ok": False}
-        sessions = len(list((config.HOME / "sessions").glob("*.json"))) if (config.HOME / "sessions").exists() else 0
-        from . import crypto
-        if crypto.denied():
-            print(f"vault key: refused, your own rules are off. Retry: {crypto.RETRY}")
-        print(f"mode: {cfg['mode']}  service: {'up' if health.get('ok') else 'down'}"
-              f"{' (model loaded)' if health.get('model') else ''}  vault sessions: {sessions}")
-        return 0
+    from . import agents
+    return agents.install(a.agent, remove=a.cmd == "uninstall")
 
+
+def _cmd_git_check(a) -> int:
+    from . import githook
+    return githook.check(a.kind, args=a.args)
+
+
+def _cmd_scan(a) -> int:
+    from . import configscan
+    return configscan.scan(a.dir)
+
+
+def _cmd_doctor(a) -> int:
+    if a.retry_key:
+        from . import crypto
+        crypto.clear_denial()
+    return _doctor()
+
+
+def _cmd_export_onnx(a) -> int:
+    import pathlib
+    from . import onnx_backend, onnx_export
+    if a.if_no_gpu:
+        try:
+            import torch
+            if torch.backends.mps.is_available() or torch.cuda.is_available():
+                print("GPU found: the model runs fast on it, no CPU model needed")
+                return 0
+        except Exception:
+            pass
+        if onnx_backend.model_file().exists() and (onnx_backend.model_dir() / "tokenizer.json").exists():
+            print(f"CPU model already built: {onnx_backend.model_file()}")
+            return 0
+    # the first-start build skips the opt-in int8 copy: fp32 is the default, and quantizing needs the most memory
+    onnx_export.export(pathlib.Path(a.out) if a.out else onnx_backend.model_dir(), int8=not a.if_no_gpu)
+    return 0
+
+
+def _cmd_serve(a) -> int:
+    from . import daemon
+    daemon.serve()
+    return 0
+
+
+def _cmd_dashboard(a) -> int:
+    from . import client
+    try:
+        code = client.dashboard_code()
+    except client.Unavailable as e:
+        print(f"cloakroom: {e}", file=sys.stderr)
+        return 2
+    url = f"http://127.0.0.1:{config.load()['port']}/dashboard?code={code}"
+    if a.print:
+        print(f"{url}\n(works once, for 60 seconds)")
+    else:
+        import webbrowser
+        webbrowser.open(url)
+        print("Opened the Cloakroom dashboard in your browser.")
+    return 0
+
+
+def _cmd_status(a) -> int:
+    cfg = config.load()
+    from . import client
+    health = client.health(cfg["port"]) or {"ok": False}
+    if health.get("ok") and health.get("service") != "cloakroom":
+        print(client.port_taken(cfg["port"]), file=sys.stderr)
+        health = {"ok": False}
+    sessions = len(list((config.HOME / "sessions").glob("*.json"))) if (config.HOME / "sessions").exists() else 0
+    from . import crypto
+    if crypto.denied():
+        print(f"vault key: refused, your own rules are off. Retry: {crypto.RETRY}")
+    print(f"mode: {cfg['mode']}  service: {'up' if health.get('ok') else 'down'}"
+          f"{' (model loaded)' if health.get('model') else ''}  vault sessions: {sessions}")
+    return 0
+
+
+def _cmd_mask_text(a) -> int:
+    """check / mask / explain: run the masker over a file or stdin."""
     mode = a.mode or config.load()["mode"]
     text = _read(a.file)
     try:
@@ -306,6 +331,44 @@ def main(argv=None):
         for kind, source, why in r.skipped:
             print(f"SKIP  {kind:<8} by {source}: {why}")
     return 1 if (a.cmd == "check" and r.masked) else 0
+
+
+# Subcommands whose body does not need the parser. The rest (check, mask, explain) fall to _cmd_mask_text.
+_COMMANDS = {
+    "allow-host": _allow_host, "proxy": _cmd_proxy, "exposure": _cmd_exposure, "clean-history": _cmd_clean_history,
+    "update": _cmd_update, "hook": _cmd_hook, "cursor-run": _cmd_cursor_run, "allow": _cmd_allow,
+    "install": _cmd_install, "uninstall": _cmd_install, "git-check": _cmd_git_check, "scan": _cmd_scan,
+    "doctor": _cmd_doctor, "export-onnx": _cmd_export_onnx, "serve": _cmd_serve, "dashboard": _cmd_dashboard,
+    "status": _cmd_status,
+}
+
+
+def _refuse_in_agent_shell(a) -> bool:
+    """Commands that approve a held call or a site, or switch Cloakroom off, run only in your own terminal."""
+    if (a.cmd in ("allow", "uninstall") or (a.cmd == "allow-host" and not a.list)
+            or (a.cmd == "proxy" and a.action == "uninstall")) and (why := _from_agent()):
+        print(f"cloakroom: {a.cmd} approves a held call or a site, or switches Cloakroom off, so it runs only in your "
+              f"own terminal, not in an agent's shell ({why}). Type it in a terminal window yourself.", file=sys.stderr)
+        return True
+    return False
+
+
+def main(argv=None):
+    _utf8_stdio()
+    p = argparse.ArgumentParser(prog="cloakroom", description="Agents check their secrets at the door.")
+    p.add_argument("--version", action="version", version=f"cloakroom {__version__}")
+    sub = p.add_subparsers(dest="cmd", required=True)
+    gv = _add_parsers_main(sub)
+    _add_parsers_rest(sub)
+    a = p.parse_args(argv)
+
+    if a.cmd == "report":
+        return _cmd_report(a)
+    if _refuse_in_agent_shell(a):
+        return 1
+    if a.cmd == "give":
+        return _give(a, gv)
+    return _COMMANDS.get(a.cmd, _cmd_mask_text)(a)
 
 
 def _give(a, parser) -> int:
@@ -336,6 +399,91 @@ def _give(a, parser) -> int:
     return 0
 
 
+def _doctor_vault_key(line):
+    from . import crypto
+    try:
+        crypto.key()
+        line(crypto.KEY_SOURCE != "key-file" or None, "vault key",
+             {"os-secure-store": "OS secure store", "environment": "CLOAKROOM_VAULT_KEY",
+              "key-file": "key file (no OS secure store found, or HOME is not your account's home; set CLOAKROOM_VAULT_KEY or install a keyring backend)"}
+             [crypto.KEY_SOURCE])
+    except crypto.KeyUnavailable as e:
+        line(False, "vault key", str(e))
+        if crypto.denied():
+            print(f"      {crypto.PREWARN}")
+    except Exception as e:
+        line(False, "vault key", f"{type(e).__name__}: install the 'cryptography' and 'keyring' packages")
+
+
+def _doctor_model(line):
+    import time
+    try:
+        backend = engine.choose_backend()
+        print("...   model: loading (the first run downloads it once, about 1 GB; that can take a minute or two)",
+              flush=True)
+        t0 = time.perf_counter()
+        engine.load_model()
+        t1 = time.perf_counter()
+        sample = "Contact Jane Example at jane@example.org or +1 415 555 0100."
+        engine.mask(sample, mode="full")  # the first check warms the backend up
+        t2 = time.perf_counter()
+        engine.mask(sample, mode="full")
+        t3 = time.perf_counter()
+        detail = backend + (f" ({engine.load_model().path.name})" if backend == "onnx" else "")
+        line(True, "model", f"{detail}, loaded in {t1 - t0:.1f} s, one check {1000 * (t3 - t2):.0f} ms "
+                            f"(first check {1000 * (t2 - t1):.0f} ms, a one-time warm-up)")
+    except engine.ModelUnavailable as e:
+        line(False, "model", f"{e} (or set mode to rules)")
+
+
+def _doctor_service(line, cfg):
+    from . import client
+    h = client.health(cfg["port"])
+    if h is None:
+        line(True, "service", f"not running yet (port {cfg['port']}); it starts by itself on first use")
+    elif h.get("service") != "cloakroom":
+        line(False, "service", client.port_taken(cfg["port"]))
+    else:
+        line(True, "service", f"up on port {cfg['port']}" + (", model loaded" if h.get("model") else ""))
+
+
+def _doctor_agents(line):
+    import os
+    from . import agents
+    if os.path.isdir(agents.codex_home()):  # Codex is on this machine
+        on = agents.codex_installed()
+        line(on or None, "codex", "Cloakroom's hooks installed; Codex runs them only once you trust them (/hooks in "
+             "Codex)" if on else "not protected; to protect it: cloakroom install codex")
+    if os.path.isdir(agents.gemini_home()):  # Gemini CLI is on this machine
+        on = agents.gemini_installed()
+        line(on or None, "gemini", f"Cloakroom's extension installed ({agents.gemini_dir()})" if on else
+             "not protected; to protect it: cloakroom install gemini")
+        for problem in agents.gemini_problems(os.getcwd()) if on else []:
+            line(None, "gemini", problem)
+    if os.path.isdir(agents.cursor_home()):  # Cursor is on this machine
+        on = agents.cursor_installed()
+        line(on or None, "cursor", "Cloakroom's hooks installed (editor and command-line agent)"
+             if on else "not protected; to protect it: cloakroom install cursor")
+        for path in agents.cursor_other_hooks(os.getcwd()) if on else []:
+            line(None, "cursor", f"another hook also runs on Cursor's tool calls ({path}); if it changes commands or "
+                 "file reads, Cloakroom's masking may not apply")
+
+
+def _doctor_proxy(line):
+    from . import proxy
+    up, pointed = proxy.running(), proxy.pointing()
+    if up or pointed:  # off by default: say nothing until it is in use
+        if pointed and not up:
+            line(False, "proxy", f"not running, but these point at it, so their requests fail: "
+                 f"{', '.join(proxy.NAMES[k] for k in pointed)}. Start it (cloakroom proxy) or undo (cloakroom "
+                 "proxy uninstall NAME)")
+        else:
+            line(True, "proxy", f"running on port {proxy.port()}; pointing at it: "
+                 + (", ".join(proxy.NAMES[k] for k in pointed) or "no tool yet (cloakroom proxy install claude)"))
+        if "codex" in pointed and proxy.codex_chatgpt() and not proxy.reads_zstd():
+            line(False, "proxy", f"Codex is signed in with ChatGPT, but {proxy.NO_ZSTD}")
+
+
 def _doctor() -> int:
     import platform
     ok = True
@@ -357,77 +505,12 @@ def _doctor() -> int:
                                "model": "first-start install, stage 2 of 2: the model is downloading",
                                "model-failed": "the model download failed; see ~/.cloakroom/bootstrap.log"}
              .get(cfg["installing"], cfg["installing"]))
-    from . import crypto
-    try:
-        crypto.key()
-        line(crypto.KEY_SOURCE != "key-file" or None, "vault key",
-             {"os-secure-store": "OS secure store", "environment": "CLOAKROOM_VAULT_KEY",
-              "key-file": "key file (no OS secure store found, or HOME is not your account's home; set CLOAKROOM_VAULT_KEY or install a keyring backend)"}
-             [crypto.KEY_SOURCE])
-    except crypto.KeyUnavailable as e:
-        line(False, "vault key", str(e))
-        if crypto.denied():
-            print(f"      {crypto.PREWARN}")
-    except Exception as e:
-        line(False, "vault key", f"{type(e).__name__}: install the 'cryptography' and 'keyring' packages")
+    _doctor_vault_key(line)
     if cfg["mode"] == "full":
-        import time
-        try:
-            backend = engine.choose_backend()
-            print("...   model: loading (the first run downloads it once, about 1 GB; that can take a minute or two)",
-                  flush=True)
-            t0 = time.perf_counter()
-            engine._model()
-            t1 = time.perf_counter()
-            sample = "Contact Jane Example at jane@example.org or +1 415 555 0100."
-            engine.mask(sample, mode="full")  # the first check warms the backend up
-            t2 = time.perf_counter()
-            engine.mask(sample, mode="full")
-            t3 = time.perf_counter()
-            detail = backend + (f" ({engine._model().path.name})" if backend == "onnx" else "")
-            line(True, "model", f"{detail}, loaded in {t1 - t0:.1f} s, one check {1000 * (t3 - t2):.0f} ms "
-                                f"(first check {1000 * (t2 - t1):.0f} ms, a one-time warm-up)")
-        except engine.ModelUnavailable as e:
-            line(False, "model", f"{e} (or set mode to rules)")
-    from . import client
-    h = client.health(cfg["port"])
-    if h is None:
-        line(True, "service", f"not running yet (port {cfg['port']}); it starts by itself on first use")
-    elif h.get("service") != "cloakroom":
-        line(False, "service", client.port_taken(cfg["port"]))
-    else:
-        line(True, "service", f"up on port {cfg['port']}" + (", model loaded" if h.get("model") else ""))
-    import os
-    from . import agents
-    if os.path.isdir(agents.codex_home()):  # Codex is on this machine
-        on = agents.codex_installed()
-        line(on or None, "codex", "Cloakroom's hooks installed; Codex runs them only once you trust them (/hooks in "
-             "Codex)" if on else "not protected; to protect it: cloakroom install codex")
-    if os.path.isdir(agents.gemini_home()):  # Gemini CLI is on this machine
-        on = agents.gemini_installed()
-        line(on or None, "gemini", f"Cloakroom's extension installed ({agents.gemini_dir()})" if on else
-             "not protected; to protect it: cloakroom install gemini")
-        for problem in agents.gemini_problems(os.getcwd()) if on else []:
-            line(None, "gemini", problem)
-    if os.path.isdir(agents.cursor_home()):  # Cursor is on this machine
-        on = agents.cursor_installed()
-        line(on or None, "cursor", "Cloakroom's hooks installed (editor and command-line agent)"
-             if on else "not protected; to protect it: cloakroom install cursor")
-        for path in agents.cursor_other_hooks(os.getcwd()) if on else []:
-            line(None, "cursor", f"another hook also runs on Cursor's tool calls ({path}); if it changes commands or "
-                 "file reads, Cloakroom's masking may not apply")
-    from . import proxy
-    up, pointed = proxy.running(), proxy.pointing()
-    if up or pointed:  # off by default: say nothing until it is in use
-        if pointed and not up:
-            line(False, "proxy", f"not running, but these point at it, so their requests fail: "
-                 f"{', '.join(proxy.NAMES[k] for k in pointed)}. Start it (cloakroom proxy) or undo (cloakroom "
-                 "proxy uninstall NAME)")
-        else:
-            line(True, "proxy", f"running on port {proxy.port()}; pointing at it: "
-                 + (", ".join(proxy.NAMES[k] for k in pointed) or "no tool yet (cloakroom proxy install claude)"))
-        if "codex" in pointed and proxy.codex_chatgpt() and proxy._zstd() is None:
-            line(False, "proxy", f"Codex is signed in with ChatGPT, but {proxy.NO_ZSTD}")
+        _doctor_model(line)
+    _doctor_service(line, cfg)
+    _doctor_agents(line)
+    _doctor_proxy(line)
     found = find_program()
     line(found is not None or None, "program", found or "the plugin can't find the cloakroom program, so Claude Code "
          "tool calls are denied: reinstall (uv tool install 'cloakroom[model,torch]', or let the plugin do it by "

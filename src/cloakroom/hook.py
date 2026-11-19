@@ -16,6 +16,13 @@ import sys
 import time
 
 from . import client, config, crypto, decode, egress, engine, events, filelog, handoff, history, media, money, shell
+# The git commit and push check (gitcheck.py) and what one hook call notes down and how a call is held (hookcall.py)
+# were part of this file, and their names are still here: tests, githook.py and cursor.py use them from hook.
+from .gitcheck import (COMMIT_KINDS, GIT_MAX_TEXT, GIT_SECONDS, _git_bash_path, _git_hold,  # noqa: F401
+                       _git_steps, _git_would_commit, git_added)
+from .hookcall import (HOLD_MINUTES, _ACTION, _EXTRA, _FOUND, _NOTE, _SKIPS, _allowed_once,  # noqa: F401
+                       _arm_held, _command_mac, _deny, _dry, _held_file, _hold, _read_held, _skip, _summary,
+                       _write_held)
 from .hookentry import STRUCTURAL, _withhold, closed
 from .vault import ANY_PLACEHOLDER, OLD_FORMAT, PLACEHOLDER, Vault
 
@@ -29,11 +36,6 @@ GUIDE = ("Cloakroom note: values like PII_EMAIL_1_k7q2ab are placeholders for re
          "placeholders, or rewrite the file with Write. Copy placeholders exactly, tag included: Cloakroom restores "
          "only the ones it issued in this session. Don't try to recover the real values.")
 PRIME_MAX_BYTES = 512 * 1024
-_ACTION = [""]  # set when a prompt passes by your own choice (sent anyway, paused), for the event log
-_NOTE = [""]  # extra detail for the hook.log line (OCR pages and time), never values
-_FOUND: list[tuple[str, str]] = []  # (placeholder, kind) found during the current hook call, for the event log
-_EXTRA: dict = {}  # extra event-log fields for this hook call (session start: version, mode, hooks)
-_SKIPS: list[tuple] = []  # checks this hook call let through without running in full: (reason, check, what, say, extra)
 SEND_ANYWAY = ("Send it anyway: add cr! at the start. Pause prompt checks: type cr: pause 10m (tool output stays "
                "masked). Resume: cr: resume.")
 TIP = ("Cloakroom can't rewrite a prompt, only block it. Put the detail in a file and ask Claude to read it: "
@@ -46,7 +48,6 @@ COPY_NOTE = ("In the copy below that data is replaced by placeholders, which Clo
 COPY_MAX = 10_000
 TOO_LONG = f"It is too long to give back here with placeholders (over {COPY_MAX:,} characters)."
 _ALLOW_CMD = re.compile(r"(?i)^\s*cr:\s*allow(?:\s+once)?\s*$")
-HOLD_MINUTES = 10  # how long a held command can be allowed with cr: allow
 _GIVE_CMD = re.compile(r"(?i)\bcr:\s*give\b")
 GIVE_TIP = "Cloakroom: never type a value here. In a terminal run: cloakroom give NAME (hidden prompt), then paste the placeholder it prints."
 _PAUSE_CMD = re.compile(r"(?i)^\s*cr:\s*(pause(?:\s+(\d{1,3})\s*m(?:in(?:utes?)?)?)?|resume)\s*$")
@@ -76,20 +77,13 @@ def _strings(value, fn):
     return value, False
 
 
-def _skip(reason: str, check: str, what: str = "", say: bool = True, ms: float = 0.0, **numbers):
-    """A check that let this call through without running in full (fail-open): logged as a "skipped" event (no
-    values) and, when say, told to you once per session for each reason and check. what: the check in the message."""
-    _SKIPS.append((reason, check, what or f"this {check}", say, {"ms": round(ms, 1), **numbers}))
-
-
 def _skip_message(session: str) -> str:
     """The first-in-this-session skip notes, e.g. "Cloakroom didn't check this git push: it was larger than 4 MB"."""
     out = []
     for reason, check, what, say, numbers in _SKIPS:
         if not say:
             continue
-        safe = "".join(c for c in session if c.isalnum() or c in "-_")[:80] or "default"
-        flag = config.private_dir("skip-noted") / f"{safe}.{reason}.{''.join(c for c in check if c.isalnum())}"
+        flag = config.private_dir("skip-noted") / f"{config.safe_name(session)}.{reason}.{''.join(c for c in check if c.isalnum())}"
         if flag.exists():
             continue
         flag.touch(mode=0o600)
@@ -97,22 +91,6 @@ def _skip_message(session: str) -> str:
         if msg not in out:
             out.append(msg)
     return " · ".join(out)
-
-
-def _summary(kinds: list[str]) -> str:
-    counts = {}
-    for k in kinds:
-        counts[k] = counts.get(k, 0) + 1
-    return ", ".join(f"{k} x{n}" for k, n in sorted(counts.items()))
-
-
-def _dry(event: str, note: str) -> bool:
-    if not os.environ.get("CLOAKROOM_DRY_RUN"):
-        return False
-    _ACTION[0] = "dry-run"
-    with open(config.private_dir() / "dry-run.log", "a") as f:
-        f.write(f"{time.strftime('%Y-%m-%dT%H:%M:%S')} {event} {note}\n")
-    return True
 
 
 PROMPT_OK = {"PERSON"}  # names you type yourself go through; Cloakroom can only block a prompt, not mask it
@@ -156,51 +134,6 @@ def _control(prompt: str) -> dict | None:
                                            "masked. Turn checks back on early: cr: resume."}
 
 
-def _held_file():
-    return config.private_dir() / "held.json"
-
-
-def _command_mac(command: str) -> str:
-    """A keyed hash of a held command, so the file never holds the command (or the secret in it)."""
-    import hashlib
-    import hmac
-    return hmac.new(config.token().encode(), command.encode(), hashlib.sha256).hexdigest()
-
-
-def _write_held(state: dict):
-    fd = os.open(_held_file(), os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
-    with os.fdopen(fd, "w") as f:
-        json.dump(state, f)
-
-
-def _read_held() -> dict | None:
-    try:
-        state = json.loads(_held_file().read_text())
-    except (OSError, ValueError):
-        return None
-    return state if isinstance(state, dict) and state.get("until", 0) > time.time() else None
-
-
-def _arm_held() -> str:
-    """cr: allow - let the last held command run once (Claude can't type this: it is your prompt)."""
-    state = _read_held()
-    if not state:
-        return "Cloakroom: no command is being held right now, so there is nothing to allow."
-    state["armed"] = True
-    _write_held(state)
-    return ("Cloakroom: the held command may run once. Ask Claude to run it again, unchanged; a changed command is "
-            "held again.")
-
-
-def _allowed_once(command: str) -> bool:
-    """The command you allowed with cr: allow, run unchanged: it passes this one time."""
-    state = _read_held()
-    if not (state and state.get("armed") and state.get("mac") == _command_mac(command)):
-        return False
-    _held_file().unlink(missing_ok=True)
-    return True
-
-
 def _egress_hold(command: str, session: str, vault: Vault, powershell: bool, money_why: str = "") -> dict | None:
     """Hold a command that would send a known secret off this machine: a value already in the session vault (plain
     or encoded), a key the rules recognise, or a literal token in a credential header. Labels only in the reason.
@@ -235,35 +168,22 @@ def _egress_hold(command: str, session: str, vault: Vault, powershell: bool, mon
         return _money_hold(command, money_why) if money_why else None
     if money_why:
         _NOTE[0], _EXTRA["money"] = f"money: {money_why}", money_why
-    if _allowed_once(command):
-        _ACTION[0] = "allowed once"
-        return None
     what = ", ".join(dict.fromkeys(found))
-    if _dry("pre", f"egress via {via}: would hold"):
-        return None
-    _write_held({"mac": _command_mac(command), "until": time.time() + 60 * HOLD_MINUTES, "armed": False})
-    _ACTION[0] = "held"
     also = f" and it would move money ({money_why})" if money_why else ""
-    return _deny(f"Cloakroom held this command: it would send {what} off this machine (via {via}){also}. A secret that "
-                 f"has left can't be called back. To send it anyway, type cr: allow, then ask Claude to run the same "
-                 f"command again: it passes once, within {HOLD_MINUTES} min. Claude: don't change or re-encode the "
-                 f"value to get past this; use an environment variable the user sets, or ask the user.")
+    return _hold(command, f"Cloakroom held this command: it would send {what} off this machine (via {via}){also}. A "
+                          f"secret that has left can't be called back. To send it anyway, type cr: allow, then ask "
+                          f"Claude to run the same command again: it passes once, within {HOLD_MINUTES} min. Claude: "
+                          f"don't change or re-encode the value to get past this; use an environment variable the "
+                          f"user sets, or ask the user.", f"egress via {via}: would hold")
 
 
 def _money_hold(key: str, why: str) -> dict | None:
     """Hold a call that would move money (money.py) until you type cr: allow; key is the command, or the tool name and
     its input, so only the same call passes once."""
     _NOTE[0], _EXTRA["money"] = f"money: {why}", why
-    if _allowed_once(key):
-        _ACTION[0] = "allowed once"
-        return None
-    if _dry("pre", f"money ({why}): would hold"):
-        return None
-    _write_held({"mac": _command_mac(key), "until": time.time() + 60 * HOLD_MINUTES, "armed": False})
-    _ACTION[0] = "held"
-    return _deny(f"Cloakroom held this call: it would move money ({why}). To run it, type cr: allow, then ask Claude "
-                 f"to run the same call again: it passes once, within {HOLD_MINUTES} min. Claude: don't change the "
-                 f"call to get past this; ask the user.")
+    return _hold(key, f"Cloakroom held this call: it would move money ({why}). To run it, type cr: allow, then ask "
+                      f"Claude to run the same call again: it passes once, within {HOLD_MINUTES} min. Claude: don't "
+                      f"change the call to get past this; ask the user.", f"money ({why}): would hold")
 
 
 def _long_hold(command: str) -> dict | None:
@@ -274,17 +194,10 @@ def _long_hold(command: str) -> dict | None:
     if not what:
         return None
     _NOTE[0], _EXTRA["hold"] = f"long-running: {what}", "long-running"
-    if _allowed_once(command):
-        _ACTION[0] = "allowed once"
-        return None
-    if _dry("pre", f"long-running ({what}): would hold"):
-        return None
-    _write_held({"mac": _command_mac(command), "until": time.time() + 60 * HOLD_MINUTES, "armed": False})
-    _ACTION[0] = "held"
-    return _deny(f"Cloakroom held this command: {what} keeps running, and what it prints after Codex stops waiting "
-                 f"won't be masked. To run it anyway, type cr: allow, then ask Codex to run the same command again: it "
-                 f"passes once, within {HOLD_MINUTES} min. Codex: don't change the command to get past this; ask the "
-                 "user.")
+    return _hold(command, f"Cloakroom held this command: {what} keeps running, and what it prints after Codex stops "
+                          f"waiting won't be masked. To run it anyway, type cr: allow, then ask Codex to run the same "
+                          f"command again: it passes once, within {HOLD_MINUTES} min. Codex: don't change the command "
+                          "to get past this; ask the user.", f"long-running ({what}): would hold")
 
 
 def on_prompt(data: dict) -> dict | None:
@@ -378,7 +291,76 @@ def on_post(data: dict) -> dict | None:
         filelog.complete(str(data["tool_use_id"]), Vault(config.vault_path(session)))
     roots = [data.get("cwd") or os.getcwd()]
     read = str((data.get("tool_input") or {}).get("file_path") or "") if data.get("tool_name") == "Read" else ""
+    raw, converted = data.get("tool_response"), ""
+    if data.get("tool_name") == "Read":  # PDFs become their text layer, scans and pictures OCR text (media.py)
+        stop, answer, raw, converted = _convert_read(data, raw)
+        if stop:
+            return answer
+    img, n = "", None  # img: what happened to MCP images, for every message below
+    view = data.get("tool_name") == "view_image"  # Codex's picture tool: the same policy as MCP pictures
+    if str(data.get("tool_name", "")).startswith("mcp__") or view:  # screenshots and pictures: OCR text, never pixels
+        stop, answer, raw, converted, img, n = _convert_pictures(data, raw, roots, view, converted)
+        if stop:
+            return answer
+    new, changed = _mask_strings(raw, session, converted, roots, read, kinds)
+    new, hits = _encoded_check(new, data, session, roots)
+    return _post_answer(data, session, new, changed, converted, kinds, img, n, hits)
 
+
+def _convert_read(data: dict, raw):
+    """A Read result: PDFs become their text layer, scans and pictures OCR text (media.py).
+    Returns (stop, answer, raw, converted); stop is True when answer is already the hook's answer."""
+    cfg = config.load()
+    ocr = media.Ocr.from_config(cfg)
+    raw, converted = media.convert(raw, (data.get("tool_input") or {}).get("file_path", ""),
+                                   allow_images=bool(cfg.get("allow_images")), ocr=ocr)
+    if ocr.pages or ocr.error:
+        _NOTE[0] = (f"ocr pages={ocr.pages} ms={ocr.ms:.0f}" if not ocr.error else
+                    f"ocr failed ({ocr.error})")
+    if converted == "image-allowed":
+        _ACTION[0] = "image passed"
+        return True, {"systemMessage": "cloakroom: an image went to Claude unchecked (allow_images is on)"}, raw, converted
+    if converted == "held":
+        _ACTION[0] = "withheld"
+        if _dry("post", "Read: would hold back a non-text result"):
+            return True, None, raw, converted
+        return True, {"hookSpecificOutput": {"hookEventName": "PostToolUse", "updatedToolOutput": raw},
+                      "systemMessage": "cloakroom: held back a Read result it can't check (image or PDF without text)"
+                      }, raw, converted
+    return False, None, raw, converted
+
+
+def _convert_pictures(data: dict, raw, roots: list[str], view: bool, converted: str):
+    """MCP pictures and Codex's view_image: OCR text, never pixels.
+    Returns (stop, answer, raw, converted, img, n); stop is True when answer is already the hook's answer."""
+    cfg = config.load()
+    ocr = media.Ocr.from_config(cfg)
+    if view and cfg.get("allow_images"):
+        _ACTION[0] = "image passed"
+        return (True, {"systemMessage": "cloakroom: an image went to Claude unchecked (allow_images is on)"}, raw,
+                converted, "", None)
+    raw, n = media.convert_mcp(raw, allow_images=bool(cfg.get("allow_images")), ocr=ocr)
+    if view and not any(n.values()):  # a result shape Cloakroom doesn't know: read the picture from its path
+        ti = data.get("tool_input") or {}
+        where = str((ti.get("path") or ti.get("command") if isinstance(ti, dict) else ti) or "")
+        raw, n = media.convert_mcp(media.file_image(os.path.join(roots[0], where)), ocr=ocr)
+    if ocr.pages or ocr.error:
+        _NOTE[0] = f"ocr pages={ocr.pages} ms={ocr.ms:.0f}" + (f" ocr failed ({ocr.error})" if ocr.error else "")
+    img = "; ".join(x for x in (
+        f"{n['ocr']} image(s) read by local OCR, the picture not sent" if n["ocr"] else "",
+        f"{n['held']} image(s) held back (no OCR text)" if n["held"] else "",
+        f"{n['allowed']} image(s) sent unchecked (allow_images is on)" if n["allowed"] else "") if x)
+    if n["ocr"]:
+        converted = "ocr"  # the OCR text gets OCR masking (digit runs), like a Read picture
+    elif n["held"]:
+        converted = "held"
+    if n["allowed"] and not (n["ocr"] or n["held"]):
+        _ACTION[0] = "image passed"
+    return False, None, raw, converted, img, n
+
+
+def _mask_strings(raw, session: str, converted: str, roots: list[str], read: str, kinds: list):
+    """Mask every string in the tool result; kinds and _FOUND get what was found. Returns (new value, changed)."""
     def fn(s):
         if len(s) < 4:
             return s
@@ -386,50 +368,12 @@ def on_post(data: dict) -> dict | None:
         kinds.extend(k for _, k, _ in r["masked"])
         _FOUND.extend((p, k) for p, k, _ in r["masked"])
         return r["text"]
-    raw, converted = data.get("tool_response"), ""
-    if data.get("tool_name") == "Read":  # PDFs become their text layer, scans and pictures OCR text (media.py)
-        cfg = config.load()
-        ocr = media.Ocr.from_config(cfg)
-        raw, converted = media.convert(raw, (data.get("tool_input") or {}).get("file_path", ""),
-                                       allow_images=bool(cfg.get("allow_images")), ocr=ocr)
-        if ocr.pages or ocr.error:
-            _NOTE[0] = (f"ocr pages={ocr.pages} ms={ocr.ms:.0f}" if not ocr.error else
-                        f"ocr failed ({ocr.error})")
-        if converted == "image-allowed":
-            _ACTION[0] = "image passed"
-            return {"systemMessage": "cloakroom: an image went to Claude unchecked (allow_images is on)"}
-        if converted == "held":
-            _ACTION[0] = "withheld"
-            if _dry("post", "Read: would hold back a non-text result"):
-                return None
-            return {"hookSpecificOutput": {"hookEventName": "PostToolUse", "updatedToolOutput": raw},
-                    "systemMessage": "cloakroom: held back a Read result it can't check (image or PDF without text)"}
-    img = ""  # what happened to MCP images, for every message below
-    view = data.get("tool_name") == "view_image"  # Codex's picture tool: the same policy as MCP pictures
-    if str(data.get("tool_name", "")).startswith("mcp__") or view:  # screenshots and pictures: OCR text, never pixels
-        cfg = config.load()
-        ocr = media.Ocr.from_config(cfg)
-        if view and cfg.get("allow_images"):
-            _ACTION[0] = "image passed"
-            return {"systemMessage": "cloakroom: an image went to Claude unchecked (allow_images is on)"}
-        raw, n = media.convert_mcp(raw, allow_images=bool(cfg.get("allow_images")), ocr=ocr)
-        if view and not any(n.values()):  # a result shape Cloakroom doesn't know: read the picture from its path
-            ti = data.get("tool_input") or {}
-            where = str((ti.get("path") or ti.get("command") if isinstance(ti, dict) else ti) or "")
-            raw, n = media.convert_mcp(media.file_image(os.path.join(roots[0], where)), ocr=ocr)
-        if ocr.pages or ocr.error:
-            _NOTE[0] = f"ocr pages={ocr.pages} ms={ocr.ms:.0f}" + (f" ocr failed ({ocr.error})" if ocr.error else "")
-        img = "; ".join(x for x in (
-            f"{n['ocr']} image(s) read by local OCR, the picture not sent" if n["ocr"] else "",
-            f"{n['held']} image(s) held back (no OCR text)" if n["held"] else "",
-            f"{n['allowed']} image(s) sent unchecked (allow_images is on)" if n["allowed"] else "") if x)
-        if n["ocr"]:
-            converted = "ocr"  # the OCR text gets OCR masking (digit runs), like a Read picture
-        elif n["held"]:
-            converted = "held"
-        if n["allowed"] and not (n["ocr"] or n["held"]):
-            _ACTION[0] = "image passed"
-    new, changed = _strings(raw, fn)
+    return _strings(raw, fn)
+
+
+def _encoded_check(new, data: dict, session: str, roots: list[str]):
+    """Re-check the masked output for known values in an encoded or spaced-out form.
+    Returns (new value, hits); each text field that hit is replaced by the withheld note."""
     # Encoded output (od -c, xxd, base64, rev...) can carry values the detectors can't read: decode and re-check
     # each text field, and replace only the fields that hit (structural fields must stay as they are).
     # dates are left out: a fragment like "Oct 11 12:16" repeats harmlessly across a file listing or a log
@@ -458,6 +402,11 @@ def on_post(data: dict) -> dict | None:
             return msg
         return t
     new, _ = _strings(new, check)
+    return new, hits
+
+
+def _post_answer(data: dict, session: str, new, changed: bool, converted: str, kinds: list, img: str, n, hits: list):
+    """The PostToolUse answer: withheld, masked, checked with nothing to mask, or None when nothing changed."""
     tail = f" (MCP: {img})" if img else ""
     mcp = str(data.get("tool_name", "")).startswith("mcp__")
 
@@ -523,16 +472,11 @@ def _prime(command: str, cwd: str, session: str, powershell: bool = False):
 
 
 def _guide_once(session: str) -> str | None:
-    flag = config.private_dir("guided") / ("".join(c for c in session if c.isalnum() or c in "-_")[:80] or "default")
+    flag = config.private_dir("guided") / config.safe_name(session)
     if flag.exists():
         return None
     flag.touch(mode=0o600)
     return GUIDE
-
-
-def _deny(reason: str) -> dict:
-    return {"hookSpecificOutput": {"hookEventName": "PreToolUse", "permissionDecision": "deny",
-                                   "permissionDecisionReason": reason}}
 
 
 HOME_DENY = ("Cloakroom: its own settings (~/.cloakroom) are changed only by you, from the dashboard or "
@@ -613,7 +557,7 @@ def _program_paths() -> list[str]:
              (home, ".local", "pipx", "venvs"), (home, "pipx", "venvs"), (home, ".local", "share", "pipx", "venvs"),
              (env("XDG_DATA_HOME"), "pipx", "venvs"), (home, "Library", "Application Support", "pipx", "venvs"),
              (env("LOCALAPPDATA"), "pipx", "pipx", "venvs"), (env("PIPX_HOME"), "venvs")]
-    found = [shutil.which("cloakroom"), agents._program()] + [os.path.join(*r, "cloakroom") for r in roots if r[0]]
+    found = [shutil.which("cloakroom"), agents.program()] + [os.path.join(*r, "cloakroom") for r in roots if r[0]]
     package = os.path.dirname(os.path.abspath(__file__))
     found += [package] if "site-packages" in package else []  # not a source checkout you work on
     # POSIX: also the link's own name (norm resolves links); Windows: norm's one spelling is the only one
@@ -663,7 +607,6 @@ def _self_cli(command: str, cwd: str) -> bool:
     return False
 
 
-COMMIT_KINDS = {"SECRET", "PASSWORD"}  # kinds kept out of files git would commit; personal data is not checked
 SECRET_FILES = (".env*", ".envrc", "*.pem", "*.key", "credentials*", "*.p12")  # where a key belongs
 _DRY_DENY = {"dry-run": "would deny"}  # _commit_check in dry run: log only, and skip the restore's own dry line
 # > f, >> f, 2> f, | tee [-a] f; not the arrows in -> and =>, nor >=
@@ -768,13 +711,9 @@ def _config_hold(tool: str, args: dict, cwd: str) -> dict | None:
         key = tool + "\0" + json.dumps(args, sort_keys=True)
     if not why:
         return None
-    if _allowed_once(key):
-        _ACTION[0] = "allowed once"
-        return None
-    _write_held({"mac": _command_mac(key), "until": time.time() + 60 * HOLD_MINUTES, "armed": False})
-    _ACTION[0] = "held"
-    return _deny(f"Cloakroom held this call: {'; '.join(why)}. A planted hook or MCP server runs with your rights. "
-                 "If you meant it, type cr: allow, then ask Claude to run the same call again: it runs once.")
+    return _hold(key, f"Cloakroom held this call: {'; '.join(why)}. A planted hook or MCP server runs with your "
+                      "rights. If you meant it, type cr: allow, then ask Claude to run the same call again: it runs "
+                      "once.")
 
 
 def _config_literals(text: str) -> list[str]:
@@ -813,25 +752,6 @@ def _written_text(tool: str, args: dict) -> str:
     if tool == "apply_patch":  # the lines it adds
         return "\n".join(ln[1:] for ln in str(args.get("command", "")).splitlines() if ln.startswith("+"))
     return ""
-
-
-def _git_would_commit(path: str) -> bool:
-    """The file is in a git repo and not ignored. Any doubt (no git, not a repo, slow) answers False: restore as before."""
-    import subprocess
-    d = os.path.dirname(path)
-    while d and not os.path.isdir(d):
-        d = os.path.dirname(d) if os.path.dirname(d) != d else ""
-    if not d:
-        return False
-    try:
-        r = subprocess.run(["git", "-C", d, "check-ignore", "-q", "--", path], capture_output=True, timeout=1)
-    except subprocess.TimeoutExpired:
-        _skip("too-slow", "git check on a write holding a key",
-              "whether git would commit this write, which holds a key", ms=1000, limit=1)
-        return False
-    except Exception:  # no git: nothing can commit the file
-        return False
-    return r.returncode == 1  # 0 ignored, 1 not ignored, 128 not a repo or error
 
 
 def _commit_check(tool: str, args: dict, original: dict, cwd: str, vault: Vault) -> dict | None:
@@ -897,275 +817,6 @@ def _commit_check(tool: str, args: dict, original: dict, cwd: str, vault: Vault)
         return _deny(f"Cloakroom: this would write {what} into {rel}, which git would commit. Put the value in "
                      ".env (git-ignored) and read it from the environment.")
     return None
-
-
-GIT_SECONDS = 2.0  # the commit and push check gives up (lets the command run) after this long
-GIT_MAX_TEXT = 4 * 1024 * 1024  # added lines scanned at most; a bigger change set fails open
-_COMMIT_VALUE_OPTS = {"-m", "--message", "-F", "--file", "-c", "-C", "--reuse-message", "--reedit-message",
-                      "--author", "--date", "-t", "--template", "--fixup", "--squash", "--cleanup", "--trailer"}
-_PUSH_VALUE_OPTS = {"-o", "--push-option", "--repo", "--receive-pack", "--exec", "--signed"}
-
-
-def _git_bash_path(p: str, powershell: bool) -> str:
-    """Git Bash on Windows writes C:\\Users\\x as /c/Users/x; git.exe and Python need the drive form."""
-    m = None if powershell or sys.platform != "win32" else re.fullmatch(r"/([A-Za-z])(/.*)?", p)
-    return f"{m.group(1).upper()}:" + (m.group(2) or "/").replace("/", "\\") if m else p
-
-
-def _add_specs(args: list[str], folder: str) -> tuple[list[str], list[str]]:
-    """What a git add stages, as pathspecs: (for changed tracked files, for new files). Paths are made absolute
-    (git takes those inside the work tree); ":/" is the whole repo."""
-    paths, everything, tracked_only, rest = [], False, False, False
-    for a in args:
-        if rest or not a.startswith("-"):
-            paths.append(os.path.normpath(os.path.join(folder, os.path.expanduser(a))))
-        elif a == "--":
-            rest = True
-        elif a.startswith("--pathspec-from-file"):  # paths unknown here: the whole repo
-            return [":/"], [":/"]
-        elif a in ("-A", "--all", "--no-ignore-removal"):
-            everything = True
-        elif a in ("-u", "--update"):
-            tracked_only = True
-    specs = paths or ([":/"] if everything or tracked_only else [])
-    return specs, [] if tracked_only else specs
-
-
-def _git_steps(command: str, cwd: str, powershell: bool) -> list[tuple[str, str, list[str], tuple | None]]:
-    """(commit|push, repo folder, its arguments, what git adds before it staged: _add_specs, or None) for each
-    git commit or push in the command, following cd and git -C."""
-    import shlex
-    out, here, added = [], cwd, None
-    for seg in (shell._PS_SEGMENT_SPLIT if powershell else shell._SEGMENT_SPLIT).split(command):
-        try:
-            words = shlex.split(seg, posix=not powershell)
-        except ValueError:
-            words = seg.split()
-        words = [w.strip("\"'") for w in words]
-        while words and (re.fullmatch(r"\w+=.*", words[0]) or words[0] in ("sudo", "env", "command", "exec")):
-            words = words[1:]
-        if not words:
-            continue
-        if words[0].lower() in ("cd", "pushd", "set-location", "sl") and len(words) > 1:
-            here = os.path.join(here, os.path.expanduser(_git_bash_path(words[-1], powershell)))
-            continue
-        if re.split(r"[\\/]", words[0])[-1].lower() not in ("git", "git.exe"):
-            continue
-        i, repo = 1, here
-        while i < len(words) and words[i].startswith("-"):
-            if words[i] == "-C" and i + 1 < len(words):
-                repo = os.path.join(repo, os.path.expanduser(_git_bash_path(words[i + 1], powershell)))
-                i += 1
-            elif words[i] == "-c":
-                i += 1
-            i += 1
-        sub = words[i] if i < len(words) else ""
-        if sub == "add":
-            tracked, new = _add_specs(words[i + 1:], repo)
-            added = (added[0] + tracked, added[1] + new) if added else (tracked, new)
-        elif sub in ("commit", "push"):
-            out.append((sub, repo, words[i + 1:], added))
-    return out
-
-
-def _commit_diffs(args: list[str], added: tuple | None) -> list[list[str]]:
-    """git commands whose output is what a commit with these arguments would record (a superset is fine).
-    added: what git adds earlier in the command stage (_add_specs), which hasn't run yet when this is checked."""
-    widen, i = False, 0
-    while i < len(args):
-        a = args[i]
-        if a in _COMMIT_VALUE_OPTS:
-            i += 1
-        elif a in ("-a", "--all", "--include", "-i", "--only", "-o"):
-            widen = True
-        elif a.startswith("-") and not a.startswith("--"):
-            for j, c in enumerate(a[1:]):
-                if c == "a":
-                    widen = True
-                if c in "mFcCt":  # the rest of the cluster (or the next word) is that option's value
-                    if j == len(a) - 2:
-                        i += 1
-                    break
-        elif a == "--":
-            widen = widen or i + 1 < len(args)
-            break
-        elif not a.startswith("-"):
-            widen = True  # git commit <paths>
-        i += 1
-    cmds = [["diff", "--cached"]]
-    if widen:
-        cmds.append(["diff", "HEAD"])
-    elif added and added[0]:
-        cmds.append(["diff", "HEAD", "--", *added[0]])
-    if added and added[1]:
-        cmds.append(["untracked", *added[1]])
-    return cmds
-
-
-def _push_logs(args: list[str]) -> list[list[str]]:
-    srcs, positional, everything, i = [], [], False, 0
-    while i < len(args):
-        a = args[i]
-        if a in _PUSH_VALUE_OPTS:
-            i += 1
-        elif a in ("--all", "--mirror", "--branches"):
-            everything = True
-        elif not a.startswith("-"):
-            positional.append(a)
-        i += 1
-    for ref in positional[1:]:
-        src = ref.lstrip("+").split(":")[0]
-        if src:
-            srcs.append(src)
-    srcs = ["--branches"] if everything else srcs or ["HEAD"]
-    return [["log", "-p", "--format=", *srcs, "--not", "--remotes"]]
-
-
-def _added_lines(diff: str) -> dict[str, list[str]]:
-    """{file: added lines} from git diff or git log -p output."""
-    out: dict[str, list[str]] = {}
-    current, header = "", False
-    for line in diff.splitlines():
-        if line.startswith("diff --git "):
-            header, current = True, ""
-            continue
-        if header:
-            if line.startswith("+++ "):
-                p = line[4:].strip().strip('"')
-                current = p[2:] if p.startswith("b/") else ("" if p == "/dev/null" else p)
-            elif line.startswith("@@"):
-                header = False
-            continue
-        if current and line.startswith("+"):
-            out.setdefault(current, []).append(line[1:])
-    return out
-
-
-def _in_repo(folder: str) -> bool:
-    import subprocess
-    try:
-        return subprocess.run(["git", "-C", folder, "rev-parse", "--git-dir"], capture_output=True,
-                              timeout=1).returncode == 0
-    except Exception:
-        return False
-
-
-def _git_out(repo: str, deadline: float, *argv) -> str:
-    import subprocess
-    left = deadline - time.monotonic()
-    if left <= 0:
-        raise TimeoutError
-    r = subprocess.run(["git", "-C", repo, "-c", "core.quotePath=false", *argv], capture_output=True, timeout=left)
-    if r.returncode != 0:
-        raise RuntimeError("git")
-    return r.stdout.decode("utf-8", "replace")
-
-
-def git_added(repo: str, argvs: list[list[str]], vault: Vault | None, cfg: dict,
-              deadline: float, check: str = "git commit") -> list[tuple[str, str, str]] | None:
-    """(file, placeholder or "", kind) for each key or password the added lines carry (the rules, your always-mask
-    entries and the session's known secrets). argvs: git commands (_commit_diffs, _push_logs). None when the change
-    set is too large to scan (fail open, a "too-large" skip is noted for check); running out of time raises
-    TimeoutError and a git error raises. Also the git hook's check (githook.py)."""
-    from fnmatch import fnmatch
-    known = {v: k for v, k in engine.known_values(vault, cfg["always"]).items() if k in COMMIT_KINDS}
-    always = [(e, k) for e, k in cfg["always"] if k in COMMIT_KINDS]
-    globs = cfg.get("allow_secret_paths") or []
-    files: dict[str, list[str]] = {}
-    root = ""
-    for argv in argvs:
-        specs = argv[3:] if argv[:3] == ["diff", "HEAD", "--"] else argv[1:] if argv[0] == "untracked" else None
-        if specs:  # a git add's paths: only those in this repo (cd a && git add x && cd ../b && git commit)
-            root = root or os.path.realpath(_git_out(repo, deadline, "rev-parse", "--show-toplevel").strip())
-            specs = [s for s in specs if s == ":/" or os.path.realpath(s) == root
-                     or os.path.realpath(s).startswith(root + os.sep)]
-            if not specs:
-                continue
-        if argv[0] == "untracked":
-            root = root or os.path.realpath(_git_out(repo, deadline, "rev-parse", "--show-toplevel").strip())
-            for name in _git_out(repo, deadline, "ls-files", "--full-name", "--others", "--exclude-standard", "-z",
-                                 "--", *(specs or [":/"])).split("\0"):
-                path = os.path.join(root, name)
-                if not (name and os.path.isfile(path)):
-                    continue
-                if os.path.getsize(path) > 4 * PRIME_MAX_BYTES:
-                    _skip("too-large", "new file in a git commit", "a new file in this git commit",
-                          size=os.path.getsize(path), limit=4 * PRIME_MAX_BYTES)
-                    continue
-                with open(path, encoding="utf-8", errors="replace") as f:
-                    files.setdefault(name, []).extend(f.read().splitlines())
-            continue
-        if argv[:2] == ["diff", "HEAD"]:
-            try:
-                out = _git_out(repo, deadline, "diff", "HEAD", "--no-color", "--no-ext-diff", "-U0", *argv[2:3],
-                               *(specs or []))
-            except RuntimeError:  # no commit yet: the staged diff covers it
-                continue
-        else:
-            out = _git_out(repo, deadline, *argv, "--no-color", "--no-ext-diff", "-U0")
-        for name, lines in _added_lines(out).items():
-            files.setdefault(name, []).extend(lines)
-    size = sum(len(x) for lines in files.values() for x in lines)
-    if size > GIT_MAX_TEXT:
-        _skip("too-large", check, size=size, limit=GIT_MAX_TEXT)
-        return None
-    found = []
-    for name, lines in files.items():
-        if time.monotonic() > deadline:
-            raise TimeoutError
-        if any(fnmatch(name, g) or fnmatch(os.path.basename(name), g) for g in globs):
-            continue
-        text = "\n".join(lines)
-        hits, _ = engine.detect(text, "rules", cfg["allow"], always, known=known)
-        for f in hits:
-            if f.kind in COMMIT_KINDS:
-                found.append((name, vault.by_value.get(f.value(text), "") if vault else "", f.kind))
-    return found
-
-
-def _git_hold(command: str, cwd: str, vault: Vault, powershell: bool) -> dict | None:
-    """Hold a git commit or push whose changes carry a known secret or a key the rules recognise, like the egress
-    hold (cr: allow lets it run once). Names the file and placeholder or kind, never the value. Fails open on any
-    git error, on a change set too large to scan, or after GIT_SECONDS."""
-    import subprocess
-    steps = _git_steps(command, cwd, powershell)
-    if not steps:
-        return None
-    deadline = time.monotonic() + GIT_SECONDS
-    cfg = config.load()
-    found, verb, sub, repo = [], "", steps[0][0], steps[0][1]
-    try:
-        for sub, repo, args, added in steps:
-            argvs = _commit_diffs(args, added) if sub == "commit" else _push_logs(args)
-            found = git_added(repo, argvs, vault, cfg, deadline, f"git {sub}")
-            if found is None:
-                return None
-            if found:
-                verb = sub
-                break
-    except (TimeoutError, subprocess.TimeoutExpired):  # slow: the command runs as before, unchecked
-        _skip("too-slow", f"git {sub}", ms=1000 * (time.monotonic() - deadline + GIT_SECONDS), limit=GIT_SECONDS)
-        return None
-    except Exception:  # git missing or failing, not a repo: the command runs as before, unchecked
-        if _in_repo(repo):  # no git, or no repo there: the command can't commit or push either
-            _skip("git-error", f"git {sub}")
-        return None
-    if not found:
-        return None
-    _FOUND.extend((ph, k) for _, ph, k in found)
-    if _allowed_once(command):
-        _ACTION[0] = "allowed once"
-        return None
-    pairs = list(dict.fromkeys(f"{ph or 'a ' + k} in {name}" for name, ph, k in found))
-    what = "; ".join(pairs[:3]) + (f" (and {len(pairs) - 3} more)" if len(pairs) > 3 else "")
-    if _dry("pre", f"git {verb}: would hold ({_summary([k for _, _, k in found])})"):
-        return None
-    _write_held({"mac": _command_mac(command), "until": time.time() + 60 * HOLD_MINUTES, "armed": False})
-    _ACTION[0] = "held"
-    return _deny(f"Cloakroom held this git {verb}: {what}. A pushed secret can't be called back. Move the value to "
-                 f".env (git-ignored) and unstage it, or, to {verb} anyway, type cr: allow, then ask Claude to run the "
-                 f"same command again: it passes once, within {HOLD_MINUTES} min. Claude: don't change or re-encode the "
-                 "value to get past this; ask the user.")
 
 
 GUESS_NOTICE = 3  # refused placeholders in one session before the user is told
@@ -1267,16 +918,9 @@ def _site_hold(hosts: list[str], key: str, tool: str, args: dict, session: str, 
     if not why:
         return None
     _NOTE[0], _EXTRA["hold"] = "egress: " + " + ".join(holds), "+".join(holds)
-    if _allowed_once(key):
-        _ACTION[0] = "allowed once"
-        return None
-    if _dry("pre", f"egress ({'+'.join(holds)}): would hold"):
-        return None
-    _write_held({"mac": _command_mac(key), "until": time.time() + 60 * HOLD_MINUTES, "armed": False})
-    _ACTION[0] = "held"
-    return _deny(f"Cloakroom held this call: {'; '.join(why)}. To run it anyway, type cr: allow, then ask Claude to run "
-                 f"the same call again: it passes once, within {HOLD_MINUTES} min.{hint} Claude: don't change the call "
-                 "to get past this; ask the user.")
+    return _hold(key, f"Cloakroom held this call: {'; '.join(why)}. To run it anyway, type cr: allow, then ask Claude "
+                      f"to run the same call again: it passes once, within {HOLD_MINUTES} min.{hint} Claude: don't "
+                      "change the call to get past this; ask the user.", f"egress ({'+'.join(holds)}): would hold")
 
 
 def on_pre(data: dict) -> dict | None:
@@ -1337,15 +981,39 @@ def _cursor_pre(data: dict) -> tuple[bool, dict | None]:
 def _on_pre(data: dict) -> dict | None:
     tool, args, session = data.get("tool_name", ""), data.get("tool_input") or {}, data.get("session_id", "default")
     cwd = data.get("cwd") or os.getcwd()
+    denied = _self_deny(tool, args, cwd)
+    if denied:
+        return denied
+    blob = json.dumps(args)
+    has_ph = bool(ANY_PLACEHOLDER.search(blob))
+    vault = Vault(config.vault_path(session))
+    held = _pre_holds(data, tool, args, cwd, session, vault)
+    if held:
+        return held
+    if tool in LOCAL_FILE_TOOLS or tool in SHELL_TOOLS:
+        if not has_ph:  # nothing to restore; a key the model typed into a file is still checked
+            denied = _commit_check(tool, args, args, cwd, vault) if tool in WRITE_TOOLS else None
+            return None if denied is _DRY_DENY else denied
+        if tool in SHELL_TOOLS:
+            return _restore_shell(data, tool, args, cwd, session, vault)
+        return _restore_fields(data, tool, args, cwd, session, vault)
+    return _outbound_deny(tool, blob, session, cwd)
+
+
+def _self_deny(tool: str, args: dict, cwd: str) -> dict | None:
+    """Cloakroom protects itself: no writes to its home, no reading its vault key, no running its own approvals."""
     if _touches_home(tool, args, cwd):
         return _deny(HOME_DENY)
     if tool in SHELL_TOOLS and _reads_key(str(args.get("command", ""))):
         return _deny(KEY_DENY)
     if tool in SHELL_TOOLS and _self_cli(str(args.get("command", "")), cwd):
         return _deny(SELF_DENY)
-    blob = json.dumps(args)
-    has_ph = bool(ANY_PLACEHOLDER.search(blob))
-    vault = Vault(config.vault_path(session))
+    return None
+
+
+def _pre_holds(data: dict, tool: str, args: dict, cwd: str, session: str, vault: Vault) -> dict | None:
+    """The holds before any restore: agent config, then for shell commands secrets leaving, git, long-running
+    (Codex) and the file pre-read; money for any tool. The first hold, or None."""
     if tool in SHELL_TOOLS or tool in WRITE_TOOLS:
         held = _config_hold(tool, args, cwd)
         if held:  # a literal token in it is denied first: that message names the fix
@@ -1369,58 +1037,64 @@ def _on_pre(data: dict) -> dict | None:
         held = _money_hold(tool + "\0" + json.dumps(args, sort_keys=True), money_why)
         if held:
             return held
-    if tool in LOCAL_FILE_TOOLS or tool in SHELL_TOOLS:
-        if not has_ph:  # nothing to restore; a key the model typed into a file is still checked
-            denied = _commit_check(tool, args, args, cwd, vault) if tool in WRITE_TOOLS else None
-            return None if denied is _DRY_DENY else denied
-        if tool in SHELL_TOOLS:
-            ps = tool == "PowerShell"
-            cmd = args.get("command", "")
-            kind = shell.classify(cmd, powershell=ps)
-            if kind == "network" or "<<" in cmd or "@'" in cmd or '@"' in cmd:
-                out = {"hookSpecificOutput": {"hookEventName": "PreToolUse", "permissionDecision": "ask",
-                       "permissionDecisionReason": "Cloakroom: this command can send data off this machine, so "
-                                                   "placeholders were left in place. Approve only if that's what you want."}}
-                return None if _dry("pre", "Bash network: would ask") else out
-            restored, _ = shell.restore(cmd, vault.lookup, powershell=ps)  # refusals: vault.refused
-            denied = _commit_check(tool, args, args, cwd, vault)
-            if denied:
-                return None if denied is _DRY_DENY else denied
-            if _dry("pre", f"Bash {kind}: would restore"):
-                return None
-            context, notice = _refusals(vault, session)
-            if restored == cmd:
-                return _with_notes({"hookEventName": "PreToolUse"}, context, notice) if context else None
-            _pending(data, _command_paths(cmd, cwd, ps), cmd, vault)
-            out = {"hookEventName": "PreToolUse", "updatedInput": {**args, "command": restored}}
-            if kind == "unknown":
-                out.update(permissionDecision="ask",
-                           permissionDecisionReason="Cloakroom restored real values into a command it doesn't know. "
-                                                    "Approve only if it stays on this machine.")
-            return _with_notes(out, context, notice)
-        changed_fields = {}
-        for key, value in args.items():
-            def fn(s):
-                return vault.restore(s)[0]  # refusals: vault.refused
-            new, changed = _strings(value, fn)
-            if changed:
-                changed_fields[key] = new
-        if tool in WRITE_TOOLS:
-            denied = _commit_check(tool, {**args, **changed_fields}, args, cwd, vault)
-            if denied:
-                return None if denied is _DRY_DENY else denied
-        if changed_fields and _dry("pre", f"{tool}: would restore {list(changed_fields)}"):
-            return None
-        context, notice = _refusals(vault, session)
-        if not changed_fields:
-            return _with_notes({"hookEventName": "PreToolUse"}, context, notice) if context else None
-        if tool in WRITE_TOOLS:
-            _pending(data, [filelog.norm(p, cwd) for p in _write_paths(tool, args) if p], json.dumps(args), vault)
-        # updatedInput replaces the whole input in practice (a partial one dropped Write's file_path): send it all
-        out = {"hookEventName": "PreToolUse", "updatedInput": {**args, **changed_fields}}
-        return _with_notes(out, context, notice)
+    return None
 
-    # Everything else may leave the machine (web, MCP, subagent prompts): never restore; deny real values.
+
+def _restore_shell(data: dict, tool: str, args: dict, cwd: str, session: str, vault: Vault) -> dict | None:
+    """A local shell command with placeholders: real values back in, unless it can send data off this machine."""
+    ps = tool == "PowerShell"
+    cmd = args.get("command", "")
+    kind = shell.classify(cmd, powershell=ps)
+    if kind == "network" or "<<" in cmd or "@'" in cmd or '@"' in cmd:
+        out = {"hookSpecificOutput": {"hookEventName": "PreToolUse", "permissionDecision": "ask",
+               "permissionDecisionReason": "Cloakroom: this command can send data off this machine, so "
+                                           "placeholders were left in place. Approve only if that's what you want."}}
+        return None if _dry("pre", "Bash network: would ask") else out
+    restored, _ = shell.restore(cmd, vault.lookup, powershell=ps)  # refusals: vault.refused
+    denied = _commit_check(tool, args, args, cwd, vault)
+    if denied:
+        return None if denied is _DRY_DENY else denied
+    if _dry("pre", f"Bash {kind}: would restore"):
+        return None
+    context, notice = _refusals(vault, session)
+    if restored == cmd:
+        return _with_notes({"hookEventName": "PreToolUse"}, context, notice) if context else None
+    _pending(data, _command_paths(cmd, cwd, ps), cmd, vault)
+    out = {"hookEventName": "PreToolUse", "updatedInput": {**args, "command": restored}}
+    if kind == "unknown":
+        out.update(permissionDecision="ask",
+                   permissionDecisionReason="Cloakroom restored real values into a command it doesn't know. "
+                                            "Approve only if it stays on this machine.")
+    return _with_notes(out, context, notice)
+
+
+def _restore_fields(data: dict, tool: str, args: dict, cwd: str, session: str, vault: Vault) -> dict | None:
+    """A local file tool with placeholders: real values back into every field that has one."""
+    changed_fields = {}
+    for key, value in args.items():
+        def fn(s):
+            return vault.restore(s)[0]  # refusals: vault.refused
+        new, changed = _strings(value, fn)
+        if changed:
+            changed_fields[key] = new
+    if tool in WRITE_TOOLS:
+        denied = _commit_check(tool, {**args, **changed_fields}, args, cwd, vault)
+        if denied:
+            return None if denied is _DRY_DENY else denied
+    if changed_fields and _dry("pre", f"{tool}: would restore {list(changed_fields)}"):
+        return None
+    context, notice = _refusals(vault, session)
+    if not changed_fields:
+        return _with_notes({"hookEventName": "PreToolUse"}, context, notice) if context else None
+    if tool in WRITE_TOOLS:
+        _pending(data, [filelog.norm(p, cwd) for p in _write_paths(tool, args) if p], json.dumps(args), vault)
+    # updatedInput replaces the whole input in practice (a partial one dropped Write's file_path): send it all
+    out = {"hookEventName": "PreToolUse", "updatedInput": {**args, **changed_fields}}
+    return _with_notes(out, context, notice)
+
+
+def _outbound_deny(tool: str, blob: str, session: str, cwd: str) -> dict | None:
+    """Everything else may leave the machine (web, MCP, subagent prompts): never restore; deny real values."""
     r = client.mask(blob, session, roots=[cwd])
     if r["masked"]:
         _FOUND.extend((p, k) for p, k, _ in r["masked"])
@@ -1458,8 +1132,7 @@ def _install_note_once(session: str) -> str | None:
     note = _install_note(config.load())
     if not note:
         return None
-    flag = config.private_dir("install-noted") / ("".join(c for c in session if c.isalnum() or c in "-_")[:80]
-                                                  or "default")
+    flag = config.private_dir("install-noted") / config.safe_name(session)
     if flag.exists():
         return None
     flag.touch(mode=0o600)
@@ -1482,7 +1155,7 @@ def on_start(data: dict) -> dict | None:
         try:
             # wait=0: start the service and return at once (the SessionStart hook only has 30 s; the first model
             # download alone can take longer). Tool calls wait for it instead.
-            client._post("/mask", {"text": "warm up", "session": data.get("session_id", "default")}, timeout=5, wait=0)
+            client.warm_up(data.get("session_id", "default"))
         except client.Unavailable:
             return {"systemMessage": "cloakroom: starting the local model in the background. The very first run also "
                                      "downloads it once (about a minute); tool calls wait for it."}
@@ -1543,6 +1216,14 @@ def _model_fallback(event: str, data: dict):
 
 
 def handle(event: str, data: dict) -> dict | None:
+    client.start_clock(event)  # the agent's time limit for this hook: every call to the service shares it
+    try:
+        return _handle(event, data)
+    finally:
+        client.stop_clock()
+
+
+def _handle(event: str, data: dict) -> dict | None:
     _FOUND.clear()
     _EXTRA.clear()
     _SKIPS.clear()

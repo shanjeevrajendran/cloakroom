@@ -188,3 +188,47 @@ def test_full_mode_through_the_service(tmp_path, monkeypatch, capsys):
         assert NAME not in out and "PII_PERSON_1_" in out
     finally:
         srv.shutdown()
+
+
+def test_a_file_logged_by_another_process_meanwhile_keeps_its_entry(tmp_path, monkeypatch):
+    """known() works out a file's changes outside the lock. Before 1.5 it then wrote its own, older view of the file's
+    entry over what another process had logged in between."""
+    from cloakroom import filelog
+    path = tmp_path / "owners.md"
+    path.write_text(f"{NAME}\n")
+    filelog.record(str(path), [(NAME, "PERSON", "PII_PERSON_1_aaaaaa")])
+    real_check = filelog._check
+
+    def check_then_another_process_logs(p, entry):
+        out = real_check(p, entry)
+        monkeypatch.setattr(filelog, "_check", real_check)
+        path.write_text(f"{NAME}\n{EMAIL}\n")  # the file grows and another process logs the new value
+        filelog.record(str(path), [(EMAIL, "EMAIL", "PII_EMAIL_1_aaaaaa")])
+        return ({**out[0], "ts": 0.0} if out[0] else out[0]), out[1]  # this call's view differs from what it read
+
+    monkeypatch.setattr(filelog, "_check", check_then_another_process_logs)
+    filelog.known([str(tmp_path)])
+    assert set(filelog.known([str(tmp_path)])) == {NAME, EMAIL}
+
+
+def test_values_read_back_from_files_are_kept_for_the_most_recent_files_only(tmp_path, monkeypatch):
+    from cloakroom import filelog
+    monkeypatch.setattr(filelog, "KEEP_VALUES", 3)
+    for i in range(8):
+        path = tmp_path / f"f{i}.md"
+        path.write_text(f"{NAME} {i}\n")
+        filelog.record(str(path), [(NAME, "PERSON", "PII_PERSON_1_aaaaaa")])
+    assert filelog.known([str(tmp_path)]) == {NAME: "PERSON"}
+    assert len(filelog._VALUES) <= 3
+
+
+def test_a_value_logged_into_a_file_that_was_logged_before_is_known_at_once(tmp_path):
+    """Rules mode: the hook that logs a write masks its output in the same process. Before 1.5 the values read back
+    for the file were the ones from before the write, so the new one went through in that call's output."""
+    from cloakroom import filelog
+    path = tmp_path / "owners.md"
+    path.write_text(f"{NAME}\n")
+    filelog.record(str(path), [(NAME, "PERSON", "PII_PERSON_1_aaaaaa")])
+    path.write_text(f"{NAME}\nDana Okafor\n")
+    filelog.record(str(path), [("Dana Okafor", "PERSON", "PII_PERSON_2_aaaaaa")])
+    assert filelog.known([str(tmp_path)]) == {NAME: "PERSON", "Dana Okafor": "PERSON"}

@@ -117,13 +117,14 @@ text than secret-only scanners. Method and raw numbers: [bench/RESULTS.md](bench
 
 ## Recent releases
 
+- **1.5.0**: the model now reads long, dense output (a log, a CSV, a hex dump) to its end; before, a name near the
+  end of each stretch could pass unmasked. Large files are checked much faster, and a check that would take longer
+  than the agent waits ends with the output withheld.
 - **1.4.0**: `cloakroom exposure --personal` also finds personal data you typed in old Codex, Cursor and Gemini CLI
   chats ([details](#commands-youll-use)). On a Mac there is no Keychain password prompt on first run or after a Python
   update, and an agent can't read the vault key ([details](#how-it-works)).
 - **1.3.0**: an agent can't approve its own held call or switch Cloakroom off, and a hook or MCP server it writes
   into agent config is held until you type `cr: allow`.
-- **1.2.0**: Cursor's editor is checked with Cloakroom (Tab completion isn't covered). Codex signed in with ChatGPT is
-  masked through `cloakroom proxy`. Fewer false alarms on Codex's plugin list.
 
 All releases: [cloakroom.sh/releases](https://cloakroom.sh/releases) · [CHANGELOG.md](CHANGELOG.md).
 

@@ -55,11 +55,8 @@ def set_allowed_hosts(hosts: list[str]):
     path = private_dir() / "config.json"
     cfg = json.loads(path.read_text()) if path.exists() else {}
     cfg["allowed_hosts"] = hosts
-    tmp = path.with_suffix(".tmp")
-    fd = os.open(tmp, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
-    with os.fdopen(fd, "w", encoding="utf-8") as f:
-        json.dump(cfg, f, indent=2)
-    os.replace(tmp, path)
+    from . import store
+    store.write_atomic(path, json.dumps(cfg, indent=2).encode("utf-8"))
 
 
 def install_state() -> str | None:
@@ -87,6 +84,10 @@ def token() -> str:
     return path.read_text().strip()
 
 
+def safe_name(name: str) -> str:
+    """name (a session id, a tool call id) as a file name: letters, digits, - and _, at most 80, never empty."""
+    return "".join(c for c in str(name) if c.isalnum() or c in "-_")[:80] or "default"
+
+
 def vault_path(session: str) -> Path:
-    safe = "".join(c for c in session if c.isalnum() or c in "-_")[:80] or "default"
-    return private_dir("sessions") / f"{safe}.json"
+    return private_dir("sessions") / f"{safe_name(session)}.json"

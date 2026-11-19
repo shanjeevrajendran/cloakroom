@@ -10,13 +10,12 @@ entries still go in config.json's "allow" list.
 from __future__ import annotations
 
 import json
-import os
 import re
 import secrets
 import sys
 import time
 
-from . import config, crypto
+from . import config, crypto, store
 
 TYPES = ("allow", "always_mask")
 SECRET_KINDS = {"SECRET", "CARD", "SSN", "IBAN", "ACCOUNT", "PASSWORD"}  # never applied without your approval
@@ -33,11 +32,7 @@ def load() -> list[dict]:
 
 def _save(rules: list[dict]):
     path = config.private_dir() / "rules.bin"
-    tmp = path.with_suffix(".tmp")
-    fd = os.open(tmp, os.O_WRONLY | os.O_CREAT | os.O_TRUNC | getattr(os, "O_BINARY", 0), 0o600)
-    with os.fdopen(fd, "wb") as f:
-        f.write(crypto.encrypt(json.dumps({"rules": rules}).encode()))
-    os.replace(tmp, path)
+    store.write_atomic(path, crypto.encrypt(json.dumps({"rules": rules}).encode()))
 
 
 def effective() -> tuple[list[str], list[tuple[str, str]]]:
@@ -127,3 +122,6 @@ def decisions() -> int:
     path = config.HOME / "decisions.json"
     gone = sum(json.loads(path.read_text()).values()) if path.exists() else 0
     return gone + sum(1 for r in load() if r["decided"])
+
+
+save = _save  # learn.py

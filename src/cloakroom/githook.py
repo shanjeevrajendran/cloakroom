@@ -72,8 +72,8 @@ def install(remove: bool = False, cwd: str = ".") -> int:
         print(f"cloakroom: not in a git repo ({e})", file=sys.stderr)
         return 1
     if not remove:
-        from .agents import _program
-        program = _program()
+        from . import agents
+        program = agents.program()
         if not program:
             print("cloakroom: can't find the cloakroom program for the hook to run; install it first "
                   "(uv tool install 'cloakroom[model,torch]')", file=sys.stderr)
@@ -124,7 +124,7 @@ def check(kind: str, stdin=None, args=()) -> int:
     if kind in POST:
         from . import configscan
         return configscan.check(kind, list(args))
-    from . import events, hook
+    from . import events, hook, hookcall
     t0 = time.monotonic()
     label = f"git {kind} (git hook)"
     if kind == "commit":
@@ -134,21 +134,21 @@ def check(kind: str, stdin=None, args=()) -> int:
                  for parts in (line.split() for line in (stdin or sys.stdin)) if len(parts) == 4 and parts[1] != ZERO]
         if not argvs:
             return 0
-    hook._SKIPS.clear()
+    hookcall.SKIPS.clear()
     try:
         found = hook.git_added(".", argvs, None, config.load(), t0 + SECONDS, label)
     except (TimeoutError, subprocess.TimeoutExpired):
         found = None
-        hook._skip("too-slow", label, ms=1000 * (time.monotonic() - t0), limit=SECONDS)
+        hookcall.skip("too-slow", label, ms=1000 * (time.monotonic() - t0), limit=SECONDS)
     except (RuntimeError, OSError):  # git failed or is missing
         found = None
-        hook._skip("git-error", label)
+        hookcall.skip("git-error", label)
     except Exception as e:  # noqa: BLE001 - never stop your own commit because the check broke
         print(f"cloakroom: this {kind} was not checked ({type(e).__name__})", file=sys.stderr)
         return 0
     ms = 1000 * (time.monotonic() - t0)
     data = {"session_id": "git-hook", "tool_name": "git hook"}
-    for reason, check_, what, _, numbers in hook._SKIPS:
+    for reason, check_, what, _, numbers in hookcall.SKIPS:
         numbers = dict(numbers)
         _record("skipped", data, "skipped", [], numbers.pop("ms") or ms, "", {"reason": reason, "check": check_,
                                                                               **numbers})
@@ -163,3 +163,6 @@ def check(kind: str, stdin=None, args=()) -> int:
     print(f"cloakroom: stopped this {kind}: it adds {what}. A pushed secret can't be called back: move the value to "
           f".env (git-ignored) and {fix}. To {kind} anyway: git {kind} --no-verify", file=sys.stderr)
     return 1
+
+
+ours = _ours  # update.py

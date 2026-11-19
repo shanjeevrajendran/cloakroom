@@ -184,7 +184,7 @@ def test_a_stopped_commit_is_logged_as_held_without_values(repo):
 @pytest.mark.parametrize("kind", ["commit", "push"])
 def test_too_large_is_logged_as_skipped_and_told(repo, monkeypatch, capsys, kind):
     from cloakroom import githook, hook
-    monkeypatch.setattr(hook, "GIT_MAX_TEXT", 8)
+    monkeypatch.setattr("cloakroom.gitcheck.GIT_MAX_TEXT", 8)
     (repo / "app.py").write_text(f"TOKEN = '{KEY}'\n")
     git(repo, "add", "app.py")
     if kind == "push":
